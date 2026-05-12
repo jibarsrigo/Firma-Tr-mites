@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>AutoFirma – Diagnóstico exhaustivo CAU</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; line-height: 1.5; margin: 2em; }
+    h1, h2, h3, h4 { color: #003366; }
+    ul { margin-left: 1.5em; }
+    code { background: #f2f2f2; padding: 2px 4px; }
+    hr { margin: 2em 0; }
+  </style>
+</head>
+
+<body>
+
+<h1>AutoFirma – Diagnóstico exhaustivo y recuperación avanzada (CAU)</h1>
+
+<p>
+Documento técnico interno para personal CAU.
+Contiene todo el conocimiento operativo sobre firma electrónica con
+<strong>FIRE</strong>, <strong>AutoFirma cliente</strong>,
+<strong>AutoFirma servidor</strong> y firma móvil.
+</p>
+
+<p><strong>NO es documentación para ciudadanos.</strong></p>
+
+<hr>
+
+<h2>1. Marco general y principio rector</h2>
+
+<p>
+Cuando un ciudadano firma con <strong>certificado local</strong>
+(FNMT, DNIe u otros), el <strong>proveedor funcional</strong> del flujo es siempre
+<strong>FIRE</strong>.
+</p>
+
+<ul>
+  <li>AutoFirma cliente <strong>NO es proveedor</strong>.</li>
+  <li>AutoFirma cliente es una <strong>herramienta local</strong> del entorno del ciudadano.</li>
+  <li>AutoFirma servidor o componentes intermedios se analizan solo si aparece <code>SAF_27</code>.</li>
+</ul>
+
+<p>
+<strong>Regla CAU:</strong> no escalar como proveedor sin descartar entorno local.
+</p>
+
+<hr>
+
+<h2>2. Regla universal de diagnóstico</h2>
+
+<p><strong>OBLIGATORIO:</strong> exigir siempre prueba de firma local con PDF.</p>
+
+<ol>
+  <li>Abrir AutoFirma manualmente.</li>
+  <li>Seleccionar “Firmar archivo / Firmar fichero”.</li>
+  <li>Firmar un PDF local.</li>
+</ol>
+
+<table border="1" cellpadding="6" cellspacing="0">
+  <tr>
+    <th>Resultado</th>
+    <th>Diagnóstico</th>
+    <th>Acción</th>
+  </tr>
+  <tr>
+    <td>No abre AutoFirma</td>
+    <td>Instalación / permisos</td>
+    <td>No escalar</td>
+  </tr>
+  <tr>
+    <td>No aparece certificado</td>
+    <td>Certificado / DNIe</td>
+    <td>No escalar</td>
+  </tr>
+  <tr>
+    <td>No firma PDF</td>
+    <td>AutoFirma / entorno</td>
+    <td>No escalar</td>
+  </tr>
+  <tr>
+    <td>Firma PDF OK</td>
+    <td>Invocación web / navegador</td>
+    <td>Revisar entorno</td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>3. Patrón maestro: firma local OK / firma web KO</h2>
+
+<ul>
+  <li>AutoFirma firma PDF local correctamente.</li>
+  <li>La firma del trámite web no se completa.</li>
+  <li>Aparece <code>TR_SGI</code>, pero no <code>TR_SGO</code>.</li>
+</ul>
+
+<p>
+<strong>Interpretación:</strong> problema de comunicación navegador ↔ AutoFirma,
+no del certificado ni del proveedor.
+</p>
+
+<p>
+Acciones CAU:
+</p>
+<ul>
+  <li>Cerrar navegador.</li>
+  <li>Probar otro navegador.</li>
+  <li>Usar “Herramientas → Restaurar instalación”.</li>
+  <li>Probar sin VPN / red corporativa.</li>
+</ul>
+
+<hr>
+
+<h2>4. Relación SistraHelp ↔ diagnóstico real</h2>
+
+<table border="1" cellpadding="6" cellspacing="0">
+  <tr>
+    <th>Patrón de trazas</th>
+    <th>Interpretación CAU</th>
+  </tr>
+  <tr>
+    <td>TR_SGI → TR_SGX sin Cl@ve ni SAF</td>
+    <td>FIRE / entorno local</td>
+  </tr>
+  <tr>
+    <td>TR_SGI → TR_SGX + SAF_27</td>
+    <td>AutoFirma servidor</td>
+  </tr>
+  <tr>
+    <td>TR_SGI → TR_SGX + 8–15 / 101 / 103 / 104</td>
+    <td>Cl@ve Firma</td>
+  </tr>
+  <tr>
+    <td>No aparece TR_SGI</td>
+    <td>Portafib / Soffid (pre‑proveedor)</td>
+  </tr>
+</table>
+
+<hr>
+
+<h2>5. Diagnóstico por sistema operativo</h2>
+
+<h3>Windows</h3>
+
+<ul>
+  <li>AutoFirma no se abre o no se invoca.</li>
+  <li>Carpeta <code>.afirma</code> persiste tras desinstalar.</li>
+  <li>Firewall bloquea AutoFirma aunque antivirus no.</li>
+  <li>Chrome / Edge más restrictivos que Firefox.</li>
+</ul>
+
+<p><strong>Criterios CAU:</strong></p>
+<ul>
+  <li>Cerrar TODOS los navegadores antes de instalar.</li>
+  <li>Reiniciar SIEMPRE tras instalar.</li>
+  <li>Probar Firefox si falla Chrome/Edge.</li>
+  <li>Incógnito NO garantiza solución.</li>
+</ul>
+
+<h3>macOS</h3>
+
+<ul>
+  <li>AutoFirma abre.</li>
+  <li>Firma local OK.</li>
+  <li>Firma web KO.</li>
+</ul>
+
+<p><strong>Causas:</strong></p>
+<ul>
+  <li>Gatekeeper.</li>
+  <li>Confianza interna dañada.</li>
+  <li>Navegador concreto.</li>
+</ul>
+
+<p><strong>Acción prioritaria:</strong></p>
+<ul>
+  <li>Herramientas → Restaurar instalación.</li>
+  <li>Cambiar navegador.</li>
+  <li>No tocar llavero manualmente.</li>
+</ul>
+
+<h3>Linux</h3>
+
+<ul>
+  <li>Firefox Snap / Flatpak aislado.</li>
+  <li>PKCS#11 obligatorio para DNIe.</li>
+  <li>Certificado visible en navegador pero no en AutoFirma.</li>
+</ul>
+
+<p><strong>Reglas CAU:</strong></p>
+<ul>
+  <li>No recomendar incógnito.</li>
+  <li>Probar Chrome o Firefox no Snap.</li>
+  <li>Restaurar instalación si firma local OK.</li>
+</ul>
+
+<h3>Android</h3>
+
+<ul>
+  <li>AutoFirma App firma PDF local.</li>
+  <li>SOLO firma trámites compatibles.</li>
+  <li>DNIe por NFC inestable.</li>
+</ul>
+
+<p>
+Si no firma PDF local → detener diagnóstico.
+VALIDe es prueba técnica CAU, no ciudadana.
+</p>
+
+<h3>iPhone / iPad</h3>
+
+<ul>
+  <li>AutoFirma App firma PDF local.</li>
+  <li>Safari debe usar vista móvil.</li>
+  <li>No todos los trámites son compatibles.</li>
+</ul>
+
+<hr>
+
+<h2>6. Diagnóstico por tipo de certificado</h2>
+
+<h3>FNMT / certificado software</h3>
+
+<ul>
+  <li>Certificado no caducado.</li>
+  <li>Clave privada presente.</li>
+  <li>Archivo original <code>.p12 / .pfx</code>.</li>
+</ul>
+
+<h3>DNIe</h3>
+
+<ul>
+  <li>DNIe en vigor.</li>
+  <li>PIN no bloqueado.</li>
+  <li>Lector funciona.</li>
+  <li>Software oficial instalado.</li>
+  <li>PKCS#11 en Linux/macOS.</li>
+</ul>
+
+<hr>
+
+<h2>7. Keystore interno de AutoFirma</h2>
+
+<p>
+AutoFirma dispone de un keystore interno de confianza.
+No contiene certificados personales ni claves privadas del ciudadano.
+</p>
+
+<p><strong>Síntomas de keystore dañado:</strong></p>
+<ul>
+  <li>Firma local OK / web KO.</li>
+  <li>Errores SSL.</li>
+  <li>TR_SGI repetido sin TR_SGO.</li>
+</ul>
+
+<p><strong>Acción:</strong> Restaurar instalación o reinstalación limpia.</p>
+
+<hr>
+
+<h2>8. Limpieza completa de AutoFirma (Windows)</h2>
+
+<p><strong>SOLO personal técnico.</strong></p>
+
+<ol>
+  <li>Desinstalar AutoFirma.</li>
+  <li>Reiniciar.</li>
+  <li>Eliminar:
+    <ul>
+      <li><code>C:\Program Files\AutoFirma</code></li>
+      <li><code>C:\Users\usuario\.afirma</code></li>
+    </ul>
+  </li>
+  <li>(Opcional) eliminar claves de registro.</li>
+  <li>Reiniciar.</li>
+  <li>Instalar como administrador.</li>
+</ol>
+
+<hr>
+
+<h2>9. Criterios de escalado</h2>
+
+<p><strong>NO escalar si:</strong></p>
+<ul>
+  <li>Un solo NIF.</li>
+  <li>Firma local KO.</li>
+  <li>Falla solo en equipo corporativo.</li>
+  <li>No aparece SAF_27.</li>
+</ul>
+
+<p><strong>SÍ escalar si:</strong></p>
+<ul>
+  <li>Varios NIF afectados.</li>
+  <li>Misma franja y patrón.</li>
+  <li>SAF_27 repetido.</li>
+</ul>
+
+<hr>
+
+<h2>10. Resumen operativo</h2>
+
+<ul>
+  <li>FIRE es el proveedor con certificado local.</li>
+  <li>AutoFirma cliente es herramienta auxiliar.</li>
+  <li>La prueba local decide el diagnóstico.</li>
+  <li>Firma local KO → entorno.</li>
+  <li>Firma local OK / web KO → invocación.</li>
+  <li>Cliente de Firma Móvil ≠ Cl@ve.</li>
+</ul>
+
+</body>
+</html>
