@@ -7,9 +7,11 @@
   <style>
     body { font-family: Arial, Helvetica, sans-serif; line-height: 1.5; margin: 2em; }
     h1, h2, h3, h4 { color: #003366; }
-    ul { margin-left: 1.5em; }
+    ul, ol { margin-left: 1.5em; }
     code { background: #f2f2f2; padding: 2px 4px; }
     hr { margin: 2em 0; }
+    table { border-collapse: collapse; margin: 1em 0; }
+    th, td { border: 1px solid #666; padding: 6px; }
   </style>
 </head>
 
@@ -42,9 +44,7 @@ Cuando un ciudadano firma con <strong>certificado local</strong>
   <li>AutoFirma servidor o componentes intermedios se analizan solo si aparece <code>SAF_27</code>.</li>
 </ul>
 
-<p>
-<strong>Regla CAU:</strong> no escalar como proveedor sin descartar entorno local.
-</p>
+<p><strong>Regla CAU:</strong> no escalar como proveedor sin descartar entorno local.</p>
 
 <hr>
 
@@ -58,7 +58,7 @@ Cuando un ciudadano firma con <strong>certificado local</strong>
   <li>Firmar un PDF local.</li>
 </ol>
 
-<table border="1" cellpadding="6" cellspacing="0">
+<table>
   <tr>
     <th>Resultado</th>
     <th>Diagnóstico</th>
@@ -101,9 +101,6 @@ Cuando un ciudadano firma con <strong>certificado local</strong>
 no del certificado ni del proveedor.
 </p>
 
-<p>
-Acciones CAU:
-</p>
 <ul>
   <li>Cerrar navegador.</li>
   <li>Probar otro navegador.</li>
@@ -115,7 +112,7 @@ Acciones CAU:
 
 <h2>4. Relación SistraHelp ↔ diagnóstico real</h2>
 
-<table border="1" cellpadding="6" cellspacing="0">
+<table>
   <tr>
     <th>Patrón de trazas</th>
     <th>Interpretación CAU</th>
@@ -143,74 +140,38 @@ Acciones CAU:
 <h2>5. Diagnóstico por sistema operativo</h2>
 
 <h3>Windows</h3>
-
 <ul>
   <li>AutoFirma no se abre o no se invoca.</li>
-  <li>Carpeta <code>.afirma</code> persiste tras desinstalar.</li>
+  <li>Persistencia de <code>.afirma</code> tras desinstalar.</li>
   <li>Firewall bloquea AutoFirma aunque antivirus no.</li>
   <li>Chrome / Edge más restrictivos que Firefox.</li>
-</ul>
-
-<p><strong>Criterios CAU:</strong></p>
-<ul>
-  <li>Cerrar TODOS los navegadores antes de instalar.</li>
-  <li>Reiniciar SIEMPRE tras instalar.</li>
-  <li>Probar Firefox si falla Chrome/Edge.</li>
-  <li>Incógnito NO garantiza solución.</li>
+  <li>Registro incorrecto del protocolo <code>afirma://</code>.</li>
 </ul>
 
 <h3>macOS</h3>
-
 <ul>
   <li>AutoFirma abre.</li>
   <li>Firma local OK.</li>
   <li>Firma web KO.</li>
-</ul>
-
-<p><strong>Causas:</strong></p>
-<ul>
-  <li>Gatekeeper.</li>
-  <li>Confianza interna dañada.</li>
-  <li>Navegador concreto.</li>
-</ul>
-
-<p><strong>Acción prioritaria:</strong></p>
-<ul>
-  <li>Herramientas → Restaurar instalación.</li>
-  <li>Cambiar navegador.</li>
-  <li>No tocar llavero manualmente.</li>
+  <li>Gatekeeper y llavero Sistema vs Inicio de sesión.</li>
+  <li>Apple Silicon + macOS recientes: puertos dinámicos.</li>
 </ul>
 
 <h3>Linux</h3>
-
 <ul>
   <li>Firefox Snap / Flatpak aislado.</li>
   <li>PKCS#11 obligatorio para DNIe.</li>
   <li>Certificado visible en navegador pero no en AutoFirma.</li>
 </ul>
 
-<p><strong>Reglas CAU:</strong></p>
-<ul>
-  <li>No recomendar incógnito.</li>
-  <li>Probar Chrome o Firefox no Snap.</li>
-  <li>Restaurar instalación si firma local OK.</li>
-</ul>
-
 <h3>Android</h3>
-
 <ul>
   <li>AutoFirma App firma PDF local.</li>
-  <li>SOLO firma trámites compatibles.</li>
+  <li>Solo firma trámites compatibles.</li>
   <li>DNIe por NFC inestable.</li>
 </ul>
 
-<p>
-Si no firma PDF local → detener diagnóstico.
-VALIDe es prueba técnica CAU, no ciudadana.
-</p>
-
 <h3>iPhone / iPad</h3>
-
 <ul>
   <li>AutoFirma App firma PDF local.</li>
   <li>Safari debe usar vista móvil.</li>
@@ -222,7 +183,6 @@ VALIDe es prueba técnica CAU, no ciudadana.
 <h2>6. Diagnóstico por tipo de certificado</h2>
 
 <h3>FNMT / certificado software</h3>
-
 <ul>
   <li>Certificado no caducado.</li>
   <li>Clave privada presente.</li>
@@ -230,13 +190,11 @@ VALIDe es prueba técnica CAU, no ciudadana.
 </ul>
 
 <h3>DNIe</h3>
-
 <ul>
   <li>DNIe en vigor.</li>
   <li>PIN no bloqueado.</li>
-  <li>Lector funciona.</li>
-  <li>Software oficial instalado.</li>
-  <li>PKCS#11 en Linux/macOS.</li>
+  <li>Lector reconocido.</li>
+  <li>Drivers / PKCS#11 instalados.</li>
 </ul>
 
 <hr>
@@ -244,15 +202,15 @@ VALIDe es prueba técnica CAU, no ciudadana.
 <h2>7. Keystore interno de AutoFirma</h2>
 
 <p>
-AutoFirma dispone de un keystore interno de confianza.
-No contiene certificados personales ni claves privadas del ciudadano.
+AutoFirma utiliza un keystore SSL interno con
+<strong>AutoFirma ROOT</strong> y certificado de servidor <code>127.0.0.1</code>.
+No contiene certificados personales.
 </p>
 
-<p><strong>Síntomas de keystore dañado:</strong></p>
 <ul>
-  <li>Firma local OK / web KO.</li>
   <li>Errores SSL.</li>
-  <li>TR_SGI repetido sin TR_SGO.</li>
+  <li>SAF_36 / SAF_37.</li>
+  <li>Firma local OK pero web KO.</li>
 </ul>
 
 <p><strong>Acción:</strong> Restaurar instalación o reinstalación limpia.</p>
@@ -272,7 +230,7 @@ No contiene certificados personales ni claves privadas del ciudadano.
       <li><code>C:\Users\usuario\.afirma</code></li>
     </ul>
   </li>
-  <li>(Opcional) eliminar claves de registro.</li>
+  <li>Eliminar claves de registro (si procede).</li>
   <li>Reiniciar.</li>
   <li>Instalar como administrador.</li>
 </ol>
@@ -281,33 +239,53 @@ No contiene certificados personales ni claves privadas del ciudadano.
 
 <h2>9. Criterios de escalado</h2>
 
-<p><strong>NO escalar si:</strong></p>
+<h3>NO escalar si:</h3>
 <ul>
   <li>Un solo NIF.</li>
   <li>Firma local KO.</li>
-  <li>Falla solo en equipo corporativo.</li>
+  <li>Falla solo en un equipo o red.</li>
   <li>No aparece SAF_27.</li>
 </ul>
 
-<p><strong>SÍ escalar si:</strong></p>
+<h3>SÍ escalar si:</h3>
 <ul>
   <li>Varios NIF afectados.</li>
-  <li>Misma franja y patrón.</li>
-  <li>SAF_27 repetido.</li>
+  <li>Misma franja horaria.</li>
+  <li>SAF_27 masivo.</li>
 </ul>
 
 <hr>
 
-<h2>10. Resumen operativo</h2>
+<h2>10. Regla de oro CAIB</h2>
 
+<p>
+Si aparece <code>127.0.0.1</code>, <code>wss://</code> o AutoFirma en el error,
+<strong>NO es un problema de la sede CAIB ni de @firma/FIRE</strong>.
+</p>
+
+<hr>
+
+<h1>ANEXO TÉCNICO – Arquitectura interna y diagnóstico profundo de AutoFirma (CAIB)</h1>
+
+<p>
+Este anexo recoge el funcionamiento interno de AutoFirma, la comunicación por WebSockets,
+la gestión de certificados locales, puertos, seguridad de red y patrones reales de fallo
+observados en la CAIB.
+</p>
+
+<h2>Arquitectura por capas</h2>
 <ul>
-  <li>FIRE es el proveedor con certificado local.</li>
-  <li>AutoFirma cliente es herramienta auxiliar.</li>
-  <li>La prueba local decide el diagnóstico.</li>
-  <li>Firma local KO → entorno.</li>
-  <li>Firma local OK / web KO → invocación.</li>
-  <li>Cliente de Firma Móvil ≠ Cl@ve.</li>
+  <li>Capa 1 – Navegador del ciudadano.</li>
+  <li>Capa 2 – AutoFirma (cliente local).</li>
+  <li>Capa 3 – PortaFIB / @firma / FIRE.</li>
+  <li>Capa 4 – Red, proxy, firewall, VPN, EDR.</li>
 </ul>
+
+<h2>Regla CAIB</h2>
+<p>
+Errores con <code>127.0.0.1</code>, <code>wss://</code> o AutoFirma pertenecen siempre
+al entorno local y no justifican escalar a proveedor.
+</p>
 
 </body>
 </html>
