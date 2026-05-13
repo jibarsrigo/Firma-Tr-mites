@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Artículo Wiki – Incidencias Frecuentes (CAU CAIB)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: Arial, Helvetica, sans-serif; line-height: 1.5; margin: 2em; color: #202122; }
+    h1, h2, h3 { color: #003366; }
+    h2 { border-bottom: 1px solid #a2a9b1; padding-bottom: 4px; margin-top: 2em; }
+    code { background: #f2f2f2; padding: 2px 5px; border: 1px solid #ddd; border-radius: 2px; font-size: 0.92em; }
+    hr { margin: 2em 0; border: none; border-top: 1px solid #ccc; }
+    table { border-collapse: collapse; margin: 1em 0; width: 100%; }
+    th, td { border: 1px solid #a2a9b1; padding: 6px 10px; vertical-align: top; }
+    th { background: #eaecf0; }
+    blockquote { border-left: 3px solid #a2a9b1; margin: 8px 0 8px 1.5em; padding: 4px 12px; color: #444; background: #fafafa; }
+    dl dt { font-weight: bold; margin-top: 6px; }
+    dl dd { margin-left: 2em; }
+    .indice-container { text-align:center; margin: 10px 0; }
+    .indice-box { display:inline-block; border:1px solid #ddd; border-radius:8px; padding:12px; background:#fff; }
+    .indice-titulo { display:flex; align-items:center; justify-content:center; margin-bottom:12px; font-weight:bold; }
+    .indice-linea { width:40px; height:1px; background:#ddd; margin: 0 8px; }
+    .indice-cols { display:flex; gap:14px; flex-wrap:nowrap; justify-content:center; align-items:flex-start; }
+    .indice-col { border:1px solid #ddd; border-radius:8px; padding:10px; width:260px; background:#fafafa; font-size:90%; text-align:left; }
+    .accion { margin-left: 1.5em; }
+    .ver-articulo { color: #0645ad; }
+  </style>
+</head>
+<body>
+
+<h1>Artículo Wiki – Incidencias Frecuentes</h1>
+<p><em>Identificar el tipo de incidencia a partir del <strong>último evento de SistraHelp</strong> y del <strong>mensaje/código de error</strong>.</em></p>
+
+<!-- ÍNDICE VISUAL -->
+<div class="indice-container">
+  <div class="indice-box">
+    <div class="indice-titulo"><span class="indice-linea"></span>Índice<span class="indice-linea"></span></div>
+    <div class="indice-cols">
+
+      <!-- ACCESO -->
+      <div class="indice-col">
+        <b>🔏 Acceso</b><br>
+        <small style="color:#666;">Antes de iniciar la firma</small><br><br>
+        ◆ <a href="#IF_Pasarela">Fallo Pasarela – SAML</a><br>
+        ◆ <a href="#IF_Portafib">Portafib</a><br>
+        ◆ <a href="#IF_Portafib">Formulario</a>
+      </div>
+
+      <!-- FIRMA -->
+      <div class="indice-col">
+        <b>✍️ Firma</b><br>
+        <small style="color:#666;">Durante la firma electrónica</small><br><br>
+        <b>Cl@ve – Método</b><br>
+        ◆ <a href="#Clave_Movil">Cl@ve Móvil / PIN</a><br><br>
+        <b>Cl@ve – Proveedor</b><br>
+        ◆ <a href="#IF_Clave815">8‑15 (Individual)</a><br>
+        ◆ <a href="#Clave815General">8‑15 (General)</a><br>
+        ◆ <a href="#IF_Clave103">103 Bloqueo Contraseña</a><br>
+        ◆ <a href="#IF_Clave10315">103‑15 Certificado Bloqueado</a><br>
+        ◆ <a href="#IF_Clave101">101 Nivel insuficiente</a><br>
+        ◆ <a href="#IF_Clave_104">104‑15 Registro débil</a><br>
+        ◆ <a href="#IF_Clave_Firma_Proveedor">Proveedor Cl@ve Firma</a><br><br>
+        <b>Certificado local</b><br>
+        ◆ <a href="#IF_Autofirma">Autofirma</a>
+      </div>
+
+      <!-- REGISTRO + FUNCIONALES -->
+      <div class="indice-col">
+        <b>🧾 Registro</b><br>
+        <small style="color:#666;">Tras la firma correcta</small><br><br>
+        ◆ <a href="#IF_REGWEB">Registro</a><br><br>
+        <b>⚙️ Funcionales</b><br>
+        <small style="color:#666;">Fuera del flujo de firma</small><br><br>
+        ◆ <a href="#Pago">Pago</a><br>
+        ◆ <a href="#Carpeta">Carpeta</a><br>
+        ◆ <a href="#IF_Portafib">Formulario</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="IF_Pasarela">Pantalla en blanco al iniciar trámite (Acceso‑Acceso)</h2>
+
+<blockquote>
+  <b>Escenario:</b> Al pulsar «Iniciar trámite» en la Sede Electrónica CAIB, la página queda en blanco y no se carga la pasarela de identificación de Cl@ve, tanto usando certificado local como Cl@ve, o el ciudadano visualiza un error <b>SAML</b> o un <b>error de conexión/timeout</b> contra la pasarela.
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd><code>En la mayoría de fallos generales de la pasarela Cl@ve, el formulario no llega a iniciarse y NO aparece TR_FRI ni trazas en SistraHelp.</code></dd>
+  <dd>❌ <b>NO aparece TR_FRI (Inicio formulario)</b> — El trámite no llega a iniciarse. Fallo previo al inicio del formulario (pasarela de autenticación Cl@ve / entorno de acceso).<br>
+  <em>Nota: Este es el <b>caso más habitual</b> en fallos generales de la pasarela Cl@ve. Si el error es de conexión/timeout y afecta a varios ciudadanos → posible fallo de pasarela Cl@ve.</em></dd>
+  <dd>✅ <b>SÍ aparece TR_FRI (Inicio formulario)</b> — (caso menos frecuente). El acceso se ha iniciado, pero falla inmediatamente después. Si el error es <b>SAML de identidad</b> (p. ej. <em>Response is fail: Usuario no registrado presencialmente / Nivel de registro insuficiente / Usuario no autorizado</em>) → posible error individual del ciudadano.<br>
+  Si el error es de conexión/timeout y afecta a varios ciudadanos → posible fallo de pasarela Cl@ve (caso menos frecuente).</dd>
+  <dd><b>NO aparecen trazas en SistraHelp</b> — Si NO hay ninguna traza = error previo al inicio del trámite. Posibles causas:
+    <ul>
+      <li>Si el error es de conexión/timeout y afecta a varios ciudadanos → posible fallo de pasarela Cl@ve.</li>
+      <li>Fallo general en la pasarela de autenticación Cl@ve / IdP.</li>
+      <li>Cl@ve no activa / registro Cl@ve no válido.</li>
+      <li>Certificado local no instalado, caducado o no confiable.</li>
+      <li>DNIe sin drivers, lector no detectado o PIN bloqueado.</li>
+      <li>Problema del navegador con certificados.</li>
+    </ul>
+  </dd>
+</dl>
+
+<p><b>Mensajes típicos:</b></p>
+<dl>
+  <dd>El navegador intenta redirigir a <code>https://pasarela.clave.gob.es</code> y la página queda en blanco tras pulsar «Iniciar trámite».<br>
+  ► No carga <code>https://pasarela.clave.gob.es</code> o <code>https://pasarela.clave.gob.es/Proxy2/ServiceProvider</code>.<br>
+  Se puede probar acceder a <a href="https://carpetaciudadana.gob.es/carpeta/mcc/clave" target="_blank">Carpeta Ciudadana GOB</a> o revisar el <a href="https://estado-aapp.naroh.es/status/estado-administracion-publica" target="_blank">estado del servicio pasarela</a>.</dd>
+  <dd>El acceso funciona de forma intermitente (a veces sí, a veces no).</dd>
+  <dd>No aparece selector de certificados / no solicita PIN.</dd>
+</dl>
+
+<p><b>Acción:</b></p>
+<dl>
+  <dd>Si aparece TR_FRI y el ciudadano recibe error SAML <code>Response is fail: Usuario no registrado presencialmente</code> → Error del ciudadano (registro Cl@ve no presencial / no avanzado). CAI‑2626766.</dd>
+  <dd>Si NO hay trazas o el error es de conexión/timeout:
+    <ul>
+      <li>Indicar que el problema es <b>previo al trámite</b>.</li>
+      <li>Para confirmar posible fallo de pasarela Cl@ve, probar acceso a <b>Carpeta Ciudadana CAIB</b> o <code>https://sede.dgt.gob.es/es/mi_dgt/</code>.</li>
+      <li>Si tampoco cargan → se confirma fallo general de pasarela Cl@ve.</li>
+    </ul>
+  </dd>
+  <dd>▶ Informar de <b>posible incidencia general en la pasarela de autenticación Cl@ve</b> o fallo del proveedor de identidad (IdP) si afecta a varios ciudadanos.</dd>
+  <dd>Recomendar <b>reintentar más tarde</b>.</dd>
+  <dd>No es un problema del trámite ni del equipo del ciudadano.</dd>
+  <dd>🔹 Ver artículo completo: Problemas Generales – AccesoAcceso_Clave_Pasarela</dd>
+</dl>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="IF_Clave_Firma_Proveedor">Error al firmar – Proveedor Cl@ve Firma</h2>
+
+<blockquote>
+  <b>Escenario:</b> Al intentar firmar el trámite, la firma falla y el sistema devuelve errores del proveedor <b>Cl@ve Firma</b>. Este problema puede ocurrir tanto accediendo con <b>Cl@ve Permanente</b> como con <b>certificado digital local</b>, si el trámite está configurado para firmar con Cl@ve Firma.
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd>→ Aparece TR_SGI (Inicio firma)</dd>
+  <dd>→ Aparece TR_SGX (Firma KO)</dd>
+  <dd>❌ NO aparece TR_SGO (Fin firma OK)</dd>
+</dl>
+
+<p><b>Mensajes típicos:</b></p>
+<dl>
+  <dd><code>Código Error: 8 – Tipo Resultado: 15</code></dd>
+  <dd><code>Código Error: 103 – (Certificados bloqueados)</code></dd>
+  <dd><code>Código Error: 101 (registro/credencial inconsistente)</code></dd>
+  <dd><code>Código Error: 104 (registro Cl@ve débil)</code></dd>
+  <dd><code>(VALIDATION) InvalidNotSignerCertificate:</code> — Identifica un fallo del servicio de firma Cl@ve Firma. En las trazas aparece como literales de validación DSS/XSS propios del proveedor:<br>
+  <code>(VALIDATION) La validació del certificat del firmant contingut en el diccionari de firma [Signature1] no ha estat correcta</code><br>
+  <code>urn:oasis:names:tc:dss:1.0:resultmajor:Warning</code><br>
+  <code>urn:afirma:dss:1.0:profile:XSS:resultminor:InvalidNotSignerCertificate</code><br>
+  Habitualmente acompañado de: <code>Error general durant el procés de firma dels fitxers: 500</code></dd>
+</dl>
+
+<p><b>Qué significa:</b></p>
+<dl>
+  <dd>El trámite <b>firma con Cl@ve Firma</b> aunque el ciudadano haya accedido con certificado local.</dd>
+  <dd>El proveedor de firma lo determina la configuración del trámite, no el método de acceso.</dd>
+</dl>
+
+<p><b>Acción:</b></p>
+<dl>
+  <dd>Si afecta a varios ciudadanos → informar de <b>problema general del servicio de firma Cl@ve</b>.</dd>
+  <dd>Si afecta solo a un ciudadano → revisar <b>credencial de firma Cl@ve</b> (Error 8-15 / 103...).</dd>
+  <dd>🔹 Ver artículo completo: Incidencias Cl@ve – FirmaProveedor_ClaveFirma</dd>
+</dl>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="IF_Portafib">Error Portafib / Error Formulario (Acceso‑Sesión)</h2>
+
+<blockquote>
+  <b>Escenario:</b> Después de pulsar «Continuar / Firmar», la firma no llega a iniciarse porque Portafib no puede generar la sesión de firma (error de flujo) o falla el <b>formulario</b>.
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd><b>TR_FRF (Fin formulario)</b> → OK — El ciudadano ha pulsado «Continuar / Firmar» y el formulario se ha validado correctamente.</dd>
+  <dd>❌ <b>NO aparece TR_SGI (Inicio firma)</b> — La firma no se inicia. Portafib falla antes de invocar al proveedor de firma.</dd>
+  <dd>⚠️ Si NO aparece TR_SGI = problema en la fase <b>Acceso‑Sesión</b> (previa a firma).</dd>
+</dl>
+
+<p><b>Mensajes típicos:</b></p>
+<dl>
+  <dd><code>Fluxe no vàlid</code> – Error de flujo.</dd>
+  <dd><code>Excepció sessió firma</code> – Error de flujo.</dd>
+  <dd><code>SesionFirmaClienteException</code></dd>
+  <dd><code>No s'ha especificat presentador al script (obligatori si iniciador és anònim)</code> – Error funcional de formulario.</dd>
+</dl>
+
+<p><b>Acción:</b></p>
+<dl>
+  <dd>Si aparecen <b>errores de flujo</b> → ✉︎ Enviar mail «Problemas con el Servicio Portafib».</dd>
+  <dd>Si <b>NO</b> aparecen errores de flujo y el mensaje apunta a formulario → ✉︎ Enviar mail problema funcional del <b>formulario</b>. (Puede fallar formulario y no aparecer TR_FRF.)</dd>
+  <dd>Finalizar 603.</dd>
+  <dd>🔹 Ver artículo completo: Incidencias Cl@ve – AccesoSesion_Portafib_Clave</dd>
+</dl>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="Pago">Pago no verificado</h2>
+
+<blockquote>
+  <b>Escenario:</b> El ciudadano no llega a iniciar la firma porque el pago del trámite no se valida correctamente.
+</blockquote>
+
+<p><b>Trazas SistraHelp:</b></p>
+<dl>
+  <dd><code>(Pago no verificado)</code></dd>
+  <dd>TR_PAN – Pago no verificado</dd>
+</dl>
+
+<p><b>Interpretación:</b> El trámite se detiene en la fase de pago. No se inicia la firma electrónica ni se invoca a ningún proveedor de firma.</p>
+<p><b>Clasificación:</b> Funcional (no firma)</p>
+<p><b>Acción CAU:</b> Indicar al ciudadano que revise el proceso de pago o contacte con el órgano gestor del trámite. ✉︎ Enviar mail «Problemas con el Pago».</p>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="Carpeta">Carga desde Carpeta</h2>
+
+<blockquote>
+  <b>Escenario:</b> El ciudadano intenta recuperar o continuar un trámite desde Carpeta Ciudadana y el proceso no avanza correctamente.
+</blockquote>
+
+<p><b>Trazas SistraHelp:</b></p>
+<dl>
+  <dd><code>(Carga desde Carpeta)</code></dd>
+  <dd>TR_CAR – Carga del trámite</dd>
+</dl>
+
+<p><b>Interpretación:</b> El problema se produce durante la recuperación del trámite. No está relacionado con la firma electrónica ni con los proveedores de firma.</p>
+<p><b>Clasificación:</b> Funcional (no firma)</p>
+<p><b>Acción CAU:</b> Indicar reintento desde Carpeta Ciudadana o inicio de un nuevo trámite si procede. No escalar como incidencia de firma.</p>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="IF_Clave815">Cl@ve (8–15)</h2>
+
+<blockquote>
+  <b>Escenario:</b> Cl@ve se abre y acepta las credenciales, pero la firma falla. El proveedor <b>Cl@ve Firma</b> devuelve el código <code>8–15</code>.
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd>TR_SGI (Inicio firma)</dd>
+  <dd>TR_SGX (Firma KO)</dd>
+</dl>
+
+<p id="Clave815General"><b>⚠️ Detección de posible fallo general:</b></p>
+<dl>
+  <dd>Código <code>8–15</code> + varios NIF distintos + misma franja horaria → Posible incidencia general del proveedor Cl@ve Firma.</dd>
+</dl>
+
+<p><b>Acción:</b></p>
+<dl>
+  <dd>Caso individual → renovar/acreditar Cl@ve Permanente. ✉︎ Enviar mail «Problema con Cl@ve Firma (8–15)».</dd>
+  <dd>Varios NIF → informar incidencia general y reintentar más tarde. ✉︎ Enviar mail «Problemas con el Servicio».</dd>
+</dl>
+
+<p><b>Nota CAU:</b></p>
+<dl>
+  <dd>El <code>8–15</code> es el <b>único</b> código usado para detectar caída general.</dd>
+  <dd><code>101</code> y <code>103</code> son siempre individuales, salvo aviso oficial.</dd>
+  <dd>🔹 Ver artículo completo: Código 8 – Tipo 15</dd>
+</dl>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="IF_Clave103">Cl@ve (103 – Bloqueo de Contraseña)</h2>
+
+<blockquote>
+  <b>Escenario:</b> El ciudadano llega a las pantallas de Cl@ve y efectúa más de cinco intentos de introducción incorrecta de la contraseña de Cl@ve Permanente.
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd>TR_SGI (Inicio firma) — Portafib ha invocado correctamente a Cl@ve para iniciar la firma.</dd>
+  <dd>TR_SGX (Firma KO) — El proveedor <b>Cl@ve Firma (nube)</b> devuelve <code>103</code>. La firma no se completa.</dd>
+</dl>
+
+<p><b>Mensajes típicos:</b> <code>Error Cl@ve Firma 103</code></p>
+
+<p><b>Acción:</b> Indicar que siga las instrucciones del apartado «olvido de contraseña». ✉︎ Enviar mail Cl@ve (credenciales).</p>
+<p>🔹 Ver artículo completo: Error 103</p>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="IF_Clave10315">Cl@ve (103 – Tipo 15 – Bloqueo Certificado)</h2>
+
+<blockquote>
+  <b>Escenario:</b> El ciudadano se autentica correctamente en Cl@ve, pero la firma falla porque su certificado Cl@ve está bloqueado. El proveedor <b>Cl@ve Firma</b> devuelve el código <code>103 – Tipo 15</code>.
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd>TR_SGI (Inicio firma) — Portafib invoca correctamente a Cl@ve para iniciar la firma.</dd>
+  <dd>TR_SGX (Firma KO) — El proveedor <b>Cl@ve Firma (nube)</b> devuelve <code>103 – Tipo 15</code>. La firma no continúa.</dd>
+  <dd>⚠️ <code>103 – Tipo 15</code> indica certificados Cl@ve bloqueados / revocados.</dd>
+</dl>
+
+<p><b>Mensajes típicos:</b> <code>Certificados bloqueados (103 – Tipo 15)</code></p>
+
+<p><b>Acción:</b> Indicar al ciudadano que debe <b>revocar y volver a emitir su certificado Cl@ve</b> desde Gestiones Cl@ve. Recomendar revisar el nivel de registro Cl@ve (avanzado). ✉︎ Enviar mail Cl@ve 103‑15.</p>
+<p>🔹 Ver artículo completo: Error 103</p>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="IF_Clave101">Cl@ve (101 – Registro / Nivel insuficiente)</h2>
+
+<blockquote>
+  <b>Escenario:</b> El ciudadano llega a las pantallas de Cl@ve, pero la firma no se completa porque no dispone de un certificado válido para firmar (registro Cl@ve incompleto, nivel insuficiente o certificado no emitido).
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd>TR_SGI (Inicio firma) — Portafib ha invocado correctamente a Cl@ve para iniciar la firma.</dd>
+  <dd>TR_SGX (Firma KO) — El proveedor <b>Cl@ve Firma (nube)</b> devuelve <code>101</code>. La firma no se completa.</dd>
+</dl>
+
+<p><b>Mensajes típicos:</b></p>
+<dl>
+  <dd><code>Error Cl@ve Firma 101</code></dd>
+  <dd><code>No dispone de certificado para firmar</code></dd>
+  <dd><code>Nivel de registro insuficiente</code></dd>
+</dl>
+
+<p><b>Acción:</b> Indicar al ciudadano que dispone de un <b>registro Cl@ve débil</b> y que debe realizar un <b>registro Cl@ve avanzado</b> mediante acreditación de su identidad. ✉︎ Enviar mail Cl@ve (Registro Cl@ve insuficiente).</p>
+<p>🔹 Ver artículo completo: Error 101</p>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="IF_Clave_104">Error Cl@ve Firma – Registro débil (Código 104)</h2>
+
+<blockquote>
+  <b>Escenario:</b> La firma se inicia correctamente (aparece TR_SGI), pero Cl@ve Firma rechaza la operación porque el ciudadano tiene un <b>registro Cl@ve débil</b>, que no permite disponer de certificados de firma.
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd>TR_SGI (Inicio firma) → OK — Portafib invoca correctamente al proveedor Cl@ve Firma.</dd>
+  <dd>TR_SGX (Firma KO) — Cl@ve Firma devuelve error por nivel de registro insuficiente.</dd>
+  <dd>❌ NO aparece TR_SGO (Fin firma OK) — La firma no se completa.</dd>
+  <dd>❌ NO aparece TR_REG (Registro) — El trámite no llega a registrarse.</dd>
+</dl>
+
+<p><b>Mensajes típicos:</b></p>
+<dl>
+  <dd><code>L'usuari no pot tenir certificats de signatura per haver realitzat un registre feble</code></dd>
+  <dd><code>Codi Error: 104 – Proveïdor: clavefirma – Tipus Resultat: 15</code></dd>
+</dl>
+
+<p><b>Interpretación:</b></p>
+<dl>
+  <dd>El ciudadano tiene un <b>registro Cl@ve débil</b>.</dd>
+  <dd>Cl@ve Firma <b>no permite emitir ni usar certificados de firma</b> con este tipo de registro.</dd>
+  <dd>No es un fallo técnico ni una caída del servicio. Es un <b>caso individual del ciudadano</b>.</dd>
+</dl>
+
+<p><b>Acción:</b></p>
+<dl>
+  <dd>Informar al ciudadano de que debe <b>realizar un registro Cl@ve avanzado</b> (acreditación fuerte).</dd>
+  <dd>Tras completar el registro avanzado, deberá <b>reintentar la firma</b> desde Carpeta Ciudadana.</dd>
+  <dd>No escalar como incidencia técnica.</dd>
+  <dd>✉︎ Enviar mail «Registro Cl@ve insuficiente (Código 104)».</dd>
+  <dd>🔹 Ver artículo completo: Incidencias Cl@ve – FirmaProveedor_ClaveFirma</dd>
+</dl>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="Clave_Movil">Cl@ve Móvil – Método NO permitido</h2>
+
+<blockquote>
+  <b>Escenario:</b> Las pantallas de Cl@ve aparecen, pero el método elegido no es válido para firmar en CAIB (Cl@ve PIN, Cl@ve Móvil) o el ciudadano no tiene el nivel de registro/QAA necesario. La firma no llega a completarse.
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd>TR_SGI (Inicio firma) — Portafib invoca a Cl@ve correctamente para iniciar la firma.</dd>
+  <dd>TR_SGX (Firma KO) — Cl@ve rechaza el método/credencial, pero sin códigos de proveedor (no 8–15, no 103).</dd>
+  <dd>⚠️ Si NO hay códigos <code>8–15</code> o <code>103</code>, y SÍ hay pantallas Cl@ve → es un <b>error de método / credencial</b>.</dd>
+</dl>
+
+<p><b>Mensajes típicos:</b> <code>Métode CLAVE_MOVIL no permès</code></p>
+
+<p><b>Acción:</b></p>
+<dl>
+  <dd>Indicar al ciudadano que la firma SOLO funciona con <b>Cl@ve Permanente</b>.</dd>
+  <dd>Explicar que <b>Cl@ve PIN</b> y <b>Cl@ve Móvil</b> NO sirven para firmar en CAIB.</dd>
+  <dd>✉︎ Enviar mail Cl@ve Móvil Método No permitido.</dd>
+  <dd>🔹 Ver artículo completo: Incidencias Cl@ve – FirmaMetodo_Clave</dd>
+</dl>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="IF_Autofirma">Autofirma (certificado local / SAF_27 / SAF_xx)</h2>
+
+<blockquote>
+  <b>Escenario:</b> La firma llega a iniciarse (aparece TR_SGI), pero no se completa. El problema puede estar en el entorno local del ciudadano (Autofirma / certificado) o en el proveedor Autofirma en servidor.
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd>TR_SGI (Inicio firma) — Portafib invoca correctamente al proveedor de firma.</dd>
+  <dd>TR_SGX (Firma KO)</dd>
+  <dd>Con <code>SAF_27</code> → Posible problema en <b>Autofirma Proveedor-Servidor</b>.</dd>
+  <dd>Con otros <code>SAF_xx</code> y sin códigos Cl@ve → Posible problema del <b>entorno local</b> (certificado / cliente Autofirma).</dd>
+  <dd><b>Revisar detalle trazas TR_INI / TR_CAR:</b> doble clic sobre la traza de inicio o carga del trámite. Si <code>SO = IPHONE / IPAD</code> → el trámite se ha iniciado desde dispositivo móvil.</dd>
+</dl>
+
+<p><b>Mensajes típicos:</b></p>
+<dl>
+  <dd><code>SAF_27</code>, <code>SAF_xx</code></dd>
+  <dd>Mensajes del cliente Autofirma / Cliente de Firma Móvil.</dd>
+  <dd><code>Signatura cancel·lada</code> — Significa que no se ha recibido una firma válida desde el proveedor. El sistema NO sabe si el ciudadano pulsó «Cancelar» o si hubo cancelación técnica (Autofirma falló, SSL cortado, plugin devolvió algo inválido, timeout...).</dd>
+  <dd>Autofirma no se abre / solicita escaneo de DNI / no detecta certificado.</dd>
+  <dd><code>El plugin amb ID null ha retornat un status OK per la petició de passarela - però el fitxer Signat està buit (CAI-2624660)</code></dd>
+</dl>
+
+<p><b>Acción:</b></p>
+<dl>
+  <dd><b>Siempre</b> pedir al ciudadano:
+    <ul>
+      <li>Realizar la firma desde un <b>ordenador</b>.</li>
+      <li><b>Desinstalar</b> Autofirma, <b>reiniciar</b> equipo e <b>instalar</b> la aplicación Autofirma.</li>
+      <li>Comprobar que el <b>certificado local</b> está bien instalado y vigente y que Autofirma lo detecta.</li>
+      <li>Probar a <b>firmar un PDF en local</b> con Autofirma.</li>
+      <li>✉︎ Enviar mail «Instalar / actualizar Autofirma y probar firma local».</li>
+    </ul>
+  </dd>
+  <dd><b>En iPhone / iPad</b> (opcional, sin garantía): Safari puede intentar abrir Autofirma como si fuera macOS (vista de escritorio). Acción: desactivar «Vista de escritorio» en Safari y reintentar. ✉︎ Enviar mail Autofirma iPhone / iPad.</dd>
+  <dd><b>En macOS:</b> Problema habitual: Autofirma bloqueada por Gatekeeper. Regla práctica: si Autofirma <b>no se abre manualmente, no se abrirá desde el navegador</b>. Solución: permitir ejecución desde «Seguridad y privacidad», verificar que se abre manualmente, probar firma local de un PDF. ✉︎ Enviar mail Autofirma en macOS (aplicación bloqueada).</dd>
+  <dd>Si tras firmar desde ordenador sigue fallando:
+    <ul>
+      <li>Con <code>SAF_27</code> → posible problema de <b>Autofirma servidor</b>. ✉︎ Enviar mail «Problemas con el Servicio».</li>
+      <li>Sin <code>SAF_xx</code> → problema del <b>entorno local</b>. Revisar tabla de asignación, apartado «Error al firmar con certificado / Otros errores al firmar».</li>
+    </ul>
+  </dd>
+  <dd>Si hay <b>varios NIF</b> con el mismo error en la misma franja → posible incidencia general.</dd>
+  <dd>🔹 Ver artículo completo: Problemas con el Servicio – FirmaProveedor_AutofirmaGeneral</dd>
+</dl>
+
+<hr>
+
+<!-- ============================================================ -->
+<h2 id="IF_REGWEB">REGWEB – Justificante no generado / Fallo Registro</h2>
+
+<blockquote>
+  <b>Escenario:</b> La firma del trámite se completa correctamente, pero el justificante no se genera o el registro no finaliza. El error se produce después de TR_SGO, durante la fase de registro en REGWEB.
+</blockquote>
+
+<p><b>Trazas:</b></p>
+<dl>
+  <dd>TR_SGO (Fin firma OK) — La firma se ha realizado correctamente.</dd>
+  <dd>TR_REG (Registro) — REGWEB devuelve error o no genera el justificante.</dd>
+  <dd>❌ Falta TR_FIN (Fin trámite) — El trámite queda sin cerrar.</dd>
+  <dd>⚠️ Firma correcta + registro KO = <b>Error REGWEB</b> (backend CAIB, no proveedor de firma).</dd>
+</dl>
+
+<p><b>Mensajes típicos:</b></p>
+<dl>
+  <dd><code>El fluxe no es vàlid</code></dd>
+  <dd><code>AccionPasoNoPermitidaException</code></dd>
+  <dd><code>No se ha podido generar justificante</code></dd>
+  <dd><code>NIF no concorda</code></dd>
+  <dd><code>PDF corrupto</code></dd>
+  <dd><code>Justificante no generado</code></dd>
+  <dd><code>Registro incompleto</code></dd>
+</dl>
+
+<p><b>Acción:</b></p>
+<dl>
+  <dd>Si aparece <code>El fluxe no es vàlid</code> / <code>Registre està pendent de verificació (estat reintentar)</code> / <code>AccionPasoNoPermitidaException</code> / <code>Excepció al registrar. Marcam per reintentar</code> / <code>RegistroSolicitudException</code>:<br>
+  → Suele ser un fallo puntual de REGWEB o causado por navegación no permitida (uso de botones atrás/adelante). <b>No pasar CAI</b> y <b>pedir reintentar</b> el registro.</dd>
+  <dd>Para el resto de casos: informar al ciudadano de que la <b>firma es correcta</b>, pero el justificante no se ha generado por un error de REGWEB. El trámite debe ser revisado por el equipo responsable del registro.</dd>
+  <dd>✉︎ Enviar mail «Problemas REGWEB».</dd>
+  <dd>Asignar a DGIDT REGWEB — APLICACIONS\7.-PENDENTS REGISTRE WEB</dd>
+  <dd>🔹 Ver artículo completo: Problemas Generales – Registro_REGWEB</dd>
+</dl>
+
+<hr>
+
+<p style="font-size:0.85em; color:#777; border-top:1px solid #eee; margin-top:2em; padding-top:8px;">
+  Wiki CAU CAIB · Firma Electrónica · Artículo: Incidencias Frecuentes · Última revisión: mayo 2026
+</p>
+
+</body>
+</html>
