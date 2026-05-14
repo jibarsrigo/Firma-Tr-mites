@@ -8,31 +8,65 @@
 
 <h1>Tareas pendientes y permanentes – Wiki Firma CAIB</h1>
 
-<p>Listado vivo de tareas y metas de trabajo.  
+<p>Listado vivo de tareas y metas de trabajo.<br>
 Este documento actúa como memoria permanente consultable por el agente.</p>
 
+<h2>Tareas pendientes</h2>
 <ul>
 <li>
-Convertir los análisis de casos reales en “reglas fijas CAU” de la wiki
-Descripción
-Durante el trabajo de diagnóstico se han analizado varios casos reales recurrentes relacionados con trámites electrónicos y firma con certificados locales, que generan incidencias repetidas en CAU sin ser fallos técnicos reales.
-Estos casos ya han sido razonados y cerrados conceptualmente, pero no están aún consolidados como conocimiento permanente en la wiki.
-Casos ya analizados (ejemplos):
-
-Documento descargado vacío con TR_FIN → NO es un fallo de registro
-Firma KO por NIF distinto del requerido → NO es un problema técnico de firma
-Diferenciación clara entre:
-
-acceso,
-firma,
-lógica del trámite,
-proveedor / servidor
+<strong>1. Convertir los análisis de casos reales en “reglas fijas CAU” de la wiki</strong><br>
+Descripción:<br>
+Durante el trabajo de diagnóstico se han analizado varios casos reales recurrentes relacionados con trámites electrónicos y firma con certificados locales, que generan incidencias repetidas en CAU sin ser fallos técnicos reales.<br>
+Estos casos ya han sido razonados y cerrados conceptualmente, pero no están aún consolidados como conocimiento permanente en la wiki.<br>
+Casos ya analizados (ejemplos):<br>
+Documento descargado vacío con TR_FIN → NO es un fallo de registro.<br>
+Firma KO por NIF distinto del requerido → NO es un problema técnico de firma.<br>
+Diferenciación clara entre acceso, firma, lógica del trámite, proveedor / servidor.
 </li>
-  <li>[ ] -----</li>
-  <li>[ ] -----</li>
+
+<li>
+<strong>2. Consolidar y validar el modelo estructural y visual de la wiki</strong><br>
+Descripción:<br>
+Se ha identificado una línea de trabajo específica sobre cómo modernizar y ordenar visualmente la wiki dentro de las limitaciones reales del entorno MediaWiki antiguo con Vector heredado 2010 y sin acceso a CSS global ni permisos de administrador.<br>
+Este bloque debe mantenerse como un único apartado pendiente, ya que podrán añadirse más tareas aparte en el futuro.<br>
+<br>
+Objetivos de este apartado:<br>
+– Probar primero en la wiki real qué recursos visuales y de maquetación funcionan de forma estable antes de consolidarlos como patrón permanente.<br>
+– Documentar claramente qué se puede y qué no se puede hacer técnicamente en este entorno.<br>
+– Consolidar como criterio de trabajo que la modernización visual debe hacerse por artículo, mediante estructura y HTML inline, y no mediante cambios globales del skin.<br>
+– Convertir el sistema visual actual en un patrón modular reutilizable para toda la wiki.<br>
+– Revisar, cuando la wiki esté más completa, la coherencia estructural de los 3 artículos principales: Incidencias Frecuentes, Incidencias Cl@ve e Incidencias Certificados Locales.<br>
+– Verificar si todos los apartados de esos artículos siguen realmente la misma estructura o si algunos deben ajustarse al patrón definitivo una vez cerrada la wiki.<br>
+<br>
+Criterios ya alcanzados dentro de este apartado:<br>
+– En esta wiki, la estrategia correcta NO es intentar modernizar el skin global, sino maquetar cada artículo como documento técnico enriquecido usando solo recursos locales del propio artículo.<br>
+– La modernización visual debe apoyarse en HTML inline y estructura, no en personalización global del sitio.<br>
+– Priorizar: div, span, table, blockquote, anclas, enlaces y estilos inline simples como text-align, margin, padding, border, background, display:inline-block y font-size.<br>
+– No depender como base del sistema de cambios que requieran MediaWiki:Common.css, MediaWiki:Vector.css, gadgets, JS global o permisos de administración.<br>
+– Toda mejora visual o estructural debe probarse primero en la wiki real antes de consolidarse como patrón permanente.<br>
+– El patrón visual base de los artículos debe componerse de un kit fijo de 4 piezas reutilizables:<br>
+&nbsp;&nbsp;1. Índice visual.<br>
+&nbsp;&nbsp;2. Bloque colapsable de flujo.<br>
+&nbsp;&nbsp;3. Bloque Escenario.<br>
+&nbsp;&nbsp;4. Bloques de contenido con subtítulos fijos.<br>
+– El índice visual debe ir al inicio, centrado, dividido por fases del trámite y servir como mapa mental del artículo.<br>
+– El bloque colapsable de flujo debe situarse debajo del índice y contener esquema general del trámite, guía rápida o tablas de decisión.<br>
+– El bloque Escenario debe abrir cada incidencia concreta para contextualizar rápidamente la casuística.<br>
+– Los apartados inferiores deben mantener subtítulos fijos y repetibles. Patrón recomendado:<br>
+&nbsp;&nbsp;Escenario.<br>
+&nbsp;&nbsp;Qué ve el ciudadano.<br>
+&nbsp;&nbsp;Patrón / Trazas en SistraHelp.<br>
+&nbsp;&nbsp;Errores o mensajes típicos.<br>
+&nbsp;&nbsp;Qué significa / Interpretación técnica.<br>
+&nbsp;&nbsp;Acción recomendada / Acción CAU.<br>
+&nbsp;&nbsp;Enlaces de interés.<br>
+– La mejora de la wiki debe centrarse en consistencia y reutilización, no en añadir decoración innecesaria.<br>
+– Cuando una mejora funcione bien en un artículo, debe transformarse en patrón reusable para el resto y no quedarse como solución aislada.<br>
+– La wiki debe pensarse como un sistema modular de bloques CAU y no como páginas redactadas de forma libre e independiente.
+</li>
 </ul>
 
-<p><em>Última actualización: editar manualmente cuando se modifique la lista.</em></p>
+<p><em>Última actualización: mayo 2026. Editar manualmente cuando se modifique la lista.</em></p>
 
 </body>
 </html>
