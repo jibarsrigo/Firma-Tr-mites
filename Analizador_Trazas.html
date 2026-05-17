@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Analizador_Trazas</title>
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --card: #ffffff;
+      --text: #28251d;
+      --muted: #6f6b63;
+      --border: #d8d4cc;
+      --primary: #01696f;
+      --warn: #964219;
+      --soft: #eef5f4;
+      --soft2: #f6f1eb;
+      --ok: #2f6b1f;
+      --radius: 14px;
+      --shadow: 0 10px 30px rgba(0,0,0,.06);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 32px 18px 80px;
+    }
+    h1,h2,h3 { line-height: 1.15; }
+    h1 { font-size: 2rem; margin: 0 0 12px; }
+    h2 { font-size: 1.35rem; margin: 0 0 10px; }
+    h3 { font-size: 1.05rem; margin: 0 0 8px; }
+    p { margin: 0 0 12px; }
+    .lead {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 75ch;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-top: 22px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--primary);
+      font-size: .85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .tag.warn { background: var(--soft2); color: var(--warn); }
+    ul { margin: 0; padding-left: 18px; }
+    li { margin: 0 0 8px; }
+    .section { margin-top: 30px; }
+    .box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 14px;
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #f3f0ea;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-size: .95em;
+    }
+    .pre {
+      white-space: pre-wrap;
+      background: #fcfbf8;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .93rem;
+    }
+    .small { color: var(--muted); font-size: .94rem; }
+    .cols {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Analizador_Trazas.html</h1>
+    <p class="lead">Documento base para la v1 del analizador de trazas de firma. Resume lo acordado hasta ahora para poder continuar más adelante con una versión publicada en GitHub Pages y, si se desea, evolucionar después a una herramienta con lógica de análisis.</p>
+
+    <section class="grid">
+      <article class="card">
+        <div class="tag">Objetivo v1</div>
+        <p>Construir una herramienta básica, prudente y útil. La primera versión no debe intentar resolver todos los casos, sino solo los que están bien acotados y se pueden diagnosticar con reglas claras.</p>
+        <ul>
+          <li>Fallo pasarela / SAML.</li>
+          <li>Fallo Portafib / sesión.</li>
+          <li>Fallo formulario / pre-firma.</li>
+          <li>Más adelante: entorno Autofirma, Cl@ve, FIRE y registro.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <div class="tag">Entrada prevista</div>
+        <ul>
+          <li>Área de texto grande para pegar trazas de SistraHelp.</li>
+          <li>Checks de contexto: certificado local / Cl@ve / no informado.</li>
+          <li>SO: Windows, Mac, iPad, iPhone, Android, no informado.</li>
+          <li>Checks adicionales: error SAML, página en blanco, traza en orden reciente → antiguo.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <div class="tag warn">Salidas deseadas</div>
+        <ul>
+          <li>Diagnóstico técnico.</li>
+          <li>Texto corto para pegar en el ticket.</li>
+          <li>Correo sugerido listo para copiar.</li>
+          <li>Nivel de confianza: alto, medio o bajo.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="section">
+      <h2>Reglas funcionales acordadas</h2>
+      <div class="cols">
+        <div class="box">
+          <h3>1. Fallo pasarela / SAML</h3>
+          <p>Si el ciudadano indica que la página queda en blanco o ve un error SAML, el problema puede estar en la pasarela de acceso o autenticación. En estos casos puede no existir traza útil en SistraHelp.</p>
+          <ul>
+            <li>No usar SistraHelp como única prueba.</li>
+            <li>Conviene añadir un check específico para SAML.</li>
+            <li>Ese check puede desplegar ayuda con ejemplos de mensajes SAML y su significado.</li>
+          </ul>
+        </div>
+
+        <div class="box">
+          <h3>2. Portafib / sesión</h3>
+          <p>Portafib queda bien delimitado con una regla prudente:</p>
+          <ul>
+            <li>No aparece <span class="mono">TR_SGI</span>.</li>
+            <li>Aparecen errores de flujo como <span class="mono">Fluxe no vàlid</span> o <span class="mono">Excepció sessió firma</span>.</li>
+          </ul>
+          <p>Esto apunta a <span class="mono">[Error Acceso-Sesión] – Portafib/Soffid pre-proveedor</span>.</p>
+        </div>
+
+        <div class="box">
+          <h3>3. Formulario / pre-firma</h3>
+          <p>Si no aparece <span class="mono">TR_SGI</span> y tampoco aparecen los errores de flujo anteriores, el caso debe clasificarse como fallo de formulario o incidencia previa al inicio de firma.</p>
+          <ul>
+            <li>No atribuirlo a Cl@ve, FIRE o Autofirma.</li>
+            <li>No sobreinterpretar una traza incompleta.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Matices importantes</h2>
+      <div class="box">
+        <ul>
+          <li>Las trazas suelen venir en orden <strong>más reciente → más antiguo</strong>. La futura lógica debe tenerlo en cuenta.</li>
+          <li>El error <span class="mono">227</span> no debe usarse como evidencia fuerte de Portafib. Se considera genérico y puede deberse a saturación puntual o a un fallo recuperable recargando.</li>
+          <li>El mensaje que ve el ciudadano de tipo <span class="mono">Cargando el asistente</span> también puede ser transitorio y no debe forzar un diagnóstico definitivo.</li>
+          <li>En esta v1 se dejan fuera otros literales hasta confirmar mejor su utilidad diagnóstica.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Interfaz propuesta</h2>
+      <div class="box">
+        <div class="pre">Bloque 1: Entrada
+- Textarea para trazas
+- Check: Certificado local
+- Check: Cl@ve
+- Selector de SO
+- Check: El ciudadano ve error SAML
+- Check: La página queda en blanco
+- Check por defecto: Traza en orden reciente → antiguo
+
+Bloque 2: Resultado
+- Eventos detectados
+- Regla aplicada
+- Diagnóstico
+- Nivel de confianza
+
+Bloque 3: Acciones
+- Texto breve para ticket
+- Correo sugerido
+- Botón copiar</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Ejemplo de estructura de reglas</h2>
+      <div class="box">
+        <div class="pre">{
+  id: "portafib_preproveedor",
+  condiciones: [
+    "no aparece TR_SGI",
+    "aparece Fluxe no vàlid o Excepció sessió firma"
+  ],
+  diagnostico: "[Error Acceso-Sesión] – Portafib/Soffid pre-proveedor",
+  texto_ticket: "No consta inicio de firma y sí errores de flujo previos al proveedor.",
+  correo_id: "correo_portafib",
+  nivel_confianza: "alto"
+}</div>
+        <p class="small">La idea es separar la lógica del diagnóstico de las plantillas de correo, para poder cambiar los correos sin tocar las reglas.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Próximo paso recomendado</h2>
+      <div class="box">
+        <p>Antes de programar la versión interactiva, conviene cerrar una tabla de reglas v1 con:</p>
+        <ul>
+          <li>Nombre de la regla.</li>
+          <li>Condiciones exactas.</li>
+          <li>Diagnóstico resultante.</li>
+          <li>Texto corto de ticket.</li>
+          <li>Plantilla de correo asociada.</li>
+          <li>Nivel de confianza.</li>
+        </ul>
+        <p>Después de eso, la siguiente iteración natural sería convertir este documento en una página funcional con análisis en JavaScript y publicación en GitHub Pages.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
