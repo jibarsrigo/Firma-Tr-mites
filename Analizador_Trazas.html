@@ -118,7 +118,7 @@
       </details>
       <div class="status-row">
         <span class="pill">Textarea para traza</span>
-        <span class="pill">Problemas de acceso y ayuda</span>
+        <span class="pill">Problemas de Acceso</span>
         <span class="pill">Tipo de firma y SO</span>
         <span class="pill">Diagnóstico / ticket / correo</span>
       </div>
@@ -165,23 +165,23 @@
           </div>
 
           <div class="section">
-            <label>Problemas de acceso</label>
+            <label>Problemas de Acceso</label>
             <div class="choice-group">
-              <label class="choice-card"><input type="checkbox" id="checkSaml"> <span>El ciudadano ve error SAML<small>Útil cuando no hay traza útil y el problema parece estar en la pasarela de acceso o en la credencial usada para identificarse.</small></span></label>
-              <label class="choice-card"><input type="checkbox" id="checkBlanco"> <span>La página queda en blanco<small>Contexto útil para diferenciar problemas previos al flujo normal o fallos de pasarela/acceso.</small></span></label>
+              <label class="choice-card"><input type="checkbox" id="checkSaml"> <span>El ciudadano ve error SAML<small>Útil cuando no hay trazas y el problema parece estar en la credencial usada para identificarse.</small></span></label>
+              <label class="choice-card"><input type="checkbox" id="checkBlanco"> <span>La página queda en blanco<small>Fallo Acceso Pasarela.</small></span></label>
             </div>
           </div>
 
           <div class="section">
             <details class="helper-card" id="accessHelpDetails">
-              <summary>Ayuda problemas de acceso</summary>
+              <summary>Detalles problemas de acceso</summary>
               <div id="contextHelpBox" style="margin-top:10px;color:var(--muted)"></div>
             </details>
           </div>
 
           <div class="actions">
             <button class="btn-primary" type="button" id="analizarBtn">Analizar beta</button>
-            <button class="btn-secondary" type="button" id="actualizarBtn" title="Fuerza la descarga de la última versión del analizador">🔄 Actualizar</button>
+            <button class="btn-secondary" type="button" id="actualizarBtn" title="Fuerza la descarga de la última versión del analizador">🔄 Actualizar Versión</button>
           </div>
         </div>
       </section>
@@ -189,7 +189,7 @@
       <aside class="panel">
         <div class="panel-head">
           <h2>Salida prevista</h2>
-          <p class="hint">La beta ya muestra el formato de salida que se quiere consolidar en la v1.</p>
+          <p class="hint">Formato de salida</p>
         </div>
         <div class="panel-body output-stack">
           <div id="avisoInvalidSigner" style="display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:10px 14px;margin-bottom:12px;font-size:0.93em;">
@@ -726,7 +726,7 @@
       diagnostico.textContent = 'Aquí se mostrará la conclusión técnica principal.';
       diagnostico.className = 'placeholder';
       senales.innerHTML = '<li class="placeholder">Aún no se ha ejecutado análisis.</li>';
-      ticket.textContent = 'Aquí aparecerá un texto corto, listo para pegar en ticket o CAU.';
+      ticket.textContent = 'Aquí aparecerá un texto, listo para pegar en la incidencia.';
       correo.textContent = 'Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails';
       so.value = 'No informado';
       const defaultFirma = document.querySelector('input[name="firma"][value="clave"]');
