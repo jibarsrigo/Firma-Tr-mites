@@ -1242,18 +1242,19 @@ function renderSinRegla(eventos) {
 function actualizarEstadoJson() {
   const badge = document.getElementById('jsonStatusBadge');
   if (!badge) return;
+
   if (reglasSource === 'json') {
     badge.className = 'json-status-badge ok';
-    badge.textContent = '✓ OK';
-    badge.title = 'reglas.json cargado correctamente';
+    badge.textContent = '✓';
+    badge.title = 'reglas.json cargado correctamente al abrir o actualizar la página';
   } else if (reglasSource === 'embed') {
     badge.className = 'json-status-badge fallback';
-    badge.textContent = 'Fallback';
-    badge.title = 'No se pudo leer reglas.json; se usan reglas embebidas';
+    badge.textContent = '· usando reglas internas';
+    badge.title = 'No se pudo leer reglas.json al abrir o actualizar la página; se usan reglas embebidas';
   } else {
     badge.className = 'json-status-badge loading';
     badge.textContent = '...';
-    badge.title = 'Cargando reglas';
+    badge.title = 'Cargando reglas.json';
   }
 }
 
