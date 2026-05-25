@@ -1054,15 +1054,16 @@ function renderFlujo(eventos, regla) {
     inner.appendChild(lbl);
 
     // Colorear
-    if (paso.id === 'TR_SGX') {
-      if (eventos['TR_SGX']) {
-        inner.classList.add('ko');
-        fallado = true;
-      } else {
-        inner.classList.add('ok');
-        // Si no hay SGX pero hay SGO, continúa verde
-      }
-    } else if (paso.id === falladoEn && paso.id !== 'TR_SGX') {
+   if (paso.id === 'TR_SGX') {
+  if (eventos['TR_SGX']) {
+    inner.classList.add('ko');
+    fallado = true;
+  } else if (eventos['TR_SGO']) {
+    // Solo tiene sentido dar por superado el paso KO
+    // si la firma acabó bien
+    inner.classList.add('ok');
+  }
+} else if (paso.id === falladoEn && paso.id !== 'TR_SGX') {
       // Es el paso ausente que marca el fallo
       inner.classList.add('warn');
       fallado = true;
