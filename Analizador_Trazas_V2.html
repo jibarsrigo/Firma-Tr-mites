@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analizador_Trazas_V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{--bg:#f7f6f2;--surface:#fbfaf7;--surface-2:#fff;--surface-off:#f1eee8;--border:rgba(40,37,29,.10);--border-strong:rgba(40,37,29,.18);--text:#28251d;--muted:#6f6b63;--faint:#b4b0a8;--primary:#01696f;--primary-soft:#e8f2f1;--primary-hover:#014e53;--warning:#964219;--warning-soft:#f8eee7;--error:#a12c4a;--error-soft:#faedf0;--success:#3b6d23;--success-soft:#edf4e8;--gold:#b07a00;--gold-soft:#faf3e0;--radius:16px;--radius-sm:10px;--shadow:0 10px 30px rgba(29,23,15,.06);--font-body:'Inter',system-ui,sans-serif;--font-mono:'JetBrains Mono',monospace}
+[data-theme="dark"]{--bg:#14130f;--surface:#1a1916;--surface-2:#201e1b;--surface-off:#1f1d1a;--border:rgba(255,255,255,.08);--border-strong:rgba(255,255,255,.14);--text:#ccc9c3;--muted:#7a7773;--faint:#4e4d4b;--primary:#4f9ca7;--primary-soft:#1e3638;--primary-hover:#6bbcc8;--warning:#cc7a42;--warning-soft:#3a2316;--error:#d4607a;--error-soft:#3b1a22;--success:#6daa45;--success-soft:#1e3215;--gold:#e0b845;--gold-soft:#2f2510;--shadow:0 10px 30px rgba(0,0,0,.3)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}body{margin:0;font-family:var(--font-body);background:var(--bg);color:var(--text);line-height:1.55}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}a,button,input,select,textarea{transition:.16s ease}
+.wrap{max-width:1160px;margin:0 auto;padding:20px 16px 56px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.brand{display:flex;align-items:center;gap:10px}.brand svg{color:var(--primary)}.brand h1{font-size:1rem;margin:0}.brand p{margin:0;color:var(--muted);font-size:.78rem}.actions-top{display:flex;gap:8px}
+.layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);gap:16px;align-items:start}@media(max-width:920px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}.panel-head{padding:16px 16px 0}.panel-body{padding:16px}.panel-head h2{margin:0;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.left-minimal .panel-body{display:grid;gap:14px}.block{display:grid;gap:8px}.block+.block{padding-top:14px;border-top:1px solid var(--border)}label.lbl{font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+textarea,select{width:100%;border:1px solid var(--border);border-radius:12px;padding:11px 12px;background:var(--surface);color:var(--text)}textarea{min-height:320px;resize:vertical;font-family:var(--font-mono);font-size:.78rem;line-height:1.5}textarea:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in oklab,var(--primary) 16%,transparent)}
+.hint{margin:0;color:var(--muted);font-size:.78rem}.checks{display:grid;gap:7px}.check{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--border);border-radius:12px;padding:10px 11px;background:var(--surface)}.check input{margin-top:3px;accent-color:var(--primary)}.check span{font-size:.84rem}.btnrow{display:flex;flex-wrap:wrap;gap:8px}.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid transparent;border-radius:12px;padding:10px 14px;font-weight:700;background:none}.btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-hover)}.btn-secondary{background:var(--surface-off);border-color:var(--border);color:var(--text)}.btn-ghost{background:transparent;color:var(--muted)}
+.result-stack{display:grid;gap:12px}.card{border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:14px}.diag{border-width:1.5px}.diag.err{border-color:var(--error);background:var(--error-soft)}.diag.warn{border-color:var(--warning);background:var(--warning-soft)}.diag.info{border-color:var(--primary);background:var(--primary-soft)}.diag.neutral{border-color:var(--border-strong)}.diag-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.diag-title{margin:0;font-size:.92rem;font-weight:700;line-height:1.35}.placeholder{color:var(--faint);font-style:italic}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 9px;font-size:.7rem;font-weight:700;white-space:nowrap}.b-alta{background:var(--success-soft);color:var(--success);border:1px solid var(--success)}.b-media{background:var(--warning-soft);color:var(--warning);border:1px solid var(--warning)}.b-baja{background:var(--surface-off);color:var(--muted);border:1px solid var(--border)}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.pill{font-size:.72rem;border-radius:999px;padding:3px 9px;background:var(--surface-off);border:1px solid var(--border);color:var(--muted)}.pill strong{color:var(--text)}
+.card h3{margin:0 0 10px;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}.mini{margin:0;padding-left:18px}.mini li{margin-bottom:6px;font-size:.84rem}.pre{white-space:pre-wrap;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px;font-family:var(--font-mono);font-size:.76rem;line-height:1.55;min-height:84px}
+.flow{display:flex;align-items:flex-start;gap:0;overflow:auto;padding-bottom:4px}.node{display:flex;flex-direction:column;align-items:center;gap:4px}.chip{font-size:.64rem;font-weight:700;font-family:var(--font-mono);padding:4px 7px;border-radius:999px;border:1.5px solid var(--border);background:var(--surface-off);color:var(--muted);white-space:nowrap}.chip.ok{background:var(--success-soft);border-color:var(--success);color:var(--success)}.chip.ko{background:var(--error-soft);border-color:var(--error);color:var(--error)}.chip.skip{opacity:.35}.arrow{padding:0 4px;color:var(--faint);margin-top:4px}.node small{text-align:center;color:var(--muted);font-size:.62rem;line-height:1.15}
+.notice{display:none;background:#fff3cd;border:1px solid #ffc107;border-radius:10px;padding:10px 12px;font-size:.8rem;line-height:1.4}.notice strong{color:#6c4b00}.access-box{display:none;border:1px dashed var(--border);border-radius:12px;padding:10px 12px;background:var(--surface-off);font-size:.82rem;color:var(--text)}.toast{position:fixed;right:20px;bottom:20px;background:var(--text);color:var(--bg);padding:8px 13px;border-radius:10px;font-size:.8rem;font-weight:700;opacity:0;transform:translateY(6px);pointer-events:none;transition:.18s}.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true"><rect width="28" height="28" rx="8" fill="currentColor" opacity=".12"/><path d="M7 9h14M7 14h10M7 19h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <div><h1>Analizador de Trazas</h1><p>v2 · minimalista · reglas.json</p></div>
+    </div>
+    <div class="actions-top">
+      <button class="btn btn-ghost" id="themeToggle">Tema</button>
+      <button class="btn btn-secondary" id="actualizarBtn">Actualizar</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="panel left-minimal">
+      <div class="panel-head"><h2>Entrada</h2></div>
+      <div class="panel-body">
+        <div class="block">
+          <label class="lbl" for="traza">Traza de SistraHelp</label>
+          <textarea id="traza" placeholder="Pega aquí la traza completa..."></textarea>
+          <p class="hint">Pega la traza y analiza. El motor clasificará por prioridad según reglas.json.</p>
+          <div class="btnrow">
+            <button class="btn btn-secondary" id="btnPegarTraza">Pegar</button>
+            <button class="btn btn-secondary" id="btnLimpiarTraza">Limpiar</button>
+          </div>
+        </div>
+
+        <div class="block">
+          <label class="lbl" for="firma">Tipo de firma</label>
+          <select id="firma">
+            <option value="na" selected>No informado</option>
+            <option value="clave">Cl@ve</option>
+            <option value="local">Certificado local</option>
+          </select>
+        </div>
+
+        <div class="block">
+          <label class="lbl" for="so">Sistema operativo</label>
+          <select id="so">
+            <option selected>No informado</option>
+            <option>Windows</option>
+            <option>Mac</option>
+            <option>iPad</option>
+            <option>iPhone</option>
+            <option>Android</option>
+          </select>
+        </div>
+
+        <div class="block">
+          <label class="lbl">Errores Acceso</label>
+          <div class="checks">
+            <label class="check"><input type="checkbox" id="chkSaml"><span>El ciudadano ve error SAML</span></label>
+            <label class="check"><input type="checkbox" id="chkBlanco"><span>La página queda en blanco</span></label>
+          </div>
+          <div id="accessHelp" class="access-box"></div>
+        </div>
+
+        <div class="block">
+          <div class="btnrow">
+            <button class="btn btn-primary" id="analizarBtn">Analizar</button>
+            <a class="btn btn-secondary" href="https://docs.google.com/forms/de/1FAIpQLScmWTRYanI4PYO1EL18gPVbY2Nfway4FWnHrshj5hNfzMw/viewform" target="_blank" rel="noopener noreferrer">Reportar</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="result-stack">
+      <div class="notice" id="avisoInvalidSigner"><strong>Aviso InvalidNotSignerCertificate.</strong> Este error lleva varios días apareciendo y la causa aún no está confirmada. Revisar si hay incidencia activa antes de escalar o responder.</div>
+
+      <section class="card">
+        <h3>Flujo del trámite</h3>
+        <div id="flow" class="flow"></div>
+      </section>
+
+      <section class="card diag neutral" id="diagCard">
+        <div class="diag-top">
+          <p id="diagnostico" class="diag-title placeholder">Aquí se mostrará la conclusión técnica principal.</p>
+          <div id="confianza"></div>
+        </div>
+        <div id="pills" class="pills"></div>
+      </section>
+
+      <section class="card">
+        <h3>Qué ha pasado</h3>
+        <ul id="senales" class="mini"><li class="placeholder">Aún no se ha ejecutado análisis.</li></ul>
+      </section>
+
+      <section class="card">
+        <h3>Cómo proceder</h3>
+        <div id="accion" class="pre placeholder">Pendiente de análisis.</div>
+      </section>
+
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">Texto para ticket</h3><button class="btn btn-ghost" id="copyTicket">Copiar</button></div>
+        <div id="ticket" class="pre placeholder">Aquí aparecerá el texto corto para ticket o CAU.</div>
+      </section>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast">Copiado ✓</div>
+<script>
+(function(){var html=document.documentElement,btn=document.getElementById('themeToggle');var d=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';try{var ls=localStorage.getItem('caib-theme');if(ls)d=ls;}catch(e){}function apply(t){html.setAttribute('data-theme',t);try{localStorage.setItem('caib-theme',t);}catch(e){}}apply(d);btn.addEventListener('click',function(){d=html.getAttribute('data-theme')==='dark'?'light':'dark';apply(d);});})();
+function norm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();}
+const TR_DEFS=[{key:'TR_FRI',rx:/\btr_?fri\b/gi,label:'Inicio formulario'},{key:'TR_FRF',rx:/\btr_?frf\b/gi,label:'Fin formulario'},{key:'TR_CAR',rx:/\btr_?car\b/gi,label:'Carga trámite'},{key:'TR_SGI',rx:/\btr_?sgi\b/gi,label:'Inicio firma'},{key:'TR_SGX',rx:/\btr_?sgx\b/gi,label:'Firma KO'},{key:'TR_SGO',rx:/\btr_?sgo\b/gi,label:'Firma OK'},{key:'TR_REG',rx:/\btr_?reg\b/gi,label:'Registro'},{key:'TR_FIN',rx:/\btr_?fin\b/gi,label:'Fin trámite'}];
+const FLOW=[['TR_FRI','Inicio\nformulario'],['TR_FRF','Fin\nformulario'],['TR_SGI','Inicio\nfirma'],['TR_SGX','Firma\nKO'],['TR_SGO','Firma\nOK'],['TR_REG','Registro'],['TR_FIN','Fin\ntrámite']];
+function detectEvents(texto){const ev={};TR_DEFS.forEach(d=>{const m=texto.match(d.rx);ev[d.key]=m?m.length:0;});return ev;}
+function renderFlow(events){const el=document.getElementById('flow');el.innerHTML='';FLOW.forEach((step,i)=>{const key=step[0],label=step[1];const c=events[key]||0;let cls='chip';if(key==='TR_SGX')cls+=c>0?' ko':' skip';else cls+=c>0?' ok':' skip';const node=document.createElement('div');node.className='node';node.innerHTML='<div class="'+cls+'">'+(c>1?key+' ×'+c:key)+'</div><small>'+label.replace('\n','<br>')+'</small>';el.appendChild(node);if(i<FLOW.length-1){const a=document.createElement('div');a.className='arrow';a.innerHTML='&rsaquo;';el.appendChild(a);}});}
+let REGLAS=null;
+function cargarReglas(){if(REGLAS)return Promise.resolve(REGLAS);return fetch('./reglas.json?v='+Date.now()).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(data=>{data.forEach(r=>{if(!r.id_regla)console.warn('[reglas.json] Regla sin id_regla',r);if(r.prioridad===undefined)console.warn('[reglas.json] Regla sin prioridad',r.id_regla);});REGLAS=data.sort((a,b)=>(b.prioridad||0)-(a.prioridad||0));return REGLAS;});}
+function evalRule(rule,trazaN,events,firma,so){for(const e of (rule.events_present||[])){if(!(events[e]>0))return false;}for(const e of (rule.events_absent||[])){if(events[e]>0)return false;}const all=rule.all_of||[];if(all.length&&!all.every(p=>trazaN.includes(norm(p))))return false;const any=rule.any_of||[];if(any.length&&!any.some(p=>trazaN.includes(norm(p))))return false;const none=rule.none_of||[];if(none.length&&none.some(p=>trazaN.includes(norm(p))))return false;const ra=rule.extra&&rule.extra.requires_also;if(ra&&ra.length&&!ra.some(p=>trazaN.includes(norm(p))))return false;if(rule.extra&&rule.extra.min_sgi!==undefined&&(events.TR_SGI||0)<rule.extra.min_sgi)return false;if(rule.extra&&rule.extra.max_sgi!==undefined&&(events.TR_SGI||0)>rule.extra.max_sgi)return false;if(rule.context&&rule.context.firma&&firma!==rule.context.firma)return false;if(rule.context&&rule.context.so&&so.indexOf(rule.context.so)<0)return false;return true;}
+function setPlaceholder(){document.getElementById('diagnostico').textContent='Aquí se mostrará la conclusión técnica principal.';document.getElementById('diagnostico').className='diag-title placeholder';document.getElementById('confianza').innerHTML='';document.getElementById('pills').innerHTML='';document.getElementById('senales').innerHTML='<li class="placeholder">Aún no se ha ejecutado análisis.</li>';document.getElementById('accion').textContent='Pendiente de análisis.';document.getElementById('accion').className='pre placeholder';document.getElementById('ticket').textContent='Aquí aparecerá el texto corto para ticket o CAU.';document.getElementById('ticket').className='pre placeholder';document.getElementById('diagCard').className='card diag neutral';renderFlow({});document.getElementById('avisoInvalidSigner').style.display='none';}
+function renderRule(rule,events){const diag=document.getElementById('diagnostico');diag.textContent=rule.diagnostico||'–';diag.className='diag-title';const conf=(rule.confianza||'baja');document.getElementById('confianza').innerHTML='<span class="badge b-'+conf+'">'+(conf==='alta'?'✔':conf==='media'?'~':'?')+' '+conf.charAt(0).toUpperCase()+conf.slice(1)+'</span>';const pills=[];if(rule.proveedor)pills.push('<span class="pill"><strong>Proveedor:</strong> '+rule.proveedor+'</span>');if(rule.origen)pills.push('<span class="pill"><strong>Origen:</strong> '+rule.origen+'</span>');if(rule.fase)pills.push('<span class="pill"><strong>Fase:</strong> '+rule.fase+'</span>');document.getElementById('pills').innerHTML=pills.join('');const dc=document.getElementById('diagCard');dc.className='card diag neutral';const cls=(rule.clasificacion||'').toLowerCase();if(cls.includes('proveedor'))dc.classList.add('err');else if(cls.includes('acceso'))dc.classList.add('warn');else if(cls.includes('método')||cls.includes('metodo'))dc.classList.add('info');const sig=document.getElementById('senales');sig.innerHTML='';const items=[];TR_DEFS.forEach(d=>{if(events[d.key]>0)items.push(d.label+' ('+d.key+') detectado ×'+events[d.key]);});(rule.explicacion||[]).forEach(x=>items.push(x));if(!items.length)sig.innerHTML='<li class="placeholder">Sin señales relevantes.</li>';else items.forEach(t=>{const li=document.createElement('li');li.textContent=t;sig.appendChild(li);});const accion=document.getElementById('accion');accion.textContent=(rule.accion||'–')+'\n\nEscalar: '+(rule.escalar?'Sí':'No');accion.className='pre';const lines=['['+(rule.clasificacion||'Caso')+'] – '+(rule.proveedor||'–'),'Diagnóstico: '+(rule.diagnostico||'–')];if(rule.origen)lines.push('Origen: '+rule.origen);lines.push('');lines.push('Eventos detectados:');TR_DEFS.forEach(d=>{if(events[d.key]>0)lines.push('  · '+d.key+' ×'+events[d.key]+' ('+d.label+')');});lines.push('');lines.push('Confianza: '+(rule.confianza||'–'));lines.push('Escalar: '+(rule.escalar?'Sí':'No'));lines.push('');lines.push('Acción: '+(rule.accion||'–'));const ticket=document.getElementById('ticket');ticket.textContent=lines.join('\n');ticket.className='pre';}
+function analizar(){const texto=document.getElementById('traza').value||'';const trazaN=norm(texto);const firma=document.getElementById('firma').value;const so=norm(document.getElementById('so').value);const events=detectEvents(texto);renderFlow(events);document.getElementById('avisoInvalidSigner').style.display=trazaN.includes('invalidnotsignercertificate')?'block':'none';if(!texto.trim()){setPlaceholder();return;}cargarReglas().then(reglas=>{let match=null;for(const r of reglas){if(evalRule(r,trazaN,events,firma,so)){match=r;break;}}if(match)renderRule(match,events);else renderRule({diagnostico:'Caso no clasificado con las reglas actuales.',clasificacion:'',proveedor:'–',origen:'Sin patrones reconocibles en la traza',confianza:'baja',fase:'–',explicacion:['La traza no coincide con ninguna regla activa.','Revisar manualmente o ampliar reglas.json.'],accion:'Revisión manual. Ampliar reglas.json si el caso es recurrente.',escalar:false},events);}).catch(e=>{console.error(e);document.getElementById('diagnostico').textContent='Error cargando reglas.json: '+e.message;document.getElementById('diagnostico').className='diag-title';});}
+function updateAccessHelp(){const saml=document.getElementById('chkSaml').checked;const blanco=document.getElementById('chkBlanco').checked;const box=document.getElementById('accessHelp');if(!saml&&!blanco){box.style.display='none';box.innerHTML='';return;}let html='';if(saml)html+='<p><strong>Error SAML.</strong> Suele apuntar a pasarela/acceso, certificado no presentado o sesión inválida; normalmente no habrá traza útil en SistraHelp.</p>';if(blanco)html+='<p><strong>Página en blanco.</strong> Suele orientar a redirección rota, sesión caducada o incidencia previa al flujo normal; recomendar Carpeta Ciudadana y nueva prueba.</p>';box.innerHTML=html;box.style.display='block';}
+document.getElementById('analizarBtn').addEventListener('click',analizar);
+document.getElementById('btnLimpiarTraza').addEventListener('click',()=>{document.getElementById('traza').value='';document.getElementById('firma').value='na';document.getElementById('so').value='No informado';document.getElementById('chkSaml').checked=false;document.getElementById('chkBlanco').checked=false;updateAccessHelp();setPlaceholder();document.getElementById('traza').focus();});
+document.getElementById('btnPegarTraza').addEventListener('click',async()=>{try{if(navigator.clipboard&&navigator.clipboard.readText){const t=await navigator.clipboard.readText();if(t)document.getElementById('traza').value=t;}}catch(e){console.warn('Portapapeles',e);}});
+document.getElementById('actualizarBtn').addEventListener('click',()=>{REGLAS=null;location.href=location.pathname+'?v='+Date.now();});
+document.getElementById('copyTicket').addEventListener('click',()=>{const t=document.getElementById('ticket').textContent;if(navigator.clipboard&&t){navigator.clipboard.writeText(t).then(()=>{const toast=document.getElementById('toast');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1600);});}});
+document.getElementById('chkSaml').addEventListener('change',updateAccessHelp);document.getElementById('chkBlanco').addEventListener('change',updateAccessHelp);
+setPlaceholder();cargarReglas();
+</script>
+</body>
+</html>
