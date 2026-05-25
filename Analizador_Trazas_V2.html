@@ -852,8 +852,8 @@ function evaluarRegla(regla, trazaN, eventos, so, checkSaml, checkBlanco) {
     if (!found) return false;
   }
 
-  // must_not_have (ninguno puede aparecer)
-  for (const p of (regla.must_not_have || [])) {
+    // none_of / must_not_have (ninguno puede aparecer)
+  for (const p of ([...(regla.none_of || []), ...(regla.must_not_have || [])])) {
     if (trazaN.includes(normalizar(p))) return false;
   }
 
