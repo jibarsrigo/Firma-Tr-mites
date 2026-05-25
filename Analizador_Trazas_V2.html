@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analizador de Trazas – V2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:         #f5f4f0;
+  --surface:    #faf9f7;
+  --surface2:   #ffffff;
+  --border:     rgba(40,37,30,0.10);
+  --border2:    rgba(40,37,30,0.06);
+  --text:       #1e1c17;
+  --muted:      #6b6960;
+  --faint:      #b0afa8;
+  --primary:    #01696f;
+  --primary-h:  #0c4e54;
+  --primary-hl: #d0e0dc;
+  --warn:       #964219;
+  --warn-hl:    #fdf0e8;
+  --error:      #a12c7b;
+  --error-hl:   #fceef7;
+  --success:    #2e6e14;
+  --success-hl: #edf5e8;
+  --blue:       #006494;
+  --blue-hl:    #e5f0f7;
+  --gold:       #8a5b00;
+  --gold-hl:    #fdf6e3;
+  --radius:     8px;
+  --radius-lg:  12px;
+  --font: 'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', 'Courier New', monospace;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.07);
+  --shadow-md: 0 4px 14px rgba(0,0,0,0.09);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.app-header {
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+.app-header .logo {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 15px; color: var(--text);
+}
+.app-header .logo svg { color: var(--primary); }
+.badge-beta {
+  background: var(--primary); color: #fff;
+  font-size: 10px; font-weight: 600; letter-spacing: .05em;
+  padding: 2px 7px; border-radius: 99px;
+}
+.header-inline { display:flex; align-items:center; gap:8px; }
+.header-inline .btn-mini { height: 28px; padding: 0 10px; font-size: 11px; border-radius: 999px; }
+.header-inline .btn-mini svg { width: 12px; height: 12px; }
+.header-spacer { flex: 1; }
+.header-version { display:flex; align-items:center; gap:8px; font-size: 11px; color: var(--faint); }
+.json-status-label { color: var(--muted); }
+.json-status-badge { display:inline-flex; align-items:center; gap:5px; padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: .04em; border:1px solid transparent; }
+.json-status-badge.ok { background: var(--success-hl); color: var(--success); border-color: rgba(46,110,20,.18); }
+.json-status-badge.fallback { background: var(--warn-hl); color: var(--warn); border-color: rgba(150,66,25,.18); }
+.json-status-badge.loading { background: var(--surface); color: var(--muted); border-color: var(--border); }
+.header-badge-col { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
+.header-ver-detail { background:none; border:none; padding:0; font-family:var(--font); font-size:10px; color: var(--primary); cursor:pointer; text-decoration:underline; text-decoration-style:dotted; line-height:1; }
+.header-ver-detail:hover { color: var(--primary-h); }
+
+/* ── Layout ── */
+.app-body {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 0;
+  height: calc(100vh - 52px);
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Main ── */
+.main {
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Panels ── */
+.panel {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.panel-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border2);
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 600; font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase; letter-spacing: .06em;
+  background: var(--surface);
+}
+.panel-header .icon { font-size: 13px; }
+.panel-body { padding: 14px; }
+
+/* ── Form controls ── */
+label.form-label {
+  display: block;
+  font-size: 12px; font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 5px;
+}
+select.form-select, textarea.form-textarea {
+  width: 100%;
+  font-family: var(--font);
+  font-size: 13px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  transition: border-color 150ms, box-shadow 150ms;
+}
+select.form-select {
+  padding: 7px 10px;
+  cursor: pointer;
+}
+textarea.form-textarea {
+  padding: 10px;
+  resize: vertical;
+  min-height: 200px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.6;
+}
+select.form-select:focus, textarea.form-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-hl);
+}
+
+/* ── Selector row ── */
+.selector-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
+.selector-row > div { min-width: 0; }
+.selector-row .form-label { white-space: nowrap; }
+.selector-row .form-select { width: 100%; }
+
+/* ── Check cards ── */
+.check-group { display: flex; flex-direction: column; gap: 6px; }
+.check-card {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--surface);
+  transition: border-color 150ms, background 150ms;
+}
+.check-card:hover { border-color: var(--primary); background: var(--surface2); }
+.check-card.active { border-color: var(--primary); background: var(--primary-hl); }
+.check-card input[type=checkbox] { margin-top: 2px; cursor: pointer; accent-color: var(--primary); }
+.check-card-label { font-size: 12px; font-weight: 500; color: var(--text); }
+.check-card-desc { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+/* ── Help panel ── */
+.help-panel {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 350ms ease;
+}
+.help-panel.open { max-height: 600px; }
+.help-content {
+  background: var(--warn-hl);
+  border: 1px solid rgba(150,66,25,0.15);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.help-content h4 { font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--warn); }
+.help-content ul { padding-left: 14px; }
+.help-content li { margin-bottom: 3px; }
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  font-family: var(--font); font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none;
+  transition: background 150ms, box-shadow 150ms, transform 80ms;
+}
+.btn:active { transform: scale(.98); }
+.btn-primary {
+  background: var(--primary); color: #fff;
+  box-shadow: 0 1px 3px rgba(1,105,111,.3);
+}
+.btn-primary:hover { background: var(--primary-h); }
+.btn-ghost {
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: var(--surface); color: var(--text); }
+.btn-row { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); gap: 8px; }
+.btn-row .btn-primary { justify-content: center; }
+.btn-row .btn-ghost { justify-content: center; min-width: 0; }
+
+/* ── Estado trámite ── */
+#estadoTramite {
+  display: none;
+  padding: 9px 13px;
+  border-radius: var(--radius);
+  font-size: 13px; font-weight: 600;
+  gap: 8px; align-items: center;
+}
+#estadoTramite.visible { display: flex; }
+#estadoTramite.ok { background: var(--success-hl); color: var(--success); border: 1px solid rgba(46,110,20,.15); }
+#estadoTramite.ko { background: var(--error-hl); color: var(--error); border: 1px solid rgba(161,44,123,.15); }
+#estadoTramite.info { background: var(--blue-hl); color: var(--blue); border: 1px solid rgba(0,100,148,.15); }
+
+/* ── Diagnóstico card ── */
+.diag-card {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.diag-card-header {
+  padding: 12px 16px;
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+}
+.diag-card.ok .diag-card-header  { background: var(--success-hl); color: var(--success); }
+.diag-card.ko .diag-card-header  { background: var(--error-hl);   color: var(--error); }
+.diag-card.warn .diag-card-header{ background: var(--warn-hl);    color: var(--warn); }
+.diag-card.blue .diag-card-header{ background: var(--blue-hl);    color: var(--blue); }
+.diag-card.gold .diag-card-header{ background: var(--gold-hl);    color: var(--gold); }
+.diag-card.neutral .diag-card-header{ background: var(--surface); color: var(--muted); }
+.diag-card-body { padding: 14px 16px; background: var(--surface2); display: flex; flex-direction: column; gap: 12px; }
+
+/* ── Sections within diag ── */
+.diag-section { }
+.diag-section-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--faint); margin-bottom: 6px;
+}
+.diag-text { font-size: 13px; font-weight: 600; color: var(--text); }
+.diag-explain { font-size: 12px; color: var(--muted); line-height: 1.6; }
+.diag-explain li { margin-bottom: 2px; }
+.diag-accion {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 12px; color: var(--text); line-height: 1.5;
+}
+.diag-escalar {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--error); color: #fff;
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px;
+}
+.diag-no-escalar {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--success-hl); color: var(--success);
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px;
+  border: 1px solid rgba(46,110,20,.2);
+}
+.diag-proveedor {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--blue-hl); color: var(--blue);
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px;
+  border: 1px solid rgba(0,100,148,.15);
+}
+.diag-fase {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--primary-hl); color: var(--primary);
+  font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 99px;
+  border: 1px solid rgba(1,105,111,.15);
+}
+.diag-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ── Señales / eventos ── */
+.eventos-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.ev-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-family: var(--mono);
+  padding: 3px 9px; border-radius: 99px;
+}
+.ev-ok { background: var(--success-hl); color: var(--success); border: 1px solid rgba(46,110,20,.2); }
+.ev-ko { background: var(--error-hl);   color: var(--error);   border: 1px solid rgba(161,44,123,.2); }
+.ev-neutral { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+.senales-list { display: flex; flex-direction: column; gap: 4px; }
+.senal-item {
+  font-size: 12px; color: var(--text);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border2);
+  display: flex; align-items: baseline; gap: 6px;
+}
+.senal-item:last-child { border-bottom: none; }
+.senal-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--warn); flex-shrink: 0; margin-top: 4px; }
+
+/* ── Ticket ── */
+.ticket-box {
+  background: #1a1917; color: #d4d3ce;
+  border-radius: var(--radius);
+  padding: 14px;
+  font-family: var(--mono); font-size: 12px;
+  line-height: 1.7;
+  position: relative;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.ticket-box .copy-btn {
+  position: absolute; top: 8px; right: 8px;
+  background: rgba(255,255,255,0.1); color: #d4d3ce;
+  border: none; border-radius: 5px;
+  padding: 4px 10px; font-size: 11px; cursor: pointer;
+  transition: background 150ms;
+}
+.ticket-box .copy-btn:hover { background: rgba(255,255,255,0.2); }
+.ticket-box .copy-btn.copied { color: #6daa45; }
+
+/* ── Correo ── */
+.correo-link {
+  font-size: 12px; color: var(--primary);
+  text-decoration: none; font-weight: 500;
+}
+.correo-link:hover { text-decoration: underline; }
+
+/* ── Placeholder ── */
+.placeholder-msg {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; padding: 40px 20px;
+  color: var(--faint); text-align: center;
+}
+.placeholder-msg svg { opacity: .3; }
+.placeholder-msg p { font-size: 13px; max-width: 280px; line-height: 1.6; }
+.context-card { border-radius: var(--radius-lg); border: 1px solid rgba(150,66,25,0.16); background: linear-gradient(180deg, #fffaf5 0%, var(--warn-hl) 100%); box-shadow: var(--shadow-sm); overflow:hidden; }
+.context-card-header { padding: 12px 16px; font-size: 13px; font-weight: 700; color: var(--warn); border-bottom: 1px solid rgba(150,66,25,0.12); display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.context-card-title { display:flex; align-items:center; gap:8px; }
+.context-card-body { padding: 14px 16px; font-size: 12px; color: var(--text); line-height: 1.65; }
+.context-card-body h4 { font-size: 12px; font-weight: 700; margin-bottom: 6px; color: var(--warn); }
+.context-card-body p { margin-bottom: 8px; max-width: none; }
+.context-card-body ul { padding-left: 18px; margin: 6px 0 0; }
+.context-card-body li { margin-bottom: 4px; }
+.context-card[hidden] { display:none !important; }
+.details-chip { display:inline-flex; align-items:center; gap:5px; font-size:11px; color: var(--muted); border:1px solid rgba(40,37,30,0.10); border-radius:999px; padding:4px 8px; background: rgba(255,255,255,0.55); }
+
+/* ── Contadores ── */
+.count-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.count-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 5px 11px;
+  font-size: 12px; display: flex; align-items: center; gap: 5px;
+}
+.count-num { font-weight: 700; font-family: var(--mono); color: var(--primary); }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* ── Responsive ── */
+@media (max-width: 720px) {
+  .app-body { grid-template-columns: 1fr; height: auto; overflow: visible; }
+  .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+}
+
+/* ─── FLUJO DEL TRÁMITE ─── */
+.flujo-panel {}
+.flujo-body { padding: 12px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 0; }
+.flujo-step { display: flex; align-items: center; gap: 0; }
+.flujo-chip {
+  display: inline-flex; flex-direction: column; align-items: center;
+  padding: 5px 10px; border-radius: 99px;
+  font-size: 11px; font-weight: 600; font-family: var(--mono);
+  border: 1.5px solid var(--border); background: var(--surface);
+  color: var(--faint); gap: 1px; transition: all 150ms; white-space: nowrap;
+}
+.flujo-chip .chip-label { font-size: 9px; font-weight: 400; color: var(--faint); font-family: var(--font); }
+.flujo-chip.ok { background: var(--success-hl); border-color: rgba(46,110,20,.3); color: var(--success); }
+.flujo-chip.ok .chip-label { color: var(--success); opacity: .7; }
+.flujo-chip.ko { background: var(--error-hl); border-color: rgba(161,44,123,.35); color: var(--error); }
+.flujo-chip.ko .chip-label { color: var(--error); opacity: .7; }
+.flujo-chip.warn { background: var(--warn-hl); border-color: rgba(150,66,25,.3); color: var(--warn); }
+.flujo-
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    </svg>
+    Analizador de Trazas
+  </div>
+  <div class="header-inline">
+    <div class="header-badge-col">
+      <span class="badge-beta">BETA V2</span>
+      <button class="header-ver-detail" id="btnVerDetalles" type="button">Ver detalles ▾</button>
+    </div>
+    <button class="btn btn-ghost btn-mini" id="btnActualizar" title="Forzar recarga completa ignorando caché">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      Actualizar
+    </button>
+  </div>
+  <div class="header-spacer"></div>
+  <div class="header-version"><span class="json-status-label">Lectura reglas.json</span><span class="json-status-badge loading" id="jsonStatusBadge">...</span></div>
+</header>
+
+<!-- BODY -->
+<div class="app-body">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+
+    <!-- Problemas acceso -->
+    <div class="panel">
+      <div class="panel-header"><span class="icon">🔐</span> Problemas de acceso</div>
+      <div class="panel-body">
+        <div class="check-group">
+          <label class="check-card" id="cardSaml">
+            <input type="checkbox" id="checkSaml">
+            <div>
+              <div class="check-card-label">El ciudadano ve error SAML</div>
+              <div class="check-card-desc">Pantalla de error SAML al autenticarse</div>
+            </div>
+          </label>
+          <label class="check-card" id="cardBlanco">
+            <input type="checkbox" id="checkBlanco">
+            <div>
+              <div class="check-card-label">La página queda en blanco</div>
+              <div class="check-card-desc">Pantalla vacía al acceder al trámite</div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Traza -->
+    <div class="panel">
+      <div class="panel-header"><span class="icon">📋</span> Traza SistraHelp</div>
+      <div class="panel-body">
+        <label class="form-label" for="txtTraza">Pega aquí</label>
+        <textarea class="form-textarea" id="txtTraza" rows="10"
+          placeholder="Pega la traza de SistraHelp aquí...&#10;&#10;Las trazas suelen mostrarse en orden reciente → antiguo."></textarea>
+      </div>
+    </div>
+
+
+    <!-- Contexto -->
+    <div class="panel">
+      <div class="panel-header"><span class="icon">⚙️</span> Contexto del caso</div>
+      <div class="panel-body">
+        <div class="selector-row">
+          <div>
+            <label class="form-label" for="selTipoFirma">Tipo de firma</label>
+            <select class="form-select" id="selTipoFirma">
+              <option value="clave">Cl@ve Firma</option>
+              <option value="local">Certificado local</option>
+              <option value="na" selected>No informado</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label" for="selSO">Sistema Operativo</label>
+            <select class="form-select" id="selSO">
+              <option value="Windows">Windows</option>
+              <option value="Mac">Mac</option>
+              <option value="iPhone">iPhone</option>
+              <option value="iPad">iPad</option>
+              <option value="Android">Android</option>
+              <option value="No informado" selected>No informado</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Botones -->
+    <div class="btn-row">
+      <button class="btn btn-primary" id="btnAnalizar">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Analizar
+      </button>
+      <button class="btn btn-ghost" id="btnLimpiar">Limpiar</button>
+    </div>
+
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="main" id="mainContent">
+
+    <!-- Placeholder inicial -->
+    <div class="placeholder-msg" id="placeholderMsg">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14,2 14,8 20,8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10,9 9,9 8,9"/>
+      </svg>
+      <p>Pega una traza en el panel izquierdo y pulsa <strong>Analizar</strong> para obtener el diagnóstico.</p>
+    </div>
+
+    <div class="context-card novedades-card" id="novedadesCard" hidden>
+      <div class="context-card-header">
+        <div class="context-card-title">🧪 <span>Novedades BETA V2</span></div>
+        <button class="header-ver-detail" id="btnCerrarNovedades" type="button">Cerrar ✕</button>
+      </div>
+      <div class="context-card-body">
+        <h4>Cl@ve Firma</h4>
+        <ul>
+          <li><strong>CLAVE_MOVIL no permitida</strong> — detecta cuando el trámite no admite Cl@ve Móvil como método de firma.</li>
+          <li><strong>Código 8 (tipo 15)</strong> — credencial o certificado de Cl@ve Permanente caducado, no acreditado o con plazo de personación superado.</li>
+          <li><strong>Código 101</strong> — registro Cl@ve insuficiente o inconsistente; el certificado no existe o no es apto para firmar.</li>
+          <li><strong>Código 103</strong> — certificados bloqueados o revocados; se orienta a revocar y emitir uno nuevo desde Gestiones Cl@ve.</li>
+          <li><strong>Código 104</strong> — registro no fehaciente; se orienta a acreditar identidad presencialmente.</li>
+          <li><strong>Evolución 8-15 → 103-15</strong> — caso combinado donde la credencial degradada pasa a bloqueada; se detecta y diferencia automáticamente.</li>
+          <li><strong>KOs repetidos de Cl@ve</strong> — detecta TR_SGI → TR_SGX repetido con literales de Cl@ve; puede indicar caída general del proveedor.</li>
+        </ul>
+        <h4 style="margin-top:10px">Certificado local / Autofirma</h4>
+        <ul>
+          <li><strong>Autofirma / Cliente de Firma</strong> — detecta literales propios de Autofirma, Cliente de Firma Móvil, SAF27, comunicación fallida o cancelación; orientación adaptada a SO informado.</li>
+          <li><strong>FIRE / certificado local / DNIe</strong> — KO en proveedor sin literales de Cl@ve ni Autofirma; revisa navegador, lector y estado del certificado.</li>
+        </ul>
+        <h4 style="margin-top:10px">Otros errores de firma</h4>
+        <ul>
+          <li><strong>DSSAfirmaVerify HTTP 502/503</strong> — servicio de validación de firma no disponible; se escala a Aplicacions.</li>
+          <li><strong>Cajetín sastre</strong> — casos en fase de firma aún pendientes de clasificación fina por proveedor o método; se indica revisión manual.</li>
+        </ul>
+        <h4 style="margin-top:10px">Flujo y acceso</h4>
+        <ul>
+          <li><strong>Portafib/Soffid pre-proveedor</strong> — diferencia errores de sesión/flujo anteriores a TR_SGI (227/2287, TimestampInvalidException, Fluxe no vàlid…) del resto de errores.</li>
+          <li><strong>Fallo de formulario</strong> — detecta casos sin TR_SGI y sin literales de sesión/flujo; orienta a verificar si se llegó al paso de firma.</li>
+          <li><strong>Ayuda dinámica de acceso</strong> — al marcar SAML o página en blanco, muestra explicación detallada en el panel derecho.</li>
+        </ul>
+        <h4 style="margin-top:10px">Presentación</h4>
+        <ul>
+          <li><strong>Eventos con significado legible</strong> — TR_FRI, TR_FRF, TR_SGI… se muestran con su descripción en castellano.</li>
+          <li><strong>Mails</strong> — enlace directo a las plantillas de correo de la wiki CAU.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="context-card" id="accessInfoCard" hidden>
+      <div class="context-card-header">
+        <div class="context-card-title">🔎 <span>Información de acceso</span></div>
+        <span class="details-chip" id="accessInfoDetails">Ver detalles</span>
+      </div>
+      <div class="context-card-body" id="accessInfoContent"></div>
+    </div>
+
+    <!-- Estado trámite -->
+    <div id="estadoTramite"></div>
+
+    <!-- Diagnóstico -->
+    <div id="diagContainer" style="display:none;">
+
+      <!-- Flujo del trámite -->
+      <div class="panel flujo-panel" id="panelFlujo" style="display:none;">
+        <div class="panel-header"><span class="icon">🔄</span> Flujo del trámite</div>
+        <div class="flujo-body" id="flujoBody"></div>
+      </div>
+
+      <!-- Resultado principal -->
+      <div class="diag-card" id="diagCard">
+        <div class="diag-card-header" id="diagCardHeader">
+          <span id="diagCardIcon"></span>
+          <span id="diagCardTitulo"></span>
+        </div>
+        <div class="diag-card-body">
+
+          <!-- Clasificación / tags -->
+          <div class="diag-section">
+            <div class="diag-section-title">Clasificación</div>
+            <div class="diag-tags" id="diagTags"></div>
+          </div>
+
+          <!-- Diagnóstico -->
+          <div class="diag-section">
+            <div class="diag-section-title">Diagnóstico</div>
+            <div class="diag-text" id="diagTexto"></div>
+          </div>
+
+          <!-- Explicación -->
+          <div class="diag-section" id="diagExplicacionWrap">
+            <div class="diag-section-title">Interpretación de la traza</div>
+            <ul class="diag-explain" id="diagExplicacion"></ul>
+          </div>
+
+          <!-- Acción -->
+          <div class="diag-section">
+            <div class="diag-section-title">Acción recomendada</div>
+            <div class="diag-accion" id="diagAccion"></div>
+          </div>
+
+          <!-- Correo -->
+          <div class="diag-section">
+            <div class="diag-section-title">Correo sugerido</div>
+            <a class="correo-link" href="https://cau.fundaciobit.org/firmawiki/index.php/Mails"
+               target="_blank" rel="noopener noreferrer">
+               📧 Ver plantillas de correo en la wiki
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Eventos detectados -->
+      <div class="panel" id="panelEventos">
+        <div class="panel-header"><span class="icon">📊</span> Eventos detectados</div>
+        <div class="panel-body" style="display:flex;flex-direction:column;gap:10px;">
+          <div class="eventos-list" id="eventosList"></div>
+          <div class="count-row" id="countRow"></div>
+        </div>
+      </div>
+
+      <!-- Señales -->
+      <div class="panel" id="panelSenales" style="display:none;">
+        <div class="panel-header"><span class="icon">🔍</span> Señales identificadas en la traza</div>
+        <div class="panel-body">
+          <div class="senales-list" id="senalesList"></div>
+        </div>
+      </div>
+
+      <!-- Ticket -->
+      <div class="panel" id="panelTicket">
+        <div class="panel-header"><span class="icon">🎫</span> Texto para ticket CAU</div>
+        <div class="panel-body">
+          <div class="ticket-box">
+            <pre id="ticketTexto" style="white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:inherit;"></pre>
+            <button class="copy-btn" id="btnCopyTicket">Copiar</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /diagContainer -->
+
+  </main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIGURACIÓN
+// ═══════════════════════════════════════════════════════
+const REGLAS_URL = 'reglas.json';
+
+// Mapa de eventos TR_
+const TR_MAP = {
+  'TR_FRI': 'Inicio formulario',
+  'TR_FRF': 'Fin formulario',
+  'TR_CAR': 'Carga del trámite',
+  'TR_SGI': 'Inicio firma',
+  'TR_SGX': 'Firma KO',
+  'TR_SGO': 'Fin firma OK',
+  'TR_REG': 'Registro',
+  'TR_FIN': 'Fin trámite',
+  'TR_PAN': 'Pago no verificado',
+  'TR_PAE': 'Pago verificado'
+};
+
+const TODOS_TR = Object.keys(TR_MAP);
+
+// Textos de ayuda de acceso
+const HELP_SAML = `
+  <h4>Error SAML – sin certificado (003002)</h4>
+  <p>La pasarela no ha recibido ningún certificado digital válido.</p>
+  <ul>
+    <li>El ciudadano no seleccionó certificado en el diálogo del navegador</li>
+    <li>El navegador no detecta el certificado instalado</li>
+    <li>Certificado caducado, revocado o no válido</li>
+    <li>DNIe no detectado (revisar lector y controlador)</li>
+    <li>Proxy, firewall o antivirus que bloquea el envío del certificado</li>
+  </ul>
+  <p style="margin-top:8px"><strong>Acción:</strong> Probar otro navegador, revisar instalación del certificado, revisar antivirus y proxy.</p>
+`;
+
+const HELP_SAML_PASS = `
+  <h4>Error SAML – contraseña Cl@ve incorrecta</h4>
+  <p>El ciudadano ha introducido una contraseña errónea en el portal de Cl@ve.</p>
+  <ul>
+    <li>Usar la opción <em>Olvidé mi contraseña</em> en el portal Cl@ve</li>
+    <li>Verificar que no hay bloqueo de cuenta por intentos fallidos</li>
+  </ul>
+`;
+
+const HELP_BLANCO = `
+  <h4>Página en blanco al acceder</h4>
+  <p>Posible fallo de Pasarle, la pantalla queda en blanco — no se genera traza útil en SistraHelp.</p>
+  <ul>
+    <li>Probar accediendo desde <strong>Carpeta Ciudadana GOB</strong></li>
+    <li>Revisar si hay VPN, proxy o firewall que pueda interferir</li>
+    <li>Probar con otro navegador o en modo incógnito</li>
+    <li>Revisar/Desactivar extensiones del navegador</li>
+  </ul>
+`;
+
+// ═══════════════════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════════════════
+const REGLAS_EMBED = {"version":"1.0","reglas":[
+{"id_regla":"tramite_finalizado","fase":"registro","clasificacion":"Tramite OK","proveedor":null,"events_present":["TR_SGO","TR_REG","TR_FIN"],"events_absent":[],"must_have":[],"any_of":[],"must_not_have":[],"diagnostico":"El tramite esta finalizado correctamente.","explicacion":["La traza contiene Fin firma OK, Registro y Fin tramite.","El proceso se completo con exito - no hay error a diagnosticar."],"accion":"Verificar si el ciudadano ha recibido el justificante. No escalar.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":200},
+{"id_regla":"error_registro","fase":"registro","clasificacion":"Error Registro","proveedor":"REGWEB / backend CAIB","events_present":["TR_SGO"],"events_absent":[],"must_have":[],"any_of":[],"must_not_have":[],"condicion_especial":"TR_SGO presente Y (TR_REG ausente O TR_FIN ausente)","diagnostico":"[Error Registro] - REGWEB / backend CAIB. Firma completada pero registro fallido.","explicacion":["La traza contiene Fin firma OK - la firma fue aceptada por el proveedor.","No se detecta Registro o Fin tramite tras la firma.","El error esta en el backend CAIB, no en el ciudadano ni en el proveedor de firma."],"accion":"Escalar SEG-012 Aplicacions/31 indicando expediente y traza.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":true,"prioridad":190},
+{"id_regla":"iphone_ipad_no_soportado","fase":"firma","clasificacion":"Error Firma-Metodo","proveedor":null,"contexto_so":["iPhone","iPad"],"events_present":[],"events_absent":[],"must_have":[],"any_of":[],"must_not_have":[],"diagnostico":"[Error Firma-Metodo] - Dispositivo iOS no soportado para firma electronica.","explicacion":["El dispositivo informado es iPhone o iPad.","Autofirma y los clientes de firma electronica compatibles no estan disponibles en iOS.","No es posible completar la firma desde este dispositivo."],"accion":"Indicar al ciudadano que debe usar un ordenador (Windows o Mac) para realizar la firma.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":185},
+{"id_regla":"acceso_saml_003002","fase":"acceso","clasificacion":"Error Acceso-Acceso","proveedor":"Pasarela CAIB","contexto_check":"checkSaml","events_present":[],"events_absent":[],"must_have":[],"any_of":["003002","authentication failed","no certificate has been submitted"],"must_not_have":[],"diagnostico":"[Error Acceso-Acceso] - SAML 003002. La pasarela no ha recibido un certificado digital valido.","explicacion":["El error SAML 003002 indica que la pasarela no recibio ningun certificado valido.","Causas habituales: el ciudadano no selecciono certificado, navegador no lo envia, certificado caducado o revocado, DNIe no detectado, proxy o antivirus que bloquea el envio."],"accion":"Orientar al ciudadano: seleccionar certificado correcto, revisar instalacion, probar otro navegador o equipo.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":172},
+{"id_regla":"acceso_saml_contrasena","fase":"acceso","clasificacion":"Error Acceso-Acceso","proveedor":"Cl@ve (acceso)","contexto_check":"checkSaml","events_present":[],"events_absent":[],"must_have":[],"any_of":["contrasena incorrecta","contrasenya incorrecta","olvido de contrasena","password","credential"],"must_not_have":[],"diagnostico":"[Error Acceso-Acceso] - SAML. Contrasena Cl@ve incorrecta.","explicacion":["El ciudadano ha fallado la autenticacion Cl@ve por contrasena erronea.","No es un error de firma - es un error de acceso previo al formulario."],"accion":"Indicar al ciudadano usar la opcion Olvide mi contrasena en el portal de Cl@ve.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":168},
+{"id_regla":"acceso_pagina_blanco","fase":"acceso","clasificacion":"Error Acceso-Acceso","proveedor":"Pasarela CAIB","contexto_check":"checkBlanco","events_present":[],"events_absent":[],"must_have":[],"any_of":[],"must_not_have":[],"diagnostico":"[Error Acceso-Acceso] - Pagina en blanco. Posible problema de pasarela o redireccionamiento.","explicacion":["La pagina queda en blanco al intentar acceder al tramite.","Normalmente no se genera traza util en SistraHelp para este tipo de fallo.","Puede ser un problema de pasarela, redirecciones, proxy, firewall o antivirus."],"accion":"Probar accediendo desde Carpeta Ciudadana GOB. Revisar proxy, firewall y antivirus.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":165},
+{"id_regla":"portafib_preproveedor","fase":"acceso_pre_firma","clasificacion":"Error Acceso-Sesion","proveedor":"Portafib/Soffid (CAIB)","events_present":["TR_FRF"],"events_absent":["TR_SGI"],"must_have":[],"any_of":["fluxe no valid","fluxe no valido","fluxe firma invalid","al generar sessi","al generar sesion firma","sesionfirmaclienteexception","sesionfilmaclienteexception","timestampinvalidexception","el trasllat no","no es valid el trasllat","227","2287"],"must_not_have":[],"diagnostico":"[Error Acceso-Sesion] - Portafib/Soffid pre-proveedor (CAIB). La firma no llego a iniciarse por error de sesion o flujo.","explicacion":["La traza alcanza Fin formulario - el formulario se completo correctamente.","No aparece Inicio firma - el proveedor de firma no llego a ser invocado.","Se detectan errores tipicos de flujo o sesion previos al proveedor (Portafib/Soffid).","Este error es interno de la CAIB - no es un fallo del ciudadano ni del proveedor de firma externo."],"accion":"Escalar SEG-012 Aplicacions/31 con expediente y traza.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":true,"prioridad":160},
+{"id_regla":"clave_movil_no_permitida","fase":"firma","clasificacion":"Error Firma-Metodo","proveedor":"Cl@ve Firma","events_present":["TR_SGI"],"events_absent":[],"must_have":["clave_movil"],"any_of":["no esta permitida","no permes","metodoautenticacionexception","no permitida"],"must_not_have":[],"diagnostico":"[Error Firma-Metodo] - CLAVE_MOVIL no permitida para este tramite.","explicacion":["El ciudadano ha intentado firmar usando Cl@ve Movil.","El tramite no admite Cl@ve Movil como metodo de firma.","No es una caida del proveedor - es una restriccion de metodo configurada en el tramite."],"accion":"Indicar al ciudadano que use Cl@ve Permanente o certificado digital, segun lo que admita el tramite.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":155},
+{"id_regla":"clave_8_15_a_103_15","fase":"firma","clasificacion":"Error Firma-Proveedor","proveedor":"Cl@ve Firma","events_present":["TR_SGI","TR_SGX"],"events_absent":[],"must_have":[],"any_of":["codigo: 8","codigo:8"],"must_have_also":["tipo: 15","tipo:15"],"must_have_also_2":["codigo: 103","codigo:103"],"must_not_have":["autofirma","cliente de firma"],"diagnostico":"[Error Firma-Proveedor] - Cl@ve Firma. Evolucion 8-15 a 103-15. Credencial bloqueada.","explicacion":["La traza entra en fase de firma y el proveedor devuelve fallo.","Se detecta codigo 8 tipo 15: credencial Cl@ve Permanente degradada.","Se detecta tambien codigo 103: los certificados han pasado a estar bloqueados.","Es un problema individual del ciudadano."],"accion":"Indicar al ciudadano que revoque el certificado desde Gestiones Cl@ve y emita uno nuevo.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":148},
+{"id_regla":"clave_codigo_8_tipo_15","fase":"firma","clasificacion":"Error Firma-Proveedor","proveedor":"Cl@ve Firma","events_present":["TR_SGI","TR_SGX"],"events_absent":[],"must_have":[],"any_of":["codigo: 8","codigo:8"],"must_have_also":["tipo: 15","tipo:15"],"must_not_have":["autofirma","cliente de firma","codigo: 103","codigo:103"],"detectar_plazo":["plazo","personacion","personacio"],"diagnostico":"[Error Firma-Proveedor] - Cl@ve Firma. Problema de credencial/certificado Cl@ve Permanente (codigo 8, tipo 15).","explicacion":["La traza entra en fase de firma y el proveedor devuelve fallo.","El codigo 8 con tipo 15 indica problema con la credencial o certificado de Cl@ve Permanente.","Puede estar caducado, no acreditado o haber superado el plazo de personacion.","Es un problema individual del ciudadano."],"accion":"Indicar al ciudadano renovar o acreditar Cl@ve Permanente en una oficina de registro.","accion_si_plazo":"Se detecta referencia a plazo de personacion: indicar al ciudadano acudir a oficina antes de que expire el plazo.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":145},
+{"id_regla":"clave_codigo_103","fase":"firma","clasificacion":"Error Firma-Proveedor","proveedor":"Cl@ve Firma","events_present":["TR_SGI","TR_SGX"],"events_absent":[],"must_have":[],"any_of":["codigo: 103","codigo:103"],"must_not_have":["autofirma","cliente de firma"],"diagnostico":"[Error Firma-Proveedor] - Cl@ve Firma. Certificados bloqueados (codigo 103).","explicacion":["La traza entra en fase de firma y el proveedor devuelve fallo.","El codigo 103 indica que los certificados de Cl@ve del ciudadano estan bloqueados o revocados."],"accion":"Indicar al ciudadano que revoque el certificado desde Gestiones Cl@ve y emita uno nuevo.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":138},
+{"id_regla":"clave_codigo_101","fase":"firma","clasificacion":"Error Firma-Proveedor","proveedor":"Cl@ve Firma","events_present":["TR_SGI","TR_SGX"],"events_absent":[],"must_have":[],"any_of":["codigo: 101","codigo:101"],"must_not_have":["autofirma","cliente de firma"],"diagnostico":"[Error Firma-Proveedor] - Cl@ve Firma. Registro/credencial insuficiente (codigo 101).","explicacion":["La traza entra en fase de firma y el proveedor devuelve fallo.","El codigo 101 indica que el registro de Cl@ve del ciudadano es insuficiente o inconsistente."],"accion":"Indicar al ciudadano verificar su nivel de registro en Cl@ve y acreditar o completar el proceso.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":132},
+{"id_regla":"clave_codigo_104","fase":"firma","clasificacion":"Error Firma-Proveedor","proveedor":"Cl@ve Firma","events_present":["TR_SGI","TR_SGX"],"events_absent":[],"must_have":[],"any_of":["codigo: 104","codigo:104","no fehaciente","registro no fehaciente"],"must_not_have":["autofirma","cliente de firma"],"diagnostico":"[Error Firma-Proveedor] - Cl@ve Firma. Registro no fehaciente (codigo 104).","explicacion":["La traza entra en fase de firma y el proveedor devuelve fallo.","El codigo 104 indica que el ciudadano no tiene el nivel de registro necesario para firmar."],"accion":"Indicar al ciudadano que debe acreditar su identidad de forma presencial para elevar el nivel de registro Cl@ve.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":128},
+{"id_regla":"autofirma_cliente_firma","fase":"firma","clasificacion":"Error Firma-Proveedor","proveedor":"Autofirma / Cliente de Firma (entorno local)","events_present":["TR_SGI","TR_SGX"],"events_absent":[],"must_have":[],"any_of":["autofirma","cliente de firma movil","cliente de firma","cliente firma","no se ha podido establecer la comunicacion","no se ha podido extablecer la comunicacion","no se pudo conectar con el servidor intermedio","no s\'ha pogut connectar","modulo de firma finalizado inesperadamente","modul de firma finalitzat inesperadament","signatura cancel","firma cancelada","saf_27","exceptionmessage"],"must_not_have":[],"diagnostico":"[Error Firma-Proveedor] - Autofirma / Cliente de Firma (entorno local del ciudadano).","explicacion":["La traza entra en fase de firma y el proveedor devuelve fallo.","Se detectan literales propios de Autofirma o Cliente de Firma Movil.","El problema esta en el entorno local del ciudadano: aplicacion de firma, comunicacion con la pagina web, cierre inesperado o cancelacion.","No es un fallo de Portafib ni de Cl@ve Firma."],"accion":"Revisar que Autofirma / Cliente de Firma este instalado y actualizado. Probar otro navegador. Revisar certificados, antivirus, firewall y proxy. Reintentar.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":122},
+{"id_regla":"dssafirmaverify_error","fase":"firma","clasificacion":"Error Firma-Proveedor","proveedor":"DSSAfirma (@firma backend)","events_present":[],"events_absent":[],"must_have":["dssafirmaverify"],"any_of":["502","503","bad gateway","service unavailable"],"must_not_have":[],"diagnostico":"[Error Firma-Proveedor] - DSSAfirmaVerify KO. Fallo en el servicio de validacion de firmas.","explicacion":["Se detecta una llamada a DSSAfirmaVerify con error HTTP 502 o 503.","El plugin de validacion de firma @firma no esta disponible en este momento.","No es un error del ciudadano - es un fallo del proveedor o del backend."],"accion":"Escalar a Aplicacions/31 si persiste. Indicar reintentar mas tarde.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":true,"prioridad":118},
+{"id_regla":"fire_certificado_local","fase":"firma","clasificacion":"Error Firma-Proveedor","proveedor":"FIRE (certificado local)","events_present":["TR_SGI","TR_SGX"],"events_absent":[],"must_have":[],"any_of":["fire","certificado local","dnie","dni-e","fnmt","tarjeta"],"must_not_have":["autofirma","cliente de firma","clave"],"diagnostico":"[Error Firma-Proveedor] - FIRE (certificado local / DNIe). KO en fase de firma.","explicacion":["La traza entra en fase de firma y el proveedor devuelve fallo.","Se detectan literales propios de FIRE o certificado local (DNIe, FNMT, tarjeta).","No se detectan literales de Cl@ve ni de Autofirma."],"accion":"Recomendar probar con otro navegador. Verificar que el certificado no esta caducado o revocado. Revisar lector si es DNIe.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":112},
+{"id_regla":"clave_ko_repetidos","fase":"firma","clasificacion":"Error Firma-Proveedor","proveedor":"Cl@ve Firma","events_present":["TR_SGI","TR_SGX"],"events_absent":[],"must_have":[],"any_of":["cl@ve","clave","firma.gob.es","autenticacion"],"must_not_have":["autofirma","cliente de firma","codigo: 8","codigo:8","codigo: 101","codigo:101","codigo: 103","codigo:103","codigo: 104","codigo:104"],"condicion_especial":"count_TR_SGX >= 2","diagnostico":"[Error Firma-Proveedor] - Cl@ve Firma. KO repetido. Posible caida del proveedor.","explicacion":["La traza contiene Inicio firma seguido de Firma KO de forma repetida.","Se detectan literales de Cl@ve Firma.","Un KO repetido puede indicar una incidencia general del proveedor Cl@ve."],"accion":"Indicar reintentar desde Carpeta Ciudadana. Si afecta a varios ciudadanos en la misma franja horaria, escalar como incidencia general.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":102},
+{"id_regla":"formulario_sin_inicio_firma","fase":"acceso_pre_firma","clasificacion":"Fallo formulario","proveedor":null,"events_present":[],"events_absent":["TR_SGI"],"must_have":[],"any_of":[],"must_not_have":["fluxe no valid","al generar sessi","sesionfirmaclienteexception","timestampinvalidexception","el trasllat no","227","2287"],"diagnostico":"Fallo de formulario / incidencia previa al inicio de firma.","explicacion":["No aparece Inicio firma en la traza - el proveedor de firma no fue invocado.","No se detectan errores de sesion ni flujo tipicos de Portafib.","El problema parece estar en el formulario o en el acceso previo al paso de firma."],"accion":"Verificar si el ciudadano llego al paso de firma. Revisar si la traza esta completa.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":50},
+{"id_regla":"cajon_sastre_firma","fase":"firma","clasificacion":"Pendiente de clasificar","proveedor":null,"events_present":["TR_SGI","TR_SGX"],"events_absent":[],"must_have":[],"any_of":[],"must_not_have":[],"diagnostico":"Caso en fase de firma detectado - proveedor o metodo pendiente de clasificar.","explicacion":["La traza entra en fase de firma y el proveedor devuelve fallo.","No se identifican literales conocidos de Cl@ve, Autofirma, FIRE ni codigo de error reconocido.","Es necesario revisar manualmente la traza."],"accion":"Revisar manualmente la traza. Buscar literales de Cl@ve, Autofirma/Cliente Firma, o codigo de error del proveedor.","correo":"Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails","escalar":false,"prioridad":10}
+]};
+
+let reglasDB = null;
+let reglasSource = 'loading';
+
+// ═══════════════════════════════════════════════════════
+// CARGA DE REGLAS
+// ═══════════════════════════════════════════════════════
+async function cargarReglas() {
+  try {
+    const r = await fetch(REGLAS_URL);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    reglasDB = await r.json();
+    reglasSource = 'json';
+    console.log(`[V2] reglas.json cargado desde servidor: ${reglasDB.reglas.length} reglas`);
+  } catch(e) {
+    console.warn('[V2] fetch reglas.json fallido, usando reglas embebidas:', e.message);
+    reglasDB = REGLAS_EMBED;
+    reglasSource = 'embed';
+    console.log(`[V2] Reglas embebidas activas: ${reglasDB.reglas.length} reglas`);
+  } finally {
+    actualizarEstadoJson();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// MOTOR DE ANÁLISIS
+// ═══════════════════════════════════════════════════════
+function normalizar(texto) {
+  return texto.toLowerCase()
+    .normalize('NFD').replace(/\p{Mn}/gu, '')  // quitar diacríticos
+    .replace(/\s+/g, ' ');
+}
+
+function detectarEventos(traza) {
+  const t = traza.toUpperCase();
+  const detectados = {};
+  for (const ev of TODOS_TR) {
+    // Buscar el evento como palabra o al inicio de línea
+    const re = new RegExp('\\b' + ev.replace('_','_') + '\\b');
+    detectados[ev] = re.test(t) || t.includes(ev);
+  }
+  return detectados;
+}
+
+function contarEvento(traza, ev) {
+  const t = traza.toUpperCase();
+  let count = 0;
+  let pos = 0;
+  while ((pos = t.indexOf(ev, pos)) !== -1) { count++; pos += ev.length; }
+  return count;
+}
+
+function evaluarRegla(regla, trazaN, eventos, so, checkSaml, checkBlanco) {
+  // contexto_so
+  if (regla.contexto_so && regla.contexto_so.length > 0) {
+    if (!regla.contexto_so.includes(so)) return false;
+  }
+
+  // contexto_check
+  if (regla.contexto_check === 'checkSaml' && !checkSaml) return false;
+  if (regla.contexto_check === 'checkBlanco' && !checkBlanco) return false;
+
+  // events_present
+  for (const ev of (regla.events_present || [])) {
+    if (!eventos[ev]) return false;
+  }
+
+  // events_absent (más condicion_especial para error_registro)
+  if (regla.id_regla === 'error_registro') {
+    // TR_SGO presente Y (TR_REG ausente O TR_FIN ausente)
+    if (!eventos['TR_SGO']) return false;
+    if (eventos['TR_REG'] && eventos['TR_FIN']) return false;
+  } else {
+    for (const ev of (regla.events_absent || [])) {
+      if (eventos[ev]) return false;
+    }
+  }
+
+  // condicion_especial count_TR_SGX >= 2
+  if (regla.condicion_especial === 'count_TR_SGX >= 2') {
+    if (contarEvento(trazaN, 'tr_sgx') < 2 && contarEvento(trazaN, 'firma ko') < 2) return false;
+  }
+
+  // must_have (todos deben aparecer)
+  for (const p of (regla.must_have || [])) {
+    if (!trazaN.includes(normalizar(p))) return false;
+  }
+
+  // any_of (al menos uno)
+  if (regla.any_of && regla.any_of.length > 0) {
+    const found = regla.any_of.some(p => trazaN.includes(normalizar(p)));
+    if (!found) return false;
+  }
+
+    // none_of / must_not_have (ninguno puede aparecer)
+  for (const p of ([...(regla.none_of || []), ...(regla.must_not_have || [])])) {
+    if (trazaN.includes(normalizar(p))) return false;
+  }
+
+  // must_have_also (todos deben aparecer — para combinadas)
+  if (regla.must_have_also && regla.must_have_also.length > 0) {
+    const found = regla.must_have_also.some(p => trazaN.includes(normalizar(p)));
+    if (!found) return false;
+  }
+
+  // must_have_also_2 (al menos uno del segundo grupo)
+  if (regla.must_have_also_2 && regla.must_have_also_2.length > 0) {
+    const found = regla.must_have_also_2.some(p => trazaN.includes(normalizar(p)));
+    if (!found) return false;
+  }
+
+  return true;
+}
+
+function detectarSenales(regla, trazaN) {
+  const senales = [];
+  const grupos = [
+    regla.must_have || [],
+    regla.any_of || [],
+    regla.must_have_also || [],
+    regla.must_have_also_2 || [],
+    regla.detectar_plazo || []
+  ];
+  for (const grupo of grupos) {
+    for (const p of grupo) {
+      if (trazaN.includes(normalizar(p))) {
+        const limpio = p.replace(/['"\\]/g,'').trim();
+        if (limpio && !senales.includes(limpio)) senales.push(limpio);
+      }
+    }
+  }
+  // Detectar plazo si aplica
+  if (regla.detectar_plazo) {
+    const tienePlazo = regla.detectar_plazo.some(p => trazaN.includes(normalizar(p)));
+    if (tienePlazo && regla.accion_si_plazo) {
+      senales._accionPlazo = regla.accion_si_plazo;
+    }
+  }
+  return senales;
+}
+
+function analizar(traza, so, checkSaml, checkBlanco) {
+  if (!reglasDB || !reglasDB.reglas) return null;
+
+  const trazaN = normalizar(traza);
+  const eventos = detectarEventos(traza);
+
+  // Ordenar reglas por prioridad DESC
+  const reglasOrdenadas = [...reglasDB.reglas].sort((a,b) => b.prioridad - a.prioridad);
+
+  let reglaGanadora = null;
+  for (const regla of reglasOrdenadas) {
+    if (evaluarRegla(regla, trazaN, eventos, so, checkSaml, checkBlanco)) {
+      reglaGanadora = regla;
+      break;
+    }
+  }
+
+  const senales = reglaGanadora ? detectarSenales(reglaGanadora, trazaN) : [];
+
+  return {
+    regla: reglaGanadora,
+    eventos,
+    senales,
+    trazaN,
+    countSGI: contarEvento(traza.toUpperCase(), 'TR_SGI'),
+    countSGX: contarEvento(traza.toUpperCase(), 'TR_SGX'),
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// GENERADOR DE TICKET
+// ═══════════════════════════════════════════════════════
+function generarTicket(resultado, so, tipoFirma) {
+  const { regla, eventos, senales } = resultado;
+  if (!regla) {
+    return 'Sin diagnóstico: no se ha encontrado ninguna regla que coincida con la traza.\nRevisar manualmente.';
+  }
+
+  const evPresentes = TODOS_TR.filter(ev => eventos[ev]);
+  const evStr = evPresentes.map(ev => `${ev} (${TR_MAP[ev]})`).join('\n  ');
+
+  const explicacion = (regla.explicacion || []).map(l => `• ${l}`).join('\n');
+
+  let accion = regla.accion || '';
+  if (senales._accionPlazo) accion += '\n' + senales._accionPlazo;
+
+  let ticket = `DIAGNÓSTICO: ${regla.diagnostico}
+CLASIFICACIÓN: ${regla.clasificacion}`;
+
+  if (regla.proveedor) ticket += `\nPROVEEDOR: ${regla.proveedor}`;
+
+  ticket += `
+FASE: ${regla.fase}
+
+EVENTOS DETECTADOS:
+  ${evStr || '(ninguno identificado)'}
+
+INTERPRETACIÓN:
+${explicacion}
+
+ACCIÓN:
+${accion}
+
+ESCALAR: ${regla.escalar ? 'SÍ — ' + (regla.accion || '') : 'No es necesario'}
+CORREO: ${regla.correo || 'Ver https://cau.fundaciobit.org/firmawiki/index.php/Mails'}
+
+Contexto: SO=${so} | Tipo firma=${tipoFirma}`;
+
+  return ticket;
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════
+const FASE_LABELS = {
+  'registro': 'Registro',
+  'acceso': 'Acceso',
+  'acceso_pre_firma': 'Pre-firma',
+  'firma': 'Firma'
+};
+
+const CLASE_CARD = {
+  'Tramite OK': 'ok',
+  'Error Registro': 'ko',
+  'Error Acceso-Acceso': 'warn',
+  'Error Acceso-Sesion': 'warn',
+  'Fallo formulario': 'gold',
+  'Error Firma-Metodo': 'blue',
+  'Error Firma-Proveedor': 'ko',
+  'Pendiente de clasificar': 'neutral'
+};
+
+const ICONO_CARD = {
+  'ok': '✅',
+  'ko': '❌',
+  'warn': '⚠️',
+  'blue': 'ℹ️',
+  'gold': '📋',
+  'neutral': '🔍'
+};
+
+const FLUJO_SECUENCIA = [
+  { id: 'TR_FRI', label: 'TR_FRI', desc: 'Inicio formulario' },
+  { id: 'TR_FRF', label: 'TR_FRF', desc: 'Fin formulario' },
+  { id: 'TR_SGI', label: 'TR_SGI', desc: 'Inicio firma' },
+  { id: 'TR_SGX', label: 'TR_SGX', desc: 'Firma KO', esKo: true },
+  { id: 'TR_SGO', label: 'TR_SGO', desc: 'Firma OK' },
+  { id: 'TR_REG', label: 'TR_REG', desc: 'Registro' },
+  { id: 'TR_FIN', label: 'TR_FIN', desc: 'Fin trámite' }
+];
+
+function renderFlujo(eventos, regla) {
+  const body = document.getElementById('flujoBody');
+  body.innerHTML = '';
+
+  // Determinar estado de cada paso
+  // El punto de fallo es TR_SGX si aparece, o el primer events_absent critico de la regla ganadora
+  const falloEv = regla && regla.events_absent && regla.events_absent.length > 0
+    ? regla.events_absent[0] : null;
+
+  let fallado = false;
+  let falladoEn = null;
+
+  // TR_SGX siempre es KO si aparece
+  if (eventos['TR_SGX']) falladoEn = 'TR_SGX';
+  // Si la regla dice que no debería aparecer TR_SGI (Portafib), fallo en TR_SGI
+  if (regla && regla.events_absent && regla.events_absent.includes('TR_SGI')) falladoEn = 'TR_SGI';
+
+  FLUJO_SECUENCIA.forEach((paso, i) => {
+    // Flecha antes del paso (excepto primero)
+    if (i > 0) {
+      const arrow = document.createElement('span');
+      arrow.className = 'flujo-arrow' + (fallado ? '' : ' ok');
+      arrow.textContent = '→';
+      body.appendChild(arrow);
+    }
+
+    const chip = document.createElement('div');
+    chip.className = 'flujo-step';
+
+    const inner = document.createElement('div');
+    inner.className = 'flujo-chip';
+    inner.title = paso.desc;
+
+    const code = document.createElement('span');
+    code.textContent = paso.label;
+
+    const lbl = document.createElement('span');
+    lbl.className = 'chip-label';
+    lbl.textContent = paso.desc;
+
+    inner.appendChild(code);
+    inner.appendChild(lbl);
+
+    // Colorear
+   if (paso.id === 'TR_SGX') {
+  if (eventos['TR_SGX']) {
+    inner.classList.add('ko');
+    fallado = true;
+  } else if (eventos['TR_SGO']) {
+    // Solo tiene sentido dar por superado el paso KO
+    // si la firma acabó bien
+    inner.classList.add('ok');
+  }
+} else if (paso.id === falladoEn && paso.id !== 'TR_SGX') {
+      // Es el paso ausente que marca el fallo
+      inner.classList.add('warn');
+      fallado = true;
+    } else if (fallado) {
+      // Pasos posteriores al fallo: gris
+      inner.classList.remove('ok');
+    } else if (eventos[paso.id]) {
+      inner.classList.add('ok');
+    }
+    // Si no está presente y no ha fallado aún: gris (sin clase extra)
+
+    chip.appendChild(inner);
+    body.appendChild(chip);
+  });
+
+  // Nota orientativa
+  if (regla) {
+    const note = document.createElement('div');
+    note.className = 'flujo-note';
+    if (falladoEn === 'TR_SGX') {
+      note.textContent = '⚠ Fallo en la fase de firma — el proveedor devuelve KO.';
+    } else if (falladoEn === 'TR_SGI') {
+      note.textContent = '⚠ La firma no llegó a iniciarse — error previo al proveedor (Portafib).';
+    } else if (regla.clasificacion === 'Tramite OK') {
+      note.textContent = '✓ Flujo completado correctamente.';
+    } else if (regla.fase === 'registro') {
+      note.textContent = '⚠ Firma completada pero fallo en el registro (REGWEB/backend CAIB).';
+    } else {
+      note.textContent = `Fase detectada: ${regla.fase}`;
+    }
+    body.appendChild(note);
+  }
+}
+
+function renderResultado(resultado, so, tipoFirma) {
+  const { regla, eventos, senales } = resultado;
+
+  // Ocultar placeholder
+  document.getElementById('placeholderMsg').style.display = 'none';
+  document.getElementById('diagContainer').style.display = 'flex';
+  document.getElementById('diagContainer').style.flexDirection = 'column';
+  document.getElementById('diagContainer').style.gap = '14px';
+
+  // Estado trámite
+  const estadoEl = document.getElementById('estadoTramite');
+  if (!regla) {
+    estadoEl.className = 'visible info';
+    estadoEl.innerHTML = 'ℹ️ No se ha encontrado ninguna regla coincidente. Revisar manualmente.';
+  } else if (regla.clasificacion === 'Tramite OK') {
+    estadoEl.className = 'visible ok';
+    estadoEl.innerHTML = '✅ Trámite finalizado correctamente';
+  } else if (regla.escalar) {
+    estadoEl.className = 'visible ko';
+    estadoEl.innerHTML = '🔴 Escalar a soporte técnico';
+  } else {
+    estadoEl.className = 'visible info';
+    estadoEl.innerHTML = '🔵 ' + (regla.clasificacion || 'Ver diagnóstico');
+  }
+
+  if (!regla) {
+    renderSinRegla(eventos);
+    return;
+  }
+
+  // ── Flujo arriba del todo ──
+  document.getElementById('panelFlujo').style.display = 'block';
+  renderFlujo(eventos, regla);
+
+  // Card principal
+  const claseCard = CLASE_CARD[regla.clasificacion] || 'neutral';
+  const icono = ICONO_CARD[claseCard] || '🔍';
+  document.getElementById('diagCard').className = 'diag-card ' + claseCard;
+  document.getElementById('diagCardIcon').textContent = icono;
+  document.getElementById('diagCardTitulo').textContent = regla.titulo;
+
+  // Tags
+  const tagsEl = document.getElementById('diagTags');
+  tagsEl.innerHTML = '';
+  if (regla.clasificacion) tagsEl.innerHTML += `<span class="ev-badge ev-${claseCard}">${regla.clasificacion}</span>`;
+  if (regla.fase) tagsEl.innerHTML += `<span class="diag-fase">${FASE_LABELS[regla.fase] || regla.fase}</span>`;
+  if (regla.proveedor) tagsEl.innerHTML += `<span class="diag-proveedor">${regla.proveedor}</span>`;
+  tagsEl.innerHTML += regla.escalar
+    ? `<span class="diag-escalar">⬆ Escalar</span>`
+    : `<span class="diag-no-escalar">✓ No escalar</span>`;
+
+  // Diagnóstico
+  document.getElementById('diagTexto').textContent = regla.diagnostico;
+
+  // Explicación
+  const explEl = document.getElementById('diagExplicacion');
+  explEl.innerHTML = '';
+  for (const linea of (regla.explicacion || [])) {
+    const li = document.createElement('li');
+    li.textContent = linea;
+    explEl.appendChild(li);
+  }
+
+  // Acción
+  let accionTexto = regla.accion || '';
+  if (senales._accionPlazo) accionTexto += '\n' + senales._accionPlazo;
+  document.getElementById('diagAccion').textContent = accionTexto;
+
+  // Eventos
+  renderEventos(eventos);
+
+  // Señales
+  if (senales.length > 0) {
+    document.getElementById('panelSenales').style.display = 'block';
+    const sl = document.getElementById('senalesList');
+    sl.innerHTML = '';
+    for (const s of senales) {
+      if (typeof s === 'string') {
+        sl.innerHTML += `<div class="senal-item"><span class="senal-dot"></span><span>${s}</span></div>`;
+      }
+    }
+  } else {
+    document.getElementById('panelSenales').style.display = 'none';
+  }
+
+  // Ticket
+  const ticket = generarTicket(resultado, so, tipoFirma);
+  document.getElementById('ticketTexto').textContent = ticket;
+}
+
+function renderEventos(eventos) {
+  const lista = document.getElementById('eventosList');
+  lista.innerHTML = '';
+
+  const SGI = eventos['TR_SGI'];
+  const SGX = eventos['TR_SGX'];
+  const SGO = eventos['TR_SGO'];
+
+  for (const [ev, label] of Object.entries(TR_MAP)) {
+    if (!eventos[ev]) continue;
+    let clase = 'ev-neutral';
+    if (ev === 'TR_SGO' || ev === 'TR_FIN' || ev === 'TR_REG') clase = 'ev-ok';
+    if (ev === 'TR_SGX') clase = 'ev-ko';
+    lista.innerHTML += `<span class="ev-badge ${clase}" title="${label}">${ev} <small style="opacity:.7">${label}</small></span>`;
+  }
+
+  if (lista.innerHTML === '') {
+    lista.innerHTML = '<span style="font-size:12px;color:var(--faint)">No se detectaron eventos TR_ en la traza</span>';
+  }
+
+  // Contadores
+  const countEl = document.getElementById('countRow');
+  countEl.innerHTML = '';
+  if (SGI) {
+    const nSGI = contarEvento(document.getElementById('txtTraza').value.toUpperCase(), 'TR_SGI');
+    countEl.innerHTML += `<div class="count-item">Inicio firma: <span class="count-num">${nSGI}</span></div>`;
+  }
+  if (SGX) {
+    const nSGX = contarEvento(document.getElementById('txtTraza').value.toUpperCase(), 'TR_SGX');
+    countEl.innerHTML += `<div class="count-item">Firma KO: <span class="count-num">${nSGX}</span></div>`;
+  }
+}
+
+function renderSinRegla(eventos) {
+  document.getElementById('panelFlujo').style.display = 'block';
+  renderFlujo(eventos, null);
+  const claseCard = 'neutral';
+  document.getElementById('diagCard').className = 'diag-card ' + claseCard;
+  document.getElementById('diagCardIcon').textContent = '🔍';
+  document.getElementById('diagCardTitulo').textContent = 'Sin diagnóstico automático';
+  document.getElementById('diagTags').innerHTML = '<span class="ev-badge ev-neutral">Pendiente revisión manual</span>';
+  document.getElementById('diagTexto').textContent = 'No se ha encontrado ninguna regla que coincida con la traza proporcionada.';
+  document.getElementById('diagExplicacion').innerHTML = '<li>Revisar manualmente los eventos y literales presentes.</li><li>Puede tratarse de un caso nuevo no contemplado aún en reglas.json.</li>';
+  document.getElementById('diagAccion').textContent = 'Revisar la traza manualmente o ampliar reglas.json con el nuevo patrón.';
+  renderEventos(eventos);
+  document.getElementById('panelSenales').style.display = 'none';
+  document.getElementById('ticketTexto').textContent = 'Sin diagnóstico automático. Revisar traza manualmente.';
+}
+
+// ═══════════════════════════════════════════════════════
+// AYUDA DINÁMICA
+// ═══════════════════════════════════════════════════════
+function actualizarEstadoJson() {
+  const badge = document.getElementById('jsonStatusBadge');
+  if (!badge) return;
+
+  if (reglasSource === 'json') {
+    badge.className = 'json-status-badge ok';
+    badge.textContent = '✓';
+    badge.title = 'reglas.json cargado correctamente al abrir o actualizar la página';
+  } else if (reglasSource === 'embed') {
+    badge.className = 'json-status-badge fallback';
+    badge.textContent = '· usando reglas internas';
+    badge.title = 'No se pudo leer reglas.json al abrir o actualizar la página; se usan reglas embebidas';
+  } else {
+    badge.className = 'json-status-badge loading';
+    badge.textContent = '...';
+    badge.title = 'Cargando reglas.json';
+  }
+}
+
+function renderInfoAcceso() {
+  const saml = document.getElementById('checkSaml').checked;
+  const blanco = document.getElementById('checkBlanco').checked;
+  const card = document.getElementById('accessInfoCard');
+  const content = document.getElementById('accessInfoContent');
+  const details = document.getElementById('accessInfoDetails');
+  const placeholder = document.getElementById('placeholderMsg');
+  const diag = document.getElementById('diagContainer');
+  if (!card || !content) return;
+
+  let html = '';
+  let label = 'Ver detalles';
+
+  if (saml && blanco) {
+    label = 'SAML + página en blanco';
+    html = `
+      <h4>Se han marcado dos incidencias de acceso</h4>
+      <p>La combinación de error SAML y página en blanco sugiere un problema previo al inicio del trámite o un acceso no completado correctamente.</p>
+      <ul>
+        <li>Revisar primero qué ve exactamente el ciudadano al autenticarse.</li>
+        <li>Si aparece error SAML, priorizar la validación de certificado o credenciales.</li>
+        <li>Si tras autenticarse queda en blanco, probar Carpeta Ciudadana GOB, otro navegador o modo incógnito.</li>
+      </ul>`;
+  } else if (saml) {
+    label = 'Error SAML';
+    html = HELP_SAML;
+  } else if (blanco) {
+    label = 'Página en blanco';
+    html = HELP_BLANCO;
+  }
+
+  if (html) {
+    card.hidden = false;
+    content.innerHTML = html;
+    if (details) details.textContent = label;
+    if (placeholder && (!diag || diag.style.display === 'none')) placeholder.style.display = 'none';
+  } else {
+    card.hidden = true;
+    content.innerHTML = '';
+    if (details) details.textContent = 'Ver detalles';
+    if (placeholder && (!diag || diag.style.display === 'none')) placeholder.style.display = 'flex';
+  }
+}
+
+function actualizarAyudaAcceso() {
+  const saml = document.getElementById('checkSaml').checked;
+  const blanco = document.getElementById('checkBlanco').checked;
+  document.getElementById('cardSaml').classList.toggle('active', saml);
+  document.getElementById('cardBlanco').classList.toggle('active', blanco);
+  renderInfoAcceso();
+}
+
+// ═══════════════════════════════════════════════════════
+// LIMPIAR
+// ═══════════════════════════════════════════════════════
+function limpiar() {
+  document.getElementById('txtTraza').value = '';
+  document.getElementById('selTipoFirma').value = 'na';
+  document.getElementById('selSO').value = 'No informado';
+  document.getElementById('checkSaml').checked = false;
+  document.getElementById('checkBlanco').checked = false;
+  document.getElementById('cardSaml').classList.remove('active');
+  document.getElementById('cardBlanco').classList.remove('active');
+  const accessInfoCard = document.getElementById('accessInfoCard');
+  const accessInfoContent = document.getElementById('accessInfoContent');
+  const accessInfoDetails = document.getElementById('accessInfoDetails');
+  if (accessInfoCard) accessInfoCard.hidden = true;
+  if (accessInfoContent) accessInfoContent.innerHTML = '';
+  if (accessInfoDetails) accessInfoDetails.textContent = 'Ver detalles';
+  const novedadesCard = document.getElementById('novedadesCard');
+  if (novedadesCard) novedadesCard.hidden = true;
+
+  const estadoEl = document.getElementById('estadoTramite');
+  estadoEl.className = '';
+  estadoEl.innerHTML = '';
+
+  document.getElementById('placeholderMsg').style.display = 'flex';
+  const pf = document.getElementById('panelFlujo'); if(pf) pf.style.display='none';
+  const fb = document.getElementById('flujoBody'); if(fb) fb.innerHTML='';
+  document.getElementById('diagContainer').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════
+// EVENTOS
+// ═══════════════════════════════════════════════════════
+document.getElementById('checkSaml').addEventListener('change', actualizarAyudaAcceso);
+document.getElementById('checkBlanco').addEventListener('change', actualizarAyudaAcceso);
+
+document.getElementById('btnAnalizar').addEventListener('click', () => {
+  const traza = document.getElementById('txtTraza').value.trim();
+  if (!traza) {
+    document.getElementById('txtTraza').focus();
+    return;
+  }
+  const so = document.getElementById('selSO').value;
+  const tipoFirma = document.getElementById('selTipoFirma').value;
+  const checkSaml = document.getElementById('checkSaml').checked;
+  const checkBlanco = document.getElementById('checkBlanco').checked;
+
+  const resultado = analizar(traza, so, checkSaml, checkBlanco);
+  if (resultado) {
+    renderResultado(resultado, so, tipoFirma);
+  }
+});
+
+document.getElementById('btnLimpiar').addEventListener('click', limpiar);
+
+document.getElementById('btnActualizar').addEventListener('click', () => {
+  // Fuerza recarga completa ignorando caché del navegador
+  // Equivalente a Ctrl+Shift+R — recarga HTML, JS, CSS y reglas.json
+  const url = new URL(window.location.href);
+  url.searchParams.set('v', Date.now());
+  window.location.replace(url.toString());
+});
+
+document.getElementById('btnCopyTicket').addEventListener('click', function() {
+  const txt = document.getElementById('ticketTexto').textContent;
+  navigator.clipboard.writeText(txt).then(() => {
+    this.textContent = '✓ Copiado';
+    this.classList.add('copied');
+    setTimeout(() => {
+      this.textContent = 'Copiar';
+      this.classList.remove('copied');
+    }, 2000);
+  });
+});
+
+// Limpiar al hacer clic en checkcard
+document.getElementById('cardSaml').addEventListener('click', () => {
+  setTimeout(actualizarAyudaAcceso, 10);
+});
+document.getElementById('cardBlanco').addEventListener('click', () => {
+  setTimeout(actualizarAyudaAcceso, 10);
+});
+
+// ═══════════════════════════════════════════════════════
+// ARRANQUE
+// ═══════════════════════════════════════════════════════
+(async function init() {
+  await cargarReglas();
+})();
+
+// ═══════════════════════════════════════════════════════
+// VER DETALLES / NOVEDADES
+// ═══════════════════════════════════════════════════════
+document.getElementById('btnVerDetalles').addEventListener('click', () => {
+  const card = document.getElementById('novedadesCard');
+  const placeholder = document.getElementById('placeholderMsg');
+  const diag = document.getElementById('diagContainer');
+  card.hidden = false;
+  if (placeholder && (!diag || diag.style.display === 'none')) placeholder.style.display = 'none';
+});
+document.getElementById('btnCerrarNovedades').addEventListener('click', () => {
+  const card = document.getElementById('novedadesCard');
+  card.hidden = true;
+  const accessCard = document.getElementById('accessInfoCard');
+  const placeholder = document.getElementById('placeholderMsg');
+  const diag = document.getElementById('diagContainer');
+  if (placeholder && (!diag || diag.style.display === 'none') && (accessCard && accessCard.hidden)) {
+    placeholder.style.display = 'flex';
+  }
+});
+
+</script>
+</body>
+</html>
