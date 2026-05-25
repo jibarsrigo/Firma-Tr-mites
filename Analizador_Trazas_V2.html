@@ -1086,7 +1086,7 @@ function renderFlujo(eventos, regla) {
     if (falladoEn === 'TR_SGX') {
       note.textContent = '⚠ Fallo en la fase de firma — el proveedor devuelve KO.';
     } else if (falladoEn === 'TR_SGI') {
-      note.textContent = '⚠ La firma no llegó a iniciarse — error previo al proveedor (Portafib/Soffid).';
+      note.textContent = '⚠ La firma no llegó a iniciarse — error previo al proveedor (Portafib).';
     } else if (regla.clasificacion === 'Tramite OK') {
       note.textContent = '✓ Flujo completado correctamente.';
     } else if (regla.fase === 'registro') {
