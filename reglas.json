@@ -1,6 +1,6 @@
 {
   "version": "1.5",
-  "descripcion": "Base de reglas del Analizador de Trazas CAIB.",
+  "descripcion": "Base de reglas del Analizador de Trazas.",
   "notas": [
     "must_have: todos deben aparecer en la traza",
     "any_of: basta con que aparezca al menos uno",
