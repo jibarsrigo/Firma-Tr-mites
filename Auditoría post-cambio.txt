@@ -1,0 +1,164 @@
+AUDITORÍA POST-CAMBIO – ANALIZADOR DE TRAZAS CAIB
+
+Norma general
+- Ningún cambio se dará por válido sin auditoría posterior.
+- Esto aplica a cualquier cambio en HTML, CSS, JavaScript, reglas embebidas y reglas.json.
+- Tras cada cambio, se debe informar qué se ha tocado, qué no se ha tocado, qué se ha comprobado y qué queda pendiente.
+- El objetivo principal es evitar regresiones: no se puede añadir una mejora rompiendo algo que ya funcionaba.
+
+1. Alcance obligatorio del informe tras cada cambio
+Siempre se debe indicar:
+- Ficheros modificados.
+- Bloques modificados dentro de cada fichero.
+- Motivo del cambio.
+- Riesgo de regresión esperado.
+- Resultado de la auditoría: OK / KO / Pendiente.
+- Si no se ha podido comprobar algo, debe decirse explícitamente.
+
+2. Auditoría obligatoria del HTML
+Tras cada cambio en el HTML se debe comprobar, como mínimo:
+
+2.1 Carga inicial
+- El HTML abre correctamente.
+- No aparece pantalla en blanco.
+- No hay errores JavaScript bloqueantes al cargar.
+- El header se muestra completo.
+- El badge de lectura de reglas se ve correctamente.
+
+2.2 Integridad visual
+- No falta ningún panel que existía antes.
+- No faltan botones, selectores, checkboxes, textos o ayudas.
+- No hay elementos invisibles, solapados o fuera de sitio.
+- No se han roto estilos ya existentes.
+- No se ha desplazado incorrectamente ninguna funcionalidad anterior.
+
+2.3 Carga de reglas
+- Si existe reglas.json accesible, el HTML lo carga correctamente.
+- Si falla reglas.json, entra correctamente en reglas embebidas.
+- El badge indica claramente qué origen usa:
+  - reglas.json vX.Y ✓
+  - reglas internas vX.Y ⚠
+- La versión mostrada debe salir del campo "version" del origen realmente cargado.
+
+2.4 Funciones principales del analizador
+- Se puede pegar una traza en el textarea.
+- El botón Analizar funciona.
+- El botón Limpiar funciona.
+- Se genera diagnóstico.
+- Se muestran clasificación, explicación y acción.
+- Se renderiza el flujo del trámite.
+- Se renderizan eventos detectados.
+- Se renderizan señales identificadas.
+- Se genera el texto para ticket CAU.
+- El botón Copiar ticket sigue funcionando.
+
+2.5 Ayudas y contexto
+- El check de error SAML sigue funcionando.
+- El check de página en blanco sigue funcionando.
+- El selector de tipo de firma sigue funcionando.
+- El selector de sistema operativo sigue funcionando.
+- Las ayudas contextuales existentes no se han perdido.
+
+2.6 Funciones añadidas recientemente
+- Todo botón, enlace, modal, tabla o bloque nuevo debe abrirse y cerrarse correctamente.
+- Debe comprobarse que la nueva función hace algo visible y correcto.
+- Debe comprobarse que no rompe ninguna función anterior.
+- Si la función nueva depende del DOM, hay que comprobar que el listener queda realmente enlazado.
+
+2.7 Regresión funcional mínima
+- Una traza que antes se analizaba bien debe seguir analizando igual, salvo mejora intencional.
+- Una traza Portafib/Soffid pre-proveedor debe seguir clasificando correctamente.
+- Una traza Cl@ve 8 / 101 / 103 / 104 debe seguir clasificando correctamente.
+- Una traza Autofirma / Cliente de Firma debe seguir clasificando correctamente.
+- Una traza FIRE / certificado local debe seguir clasificando correctamente.
+- Una traza de registro KO debe seguir clasificando correctamente.
+
+3. Auditoría obligatoria del reglas.json
+Tras cada cambio en reglas.json se debe comprobar, como mínimo:
+
+3.1 Validez y estructura
+- El JSON debe ser válido.
+- Debe existir "version".
+- Debe existir "reglas".
+- Cada regla debe tener todos los campos obligatorios esperados por el HTML.
+- No debe haber errores de sintaxis.
+- No debe haber comas sobrantes ni claves rotas.
+- No debe haber IDs de regla duplicados.
+- No debe haber prioridades duplicadas si eso afecta al orden esperado.
+
+3.2 Formato obligatorio del fichero
+- Quiero cada regla en una sola línea.
+- Cada objeto de regla debe ocupar exactamente una línea completa.
+- El array "reglas" debe mantenerse legible.
+- No quiero reformateos bonitos que repartan una misma regla en varias líneas.
+- Si se reescribe reglas.json, debe respetarse este formato compacto de una regla por línea.
+- La versión debe actualizarse cuando el cambio en reglas.json sea real y relevante.
+
+3.3 Coherencia funcional
+- No se debe eliminar ninguna regla existente sin decirlo explícitamente.
+- No se debe cambiar una regla existente sin explicar qué cambia.
+- No se debe cambiar prioridad sin justificarlo.
+- No se debe romper compatibilidad con el HTML actual.
+- Los nombres de campos deben coincidir exactamente con los que espera el HTML.
+- Las listas any_of / all_of / none_of / events_present / events_absent deben seguir siendo compatibles con el motor actual.
+
+3.4 Literales
+- Deben conservarse los literales históricos ya conocidos.
+- Deben respetarse variantes con y sin acentos cuando aplique.
+- Deben respetarse variantes catalán / castellano cuando aplique.
+- No se deben perder literales del analizador anterior sin decirlo explícitamente.
+- Si se añade un literal nuevo, debe indicarse en qué regla se añade y por qué.
+- Si se elimina un literal, debe justificarse expresamente.
+
+3.5 Pruebas mínimas tras tocar reglas.json
+- Cargar reglas.json desde el HTML y comprobar que el badge muestra la nueva versión.
+- Abrir la tabla de reglas y comprobar que aparecen las reglas cargadas.
+- Verificar que el número de reglas coincide con reglasDB.reglas.length.
+- Probar al menos varios casos representativos:
+  - Portafib/Soffid pre-proveedor
+  - Cl@ve método no permitido
+  - Cl@ve 8 / 101 / 103 / 104
+  - Autofirma / Cliente de Firma
+  - FIRE / certificado local
+  - Error de registro
+- Confirmar que los diagnósticos no empeoran respecto a la versión anterior.
+
+4. Regla de seguridad al hacer cambios
+- Antes de modificar, se debe identificar qué bloque exacto se toca.
+- Después de modificar, se debe revisar que nada fuera de ese alcance se haya roto.
+- Si el cambio es visual, se audita visual y funcionalmente.
+- Si el cambio es de reglas, se audita sintaxis, formato y comportamiento.
+- Si el cambio es mixto HTML + JSON, se auditan ambos por separado y también juntos.
+
+5. Formato obligatorio de respuesta tras cada cambio
+Cada entrega debe terminar con este bloque:
+
+Auditoría post-cambio
+- Ficheros modificados:
+- Alcance exacto del cambio:
+- Riesgo de regresión:
+- HTML carga inicial: OK / KO / Pendiente
+- Integridad visual: OK / KO / Pendiente
+- Carga de reglas: OK / KO / Pendiente
+- Análisis de trazas: OK / KO / Pendiente
+- Diagnóstico y ticket: OK / KO / Pendiente
+- Ayudas y contexto: OK / KO / Pendiente
+- Función nueva añadida: OK / KO / Pendiente / No aplica
+- Validez de reglas.json: OK / KO / Pendiente / No aplica
+- Formato “una regla por línea”: OK / KO / Pendiente / No aplica
+- Regresión de reglas conocidas: OK / KO / Pendiente
+- Pendientes no verificados:
+- Veredicto final: APTO / NO APTO
+
+6. Prohibiciones
+- No dar por hecho que “como solo he añadido algo, no se ha roto nada”.
+- No dar por hecho que “si compila, funciona”.
+- No cambiar formato de reglas.json si no se ha pedido.
+- No borrar, simplificar o reordenar reglas sin advertirlo.
+- No eliminar controles o ayudas existentes sin advertirlo.
+- No ocultar incertidumbres: si algo no se ha podido verificar, debe decirse.
+
+7. Criterio final
+- Si un cambio añade algo nuevo pero rompe algo anterior, el cambio no es válido.
+- Si un cambio en reglas mejora una detección pero empeora varias anteriores, no es válido.
+- Si no se ha pasado la auditoría, el cambio no se considera terminado.
