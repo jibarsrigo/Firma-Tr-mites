@@ -381,7 +381,7 @@ btnAnalizar.onclick = () => {
   }
 
   // 3. validar traza
-  const texto = document.querySelector(".card textarea").value.trim();
+  const texto = document.getElementById("inputTraza").value.trim();
 
   if (!texto) {
     abrirPanel("Validación", "Todavía no ha pegado trazas");
