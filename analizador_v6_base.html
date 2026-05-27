@@ -5,35 +5,23 @@
 <title>Analizador V6</title>
 
 <style>
-
-/* ===== BASE ===== */
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: system-ui;
   background: #f5f4f0;
   margin: 0;
-  color: #1e1c17;
-  font-size: 14px;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header {
   height: 52px;
   display: flex;
   align-items: center;
-  padding: 0 18px;
+  padding: 0 16px;
   background: white;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
+  border-bottom: 1px solid #ddd;
 }
 
-.header-left {
-  display:flex;
-  gap:14px;
-  align-items:center;
-}
-
-.logo {
-  font-weight:600;
-}
+.header-left { display:flex; gap:12px; align-items:center;}
 
 .badge {
   background:#01696f;
@@ -41,137 +29,33 @@ body {
   font-size:10px;
   padding:2px 8px;
   border-radius:999px;
-  font-weight:600;
 }
 
 .ver-detalles {
-  font-size:11px;
+  font-size:10px;
   color:#01696f;
   cursor:pointer;
-  text-decoration: underline dotted;
 }
 
 .btn-mini {
-  border:1px solid rgba(0,0,0,0.12);
-  background:#fafafa;
+  border:1px solid #ddd;
+  background:#f5f5f5;
   border-radius:999px;
-  padding:6px 12px;
-  font-size:12px;
+  padding:5px 10px;
   cursor:pointer;
 }
 
 .header-right {
   margin-left:auto;
   font-size:12px;
-  color:#6b6960;
 }
 
-/* ===== LAYOUT ===== */
-.container {
-  display:flex;
-  height: calc(100vh - 52px);
-}
+/* LAYOUT */
+.container { display:flex; }
+.sidebar { width:300px; padding:14px; background:#faf9f7; }
+.main { flex:1; padding:16px; }
 
-.sidebar {
-  width:320px;
-  padding:16px;
-  background: #faf9f7;
-  border-right: 1px solid rgba(0,0,0,0.08);
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-
-.main {
-  flex:1;
-  padding:18px;
-}
-
-/* ===== CARDS ===== */
-.card {
-  background:white;
-  border:1px solid rgba(0,0,0,0.08);
-  border-radius:12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  overflow:hidden;
-}
-
-.card-header {
-  padding:10px 12px;
-  font-size:12px;
-  font-weight:600;
-  color:#6b6960;
-  border-bottom:1px solid rgba(0,0,0,0.05);
-  text-transform:uppercase;
-  letter-spacing:.05em;
-}
-
-.card-body {
-  padding:12px;
-}
-
-/* ===== CHECK CARDS ===== */
-.check {
-  display:flex;
-  gap:10px;
-  padding:8px;
-  border:1px solid rgba(0,0,0,0.08);
-  border-radius:8px;
-  margin-bottom:6px;
-  cursor:pointer;
-}
-
-.check:hover {
-  background:#fafafa;
-}
-
-.check input {
-  accent-color:#01696f;
-}
-
-/* ===== TEXTAREA ===== */
-textarea {
-  width:100%;
-  min-height:200px;
-  border-radius:10px;
-  border:1px solid rgba(0,0,0,0.1);
-  background:#fafafa;
-  font-family: monospace;
-  font-size:12px;
-  padding:10px;
-}
-
-textarea:focus {
-  outline:none;
-  border-color:#01696f;
-  box-shadow:0 0 0 2px rgba(1,105,111,0.2);
-}
-
-/* ===== BOTONES ===== */
-.actions {
-  display:flex;
-  gap:10px;
-}
-
-.btn-primary {
-  background:#01696f;
-  color:white;
-  border:none;
-  border-radius:8px;
-  padding:10px;
-  flex:1;
-  font-weight:600;
-}
-
-.btn-secondary {
-  background:#eee;
-  border:none;
-  border-radius:8px;
-  padding:10px;
-  flex:1;
-}
-
-/* ===== PANEL ===== */
+/* PANEL BONITO */
 .panel {
   border-radius:12px;
   border:1px solid rgba(150,66,25,.2);
@@ -183,6 +67,7 @@ textarea:focus {
   padding:10px 14px;
   display:flex;
   justify-content:space-between;
+  align-items:center;
   font-weight:600;
   color:#964219;
 }
@@ -201,14 +86,14 @@ textarea:focus {
   cursor:pointer;
 }
 
-/* ===== PLACEHOLDER ===== */
+.hidden { display:none; }
+
+/* PLACEHOLDER */
 #placeholder {
   text-align:center;
-  color:#b0afa8;
-  margin-top:140px;
+  color:#888;
+  margin-top:100px;
 }
-
-.hidden { display:none; }
 
 </style>
 </head>
@@ -216,14 +101,13 @@ textarea:focus {
 <body>
 
 <div class="header">
-  <div class="header-left">
-    <div class="logo">🛡 Analizador de Trazas</div>
 
+  <div class="header-left">
+    <b>Analizador de Trazas</b>
     <div>
       <div class="badge">BETA V2</div>
       <div class="ver-detalles" id="btnDetalles">Ver detalles ▾</div>
     </div>
-
     <button class="btn-mini" id="btnActualizar">Actualizar</button>
   </div>
 
@@ -231,63 +115,26 @@ textarea:focus {
     Lectura <span id="jsonStatus">...</span><br>
     <a href="#" id="btnTabla">Tabla reglas</a>
   </div>
+
 </div>
 
 <div class="container">
 
   <div class="sidebar">
+    <b>Problemas de acceso</b><br>
+    <input type="checkbox" id="checkSaml"> Error SAML<br>
+    <input type="checkbox" id="checkBlanco"> Página en blanco<br><br>
 
-    <!-- ACCESO -->
-    <div class="card">
-      <div class="card-header">Problemas de acceso</div>
-      <div class="card-body">
+    <b>Traza</b><br>
+    <textarea style="width:100%;height:120px;"></textarea><br><br>
 
-        <label class="check">
-          <input type="checkbox" id="checkSaml">
-          <div>
-            <b>Error SAML</b><br>
-            <span style="font-size:12px;color:#6b6960">
-            Pantalla de error al autenticarse
-            </span>
-          </div>
-        </label>
-
-        <label class="check">
-          <input type="checkbox" id="checkBlanco">
-          <div>
-            <b>Página en blanco</b><br>
-            <span style="font-size:12px;color:#6b6960">
-            Pantalla vacía al acceder
-            </span>
-          </div>
-        </label>
-
-      </div>
-    </div>
-
-    <!-- TRAZA -->
-    <div class="card">
-      <div class="card-header">Traza SistraHelp</div>
-      <div class="card-body">
-        <div style="font-size:12px;color:#6b6960;margin-bottom:8px">
-          Pega aquí
-        </div>
-        <textarea placeholder="Pega la traza de SistraHelp aquí...
-
-Las trazas suelen mostrarse en orden reciente → antiguo."></textarea>
-      </div>
-    </div>
-
-    <!-- BOTONES -->
-    <div class="actions">
-      <button class="btn-primary" id="btnAnalizar">Analizar</button>
-      <button class="btn-secondary" id="btnLimpiar">Limpiar</button>
-    </div>
-
+    <button id="btnAnalizar">Analizar</button>
+    <button id="btnLimpiar">Limpiar</button>
   </div>
 
   <div class="main">
 
+    <!-- PANEL -->
     <div id="panel" class="panel hidden">
       <div class="panel-header">
         <span id="panelTitulo"></span>
@@ -297,18 +144,133 @@ Las trazas suelen mostrarse en orden reciente → antiguo."></textarea>
     </div>
 
     <div id="placeholder">
-      Pega una traza en el panel izquierdo y pulsa <b>Analizar</b>
+      Pega una traza y pulsa Analizar
     </div>
 
-    <div id="resultados" class="hidden">RESULTADOS</div>
+    <div id="resultados" class="hidden">
+      RESULTADOS
+    </div>
 
   </div>
-
 </div>
 
 <script>
-/* (misma lógica que ya tienes, no la toco para no romper nada) */
+
+/* PANEL (FIX correcto) */
+const panel = document.getElementById("panel");
+const panelTitulo = document.getElementById("panelTitulo");
+const panelContenido = document.getElementById("panelContenido");
+
+function abrirPanel(titulo, contenido) {
+  panel.classList.remove("hidden");
+  panelTitulo.innerText = titulo;
+  panelContenido.innerHTML = contenido;
+}
+
+function cerrarPanelFunc() {
+  panel.classList.add("hidden");
+}
+
+document.getElementById("btnCerrarPanel").onclick = cerrarPanelFunc;
+
+/* DETALLES */
+btnDetalles.onclick = () => {
+  abrirPanel("Novedades BETA", `
+  <ul>
+    <li>Nuevo panel único sin conflictos</li>
+    <li>Base limpia para motor</li>
+    <li>UI mejorada progresivamente</li>
+  </ul>
+  `);
+};
+
+/* TABLA */
+btnTabla.onclick = (e) => {
+  e.preventDefault();
+  abrirPanel("Tabla reglas", `
+  <ul>
+    <li>Reglas en desarrollo</li>
+    <li>Motor pendiente</li>
+  </ul>
+  `);
+};
+
+/* SAML (TEXTO COMPLETO RESPETADO) */
+checkSaml.onchange = () => {
+  if (checkSaml.checked) {
+    checkBlanco.checked = false;
+    abrirPanel("Información de acceso", `
+    <b>SAML 003002 (Authentication Failed: Detalle error: no certificate has been submitted)</b><br>
+    La pasarela de acceso no ha recibido un certificado digital válido para autenticarse.<br><br>
+
+    Causas habituales:<br>
+    - No se ha seleccionado ningún certificado<br>
+    - Certificado caducado o revocado<br>
+    - DNIe no detectado<br>
+    - Proxy/firewall bloqueando<br><br>
+
+    <b>SAML (Response is fail: Contraseña incorrecta)</b><br>
+    La autenticación con Cl@ve no se ha completado correctamente.<br>
+    - Contraseña incorrecta<br>
+    - Usar “Olvido de contraseña”
+    `);
+  } else cerrarPanelFunc();
+};
+
+/* PAGINA BLANCO */
+checkBlanco.onchange = () => {
+  if (checkBlanco.checked) {
+    checkSaml.checked = false;
+    abrirPanel("Información de acceso", `
+    <b>La página queda en blanco</b><br><br>
+
+    Puede ser problema de acceso o pasarela.<br><br>
+
+    Qué revisar:<br>
+    - Fallo de pasarela<br>
+    - Redirección incompleta<br>
+    - Navegador o antivirus bloqueando<br><br>
+
+    <b>Prueba:</b><br>
+    Acceder desde Carpeta Ciudadana GOB
+    `);
+  } else cerrarPanelFunc();
+};
+
+/* ANALIZAR */
+btnAnalizar.onclick = () => {
+  cerrarPanelFunc();
+  placeholder.style.display = "none";
+  resultados.classList.remove("hidden");
+};
+
+/* LIMPIAR */
+btnLimpiar.onclick = () => {
+  checkSaml.checked = false;
+  checkBlanco.checked = false;
+  cerrarPanelFunc();
+  resultados.classList.add("hidden");
+  placeholder.style.display = "";
+};
+
+/* ACTUALIZAR */
+btnActualizar.onclick = () => {
+  location.href = location.pathname + "?v=" + Date.now();
+};
+
+/* REGLAS */
+async function cargarReglas() {
+  try {
+    const r = await fetch("reglas.json?v=" + Date.now());
+    const d = await r.json();
+    jsonStatus.innerText = "v"+d.version+" ✓";
+  } catch {
+    jsonStatus.innerText = "local ⚠";
+  }
+}
+cargarReglas();
+
 </script>
 
 </body>
-</html>v
+</html>
