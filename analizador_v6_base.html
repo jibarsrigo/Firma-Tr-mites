@@ -2,185 +2,97 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Analizador de Trazas – V6</title>
+<title>Analizador V6</title>
 
 <style>
-
-/* ===== BASE ===== */
 body {
-  font-family: system-ui, sans-serif;
-  margin: 0;
+  font-family: system-ui;
   background: #f5f4f0;
-  color: #1e1c17;
+  margin: 0;
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header {
   height: 52px;
   display: flex;
   align-items: center;
   padding: 0 16px;
   background: white;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
+  border-bottom: 1px solid #ddd;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.logo {
-  font-weight: 600;
-}
-
-.beta-box {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+.header-left { display:flex; gap:12px; align-items:center;}
 
 .badge {
-  background: #01696f;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
+  background:#01696f;
+  color:white;
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:999px;
 }
 
 .ver-detalles {
-  font-size: 10px;
-  color: #01696f;
-  cursor: pointer;
-  text-decoration: underline dotted;
+  font-size:10px;
+  color:#01696f;
+  cursor:pointer;
 }
 
 .btn-mini {
-  font-size: 12px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(0,0,0,0.12);
-  background: #fafafa;
-  cursor: pointer;
-}
-
-.btn-mini:hover {
-  background: #f0f0f0;
+  border:1px solid #ddd;
+  background:#f5f5f5;
+  border-radius:999px;
+  padding:5px 10px;
+  cursor:pointer;
 }
 
 .header-right {
-  margin-left: auto;
-  text-align: right;
-  font-size: 12px;
+  margin-left:auto;
+  font-size:12px;
 }
 
-.ok { color: #2e6e14; }
-.warn { color: #964219; }
+/* LAYOUT */
+.container { display:flex; }
+.sidebar { width:300px; padding:14px; background:#faf9f7; }
+.main { flex:1; padding:16px; }
 
-/* ===== LAYOUT ===== */
-
-.container {
-  display: flex;
-  height: calc(100vh - 52px);
-}
-
-.sidebar {
-  width: 300px;
-  background: #faf9f7;
-  padding: 16px;
-  border-right: 1px solid rgba(0,0,0,0.08);
-}
-
-.main {
-  flex: 1;
-  padding: 16px 20px;
-}
-
-/* ===== CARDS ===== */
-
-.card {
-  background: white;
-  border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 14px;
-}
-
-/* ===== PANEL DINÁMICO (MEJORADO) ===== */
-
+/* PANEL BONITO */
 .panel {
-  border-radius: 12px;
-  border: 1px solid rgba(150,66,25,0.15);
-  background: linear-gradient(180deg, #fffaf5 0%, #fdf0e8 100%);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  overflow: hidden;
-  margin-bottom: 14px;
+  border-radius:12px;
+  border:1px solid rgba(150,66,25,.2);
+  background:#fdf0e8;
+  margin-bottom:12px;
 }
 
-.hidden {
-  display: none;
-}
-
-/* Header panel */
 .panel-header {
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #964219;
-  border-bottom: 1px solid rgba(150,66,25,0.12);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding:10px 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:600;
+  color:#964219;
 }
 
-/* Botón cerrar elegante */
-.btn-close {
-  background: none;
-  border: none;
-  font-size: 12px;
-  color: #6b6960;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 6px;
-}
-
-.btn-close:hover {
-  background: rgba(0,0,0,0.05);
-}
-
-/* Body panel */
 .panel-body {
-  padding: 12px 14px;
-  font-size: 12px;
-  line-height: 1.6;
+  padding:12px 14px;
+  font-size:13px;
+  line-height:1.6;
 }
 
-/* ===== PLACEHOLDER ===== */
-
-.placeholder {
-  text-align: center;
-  color: #b0afa8;
-  margin-top: 120px;
+.btn-close {
+  border:1px solid #ddd;
+  background:white;
+  border-radius:6px;
+  padding:2px 8px;
+  cursor:pointer;
 }
 
-/* ===== BOTONES ===== */
+.hidden { display:none; }
 
-button {
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
-
-#btnAnalizar {
-  background: #01696f;
-  color: white;
-}
-
-#btnLimpiar {
-  background: #eee;
+/* PLACEHOLDER */
+#placeholder {
+  text-align:center;
+  color:#888;
+  margin-top:100px;
 }
 
 </style>
@@ -188,71 +100,55 @@ button {
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
 
   <div class="header-left">
-
-    <div class="logo">🛡 Analizador de Trazas</div>
-
-    <div class="beta-box">
-      <span class="badge">BETA V2</span>
-      <span class="ver-detalles" id="btnDetalles">Ver detalles ▾</span>
+    <b>Analizador de Trazas</b>
+    <div>
+      <div class="badge">BETA V2</div>
+      <div class="ver-detalles" id="btnDetalles">Ver detalles ▾</div>
     </div>
-
-    <button class="btn-mini" id="btnActualizar">↻ Actualizar</button>
-
+    <button class="btn-mini" id="btnActualizar">Actualizar</button>
   </div>
 
   <div class="header-right">
-    <div>Lectura <span id="jsonStatus">...</span></div>
-    <div><a href="#" id="btnTabla">Tabla reglas</a></div>
+    Lectura <span id="jsonStatus">...</span><br>
+    <a href="#" id="btnTabla">Tabla reglas</a>
   </div>
 
 </div>
 
 <div class="container">
 
-  <!-- SIDEBAR -->
   <div class="sidebar">
+    <b>Problemas de acceso</b><br>
+    <input type="checkbox" id="checkSaml"> Error SAML<br>
+    <input type="checkbox" id="checkBlanco"> Página en blanco<br><br>
 
-    <div class="card">
-      <b>Problemas de acceso</b><br>
-      <input type="checkbox" id="checkSaml"> Error SAML<br>
-      <input type="checkbox" id="checkBlanco"> Página en blanco
-    </div>
-
-    <div class="card">
-      <b>Traza SistraHelp</b><br>
-      <textarea style="width:100%;height:120px"></textarea>
-    </div>
+    <b>Traza</b><br>
+    <textarea style="width:100%;height:120px;"></textarea><br><br>
 
     <button id="btnAnalizar">Analizar</button>
     <button id="btnLimpiar">Limpiar</button>
-
   </div>
 
-  <!-- MAIN -->
   <div class="main">
 
     <!-- PANEL -->
     <div id="panel" class="panel hidden">
-
       <div class="panel-header">
         <span id="panelTitulo"></span>
-        <button class="btn-close" id="cerrarPanel">Cerrar ✕</button>
+        <button class="btn-close" id="btnCerrarPanel">Cerrar ✕</button>
       </div>
-
       <div class="panel-body" id="panelContenido"></div>
-
     </div>
 
-    <div id="placeholder" class="placeholder">
-      Pega una traza en el panel izquierdo y pulsa <b>Analizar</b>
+    <div id="placeholder">
+      Pega una traza y pulsa Analizar
     </div>
 
     <div id="resultados" class="hidden">
-      RESULTADOS (siguiente fase)
+      RESULTADOS
     </div>
 
   </div>
@@ -260,69 +156,90 @@ button {
 
 <script>
 
-/* PANEL */
+/* PANEL (FIX correcto) */
+const panel = document.getElementById("panel");
+const panelTitulo = document.getElementById("panelTitulo");
+const panelContenido = document.getElementById("panelContenido");
 
-function mostrarPanel(titulo, contenido) {
+function abrirPanel(titulo, contenido) {
   panel.classList.remove("hidden");
-  placeholder.style.display = "none";
   panelTitulo.innerText = titulo;
   panelContenido.innerHTML = contenido;
 }
 
-function cerrarPanel() {
+function cerrarPanelFunc() {
   panel.classList.add("hidden");
-  placeholder.style.display = "";
 }
 
-/* ELEMENTOS */
+document.getElementById("btnCerrarPanel").onclick = cerrarPanelFunc;
 
-const panel = document.getElementById("panel");
-const panelTitulo = document.getElementById("panelTitulo");
-const panelContenido = document.getElementById("panelContenido");
-const placeholder = document.getElementById("placeholder");
-
-/* VER DETALLES */
+/* DETALLES */
 btnDetalles.onclick = () => {
-  mostrarPanel("Novedades BETA", `
-    <ul>
-      <li>Nuevo panel único (sin conflictos)</li>
-      <li>Estados UI simplificados</li>
-      <li>Preparado para motor</li>
-      <li>Mejor experiencia visual</li>
-    </ul>
+  abrirPanel("Novedades BETA", `
+  <ul>
+    <li>Nuevo panel único sin conflictos</li>
+    <li>Base limpia para motor</li>
+    <li>UI mejorada progresivamente</li>
+  </ul>
   `);
 };
 
 /* TABLA */
 btnTabla.onclick = (e) => {
   e.preventDefault();
-  mostrarPanel("Tabla de reglas", `
-    <ul>
-      <li>SAML</li>
-      <li>Página en blanco</li>
-      <li>Motor base</li>
-    </ul>
+  abrirPanel("Tabla reglas", `
+  <ul>
+    <li>Reglas en desarrollo</li>
+    <li>Motor pendiente</li>
+  </ul>
   `);
 };
 
-/* CHECKS */
+/* SAML (TEXTO COMPLETO RESPETADO) */
 checkSaml.onchange = () => {
   if (checkSaml.checked) {
     checkBlanco.checked = false;
-    mostrarPanel("Información de acceso", `<b>Error SAML detectado</b>`);
-  } else cerrarPanel();
+    abrirPanel("Información de acceso", `
+    <b>SAML 003002 (Authentication Failed: Detalle error: no certificate has been submitted)</b><br>
+    La pasarela de acceso no ha recibido un certificado digital válido para autenticarse.<br><br>
+
+    Causas habituales:<br>
+    - No se ha seleccionado ningún certificado<br>
+    - Certificado caducado o revocado<br>
+    - DNIe no detectado<br>
+    - Proxy/firewall bloqueando<br><br>
+
+    <b>SAML (Response is fail: Contraseña incorrecta)</b><br>
+    La autenticación con Cl@ve no se ha completado correctamente.<br>
+    - Contraseña incorrecta<br>
+    - Usar “Olvido de contraseña”
+    `);
+  } else cerrarPanelFunc();
 };
 
+/* PAGINA BLANCO */
 checkBlanco.onchange = () => {
   if (checkBlanco.checked) {
     checkSaml.checked = false;
-    mostrarPanel("Información de acceso", `<b>Página en blanco</b>`);
-  } else cerrarPanel();
+    abrirPanel("Información de acceso", `
+    <b>La página queda en blanco</b><br><br>
+
+    Puede ser problema de acceso o pasarela.<br><br>
+
+    Qué revisar:<br>
+    - Fallo de pasarela<br>
+    - Redirección incompleta<br>
+    - Navegador o antivirus bloqueando<br><br>
+
+    <b>Prueba:</b><br>
+    Acceder desde Carpeta Ciudadana GOB
+    `);
+  } else cerrarPanelFunc();
 };
 
 /* ANALIZAR */
 btnAnalizar.onclick = () => {
-  cerrarPanel();
+  cerrarPanelFunc();
   placeholder.style.display = "none";
   resultados.classList.remove("hidden");
 };
@@ -331,32 +248,27 @@ btnAnalizar.onclick = () => {
 btnLimpiar.onclick = () => {
   checkSaml.checked = false;
   checkBlanco.checked = false;
-  cerrarPanel();
+  cerrarPanelFunc();
   resultados.classList.add("hidden");
   placeholder.style.display = "";
 };
-
-cerrarPanel.onclick = cerrarPanel;
-
-/* REGLAS */
-async function cargarReglas() {
-  try {
-    const r = await fetch("reglas.json?v=" + Date.now());
-    const data = await r.json();
-    jsonStatus.innerText = "reglas.json v" + data.version + " ✓";
-    jsonStatus.className = "ok";
-  } catch {
-    jsonStatus.innerText = "reglas internas ⚠";
-    jsonStatus.className = "warn";
-  }
-}
-
-cargarReglas();
 
 /* ACTUALIZAR */
 btnActualizar.onclick = () => {
   location.href = location.pathname + "?v=" + Date.now();
 };
+
+/* REGLAS */
+async function cargarReglas() {
+  try {
+    const r = await fetch("reglas.json?v=" + Date.now());
+    const d = await r.json();
+    jsonStatus.innerText = "v"+d.version+" ✓";
+  } catch {
+    jsonStatus.innerText = "local ⚠";
+  }
+}
+cargarReglas();
 
 </script>
 
