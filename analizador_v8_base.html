@@ -368,13 +368,19 @@ btnAnalizar.onclick = () => {
   // ocultar resultados previos
   resultados.classList.add("hidden");
 
-  // validar método
+  // 1. validar método
   if (!metodoClave.checked && !metodoCert.checked) {
     abrirPanel("Validación", "Debe seleccionar método");
     return;
   }
 
-  // validar traza
+  // 2. validar sistema (ANTES que la traza)
+  if (metodoCert.checked && !sisPC.checked && !sisMovil.checked) {
+    abrirPanel("Validación", "Debe seleccionar sistema");
+    return;
+  }
+
+  // 3. validar traza
   const texto = document.querySelector("textarea").value.trim();
 
   if (!texto) {
@@ -384,12 +390,6 @@ btnAnalizar.onclick = () => {
 
   if (!texto.includes("TR_")) {
     abrirPanel("Validación", `Esto no es una traza: "${texto}"`);
-    return;
-  }
-
-  // validar sistema SOLO si certificado
-  if (metodoCert.checked && !sisPC.checked && !sisMovil.checked) {
-    abrirPanel("Validación", "Debe seleccionar sistema");
     return;
   }
 
