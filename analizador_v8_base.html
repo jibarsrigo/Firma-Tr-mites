@@ -274,6 +274,11 @@ const btnActualizar = document.getElementById("btnActualizar");
 const jsonStatus = document.getElementById("jsonStatus");
 const placeholder = document.getElementById("placeholder");
 const resultados = document.getElementById("resultados");
+const metodoClave = document.getElementById("metodoClave");
+const metodoCert = document.getElementById("metodoCert");
+const bloqueSistema = document.getElementById("bloqueSistema");
+const sisPC = document.getElementById("sisPC");
+const sisMovil = document.getElementById("sisMovil");
 
 /* PANEL */
 const panel = document.getElementById("panel");
@@ -389,7 +394,15 @@ async function cargarReglas() {
   }
 }
 cargarReglas();
+metodoClave.onchange = () => {
+  bloqueSistema.style.display = "none";
+  sisPC.checked = false;
+  sisMovil.checked = false;
+};
 
+metodoCert.onchange = () => {
+  bloqueSistema.style.display = "block";
+};
 </script>
 
 </body>
