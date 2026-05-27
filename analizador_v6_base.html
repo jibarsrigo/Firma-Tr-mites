@@ -6,21 +6,23 @@
 <title>Analizador de Trazas – V6</title>
 
 <style>
+
+/* ===== BASE ===== */
 body {
-  font-family: Arial, sans-serif;
+  font-family: system-ui, sans-serif;
   margin: 0;
   background: #f5f4f0;
+  color: #1e1c17;
 }
 
 /* ===== HEADER ===== */
-
 .header {
   height: 52px;
   display: flex;
   align-items: center;
   padding: 0 16px;
   background: white;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 
 .header-left {
@@ -30,13 +32,9 @@ body {
 }
 
 .logo {
-  display: flex;
-  align-items: center;
-  gap: 6px;
   font-weight: 600;
 }
 
-/* Badge beta */
 .beta-box {
   display: flex;
   flex-direction: column;
@@ -47,9 +45,9 @@ body {
   background: #01696f;
   color: white;
   padding: 2px 8px;
-  border-radius: 20px;
+  border-radius: 999px;
   font-size: 10px;
-  width: fit-content;
+  font-weight: 700;
 }
 
 .ver-detalles {
@@ -59,18 +57,17 @@ body {
   text-decoration: underline dotted;
 }
 
-/* Botón actualizar */
 .btn-mini {
   font-size: 12px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid #ddd;
-  background: #f5f5f5;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #fafafa;
   cursor: pointer;
 }
 
 .btn-mini:hover {
-  background: #eee;
+  background: #f0f0f0;
 }
 
 .header-right {
@@ -79,8 +76,8 @@ body {
   font-size: 12px;
 }
 
-.ok { color: green; }
-.warn { color: orange; }
+.ok { color: #2e6e14; }
+.warn { color: #964219; }
 
 /* ===== LAYOUT ===== */
 
@@ -92,64 +89,98 @@ body {
 .sidebar {
   width: 300px;
   background: #faf9f7;
-  padding: 12px;
-  border-right: 1px solid #ddd;
+  padding: 16px;
+  border-right: 1px solid rgba(0,0,0,0.08);
 }
 
 .main {
   flex: 1;
-  padding: 20px;
+  padding: 16px 20px;
 }
 
 /* ===== CARDS ===== */
 
 .card {
   background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
-  margin-bottom: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
 }
 
-/* ===== BOTONES ===== */
-
-button {
-  padding: 8px 12px;
-  margin-top: 6px;
-  cursor: pointer;
-}
-
-/* ===== PANEL DINÁMICO ===== */
+/* ===== PANEL DINÁMICO (MEJORADO) ===== */
 
 .panel {
-  border: 1px solid #e0c4ab;
-  background: #fffaf5;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(150,66,25,0.15);
+  background: linear-gradient(180deg, #fffaf5 0%, #fdf0e8 100%);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  overflow: hidden;
+  margin-bottom: 14px;
 }
 
 .hidden {
   display: none;
 }
 
+/* Header panel */
 .panel-header {
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #964219;
+  border-bottom: 1px solid rgba(150,66,25,0.12);
   display: flex;
   justify-content: space-between;
-  font-weight: bold;
-  margin-bottom: 8px;
+  align-items: center;
+}
+
+/* Botón cerrar elegante */
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #6b6960;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.btn-close:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* Body panel */
+.panel-body {
+  padding: 12px 14px;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 /* ===== PLACEHOLDER ===== */
 
 .placeholder {
   text-align: center;
-  color: #999;
+  color: #b0afa8;
   margin-top: 120px;
 }
 
-.active {
-  background: #e0f0ee;
+/* ===== BOTONES ===== */
+
+button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+#btnAnalizar {
+  background: #01696f;
+  color: white;
+}
+
+#btnLimpiar {
+  background: #eee;
 }
 
 </style>
@@ -157,28 +188,22 @@ button {
 
 <body>
 
-<!-- ===== HEADER ===== -->
+<!-- HEADER -->
 <div class="header">
 
   <div class="header-left">
 
-    <!-- LOGO -->
-    <div class="logo">
-      🛡 Analizador de Trazas
-    </div>
+    <div class="logo">🛡 Analizador de Trazas</div>
 
-    <!-- BETA + DETALLES -->
     <div class="beta-box">
       <span class="badge">BETA V2</span>
       <span class="ver-detalles" id="btnDetalles">Ver detalles ▾</span>
     </div>
 
-    <!-- ACTUALIZAR -->
     <button class="btn-mini" id="btnActualizar">↻ Actualizar</button>
 
   </div>
 
-  <!-- DERECHA -->
   <div class="header-right">
     <div>Lectura <span id="jsonStatus">...</span></div>
     <div><a href="#" id="btnTabla">Tabla reglas</a></div>
@@ -186,22 +211,15 @@ button {
 
 </div>
 
-<!-- ===== CONTENT ===== -->
 <div class="container">
 
   <!-- SIDEBAR -->
   <div class="sidebar">
 
     <div class="card">
-      <b>Problemas de acceso</b>
-
-      <div>
-        <input type="checkbox" id="checkSaml"> Error SAML
-      </div>
-
-      <div>
-        <input type="checkbox" id="checkBlanco"> Página en blanco
-      </div>
+      <b>Problemas de acceso</b><br>
+      <input type="checkbox" id="checkSaml"> Error SAML<br>
+      <input type="checkbox" id="checkBlanco"> Página en blanco
     </div>
 
     <div class="card">
@@ -217,21 +235,22 @@ button {
   <!-- MAIN -->
   <div class="main">
 
-    <!-- PANEL DINÁMICO -->
+    <!-- PANEL -->
     <div id="panel" class="panel hidden">
+
       <div class="panel-header">
         <span id="panelTitulo"></span>
-        <button id="cerrarPanel">Cerrar ✕</button>
+        <button class="btn-close" id="cerrarPanel">Cerrar ✕</button>
       </div>
-      <div id="panelContenido"></div>
+
+      <div class="panel-body" id="panelContenido"></div>
+
     </div>
 
-    <!-- PLACEHOLDER -->
     <div id="placeholder" class="placeholder">
       Pega una traza en el panel izquierdo y pulsa <b>Analizar</b>
     </div>
 
-    <!-- RESULTADOS -->
     <div id="resultados" class="hidden">
       RESULTADOS (siguiente fase)
     </div>
@@ -241,105 +260,101 @@ button {
 
 <script>
 
-/* ===== PANEL DINÁMICO ===== */
+/* PANEL */
 
 function mostrarPanel(titulo, contenido) {
-  document.getElementById("panel").classList.remove("hidden");
-  document.getElementById("panelTitulo").innerText = titulo;
-  document.getElementById("panelContenido").innerHTML = contenido;
+  panel.classList.remove("hidden");
+  placeholder.style.display = "none";
+  panelTitulo.innerText = titulo;
+  panelContenido.innerHTML = contenido;
 }
 
 function cerrarPanel() {
-  document.getElementById("panel").classList.add("hidden");
+  panel.classList.add("hidden");
+  placeholder.style.display = "";
 }
 
-/* ===== VER DETALLES ===== */
+/* ELEMENTOS */
 
-document.getElementById("btnDetalles").onclick = () => {
+const panel = document.getElementById("panel");
+const panelTitulo = document.getElementById("panelTitulo");
+const panelContenido = document.getElementById("panelContenido");
+const placeholder = document.getElementById("placeholder");
+
+/* VER DETALLES */
+btnDetalles.onclick = () => {
   mostrarPanel("Novedades BETA", `
     <ul>
       <li>Nuevo panel único (sin conflictos)</li>
       <li>Estados UI simplificados</li>
-      <li>Preparado para nuevo motor de análisis</li>
+      <li>Preparado para motor</li>
       <li>Mejor experiencia visual</li>
     </ul>
   `);
 };
 
-/* ===== TABLA REGLAS ===== */
-
-document.getElementById("btnTabla").onclick = (e) => {
+/* TABLA */
+btnTabla.onclick = (e) => {
   e.preventDefault();
   mostrarPanel("Tabla de reglas", `
     <ul>
-      <li>Detección error SAML</li>
+      <li>SAML</li>
       <li>Página en blanco</li>
-      <li>Clasificación de flujo</li>
-      <li>Motor en desarrollo</li>
+      <li>Motor base</li>
     </ul>
   `);
 };
 
-/* ===== CHECKS EXCLUSIVOS ===== */
-
-const checkSaml = document.getElementById("checkSaml");
-const checkBlanco = document.getElementById("checkBlanco");
-
+/* CHECKS */
 checkSaml.onchange = () => {
   if (checkSaml.checked) {
     checkBlanco.checked = false;
-    mostrarPanel("Información de acceso", "Error SAML detectado");
+    mostrarPanel("Información de acceso", `<b>Error SAML detectado</b>`);
   } else cerrarPanel();
 };
 
 checkBlanco.onchange = () => {
   if (checkBlanco.checked) {
     checkSaml.checked = false;
-    mostrarPanel("Información de acceso", "Página en blanco");
+    mostrarPanel("Información de acceso", `<b>Página en blanco</b>`);
   } else cerrarPanel();
 };
 
-/* ===== ANALIZAR ===== */
-
-document.getElementById("btnAnalizar").onclick = () => {
+/* ANALIZAR */
+btnAnalizar.onclick = () => {
   cerrarPanel();
-  document.getElementById("placeholder").classList.add("hidden");
-  document.getElementById("resultados").classList.remove("hidden");
+  placeholder.style.display = "none";
+  resultados.classList.remove("hidden");
 };
 
-/* ===== LIMPIAR ===== */
-
-document.getElementById("btnLimpiar").onclick = () => {
+/* LIMPIAR */
+btnLimpiar.onclick = () => {
   checkSaml.checked = false;
   checkBlanco.checked = false;
   cerrarPanel();
-  document.getElementById("resultados").classList.add("hidden");
-  document.getElementById("placeholder").classList.remove("hidden");
+  resultados.classList.add("hidden");
+  placeholder.style.display = "";
 };
 
-/* ===== CERRAR ===== */
+cerrarPanel.onclick = cerrarPanel;
 
-document.getElementById("cerrarPanel").onclick = cerrarPanel;
-
-/* ===== CARGA REGLAS ===== */
-
+/* REGLAS */
 async function cargarReglas() {
   try {
     const r = await fetch("reglas.json?v=" + Date.now());
-    const datos = await r.json();
-    document.getElementById("jsonStatus").innerText = "reglas.json v" + datos.version + " ✓";
-    document.getElementById("jsonStatus").className = "ok";
+    const data = await r.json();
+    jsonStatus.innerText = "reglas.json v" + data.version + " ✓";
+    jsonStatus.className = "ok";
   } catch {
-    document.getElementById("jsonStatus").innerText = "reglas internas ⚠";
-    document.getElementById("jsonStatus").className = "warn";
+    jsonStatus.innerText = "reglas internas ⚠";
+    jsonStatus.className = "warn";
   }
 }
 
 cargarReglas();
 
-/* ===== ACTUALIZAR ===== */
-
-document.getElementById("btnActualizar").onclick = () => {
+/* ACTUALIZAR */
+btnActualizar.onclick = () => {
   location.href = location.pathname + "?v=" + Date.now();
 };
 
