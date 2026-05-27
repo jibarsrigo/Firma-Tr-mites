@@ -287,7 +287,21 @@ btnTabla.onclick = (e) => {
 checkSaml.onchange = () => {
   if (checkSaml.checked) {
     checkBlanco.checked = false;
-    abrirPanel("Información de acceso", `<b>Error SAML</b>`);
+    abrirPanel("El ciudadano ve error SAML", `
+<b>SAML 003002 (Authentication Failed: Detalle error: no certificate has been submitted)</b><br>
+La pasarela de acceso no ha recibido un certificado digital válido para autenticarse. Causas habituales:<br><br>
+
+No se ha seleccionado ningún certificado al acceder o el navegador no envía correctamente el certificado.<br><br>
+El certificado está caducado, revocado o no es válido.<br><br>
+El equipo no detecta correctamente el DNIe o el lector no funciona bien.<br><br>
+Algún proxy, firewall o antivirus está bloqueando la comunicación con la pasarela.<br><br>
+
+<b>SAML (Response is fail: Contraseña incorrecta. Si no recuerda su contraseña, acceda al servicio de “Olvido de contraseña”.)</b><br>
+La autenticación con Cl@ve no se ha completado correctamente porque la contraseña introducida no es válida. Causas habituales:<br><br>
+
+La contraseña de Cl@ve Permanente es incorrecta.<br>
+Es necesario restablecerla desde la opción “Olvido de contraseña”.
+    `);
   } else cerrarPanelFunc();
 };
 
@@ -295,10 +309,22 @@ checkSaml.onchange = () => {
 checkBlanco.onchange = () => {
   if (checkBlanco.checked) {
     checkSaml.checked = false;
-    abrirPanel("Información de acceso", `<b>Página en blanco</b>`);
+    abrirPanel("La página queda en blanco", `
+La página queda en blanco<br><br>
+
+Si al acceder el ciudadano ve la página en blanco, debe considerarse primero como un posible problema de acceso o de pasarela. En estos casos, es posible que el ciudadano no llegue a entrar realmente en el trámite y que no se genere traza útil en SistraHelp.<br><br>
+
+Qué revisar:<br>
+- Puede estar fallando la pasarela de acceso.<br>
+- Puede haberse producido una redirección incompleta o fallida tras la identificación.<br>
+- El navegador, una extensión, un proxy, firewall o antivirus pueden estar bloqueando la carga correcta de la página.<br><br>
+
+Prueba recomendada:<br>
+Conviene probar a acceder a Carpeta Ciudadana GOB para comprobar si la pasarela carga correctamente allí. Si tampoco carga o el comportamiento es similar, la orientación principal debe ser problema de acceso/pasarela, más que de firma o del trámite.
+    `);
   } else cerrarPanelFunc();
 };
-
+  
 /* ANALIZAR */
 btnAnalizar.onclick = () => {
   cerrarPanelFunc();
