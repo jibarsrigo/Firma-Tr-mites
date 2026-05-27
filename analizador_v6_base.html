@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analizador de Trazas – V6 base</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f5f4f0;
+}
+
+/* HEADER */
+.header {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.header-right {
+  margin-left: auto;
+  text-align: right;
+  font-size: 12px;
+}
+
+.badge {
+  background: #01696f;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+}
+
+/* LAYOUT */
+.container {
+  display: flex;
+  height: calc(100vh - 52px);
+}
+
+.sidebar {
+  width: 300px;
+  background: #faf9f7;
+  padding: 12px;
+  border-right: 1px solid #ddd;
+}
+
+.main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* CARDS */
+.card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 12px;
+}
+
+/* BOTONES */
+button {
+  padding: 8px 12px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+
+/* PANEL DINÁMICO */
+.panel {
+  border: 1px solid #e0c4ab;
+  background: #fffaf5;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.panel.hidden {
+  display: none;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+/* PLACEHOLDER */
+.placeholder {
+  text-align: center;
+  color: #999;
+  margin-top: 100px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* CHECK CARD ACTIVE */
+.active {
+  background: #e0f0ee;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  Analizador de Trazas <span class="badge">BETA V6</span>
+
+  <div class="header-right">
+    <div>Lectura <span id="jsonStatus">...</span></div>
+    <div><a href="#" id="btnTabla">Tabla reglas</a></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="card">
+      <b>Problemas de acceso</b>
+
+      <div id="cardSaml">
+        <input type="checkbox" id="checkSaml"> Error SAML
+      </div>
+
+      <div id="cardBlanco">
+        <input type="checkbox" id="checkBlanco"> Página en blanco
+      </div>
+    </div>
+
+    <div class="card">
+      <b>Traza SistraHelp</b><br>
+      <textarea style="width:100%;height:120px"></textarea>
+    </div>
+
+    <button id="btnAnalizar">Analizar</button>
+    <button id="btnLimpiar">Limpiar</button>
+
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- PANEL DINÁMICO -->
+    <div id="panel" class="panel hidden">
+      <div class="panel-header">
+        <span id="panelTitulo"></span>
+        <button id="cerrarPanel">Cerrar ✕</button>
+      </div>
+      <div id="panelContenido"></div>
+    </div>
+
+    <!-- PLACEHOLDER -->
+    <div id="placeholder" class="placeholder">
+      Pega una traza en el panel izquierdo y pulsa <b>Analizar</b>
+    </div>
+
+    <!-- RESULTADOS (vacío por ahora) -->
+    <div id="resultados" class="hidden">
+      RESULTADOS AQUÍ
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+/* ========= PANEL DINÁMICO ========= */
+
+function mostrarPanel(titulo, contenido) {
+  document.getElementById("panel").classList.remove("hidden");
+  document.getElementById("panelTitulo").innerText = titulo;
+  document.getElementById("panelContenido").innerHTML = contenido;
+}
+
+function cerrarPanel() {
+  document.getElementById("panel").classList.add("hidden");
+}
+
+/* ========= CHECKS EXCLUSIVOS ========= */
+
+const checkSaml = document.getElementById("checkSaml");
+const checkBlanco = document.getElementById("checkBlanco");
+
+checkSaml.addEventListener("change", () => {
+  if (checkSaml.checked) {
+    checkBlanco.checked = false;
+    mostrarPanel("Información de acceso", `
+      <b>Error SAML</b><br><br>
+      La pasarela no ha recibido un certificado válido.<br>
+      • No seleccionó certificado<br>
+      • Certificado caducado<br>
+      • DNIe no detectado<br>
+    `);
+  } else {
+    cerrarPanel();
+  }
+});
+
+checkBlanco.addEventListener("change", () => {
+  if (checkBlanco.checked) {
+    checkSaml.checked = false;
+    mostrarPanel("Información de acceso", `
+      <b>Página en blanco</b><br><br>
+      Posible fallo de acceso:<br>
+      • Probar Carpeta Ciudadana<br>
+      • Revisar VPN/proxy<br>
+    `);
+  } else {
+    cerrarPanel();
+  }
+});
+
+/* ========= VER DETALLES / TABLA ========= */
+
+document.getElementById("btnTabla").onclick = (e) => {
+  e.preventDefault();
+  mostrarPanel("Tabla de reglas", `
+    <ul>
+      <li>Detección de errores SAML</li>
+      <li>Detección de página en blanco</li>
+      <li>Clasificación básica de trazas</li>
+      <li>Preparado para motor de análisis</li>
+    </ul>
+  `);
+};
+
+/* ========= ANALIZAR ========= */
+
+document.getElementById("btnAnalizar").onclick = () => {
+  cerrarPanel(); // desaparecen TODOS los paneles
+  document.getElementById("placeholder").classList.add("hidden");
+  document.getElementById("resultados").classList.remove("hidden");
+};
+
+/* ========= LIMPIAR ========= */
+
+document.getElementById("btnLimpiar").onclick = () => {
+  checkSaml.checked = false;
+  checkBlanco.checked = false;
+  cerrarPanel();
+  document.getElementById("resultados").classList.add("hidden");
+  document.getElementById("placeholder").classList.remove("hidden");
+};
+
+/* ========= CERRAR PANEL ========= */
+
+document.getElementById("cerrarPanel").onclick = cerrarPanel;
+
+/* ========= CARGA REGLAS ========= */
+
+let reglasDB = null;
+let source = "loading";
+
+async function cargarReglas() {
+  try {
+    const r = await fetch("reglas.json?v=" + Date.now());
+    if (!r.ok) throw "error";
+    reglasDB = await r.json();
+    source = "json";
+  } catch {
+    reglasDB = { version: "embed" };
+    source = "embed";
+  }
+
+  const el = document.getElementById("jsonStatus");
+
+  if (source === "json") {
+    el.innerText = "reglas.json v" + reglasDB.version + " ✓";
+    el.style.color = "green";
+  } else {
+    el.innerText = "reglas internas ⚠";
+    el.style.color = "orange";
+  }
+}
+
+cargarReglas();
+
+/* ========= ACTUALIZAR ========= */
+
+function actualizar() {
+  location.href = location.pathname + "?v=" + Date.now();
+}
+
+</script>
+
+</body>
+</html>
