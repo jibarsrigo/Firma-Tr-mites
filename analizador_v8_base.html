@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Analizador V6</title>
+
+<style>
+body { font-family: system-ui; background:#f5f4f0; margin:0; color:#1e1c17; }
+.header { height:52px; display:flex; align-items:center; padding:0 18px; background:white; border-bottom:1px solid rgba(0,0,0,0.08);}
+.header-left { display:flex; gap:14px; align-items:center;}
+.badge { background:#01696f;color:white;font-size:10px;padding:2px 8px;border-radius:999px;}
+.ver-detalles { font-size:11px;color:#01696f;cursor:pointer;}
+.btn-mini { border:1px solid rgba(0,0,0,0.12);background:#fafafa;border-radius:999px;padding:6px 12px;cursor:pointer;}
+.header-right { margin-left:auto;font-size:12px;color:#6b6960;}
+
+.container { display:flex;}
+.sidebar { width:320px;padding:16px;background:#faf9f7;border-right:1px solid rgba(0,0,0,0.08);}
+.main { flex:1;padding:18px;}
+
+.card { background:white;border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:12px;margin-bottom:14px;}
+
+.check { display:flex;gap:10px;border:1px solid rgba(0,0,0,0.08);border-radius:8px;padding:8px;margin-bottom:6px;}
+
+textarea { width:100%;height:140px;border-radius:10px;border:1px solid rgba(0,0,0,0.1);padding:10px;font-family: monospace;}
+textarea:focus { outline:none;border-color:#01696f;}
+
+.actions { display:flex;gap:10px;}
+#btnAnalizar { background:#01696f;color:white;border:none;border-radius:8px;padding:10px;flex:1;}
+#btnLimpiar { background:#eee;border:none;border-radius:8px;padding:10px;flex:1;}
+
+.panel { border-radius:12px;border:1px solid rgba(150,66,25,.2);background:#fdf0e8;margin-bottom:12px;}
+.panel-header { padding:10px 14px;display:flex;justify-content:space-between;font-weight:600;color:#964219;}
+.panel-body { padding:12px 14px;font-size:13px;}
+.btn-close { border:1px solid rgba(0,0,0,0.1);background:white;border-radius:6px;padding:2px 8px;cursor:pointer;}
+.hidden { display:none;}
+
+#placeholder { text-align:center;color:#999;margin-top:120px;}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <b>Analizador de Trazas</b>
+    <div>
+      <div class="badge">BETA V2</div>
+      <div class="ver-detalles" id="btnDetalles">Ver detalles ▾</div>
+    </div>
+    <button class="btn-mini" id="btnActualizar">Actualizar</button>
+  </div>
+
+  <div class="header-right">
+    Lectura <span id="jsonStatus">...</span><br>
+    <a href="#" id="btnTabla">Tabla reglas</a>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+
+<div class="card">
+<b>Problemas de acceso</b><br><br>
+
+<label class="check">
+<input type="checkbox" id="checkSaml"> Error SAML
+</label>
+
+<label class="check">
+<input type="checkbox" id="checkBlanco"> Página en blanco
+</label>
+</div>
+
+<div class="card">
+<b>Traza</b><br><br>
+
+<textarea placeholder="Pega la traza aquí..."></textarea>
+
+<br><br>
+
+<b>Método</b><br><br>
+
+<label class="check">
+<input type="radio" name="metodo" id="metodoClave"> Cl@ve
+</label>
+
+<label class="check">
+<input type="radio" name="metodo" id="metodoCert"> Certificado local
+</label>
+
+<div id="bloqueSistema" style="display:none; margin-top:10px;">
+<b>Sistema</b><br><br>
+
+<label class="check">
+<input type="radio" name="sistema" id="sisPC">
+<div>
+Ordenador<br>
+<span style="font-size:11px;color:#777;">Windows / Mac / Linux</span>
+</div>
+</label>
+
+<label class="check">
+<input type="radio" name="sistema" id="sisMovil">
+<div>
+Dispositivo móvil<br>
+<span style="font-size:11px;color:#777;">Android / iPhone / iPad</span>
+</div>
+</label>
+
+</div>
+</div>
+
+<div class="actions">
+<button id="btnAnalizar">Analizar</button>
+<button id="btnLimpiar">Limpiar</button>
+</div>
+
+</div>
+
+<div class="main">
+
+<div id="panel" class="panel hidden">
+<div class="panel-header">
+<span id="panelTitulo"></span>
+<button class="btn-close" id="btnCerrarPanel">Cerrar ✕</button>
+</div>
+<div class="panel-body" id="panelContenido"></div>
+</div>
+
+<div id="placeholder">
+Pega una traza y pulsa Analizar
+</div>
+
+<div id="resultados" class="hidden">RESULTADOS</div>
+
+</div>
+</div>
+
+<script>
+
+/* FIX */
+const btnDetalles = document.getElementById("btnDetalles");
+const btnTabla = document.getElementById("btnTabla");
+const checkSaml = document.getElementById("checkSaml");
+const checkBlanco = document.getElementById("checkBlanco");
+const btnAnalizar = document.getElementById("btnAnalizar");
+const btnLimpiar = document.getElementById("btnLimpiar");
+const btnActualizar = document.getElementById("btnActualizar");
+const jsonStatus = document.getElementById("jsonStatus");
+const placeholder = document.getElementById("placeholder");
+const resultados = document.getElementById("resultados");
+
+const panel = document.getElementById("panel");
+const panelTitulo = document.getElementById("panelTitulo");
+const panelContenido = document.getElementById("panelContenido");
+
+function abrirPanel(titulo, contenido) {
+  panel.classList.remove("hidden");
+  panelTitulo.innerText = titulo;
+  panelContenido.innerHTML = contenido;
+}
+
+function cerrarPanelFunc() {
+  panel.classList.add("hidden");
+}
+
+document.getElementById("btnCerrarPanel").onclick = cerrarPanelFunc;
+
+/* MÉTODO + SISTEMA */
+const metodoClave = document.getElementById("metodoClave");
+const metodoCert = document.getElementById("metodoCert");
+const bloqueSistema = document.getElementById("bloqueSistema");
+const sisPC = document.getElementById("sisPC");
+const sisMovil = document.getElementById("sisMovil");
+
+metodoClave.onchange = () => {
+  bloqueSistema.style.display = "none";
+  sisPC.checked = false;
+  sisMovil.checked = false;
+};
+
+metodoCert.onchange = () => {
+  bloqueSistema.style.display = "block";
+};
+
+/* ANALIZAR (UNICO) */
+btnAnalizar.onclick = () => {
+
+  if (!metodoClave.checked && !metodoCert.checked) {
+    abrirPanel("Validación", "Debe seleccionar método");
+    return;
+  }
+
+  const texto = document.querySelector("textarea").value.trim();
+
+  if (!texto) {
+    abrirPanel("Validación", "Todavía no ha pegado trazas");
+    return;
+  }
+
+  if (!texto.includes("TR_")) {
+    abrirPanel("Validación", `Esto no es una traza: "${texto}"`);
+    return;
+  }
+
+  if (metodoCert.checked && !sisPC.checked && !sisMovil.checked) {
+    abrirPanel("Validación", "Debe seleccionar sistema");
+    return;
+  }
+
+  cerrarPanelFunc();
+  placeholder.style.display = "none";
+  resultados.classList.remove("hidden");
+};
+
+/* LIMPIAR */
+btnLimpiar.onclick = () => {
+  checkSaml.checked = false;
+  checkBlanco.checked = false;
+  metodoClave.checked = false;
+  metodoCert.checked = false;
+  sisPC.checked = false;
+  sisMovil.checked = false;
+  bloqueSistema.style.display = "none";
+  cerrarPanelFunc();
+  resultados.classList.add("hidden");
+  placeholder.style.display = "";
+};
+
+/* TABLA */
+btnTabla.onclick = (e) => {
+  e.preventDefault();
+  abrirPanel("Tabla reglas", `<ul><li>Reglas en desarrollo</li></ul>`);
+};
+
+/* DETALLES */
+btnDetalles.onclick = () => {
+  abrirPanel("Novedades BETA", `<ul><li>Panel dinámico</li></ul>`);
+};
+
+/* REGLAS */
+async function cargarReglas() {
+  try {
+    const r = await fetch("reglas.json?v=" + Date.now());
+    const d = await r.json();
+    jsonStatus.innerText = "v"+d.version+" ✓";
+  } catch {
+    jsonStatus.innerText = "local ⚠";
+  }
+}
+cargarReglas();
+
+</script>
+
+</body>
+</html>
