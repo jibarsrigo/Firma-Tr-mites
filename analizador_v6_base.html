@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Analizador de Trazas – V6 base</title>
+<title>Analizador de Trazas – V6</title>
 
 <style>
 body {
@@ -20,6 +20,12 @@ body {
   padding: 0 16px;
   background: white;
   border-bottom: 1px solid #ddd;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .header-right {
@@ -94,14 +100,13 @@ button {
 .placeholder {
   text-align: center;
   color: #999;
-  margin-top: 100px;
+  margin-top: 120px;
 }
 
 .hidden {
   display: none;
 }
 
-/* CHECK CARD ACTIVE */
 .active {
   background: #e0f0ee;
 }
@@ -112,12 +117,18 @@ button {
 
 <!-- HEADER -->
 <div class="header">
-  Analizador de Trazas <span class="badge">BETA V6</span>
+
+  <div class="header-left">
+    Analizador de Trazas
+    <span class="badge">BETA V6</span>
+    <a href="#" id="btnDetalles">Ver detalles ▾</a>
+  </div>
 
   <div class="header-right">
     <div>Lectura <span id="jsonStatus">...</span></div>
     <div><a href="#" id="btnTabla">Tabla reglas</a></div>
   </div>
+
 </div>
 
 <div class="container">
@@ -164,9 +175,9 @@ button {
       Pega una traza en el panel izquierdo y pulsa <b>Analizar</b>
     </div>
 
-    <!-- RESULTADOS (vacío por ahora) -->
+    <!-- RESULTADOS -->
     <div id="resultados" class="hidden">
-      RESULTADOS AQUÍ
+      RESULTADOS (fase futura)
     </div>
 
   </div>
@@ -195,11 +206,12 @@ checkSaml.addEventListener("change", () => {
   if (checkSaml.checked) {
     checkBlanco.checked = false;
     mostrarPanel("Información de acceso", `
-      <b>Error SAML</b><br><br>
-      La pasarela no ha recibido un certificado válido.<br>
-      • No seleccionó certificado<br>
-      • Certificado caducado<br>
+      <b>Error SAML – sin certificado (003002)</b><br><br>
+      • No se ha seleccionado certificado<br>
+      • Certificado caducado o revocado<br>
       • DNIe no detectado<br>
+      • Antivirus o proxy bloqueando<br><br>
+      <b>Acción:</b> Probar otro navegador y revisar certificado
     `);
   } else {
     cerrarPanel();
@@ -210,26 +222,41 @@ checkBlanco.addEventListener("change", () => {
   if (checkBlanco.checked) {
     checkSaml.checked = false;
     mostrarPanel("Información de acceso", `
-      <b>Página en blanco</b><br><br>
-      Posible fallo de acceso:<br>
+      <b>Página en blanco al acceder</b><br><br>
+      • Puede ser fallo de Pasarela<br>
+      • No se genera traza útil<br><br>
       • Probar Carpeta Ciudadana<br>
-      • Revisar VPN/proxy<br>
+      • Revisar VPN / proxy<br>
     `);
   } else {
     cerrarPanel();
   }
 });
 
-/* ========= VER DETALLES / TABLA ========= */
+/* ========= VER DETALLES ========= */
+
+document.getElementById("btnDetalles").onclick = (e) => {
+  e.preventDefault();
+  mostrarPanel("Novedades BETA", `
+    <ul>
+      <li>Nuevo sistema de panel único (sin conflictos)</li>
+      <li>Gestión limpia de estados UI</li>
+      <li>Preparado para nuevo motor de análisis</li>
+      <li>Mejor experiencia visual</li>
+    </ul>
+  `);
+};
+
+/* ========= TABLA REGLAS ========= */
 
 document.getElementById("btnTabla").onclick = (e) => {
   e.preventDefault();
   mostrarPanel("Tabla de reglas", `
     <ul>
       <li>Detección de errores SAML</li>
-      <li>Detección de página en blanco</li>
-      <li>Clasificación básica de trazas</li>
-      <li>Preparado para motor de análisis</li>
+      <li>Página en blanco</li>
+      <li>Clasificación de flujo básica</li>
+      <li>Motor de análisis en desarrollo</li>
     </ul>
   `);
 };
@@ -237,7 +264,7 @@ document.getElementById("btnTabla").onclick = (e) => {
 /* ========= ANALIZAR ========= */
 
 document.getElementById("btnAnalizar").onclick = () => {
-  cerrarPanel(); // desaparecen TODOS los paneles
+  cerrarPanel();
   document.getElementById("placeholder").classList.add("hidden");
   document.getElementById("resultados").classList.remove("hidden");
 };
@@ -256,7 +283,7 @@ document.getElementById("btnLimpiar").onclick = () => {
 
 document.getElementById("cerrarPanel").onclick = cerrarPanel;
 
-/* ========= CARGA REGLAS ========= */
+/* ========= CARGA DE REGLAS ========= */
 
 let reglasDB = null;
 let source = "loading";
@@ -265,10 +292,12 @@ async function cargarReglas() {
   try {
     const r = await fetch("reglas.json?v=" + Date.now());
     if (!r.ok) throw "error";
+
     reglasDB = await r.json();
     source = "json";
+
   } catch {
-    reglasDB = { version: "embed" };
+    reglasDB = { version: "local" };
     source = "embed";
   }
 
@@ -284,12 +313,6 @@ async function cargarReglas() {
 }
 
 cargarReglas();
-
-/* ========= ACTUALIZAR ========= */
-
-function actualizar() {
-  location.href = location.pathname + "?v=" + Date.now();
-}
 
 </script>
 
