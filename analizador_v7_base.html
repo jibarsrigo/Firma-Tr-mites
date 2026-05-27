@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Analizador V6</title>
+
+<style>
+
+/* ===== BASE ===== */
+body {
+  font-family: system-ui, -apple-system;
+  background: #f5f4f0;
+  margin: 0;
+  color: #1e1c17;
+  font-size: 14px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  background: white;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.header-left {
+  display:flex;
+  gap:14px;
+  align-items:center;
+}
+
+.header-left b {
+  font-weight: 600;
+}
+
+.badge {
+  background:#01696f;
+  color:white;
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:999px;
+  font-weight:600;
+}
+
+.ver-detalles {
+  font-size:11px;
+  color:#01696f;
+  cursor:pointer;
+  text-decoration: underline dotted;
+}
+
+.btn-mini {
+  border:1px solid rgba(0,0,0,0.12);
+  background:#fafafa;
+  border-radius:999px;
+  padding:5px 12px;
+  cursor:pointer;
+  font-size:12px;
+}
+
+.btn-mini:hover {
+  background:#f0f0f0;
+}
+
+.header-right {
+  margin-left:auto;
+  font-size:12px;
+  color:#6b6960;
+}
+
+/* ===== LAYOUT ===== */
+.container {
+  display:flex;
+}
+
+.sidebar {
+  width:320px;
+  padding:16px;
+  background:#faf9f7;
+  border-right:1px solid rgba(0,0,0,0.08);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.main {
+  flex:1;
+  padding:18px;
+}
+
+/* ===== CARD ===== */
+.card {
+  background:white;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.card-header {
+  padding:10px 12px;
+  font-size:11px;
+  font-weight:600;
+  text-transform:uppercase;
+  color:#6b6960;
+  border-bottom:1px solid rgba(0,0,0,0.05);
+  letter-spacing:.05em;
+}
+
+.card-body {
+  padding:12px;
+}
+
+/* ===== CHECK CARDS ===== */
+.check {
+  display:flex;
+  gap:10px;
+  padding:10px;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:8px;
+  margin-bottom:8px;
+  cursor:pointer;
+  transition: all .15s;
+}
+
+.check:hover {
+  border-color:#01696f;
+  background:#fafefe;
+}
+
+.check input {
+  accent-color:#01696f;
+  margin-top:2px;
+}
+
+/* ===== TEXTAREA ===== */
+textarea {
+  width:100%;
+  height:140px;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,0.1);
+  background:#fafafa;
+  font-family: monospace;
+  font-size:12px;
+  padding:10px;
+  line-height:1.5;
+}
+
+textarea:focus {
+  outline:none;
+  border-color:#01696f;
+  box-shadow:0 0 0 3px rgba(1,105,111,0.15);
+}
+
+/* ===== BOTONES ===== */
+.actions {
+  display:flex;
+  gap:10px;
+}
+
+#btnAnalizar {
+  background:#01696f;
+  color:white;
+  border:none;
+  border-radius:8px;
+  padding:10px;
+  flex:1;
+  font-weight:600;
+  cursor:pointer;
+}
+
+#btnAnalizar:hover {
+  background:#0c4e54;
+}
+
+#btnLimpiar {
+  background:#f0f0f0;
+  border:none;
+  border-radius:8px;
+  padding:10px;
+  flex:1;
+  cursor:pointer;
+}
+
+/* ===== PANEL ===== */
+.panel {
+  border-radius:12px;
+  border:1px solid rgba(150,66,25,.2);
+  background:#fdf0e8;
+  margin-bottom:12px;
+}
+
+.panel-header {
+  padding:10px 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:600;
+  color:#964219;
+}
+
+.panel-body {
+  padding:12px 14px;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.btn-close {
+  border:1px solid rgba(0,0,0,0.1);
+  background:white;
+  border-radius:6px;
+  padding:2px 8px;
+  cursor:pointer;
+}
+
+/* ===== PLACEHOLDER ===== */
+#placeholder {
+  text-align:center;
+  color:#b0afa8;
+  margin-top:140px;
+}
+
+.hidden { display:none; }
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+  <div class="header-left">
+    <b>Analizador de Trazas</b>
+
+    <div>
+      <div class="badge">BETA V2</div>
+      <div class="ver-detalles" id="btnDetalles">Ver detalles ▾</div>
+    </div>
+
+    <button class="btn-mini" id="btnActualizar">Actualizar</button>
+  </div>
+
+  <div class="header-right">
+    Lectura <span id="jsonStatus">...</span><br>
+    <a href="#" id="btnTabla">Tabla reglas</a>
+  </div>
+
+</div>
+
+<div class="container">
+
+  <div class="sidebar">
+
+    <!-- PROBLEMAS -->
+    <div class="card">
+      <div class="card-header">Problemas de acceso</div>
+      <div class="card-body">
+
+        <label class="check">
+          <input type="checkbox" id="checkSaml">
+          <div>Error SAML</div>
+        </label>
+
+        <label class="check">
+          <input type="checkbox" id="checkBlanco">
+          <div>Página en blanco</div>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- TRAZA -->
+    <div class="card">
+      <div class="card-header">Traza SistraHelp</div>
+      <div class="card-body">
+        <textarea placeholder="Pega la traza de SistraHelp aquí..."></textarea>
+      </div>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="actions">
+      <button id="btnAnalizar">Analizar</button>
+      <button id="btnLimpiar">Limpiar</button>
+    </div>
+
+  </div>
+
+  <div class="main">
+
+    <div id="panel" class="panel hidden">
+      <div class="panel-header">
+        <span id="panelTitulo"></span>
+        <button class="btn-close" id="btnCerrarPanel">Cerrar ✕</button>
+      </div>
+      <div class="panel-body" id="panelContenido"></div>
+    </div>
+
+    <div id="placeholder">
+      Pega una traza en el panel izquierdo y pulsa <b>Analizar</b>
+    </div>
+
+    <div id="resultados" class="hidden">RESULTADOS</div>
+
+  </div>
+</div>
+
+<script>
+/* NO TOCO TU JS */
+</script>
+
+</body>
+</html>
+``
