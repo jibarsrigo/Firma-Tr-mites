@@ -139,22 +139,18 @@ btnAnalizar.onclick = () => {
 
 // 🔴 DIAGNÓSTICO
 document.getElementById("resDiagnostico").innerText =
-  "TR_FRI → OK (Inicio formulario)\n" +
-  "TR_FRF → OK (Fin formulario)\n" +
-  "TR_SGI → OK (Inicio firma)\n" +
-  "TR_SGX → KO (Error firma)";
+  "Pendiente de análisis de traza...";
 
 // 🔴 ACCIÓN RECOMENDADA
 document.getElementById("resAccionRecomendada").innerText =
-  "Error en Cl@ve Firma. No escalar. Indicar reintento o revisión de credenciales.";
+  Pendiente de determinar acción...";
 
 // 🔴 TEXTO CAI
 document.getElementById("resCAI").value =
-  "Error Firma Cl@ve. Código 8 – Tipo 15. No escalar\n\n" +
   (formulario ? formulario + "\n\n" : "") +
-  "La firma falla durante el proceso en el proveedor Cl@ve.\n\n" +
+  "[Diagnóstico pendiente de análisis]\n\n" +
   "Se ha enviado correo al ciudadano:\n\n" +
-  "Texto del correo...";
+  "[Correo pendiente]";
 
 };
 
