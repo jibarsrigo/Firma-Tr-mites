@@ -119,17 +119,21 @@ btnAnalizar.onclick = () => {
   }
 
   // 3. validar traza
-  const texto = document.getElementById("inputTraza").value.trim();
+const texto = document.getElementById("inputTraza").value.trim();
 
-  if (!texto) {
-    abrirPanel("Validación", "Todavía no ha pegado trazas");
-    return;
-  }
+// pasar a mayúsculas para evitar problemas
+const traza = texto.toUpperCase();
 
-  if (!texto.includes("TR_")) {
-    abrirPanel("Validación", `Esto no es una traza: "${texto}"`);
-    return;
-  }
+if (!texto) {
+  abrirPanel("Validación", "Todavía no ha pegado trazas");
+  return;
+}
+
+if (!traza.includes("TR_")) {
+  abrirPanel("Validación", `Esto no es una traza válida`);
+  return;
+}
+
 
   // TODO OK
   cerrarPanelFunc();
