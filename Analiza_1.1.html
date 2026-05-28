@@ -278,11 +278,30 @@ textarea:focus {
       <div class="panel-body" id="panelContenido"></div>
     </div>
 
-    <div id="placeholder">
-      Pega una traza y pulsa Analizar
-    </div>
+   <div id="placeholder">
+  Pega una traza y pulsa Analizar
+</div>
 
-    <div id="resultados" class="hidden">RESULTADOS</div>
+<div id="resultados" class="hidden">
+
+  <!-- 🔴 TÍTULO -->
+  <div class="card">
+    <b id="resTitulo">Título incidencia</b>
+  </div>
+
+  <!-- 🔴 DIAGNÓSTICO TÉCNICO -->
+  <div class="card">
+    <b>Diagnóstico técnico</b><br><br>
+    <div id="resDiagnostico"></div>
+  </div>
+
+  <!-- 🔴 TEXTO PARA CAI -->
+  <div class="card">
+    <b>Texto para CAI</b><br><br>
+    <textarea id="resCAI"></textarea>
+  </div>
+
+</div>
 
   </div>
 </div>
