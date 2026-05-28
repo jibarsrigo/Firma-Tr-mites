@@ -142,8 +142,10 @@ document.getElementById("resDiagnostico").innerText =
   "Pendiente de análisis de traza...";
 
 // 🔴 ACCIÓN RECOMENDADA
+
 document.getElementById("resAccionRecomendada").innerText =
-  Pendiente de determinar acción...";
+  "Pendiente de determinar acción...";
+
 
 // 🔴 TEXTO CAI
 document.getElementById("resCAI").value =
