@@ -149,8 +149,24 @@ const haySGO = traza.includes("TR_SGO");
   const formulario = document.getElementById("inputFormulario").value.trim();
 
 // 🔴 DIAGNÓSTICO
-document.getElementById("resDiagnostico").innerText =
-  "Pendiente de análisis de traza...";
+let diagnosticoTexto = "";
+
+// FORMULARIO
+diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "\n";
+diagnosticoTexto += "TR_FRF (Fin formulario) → " + (hayFRF ? "OK" : "NO aparece") + "\n";
+
+// FIRMA
+diagnosticoTexto += "TR_SGI (Inicio firma) → " + (haySGI ? "OK" : "NO aparece") + "\n";
+
+if (haySGX) {
+  diagnosticoTexto += "TR_SGX (Firma KO) → ERROR\n";
+}
+
+if (haySGO) {
+  diagnosticoTexto += "TR_SGO (Firma OK) → OK\n";
+}
+
+document.getElementById("resDiagnostico").innerText = diagnosticoTexto;
 
 // 🔴 ACCIÓN RECOMENDADA
 
