@@ -134,7 +134,14 @@ if (!traza.includes("TR_")) {
   return;
 }
 
+// 🔍 DETECCIÓN DE EVENTOS TR_
+const hayFRI = traza.includes("TR_FRI");
+const hayFRF = traza.includes("TR_FRF");
+const haySGI = traza.includes("TR_SGI");
+const haySGX = traza.includes("TR_SGX");
+const haySGO = traza.includes("TR_SGO");
 
+  
   // TODO OK
   cerrarPanelFunc();
   placeholder.style.display = "none";
