@@ -119,13 +119,13 @@ btnAnalizar.onclick = () => {
 
   // 1. validar método
   if (!metodoClave.checked && !metodoCert.checked) {
-    abrirPanel("Validación", "Debe seleccionar método");
+    abrirPanel("Validación Analizar", "Debe seleccionar método");
     return;
   }
 
   // 2. validar sistema (ANTES que la traza)
   if (metodoCert.checked && !sisPC.checked && !sisMovil.checked) {
-    abrirPanel("Validación", "Debe seleccionar sistema");
+    abrirPanel("Validación  Analizar", "Debe seleccionar sistema");
     return;
   }
 
@@ -136,12 +136,12 @@ const texto = document.getElementById("inputTraza").value.trim();
 const traza = texto.toUpperCase();
 
 if (!texto) {
-  abrirPanel("Validación", "Todavía no ha pegado trazas");
+  abrirPanel("Validación  Analizar", "Todavía no ha pegado trazas");
   return;
 }
 
 if (!traza.includes("TR_")) {
-  abrirPanel("Validación", `Esto no es una traza válida`);
+  abrirPanel("Validación  Analizar", `Esto no es una traza válida`);
   return;
 }
 
