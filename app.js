@@ -1,4 +1,4 @@
-<script>
+
 
 /* ✅ FIX CRÍTICO */
 const btnDetalles = document.getElementById("btnDetalles");
@@ -171,5 +171,5 @@ metodoClave.onchange = () => {
 metodoCert.onchange = () => {
   bloqueSistema.style.display = "block";
 };
-</script>
+
 
