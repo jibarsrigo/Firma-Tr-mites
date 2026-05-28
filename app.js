@@ -1,3 +1,4 @@
+document.addEventListener("DOMContentLoaded", () => {
 
 
 /* ✅ FIX CRÍTICO */
@@ -171,5 +172,5 @@ metodoClave.onchange = () => {
 metodoCert.onchange = () => {
   bloqueSistema.style.display = "block";
 };
-
+});
 
