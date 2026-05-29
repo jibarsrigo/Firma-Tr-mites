@@ -232,8 +232,23 @@ let accionTexto = "";
 
 // 🔍 INTERPRETACIÓN BÁSICA DEL FLUJO
 
-console.log("haySGI:", haySGI, "haySGX:", haySGX, "haySGO:", haySGO);
+// DEBUG 
+  console.log("haySGI:", haySGI, "haySGX:", haySGX, "haySGO:", haySGO);
 
+//  PRUEBA CONTROL POR REGLA
+
+if (idReglaDetectada === "fallo_formulario") {
+
+  console.log("CONTROL POR REGLA ACTIVO");
+
+  document.getElementById("resAccionRecomendada").innerText =
+    "[Acceso-Sesión] – No se inicia firma (desde regla)";
+
+  return; // 🔥 clave: evita que siga ejecutando lo de abajo
+}
+
+
+  
 if (!haySGI) {
   accionTexto = "Error de acceso o sesión antes de la firma";
 }
