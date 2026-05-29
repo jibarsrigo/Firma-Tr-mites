@@ -11,7 +11,7 @@
 
   
 // 🔹 VERSION JS (editable manual)
-const VERSION_JS = "1.1.1";
+const VERSION_JS = "1.1.2";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -198,11 +198,13 @@ let accionTexto = "";
 
 // 🔍 INTERPRETACIÓN BÁSICA DEL FLUJO
 
+console.log("haySGI:", haySGI, "haySGX:", haySGX, "haySGO:", haySGO);
+
 if (!haySGI) {
-  accionTexto = "Error de acceso o sesión antes de la firma (no se inicia la firma)";
+  accionTexto = "Error de acceso o sesión antes de la firma";
 }
 else if (haySGI && haySGX) {
-  accionTexto = "Error en el proceso de firma (el proveedor devuelve fallo)";
+  accionTexto = "Error en el proceso de firma";
 }
 else if (haySGI && haySGO) {
   accionTexto = "Firma completada correctamente";
@@ -211,9 +213,9 @@ else {
   accionTexto = "Caso no identificado";
 }
 
-document.getElementById("resAccionRecomendada").innerText =
-  clasificacion + "\n" + accionTexto;
+console.log("ACCION FINAL:", accionTexto);
 
+document.getElementById("resAccionRecomendada").innerText = accionTexto;
 
 let clasificacion = "";
 
