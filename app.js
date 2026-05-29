@@ -253,7 +253,7 @@ if (idReglaDetectada === "fallo_formulario") {
   console.log("CONTROL POR REGLA ACTIVO");
 
   document.getElementById("resAccionRecomendada").innerText =
-    "🔥 REGLA APLICADA CORRECTAMENTE 🔥";
+    "[Acceso-Sesión] – No se inicia firma tras finalizar formulario\nReintentar el trámite. No escalar.";
 
   return; // 🔥 clave: evita que siga ejecutando lo de abajo
 }
