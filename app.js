@@ -9,8 +9,10 @@
 <!--                - Se construye automáticamente un texto base para CAI incluyendo el formulario si existe -->
 <!-- VERSION 1.1    - Se muestra lectura html json y js panel superior html y editable desde codigo -->
 <!-- VERSION 1.1.1  - Se Añade 🔴 DETECCIÓN DE REGLAS (PATRONES) con la primera regla par el Formulario-->
-<!-- VERSION 1.1.2  - Se Añade MOTOR BASE: TR_ → detección → ID regla → control → salida personalizada-->
-<!-- VERSION 1.1.2  - Se Añade sistema de reglas activo: el flujo ya se controla por patrones detectados -->
+<!-- VERSION 1.1.2  - MOTOR BASE DE ANÁLISIS TR_ → detección → ID regla → control → salida personalizada → stop -->
+<!-- VERSION 1.1.3  - Las reglas detectadas tienen prioridad sobre la lógica estándar-->
+
+
 
 
   
