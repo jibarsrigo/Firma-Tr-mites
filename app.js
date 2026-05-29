@@ -247,16 +247,24 @@ let accionTexto = "";
   console.log("haySGI:", haySGI, "haySGX:", haySGX, "haySGO:", haySGO);
 
 //  PRUEBA CONTROL POR REGLA
-
 if (idReglaDetectada === "fallo_formulario") {
 
   console.log("CONTROL POR REGLA ACTIVO");
 
   document.getElementById("resAccionRecomendada").innerText =
-    "[Acceso-Sesión] – No se inicia firma tras finalizar formulario\nReintentar el trámite. No escalar.";
+    "[Acceso-Sesión] – No se inicia firma tras finalizar formulario\nRemitir al ciudadano a formulario de incidencias (dudas funcionales).";
+
+  document.getElementById("resCAI").value =
+    (formulario ? formulario + "\n\n" : "") +
+    "[Acceso-Sesión] – No se inicia firma\n\n" +
+    "El ciudadano ha finalizado el formulario, pero no se inicia el proceso de firma.\n\n" +
+    "No se detectan errores técnicos en SistraHelp.\n\n" +
+    "Se indica al ciudadano que debe rellenar el formulario de incidencias seleccionando la opción de dudas funcionales.\n\n" +
+    "Se ha informado al ciudadano.";
 
   return; // 🔥 clave: evita que siga ejecutando lo de abajo
 }
+
 
 
   
