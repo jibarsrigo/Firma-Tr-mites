@@ -181,8 +181,24 @@ document.getElementById("resDiagnostico").innerText = diagnosticoTexto;
 
 // 🔴 ACCIÓN RECOMENDADA
 
-document.getElementById("resAccionRecomendada").innerText =
-  "Pendiente de determinar acción...";
+let accionTexto = "";
+
+// 🔍 INTERPRETACIÓN BÁSICA DEL FLUJO
+
+if (!haySGI) {
+  accionTexto = "Error de acceso o sesión antes de la firma (no se inicia la firma)";
+}
+else if (haySGI && haySGX) {
+  accionTexto = "Error en el proceso de firma (el proveedor devuelve fallo)";
+}
+else if (haySGI && haySGO) {
+  accionTexto = "Firma completada correctamente";
+}
+else {
+  accionTexto = "Caso no identificado";
+}
+
+document.getElementById("resAccionRecomendada").innerText = accionTexto;
 
 
 // 🔴 TEXTO CAI
