@@ -27,7 +27,6 @@ const checkBlanco = document.getElementById("checkBlanco");
 const btnAnalizar = document.getElementById("btnAnalizar");
 const btnLimpiar = document.getElementById("btnLimpiar");
 const btnActualizar = document.getElementById("btnActualizar");
-const jsonStatus = document.getElementById("jsonStatus");
 const placeholder = document.getElementById("placeholder");
 const resultados = document.getElementById("resultados");
 const metodoClave = document.getElementById("metodoClave");
@@ -237,11 +236,16 @@ async function cargarReglas() {
   try {
     const r = await fetch("reglas.json?v=" + Date.now());
     const d = await r.json();
-    jsonStatus.innerText = "v"+d.version+" ✓";
+
+    document.getElementById("versionJSON").innerText =
+      "json " + d.version;
+
   } catch {
-    jsonStatus.innerText = "local ⚠";
+    document.getElementById("versionJSON").innerText =
+      "json ?";
   }
 }
+
 cargarReglas();
 metodoClave.onchange = () => {
   bloqueSistema.style.display = "none";
