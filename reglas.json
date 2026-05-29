@@ -15,7 +15,7 @@
     
 {
   "id": "fallo_formulario",
-  "clasificacion": "[Acceso-Sesión] – No se inicia firma tras finalizar formulario",
+  "clasificacion": "[Error Acceso-Sesión] – No se inicia firma tras finalizar formulario",
   "accion": "Remitir al ciudadano a formulario de incidencias (dudas funcionales).",
-  "cai": "El ciudadano ha finalizado el formulario, pero no se inicia el proceso de firma.\n\nNo se detectan errores técnicos en SistraHelp.\n\nSe indica al ciudadano que debe rellenar el formulario de incidencias seleccionando la opción de dudas funcionales.\n\nSe ha informado al ciudadano."
+  "cai": "En Sistrahelp aparece un (Fin Formulario) , pero no se inicia el proceso de firma y no se detectan errores de flujo."
 }
