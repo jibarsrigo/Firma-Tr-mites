@@ -332,6 +332,7 @@ async function cargarReglas() {
   try {
     const r = await fetch("reglas.json?v=" + Date.now());
     const d = await r.json();
+    console.log("REGLAS JSON:", d);
 
     document.getElementById("versionJSON").innerText =
       "json " + d.version;
