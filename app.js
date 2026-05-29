@@ -11,6 +11,10 @@
 <!-- VERSION 1.1.1  - Se Añade 🔴 DETECCIÓN DE REGLAS (PATRONES) con la primera regla par el Formulario-->
 <!-- VERSION 1.1.2  - MOTOR BASE DE ANÁLISIS TR_ → detección → ID regla → control → salida personalizada → stop -->
 <!-- VERSION 1.1.3  - Las reglas detectadas tienen prioridad sobre la lógica estándar-->
+<!-- CÓMO AÑADIR REGLAS:
+                     1. Definir condición en app.js (detección de patrón)
+                     2. Añadir contenido en reglas.json (clasificación, acción, CAI) -->
+
 
 
 
