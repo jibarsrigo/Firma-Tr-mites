@@ -8,14 +8,18 @@
 <!-- Se genera un diagnóstico técnico dinámico en función de los TR_ detectados -->
 <!-- Se construye automáticamente un texto base para CAI incluyendo el formulario si existe -->
 
+const VERSION_JS = "1.0";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-console.log("JS cargado - VERSION HTML:", VERSION_HTML);
+console.log("HTML v" + VERSION_HTML);
+console.log("JS v" + VERSION_JS);
 
-  // ✅ Mostrar versión HTML
+  // ✅ Mostrar versión HTML JS
 document.getElementById("versionHTML").innerText =
   "html " + VERSION_HTML;
+  document.getElementById("versionJS").innerText =
+  "js " + VERSION_JS;
 
 
 
@@ -239,6 +243,7 @@ async function cargarReglas() {
 
     document.getElementById("versionJSON").innerText =
       "json " + d.version;
+       console.log("JSON v" + d.version);
 
   } catch {
     document.getElementById("versionJSON").innerText =
