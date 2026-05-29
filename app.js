@@ -26,6 +26,7 @@
 // 🔹 VERSION JS (editable manual)
 const VERSION_JS = "1.1.3";
 
+let reglasJSON = null;
 document.addEventListener("DOMContentLoaded", () => {
 
 console.log("HTML v" + VERSION_HTML);
