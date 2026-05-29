@@ -211,7 +211,26 @@ else {
   accionTexto = "Caso no identificado";
 }
 
-document.getElementById("resAccionRecomendada").innerText = accionTexto;
+document.getElementById("resAccionRecomendada").innerText =
+  clasificacion + "\n" + accionTexto;
+
+
+let clasificacion = "";
+
+// 🔴 CLASIFICACIÓN CAU
+
+if (!haySGI) {
+  clasificacion = "[Acceso-Sesión] – Portafib/Soffid (pre-proveedor)";
+}
+else if (haySGI && haySGX) {
+  clasificacion = "[Firma] – proveedor de firma (Cl@ve / Autofirma / FIRE)";
+}
+else if (haySGI && haySGO) {
+  clasificacion = "[Correcto] – Firma completada";
+}
+else {
+  clasificacion = "[Caso no identificado]";
+}  
 
 
 // 🔴 TEXTO CAI
