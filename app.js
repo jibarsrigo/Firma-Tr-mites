@@ -11,7 +11,9 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-// ✅ Mostrar versión HTML
+console.log("JS cargado - VERSION HTML:", VERSION_HTML);
+
+  // ✅ Mostrar versión HTML
 document.getElementById("versionHTML").innerText =
   "html " + VERSION_HTML;
 
