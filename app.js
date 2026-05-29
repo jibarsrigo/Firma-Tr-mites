@@ -8,6 +8,7 @@
 <!-- Se genera un diagnóstico técnico dinámico en función de los TR_ detectados -->
 <!-- Se construye automáticamente un texto base para CAI incluyendo el formulario si existe -->
 
+// 🔹 VERSION JS (editable manual)
 const VERSION_JS = "1.0";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -15,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 console.log("HTML v" + VERSION_HTML);
 console.log("JS v" + VERSION_JS);
 
-  // ✅ Mostrar versión HTML JS
+  // Mostrar versión HTML JS
 document.getElementById("versionHTML").innerText =
   "html " + VERSION_HTML;
   document.getElementById("versionJS").innerText =
@@ -23,7 +24,7 @@ document.getElementById("versionHTML").innerText =
 
 
 
-/* ✅ FIX CRÍTICO */
+/* FIX CRÍTICO */
 const btnDetalles = document.getElementById("btnDetalles");
 const btnTabla = document.getElementById("btnTabla");
 const checkSaml = document.getElementById("checkSaml");
