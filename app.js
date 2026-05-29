@@ -11,6 +11,9 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+document.getElementById("versionHTML").innerText =
+  "html " + VERSION_HTML;
+
 
 /* ✅ FIX CRÍTICO */
 const btnDetalles = document.getElementById("btnDetalles");
