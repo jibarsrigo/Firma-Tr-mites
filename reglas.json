@@ -1,7 +1,7 @@
 {  "version": "1.0",
   "descripcion": "Base de reglas para el analizador de trazas.",
   "notas": [
-    "JSON no permite comentarios dentro de reglas", "Si falta una sola coma en el json, json.parse falla y entra en cacth",
+    "JSON no permite comentarios dentro de reglas", "Si falta una sola coma/llave/comilla en el json, json.parse falla y entra en cacth",
     "Este archivo contiene únicamente el contenido de las reglas (clasificación, acción y texto CAI).",
     "La lógica de detección se implementa en app.js (TR_ → detección → ID regla).",
     "Cada regla debe tener un 'id' que coincida con idReglaDetectada en app.js.",
@@ -17,3 +17,14 @@
   "accion": "Remitir al ciudadano a formulario de incidencias (dudas funcionales).",
   "cai": "En Sistrahelp aparece un (Fin Formulario) , pero no se inicia el proceso de firma y no se detectan errores de flujo."
 }
+
+
+
+
+
+
+
+    
+  ]
+}
+
