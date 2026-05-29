@@ -252,22 +252,25 @@ let accionTexto = "";
   console.log("haySGI:", haySGI, "haySGX:", haySGX, "haySGO:", haySGO);
 
 //  PRUEBA CONTROL POR REGLA
-if (idReglaDetectada === "fallo_formulario") {
+if (idReglaDetectada === "fallo_formulario" && reglasJSON) {
 
-  console.log("CONTROL POR REGLA ACTIVO");
+  console.log("CONTROL POR REGLA ACTIVO (JSON)");
 
-  document.getElementById("resAccionRecomendada").innerText =
-    "[Acceso-Sesión] – No se inicia firma tras finalizar formulario\n\n\nRemitir al ciudadano a formulario de incidencias (dudas funcionales).";
+  const regla = reglasJSON.reglas.find(r => r.id === "fallo_formulario");
 
-  document.getElementById("resCAI").value =
-    (formulario ? formulario + "\n\n" : "") +
-    "[Acceso-Sesión] – No se inicia firma\n\n" +
-    "El ciudadano ha finalizado el formulario, pero no se inicia el proceso de firma.\n\n" +
-    "No se detectan errores técnicos en SistraHelp.\n\n" +
-    "Se indica al ciudadano que debe rellenar el formulario de incidencias seleccionando la opción de dudas funcionales.\n\n" +
-    "Se ha informado al ciudadano.";
+  if (regla) {
 
-  return; // 🔥 clave: evita que siga ejecutando lo de abajo
+    document.getElementById("resAccionRecomendada").innerText =
+      regla.clasificacion + "\n\n" + regla.accion;
+
+    document.getElementById("resCAI").value =
+      (formulario ? formulario + "\n\n" : "") +
+      regla.clasificacion + "\n\n" +
+      regla.cai + "\n\n" +
+      "Se ha informado al ciudadano.";
+  }
+
+  return;
 }
 
 
