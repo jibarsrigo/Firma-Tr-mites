@@ -11,8 +11,10 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
+// ✅ Mostrar versión HTML
 document.getElementById("versionHTML").innerText =
   "html " + VERSION_HTML;
+
 
 
 /* ✅ FIX CRÍTICO */
