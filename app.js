@@ -217,6 +217,10 @@ console.log("Regla detectada:", idReglaDetectada);
   placeholder.style.display = "none";
   resultados.classList.remove("hidden");
   const formulario = document.getElementById("inputFormulario").value.trim();
+  
+// ✅ VERIFICACIÓN JSON
+console.log("JSON disponible:", reglasJSON);
+
 
 // 🔴 DIAGNÓSTICO
 let diagnosticoTexto = "";
@@ -333,6 +337,7 @@ async function cargarReglas() {
   try {
     const r = await fetch("reglas.json?v=" + Date.now());
     const d = await r.json();
+    reglasJSON = d;
     console.log("REGLAS JSON:", d);
 
     document.getElementById("versionJSON").innerText =
