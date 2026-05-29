@@ -8,10 +8,12 @@
 <!--                - Se genera un diagnóstico técnico dinámico en función de los TR_ detectados -->
 <!--                - Se construye automáticamente un texto base para CAI incluyendo el formulario si existe -->
 <!-- VERSION 1.1    - Se muestra lectura html json y js panel superior html y editable desde codigo -->
+<!-- VERSION 1.1.1  - Se Añade 🔴 DETECCIÓN DE REGLAS (PATRONES) con la primera regla par el Formulario-->
+
 
   
 // 🔹 VERSION JS (editable manual)
-const VERSION_JS = "1.1.2";
+const VERSION_JS = "1.1.1";
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -165,8 +167,40 @@ const haySGI = traza.includes("TR_SGI");
 const haySGX = traza.includes("TR_SGX");
 const haySGO = traza.includes("TR_SGO");
 
+
+// =====================================
+// 🔴 DETECCIÓN DE REGLAS (PATRONES)
+// =====================================
+
+// Aquí se decidee QUÉ tipo de error es, usando los TR_
+// SOLO lógica (NO textos, eso va en JSON)
+
+let idReglaDetectada = null;
+
+// ✅ REGLA 1 - FALLO FORMULARIO
+// Condición:
+// - Hay fin de formulario (TR_FRF)
+// - NO hay inicio de firma (TR_SGI)
+//
+// Interpretación:
+// El ciudadano termina el formulario pero la firma no empieza
+
+if (hayFRF && !haySGI) {
+  idReglaDetectada = "fallo_formulario";
+}
+
+
+// 🔎 DEBUG - ver qué regla se ha detectado
+console.log("Regla detectada:", idReglaDetectada);
+
+
+
   
-  // TODO OK
+
+
+  
+  
+// TODO OK
   cerrarPanelFunc();
   placeholder.style.display = "none";
   resultados.classList.remove("hidden");
