@@ -242,7 +242,7 @@ if (idReglaDetectada === "fallo_formulario") {
   console.log("CONTROL POR REGLA ACTIVO");
 
   document.getElementById("resAccionRecomendada").innerText =
-    "[Acceso-Sesión] – No se inicia firma (desde regla)";
+    "🔥 REGLA APLICADA CORRECTAMENTE 🔥";
 
   return; // 🔥 clave: evita que siga ejecutando lo de abajo
 }
