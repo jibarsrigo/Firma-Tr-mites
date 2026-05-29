@@ -1,7 +1,5 @@
-{
-  "version": "1.0",
+{  "version": "1.0",
   "descripcion": "Base de reglas para el analizador de trazas.",
-
   "notas": [
     "JSON no permite comentarios dentro de reglas"
     "Este archivo contiene únicamente el contenido de las reglas (clasificación, acción y texto CAI).",
