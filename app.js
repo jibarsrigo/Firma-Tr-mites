@@ -1,15 +1,17 @@
 
 <!-- FUNCIONALIDADES IMPLEMENTADAS -->
 
-<!-- Se valida que la traza y el método de firma sean correctos antes de analizar -->
-<!-- Se muestran paneles informativos para errores de acceso (SAML y página en blanco) -->
-<!-- Se normaliza la traza a mayúsculas para evitar problemas en la detección -->
-<!-- Se detectan los eventos TR_ principales dentro de la traza -->
-<!-- Se genera un diagnóstico técnico dinámico en función de los TR_ detectados -->
-<!-- Se construye automáticamente un texto base para CAI incluyendo el formulario si existe -->
+<!-- VERSION 1.0    - Se valida que la traza y el método de firma sean correctos antes de analizar -->
+<!--                - Se muestran paneles informativos para errores de acceso (SAML y página en blanco) -->
+<!--                - Se normaliza la traza a mayúsculas para evitar problemas en la detección -->
+<!--                - Se detectan los eventos TR_ principales dentro de la traza -->
+<!--                - Se genera un diagnóstico técnico dinámico en función de los TR_ detectados -->
+<!--                - Se construye automáticamente un texto base para CAI incluyendo el formulario si existe -->
+<!-- VERSION 1.1    - Se muestra lectura html json y js panel superior html y editable desde codigo -->
 
+  
 // 🔹 VERSION JS (editable manual)
-const VERSION_JS = "1.0";
+const VERSION_JS = "1.1";
 
 document.addEventListener("DOMContentLoaded", () => {
 
