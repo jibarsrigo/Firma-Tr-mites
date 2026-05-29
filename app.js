@@ -13,7 +13,7 @@
 
   
 // 🔹 VERSION JS (editable manual)
-const VERSION_JS = "1.1.2";
+const VERSION_JS = "1.1.3";
 
 document.addEventListener("DOMContentLoaded", () => {
 
