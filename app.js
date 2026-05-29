@@ -10,10 +10,13 @@
 <!-- VERSION 1.1    - Se muestra lectura html json y js panel superior html y editable desde codigo -->
 <!-- VERSION 1.1.1  - Se Añade 🔴 DETECCIÓN DE REGLAS (PATRONES) con la primera regla par el Formulario-->
 <!-- VERSION 1.1.2  - MOTOR BASE DE ANÁLISIS TR_ → detección → ID regla → control → salida personalizada → stop -->
-<!-- VERSION 1.1.3  - Las reglas detectadas tienen prioridad sobre la lógica estándar-->
-<!-- CÓMO AÑADIR REGLAS:
-                     1. Definir condición en app.js (detección de patrón)
-                     2. Añadir contenido en reglas.json (clasificación, acción, CAI) -->
+  
+// CÓMO AÑADIR REGLAS:
+// 1. Añadir condición en “DETECCIÓN DE REGLAS” → idReglaDetectada = "nombre_regla"
+// 2. Añadir la regla en reglas.json con mismo id (clasificación, acción, CAI)
+// 3. La regla tiene prioridad y sustituye la lógica estándar
+
+
 
 
 
