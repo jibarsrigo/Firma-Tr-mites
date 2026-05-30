@@ -247,7 +247,7 @@ const hayAutofirmaError =
 // =====================================
 // 🔴 MÉTODO UTILIZADO
 // =====================================
-// 👉 Se usa SOLO en la fase de firma
+// 👉 Se usa SOLO en la fase de firma, de momento Método seleccionado manualmente por el técnico, pero en un futuro se cogerá del formulario pegado
 
 const esClave = metodoClave.checked;
 const esCert = metodoCert.checked;
@@ -350,12 +350,27 @@ console.log("Regla detectada:", idReglaDetectada);
   placeholder.style.display = "none";                                          // 👉 Se oculta el mensaje inicial
   resultados.classList.remove("hidden");                                       // 👉 Se muestran los resultados
   const formulario = document.getElementById("inputFormulario").value.trim();  // 👉 Se obtiene el formulario pegado (si existe)
+
   
-// ✅ VERIFICACIÓN JSON
+// =====================================
+// 🔴 GENERACIÓN DE RESULTADOS
+// =====================================
+// 👉 A partir de aquí se muestra la información al usuario
+// 👉 Incluye:
+//    - diagnóstico técnico (TR_)
+//    - acción recomendada
+//    - texto para CAI
+
+// ✅ VERIFICACIÓN JSON para comprobar en consola que el JSON se ha cargado correctamente
 console.log("JSON disponible:", reglasJSON);
 
 
-// 🔴 DIAGNÓSTICO
+
+// =====================================
+// 🔴 DIAGNÓSTICO TÉCNICO (TR_)
+// =====================================
+
+// 👉 Muestra el estado de cada evento TR_. SOLO diagnóstico técnico, NO interpretación funciona
 let diagnosticoTexto = "";
 
 // FORMULARIO
