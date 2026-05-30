@@ -172,43 +172,131 @@ if (!traza.includes("TR_")) {
   return;
 }
 
-// 🔍 DETECCIÓN DE EVENTOS TR_
-const hayFRI = traza.includes("TR_FRI");
-const hayFRF = traza.includes("TR_FRF");
-const haySGI = traza.includes("TR_SGI");
-const haySGX = traza.includes("TR_SGX");
-const haySGO = traza.includes("TR_SGO");
+
+// =====================================
+// 🔴 DETECCIÓN DE EVENTOS TR_
+// =====================================
+// 👉 Aquí se detecta en qué punto del flujo está el trámite
+// 👉 NO tocar salvo que aparezcan nuevos TR_
+
+const hayFRI = traza.includes("TR_FRI"); // Inicio formulario
+const hayFRF = traza.includes("TR_FRF"); // Fin formulario
+const haySGI = traza.includes("TR_SGI"); // Inicio firma
+const haySGX = traza.includes("TR_SGX"); // Firma KO
+const haySGO = traza.includes("TR_SGO"); // Firma OK
 
 
 // =====================================
-// 🔴 DETECCIÓN DE REGLAS (PATRONES)
+// 🔴 DETECCIÓN DE LITERALES (ERRORES)
 // =====================================
+// 👉 AQUÍ es donde se añaden nuevos textos de error
+// 👉 SOLO modificar aquí para añadir nuevos literales
+// 👉 NO tocar el resto del código
 
-// Aquí se decidee QUÉ tipo de error es, usando los TR_
-// SOLO lógica (NO textos, eso va en JSON)
+const hayErrorFlujo =
+  traza.includes("FLUXE NO VÀLID") ||
+  traza.includes("EXCEPCIÓ");
 
-let idReglaDetectada = null;
+const hayAutofirmaError =
+  traza.includes("SAF_27");
 
-// ✅ REGLA 1 - FALLO FORMULARIO
-// Condición:
-// - Hay fin de formulario (TR_FRF)
-// - NO hay inicio de firma (TR_SGI)
-//
-// Interpretación:
-// El ciudadano termina el formulario pero la firma no empieza
+// const hayClaveError = ... → pendiente definir con ejemplos reales
+  
 
-if (hayFRF && !haySGI) {
-  idReglaDetectada = "fallo_formulario";
-}
+// =====================================
+// 🔴 MÉTODO UTILIZADO
+// =====================================
+// 👉 Se usa SOLO en la fase de firma
+
+const esClave = metodoClave.checked;
+const esCert = metodoCert.checked;
 
 
-// 🔎 DEBUG - ver qué regla se ha detectado
-console.log("Regla detectada:", idReglaDetectada);
 
 
 
   
+// ==========================================================================
+// 🔴 ÁRBOL DE DECISIÓN DEL FLUJO
+// ==========================================================================
+// 👉 EL CEREBRO - AQUÍ se decide qué regla aplicar
+// 👉 Para añadir nuevas reglas:
+//    1. Añadir condición en este árbol
+//    2. Crear la regla correspondiente en reglas.json con el mismo id
 
+let idReglaDetectada = null;
+
+// ===============================
+// 🔹 NIVEL 1 → ¿LLEGA A FIRMA?
+// ===============================
+
+if (!haySGI) {
+
+  // 🔸 NO LLEGA A FIRMA
+
+  if (hayFRF && !hayErrorFlujo) {
+    // ✅ FORMULARIO TERMINA PERO NO INICIA FIRMA
+    idReglaDetectada = "fallo_formulario";
+  }
+
+  else if (hayFRF && hayErrorFlujo) {
+    // ✅ ERROR DE SESIÓN / FLUJO (PORTAFIB / SOFFID)
+    idReglaDetectada = "fallo_portafib";
+  }
+
+} else {
+
+  // ===============================
+  // 🔹 SÍ LLEGA A FIRMA
+  // ===============================
+
+  // ===========================
+  // 🔸 NIVEL 2 → RESULTADO FIRMA
+  // ===========================
+
+  if (haySGX) {
+
+    // 🔻 FIRMA KO
+
+    // =======================
+    // 🔹 NIVEL 3 → PROVEEDOR
+    // =======================
+    // 👉 Aquí diferenciamos el origen del error
+
+    if (esClave) {
+      // ✅ ERROR EN CL@VE FIRMA
+      idReglaDetectada = "error_clave";
+
+    } else if (esCert) {
+
+      if (hayAutofirmaError) {
+        // ✅ ERROR EN AUTOFIRMA (cliente local)
+        idReglaDetectada = "error_autofirma";
+
+      } else {
+        // ✅ ERROR EN FIRE / CERTIFICADO (navegador / DNIe)
+        idReglaDetectada = "error_fire";
+      }
+    }
+  }
+  else if (haySGO) {
+    // 🔻 FIRMA OK
+    idReglaDetectada = "firma_correcta";
+  }
+}
+
+// ==========================================================================
+// ✅ FIN ÁRBOL DE DECISIÓN DEL FLUJO
+// ==========================================================================
+
+
+// 🔎 DEBUG FINAL (NO TOCAR)
+console.log("Regla detectada:", idReglaDetectada);
+
+  
+
+
+  
 
   
   
