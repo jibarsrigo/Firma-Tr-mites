@@ -227,7 +227,9 @@ const haySGO = traza.includes("TR_SGO"); // Firma OK
 
 const hayErrorFlujo =
   traza.includes("FLUXE NO VÀLID") ||   // error típico de sesión/flujo
-  traza.includes("EXCEPCIÓ");          // ⚠️ literal incompleto → identificar texto exacto (ej: "Excepció al generar firma / sessió")
+  traza.includes("EXCEPCIÓ");           // ⚠️ MUY genérico → NO usar como criterio definitivo sin contexto completo
+                                        // 👉 sustituir por literal exacto cuando se identifique (ej: "Excepció sessió firma")
+
 
 
 const hayAutofirmaError =
