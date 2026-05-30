@@ -1,10 +1,3 @@
-// =====================================
-//   NOTA SOBRE CACHÉ - GITHUB PAGE             
-// =====================================
-// Si se suben cambios y no se ven en producción:
-//    - Pulsar Ctrl + F5 O usar botón "Actualizar"
-// 👉 HTML se cachea más que JS/JSON
-// 👉 reglas.json usa timestamp para evitar caché
 
 <!-- FUNCIONALIDADES IMPLEMENTADAS -->
 
@@ -172,7 +165,7 @@ Conviene probar a acceder a Carpeta Ciudadana GOB para comprobar si la pasarela 
 // 🔴 BOTÓN ANALIZAR 
 // =====================================
 
-btnAnalizar.onclick = () => {      // 👉 Ejecuta el análisis de la traza pegada
+btnAnalizar.onclick = () => {      // 👉 Inicia el análisis completo de la traza y genera resultados
 
   // Oculta resultados anteriores
   resultados.classList.add("hidden");
@@ -232,7 +225,7 @@ const haySGO = traza.includes("TR_SGO"); // Firma OK
 
 const hayErrorFlujo =
   traza.includes("FLUXE NO VÀLID") ||   // error típico de sesión/flujo
-  traza.includes("EXCEPCIÓ");          // ⚠️ literal genérico → revisar mensaje completo (ej: "Excepció al generar firma")
+  traza.includes("EXCEPCIÓ");          // ⚠️ literal incompleto → identificar texto exacto (ej: "Excepció al generar firma / sessió")
 
 
 const hayAutofirmaError =
@@ -403,30 +396,29 @@ let accionTexto = ""; // 👉 Variable donde se construirá la acción final
 
 
 // =====================================
-// 🔴 CONTROL POR REGLA (TEMPORAL)
+// 🔴 CONTROL POR REGLA (GENÉRICO)
 // =====================================
-// 👉 Este bloque aplica una regla concreta desde JSON 👉 SOLO se ejecuta si la regla detectada coincide
-// 👉 En el futuro se eliminará (motor genérico)
+// 👉 Aplica automáticamente cualquier regla definida en JSON
 
-if (idReglaDetectada === "fallo_formulario" && reglasJSON) {
+if (idReglaDetectada && reglasJSON) {
 
-  console.log("CONTROL POR REGLA ACTIVO (JSON)");
-
-  const regla = reglasJSON.reglas.find(r => r.id === "fallo_formulario");   // 👉 Busca la regla en el JSON por ID
+  const regla = reglasJSON.reglas.find(r => r.id === idReglaDetectada);
 
   if (regla) {
 
-    document.getElementById("resAccionRecomendada").innerText =     // 👉 Muestra clasificación + acción
+    // 👉 Acción recomendada desde JSON
+    document.getElementById("resAccionRecomendada").innerText =
       regla.clasificacion + "\n\n" + regla.accion;
 
-    document.getElementById("resCAI").value =           // 👉 Genera el texto CAI final
-      (formulario ? formulario + "\n\n" : "") +         // 👉 añade formulario si existe
-      regla.clasificacion + "\n\n" +                    // 👉 añade clasificación
-      regla.cai + "\n\n" +                              // 👉 añade texto CAI definido en JSON
-      "Se ha informado al ciudadano.";                  // 👉 texto fijo (pendiente mejorar) o añadir manualmente en json
+    // 👉 Texto CAI desde JSON
+    document.getElementById("resCAI").value =
+      (formulario ? formulario + "\n\n" : "") +
+      regla.clasificacion + "\n\n" +
+      regla.cai + "\n\n" +
+      "Se ha informado al ciudadano.";
   }
 
-  return;      // 🔥 IMPORTANTE → evita ejecutar lo de abajo
+  return;
 }
 
 
