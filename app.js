@@ -1,3 +1,10 @@
+// =====================================
+//   NOTA SOBRE CACHÉ - GITHUB PAGE             
+// =====================================
+// Si se suben cambios y no se ven en producción:
+//    - Pulsar Ctrl + F5 O usar botón "Actualizar"
+// 👉 HTML se cachea más que JS/JSON
+// 👉 reglas.json usa timestamp para evitar caché
 
 <!-- FUNCIONALIDADES IMPLEMENTADAS -->
 
@@ -18,11 +25,6 @@
 
 
 
-
-
-
-
-  
 // 🔹 VERSION JS (editable manual) 
 const VERSION_JS = "1.1.3";
 
@@ -35,10 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
 console.log("HTML v" + VERSION_HTML);
 console.log("JS v" + VERSION_JS);
 
-  // Mostrar versión HTML y JS en la cabecera
-document.getElementById("versionHTML").innerText =
+  
+document.getElementById("versionHTML").innerText =      // Mostrar versión HTML en la cabecera
   "html " + VERSION_HTML;
-  document.getElementById("versionJS").innerText =
+  document.getElementById("versionJS").innerText =       // Mostrar versión JS en la cabecera
   "js " + VERSION_JS;
 
 
@@ -73,15 +75,13 @@ const panel = document.getElementById("panel");
 const panelTitulo = document.getElementById("panelTitulo");
 const panelContenido = document.getElementById("panelContenido");
 
-// Abre un panel con título + contenido
-function abrirPanel(titulo, contenido) {
+function abrirPanel(titulo, contenido) {      // Abre un panel con título + contenido. 👉 Muestra panel con información
   panel.classList.remove("hidden");
   panelTitulo.innerText = titulo;
   panelContenido.innerHTML = contenido;
 }
 
-// Cierra el panel
-function cerrarPanelFunc() {
+function cerrarPanelFunc() {      // 👉 Oculta panel
   panel.classList.add("hidden");
 }
 
@@ -172,7 +172,7 @@ Conviene probar a acceder a Carpeta Ciudadana GOB para comprobar si la pasarela 
 // 🔴 BOTÓN ANALIZAR 
 // =====================================
 
-btnAnalizar.onclick = () => {
+btnAnalizar.onclick = () => {      // 👉 Ejecuta el análisis de la traza pegada
 
   // Oculta resultados anteriores
   resultados.classList.add("hidden");
@@ -232,7 +232,7 @@ const haySGO = traza.includes("TR_SGO"); // Firma OK
 
 const hayErrorFlujo =
   traza.includes("FLUXE NO VÀLID") ||   // error típico de sesión/flujo
-  traza.includes("EXCEPCIÓ");           // excepciones generales
+  traza.includes("EXCEPCIÓ");          // ⚠️ literal genérico → revisar mensaje completo (ej: "Excepció al generar firma")
 
 
 const hayAutofirmaError =
@@ -370,58 +370,72 @@ console.log("JSON disponible:", reglasJSON);
 // 🔴 DIAGNÓSTICO TÉCNICO (TR_)
 // =====================================
 
-// 👉 Muestra el estado de cada evento TR_. SOLO diagnóstico técnico, NO interpretación funciona
+// 👉 Muestra el estado de cada evento TR_. SOLO diagnóstico técnico, NO interpretación funcional
+// 👉 SOLO diagnóstico técnico (lo que ha pasado en el sistema) 👉 NO interpreta el error (eso se hace en el árbol)
+
 let diagnosticoTexto = "";
 
 // FORMULARIO
-diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "\n";
-diagnosticoTexto += "TR_FRF (Fin formulario) → " + (hayFRF ? "OK" : "NO aparece") + "\n";
+diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "\n";    // 👉 Indica si el formulario se ha iniciado
+diagnosticoTexto += "TR_FRF (Fin formulario) → " + (hayFRF ? "OK" : "NO aparece") + "\n";       // 👉 Indica si el formulario se ha enviado correctamente
 
 // FIRMA
-diagnosticoTexto += "TR_SGI (Inicio firma) → " + (haySGI ? "OK" : "NO aparece") + "\n";
+diagnosticoTexto += "TR_SGI (Inicio firma) → " + (haySGI ? "OK" : "NO aparece") + "\n";          // 👉 Indica si se ha intentado iniciar la firma
 
-if (haySGX) {
+if (haySGX) {    // 👉 Si hay error en firma, se indica                                                                                
   diagnosticoTexto += "TR_SGX (Firma KO) → ERROR\n";
 }
 
-if (haySGO) {
+if (haySGO) {    // 👉 Si la firma ha ido bien, se indica                                              
   diagnosticoTexto += "TR_SGO (Firma OK) → OK\n";
 }
 
-document.getElementById("resDiagnostico").innerText = diagnosticoTexto;
+document.getElementById("resDiagnostico").innerText = diagnosticoTexto;    // 👉 Se muestra el diagnóstico en pantalla
 
+
+// =====================================
 // 🔴 ACCIÓN RECOMENDADA
+// =====================================
 
-let accionTexto = "";
+let accionTexto = ""; // 👉 Variable donde se construirá la acción final
 
-// 🔍 INTERPRETACIÓN BÁSICA DEL FLUJO
+  console.log("haySGI:", haySGI, "haySGX:", haySGX, "haySGO:", haySGO);    // 🔍 DEBUG DEL FLUJO 👉 Permite ver en consola qué está pasando
 
-// DEBUG 
-  console.log("haySGI:", haySGI, "haySGX:", haySGX, "haySGO:", haySGO);
 
-//  PRUEBA CONTROL POR REGLA
+// =====================================
+// 🔴 CONTROL POR REGLA (TEMPORAL)
+// =====================================
+// 👉 Este bloque aplica una regla concreta desde JSON 👉 SOLO se ejecuta si la regla detectada coincide
+// 👉 En el futuro se eliminará (motor genérico)
+
 if (idReglaDetectada === "fallo_formulario" && reglasJSON) {
 
   console.log("CONTROL POR REGLA ACTIVO (JSON)");
 
-  const regla = reglasJSON.reglas.find(r => r.id === "fallo_formulario");
+  const regla = reglasJSON.reglas.find(r => r.id === "fallo_formulario");   // 👉 Busca la regla en el JSON por ID
 
   if (regla) {
 
-    document.getElementById("resAccionRecomendada").innerText =
+    document.getElementById("resAccionRecomendada").innerText =     // 👉 Muestra clasificación + acción
       regla.clasificacion + "\n\n" + regla.accion;
 
-    document.getElementById("resCAI").value =
-      (formulario ? formulario + "\n\n" : "") +
-      regla.clasificacion + "\n\n" +
-      regla.cai + "\n\n" +
-      "Se ha informado al ciudadano.";
+    document.getElementById("resCAI").value =           // 👉 Genera el texto CAI final
+      (formulario ? formulario + "\n\n" : "") +         // 👉 añade formulario si existe
+      regla.clasificacion + "\n\n" +                    // 👉 añade clasificación
+      regla.cai + "\n\n" +                              // 👉 añade texto CAI definido en JSON
+      "Se ha informado al ciudadano.";                  // 👉 texto fijo (pendiente mejorar) o añadir manualmente en json
   }
 
-  return;
+  return;      // 🔥 IMPORTANTE → evita ejecutar lo de abajo
 }
 
 
+
+// =====================================
+// 🔴 LÓGICA BÁSICA (FALLBACK)
+// =====================================
+// 👉 Se usa cuando NO hay regla específica en JSON
+// 👉 Proporciona una interpretación simple del flujo
 
   
 if (!haySGI) {
@@ -437,13 +451,19 @@ else {
   accionTexto = "Caso no identificado";
 }
 
-console.log("ACCION FINAL:", accionTexto);
+console.log("ACCION FINAL:", accionTexto);    // 👉 Debug del resultado final
 
-document.getElementById("resAccionRecomendada").innerText = accionTexto;
+document.getElementById("resAccionRecomendada").innerText = accionTexto;    // 👉 Se muestra la acción en pantalla
 
 let clasificacion = "";
 
-// 🔴 CLASIFICACIÓN CAU
+
+// =====================================
+// 🔴 CLASIFICACIÓN CAU (BASE)
+// =====================================
+// 👉 Clasificación general según flujo detectado
+// 👉 Se usará mientras no esté todo en JSON
+
 
 if (!haySGI) {
   clasificacion = "[Acceso-Sesión] – Portafib/Soffid (pre-proveedor)";
@@ -459,8 +479,14 @@ else {
 }  
 
 
-// 🔴 TEXTO CAI
-document.getElementById("resCAI").value =
+
+// =====================================
+// 🔴 TEXTO CAI (SALIDA FINAL)
+// =====================================
+// 👉 Plantilla base cuando no se usa JSON
+// 👉 Se sustituirá completamente en futuras versiones
+
+document.getElementById("resCAI").value =      // 👉 añade formulario si existe
   (formulario ? formulario + "\n\n" : "") +
   "[Diagnóstico pendiente de análisis]\n\n" +
   "Se ha enviado correo al ciudadano:\n\n" +
@@ -469,44 +495,96 @@ document.getElementById("resCAI").value =
 };
 
 
-/* LIMPIAR */
-btnLimpiar.onclick = () => {
+
+// =====================================
+// 🔴 BOTÓN LIMPIAR
+// =====================================
+// 👉 Reinicia la interfaz al estado inicial
+
+btnLimpiar.onclick = () => {           // 👉 Desmarca opciones de ayuda visual
   checkSaml.checked = false;
   checkBlanco.checked = false;
-  cerrarPanelFunc();
-  resultados.classList.add("hidden");
-  placeholder.style.display = "";
+  cerrarPanelFunc();                   // 👉 Cierra panel de información si está abierto
+  resultados.classList.add("hidden");  // 👉 Oculta resultados
+  placeholder.style.display = "";      // 👉 Muestra el mensaje inicial
 };
 
-/* ACTUALIZAR */
+
+// =====================================
+// 🔴 BOTÓN ACTUALIZAR
+// =====================================
+// 👉 Fuerza recarga completa de la página
+// 👉 Evita caché del navegador
+// 👉 Útil cuando:
+//    - Se han subido cambios a GitHub Pages
+//    - No se ven cambios en HTML, JS o JSON
+// 👉 Alternativa manual:
+//    - Ctrl + F5 (recarga completa)
+// 👉 Nota:
+//    - HTML suele quedarse en caché
+//    - JS/JSON ya usan timestamp internamente
+
 btnActualizar.onclick = () => {
   location.href = location.pathname + "?v=" + Date.now();
 };
 
-/* REGLAS */
+
+
+// =====================================
+// 🔴 CARGAR REGLAS DESDE JSON
+// =====================================
+// 👉 Trae el archivo reglas.json y lo guarda en memoria
+// 👉 Este archivo contiene TODO el contenido (clasificación, acción, CAI)
+
 async function cargarReglas() {
+
   try {
+
+    // 👉 Se añade timestamp para evitar que el navegador use caché
     const r = await fetch("reglas.json?v=" + Date.now());
+
+    // 👉 Convierte la respuesta a objeto JSON
     const d = await r.json();
+
+    // 👉 Guarda las reglas en variable global
     reglasJSON = d;
+
+    // 👉 Debug en consola (ver contenido completo)
     console.log("REGLAS JSON:", d);
 
+    // 👉 Muestra versión del JSON en cabecera
     document.getElementById("versionJSON").innerText =
       "json " + d.version;
-       console.log("JSON v" + d.version);
+
+    console.log("JSON v" + d.version);
 
   } catch {
+
+    // 👉 Si falla la carga, se indica en pantalla
     document.getElementById("versionJSON").innerText =
       "json ?";
   }
 }
 
-cargarReglas();
+
+cargarReglas();      // 👉 Ejecuta la carga al iniciar la aplicación
+// =====================================
+// 🔴 CAMBIO DE MÉTODO (Cl@ve)
+// =====================================
+// 👉 Oculta selector de sistema
+// 👉 Limpia selección PC/móvil
+
 metodoClave.onchange = () => {
   bloqueSistema.style.display = "none";
   sisPC.checked = false;
   sisMovil.checked = false;
 };
+
+
+// =====================================
+// 🔴 CAMBIO DE MÉTODO (Certificado)
+// =====================================
+// 👉 Muestra selector de sistema (PC / móvil)
 
 metodoCert.onchange = () => {
   bloqueSistema.style.display = "block";
