@@ -42,7 +42,7 @@ document.getElementById("versionHTML").innerText =      // Mostrar versión HTML
 // =====================================
 // REFERENCIAS A ELEMENTOS HTML
 // =====================================
-// Guardamos todos los elementos que vamos a usar
+// Guardamos todos los elementos que se van a usar
 
 const btnDetalles = document.getElementById("btnDetalles");
 const btnTabla = document.getElementById("btnTabla");
