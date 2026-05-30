@@ -23,16 +23,19 @@
 
 
   
-// 🔹 VERSION JS (editable manual)
+// 🔹 VERSION JS (editable manual) 
 const VERSION_JS = "1.1.3";
 
+// Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
+
+// Espera a que el HTML esté completamente cargado antes de ejecutar
 document.addEventListener("DOMContentLoaded", () => {
 
 console.log("HTML v" + VERSION_HTML);
 console.log("JS v" + VERSION_JS);
 
-  // Mostrar versión HTML JS
+  // Mostrar versión HTML y JS en la cabecera
 document.getElementById("versionHTML").innerText =
   "html " + VERSION_HTML;
   document.getElementById("versionJS").innerText =
@@ -40,7 +43,12 @@ document.getElementById("versionHTML").innerText =
 
 
 
-/* FIX CRÍTICO */
+
+// =====================================
+// REFERENCIAS A ELEMENTOS HTML
+// =====================================
+// Guardamos todos los elementos que vamos a usar
+
 const btnDetalles = document.getElementById("btnDetalles");
 const btnTabla = document.getElementById("btnTabla");
 const checkSaml = document.getElementById("checkSaml");
@@ -56,25 +64,34 @@ const bloqueSistema = document.getElementById("bloqueSistema");
 const sisPC = document.getElementById("sisPC");
 const sisMovil = document.getElementById("sisMovil");
 
-/* PANEL */
+
+// =====================================
+// PANEL POPUP (mensajes informativos)
+// =====================================
+
 const panel = document.getElementById("panel");
 const panelTitulo = document.getElementById("panelTitulo");
 const panelContenido = document.getElementById("panelContenido");
 
+// Abre un panel con título + contenido
 function abrirPanel(titulo, contenido) {
   panel.classList.remove("hidden");
   panelTitulo.innerText = titulo;
   panelContenido.innerHTML = contenido;
 }
 
+// Cierra el panel
 function cerrarPanelFunc() {
   panel.classList.add("hidden");
 }
 
-/* CERRAR */
+// Botón cerrar panel
 document.getElementById("btnCerrarPanel").onclick = cerrarPanelFunc;
 
-/* DETALLES */
+// =====================================
+// 🔴 BOTÓN DETALLES - Muestra información de la versión
+// =====================================
+
 btnDetalles.onclick = () => {
   abrirPanel("Novedades BETA", `
   <ul>
@@ -85,7 +102,11 @@ btnDetalles.onclick = () => {
   `);
 };
 
-/* TABLA */
+
+// =====================================
+// 🔴 BOTÓN TABLA - De momento informativo
+// =====================================
+
 btnTabla.onclick = (e) => {
   e.preventDefault();
   abrirPanel("Tabla reglas", `
@@ -96,7 +117,11 @@ btnTabla.onclick = (e) => {
   `);
 };
 
-/* SAML */
+
+// =====================================
+// CHECK SAML - Muestra ayuda sobre error SAM
+// =====================================
+
 checkSaml.onchange = () => {
   if (checkSaml.checked) {
     checkBlanco.checked = false;
@@ -118,7 +143,11 @@ Es necesario restablecerla desde la opción “Olvido de contraseña”.
   } else cerrarPanelFunc();
 };
 
-/* BLANCO */
+
+// =====================================
+// CHECK PÁGINA EN BLANCO
+// =====================================
+
 checkBlanco.onchange = () => {
   if (checkBlanco.checked) {
     checkSaml.checked = false;
@@ -138,35 +167,42 @@ Conviene probar a acceder a Carpeta Ciudadana GOB para comprobar si la pasarela 
   } else cerrarPanelFunc();
 };
   
-/* ANALIZAR */
+
+// =====================================
+// 🔴 BOTÓN ANALIZAR 
+// =====================================
+
 btnAnalizar.onclick = () => {
 
-  // ocultar resultados previos
+  // Oculta resultados anteriores
   resultados.classList.add("hidden");
 
-  // 1. validar método
+  // ✅ 1. VALIDACIÓN MÉTODO
   if (!metodoClave.checked && !metodoCert.checked) {
     abrirPanel("Validación", "Debe seleccionar método");
     return;
   }
 
-  // 2. validar sistema (ANTES que la traza)
+  // ✅ 2. VALIDACIÓN SISTEMA (ANTES que la traza)
   if (metodoCert.checked && !sisPC.checked && !sisMovil.checked) {
     abrirPanel("Validación", "Debe seleccionar sistema");
     return;
   }
 
-  // 3. validar traza
+  // ✅ 3. VALIDACIÓN TRAZA
+  // 👉 Se obtiene la traza pegada por el usuario
 const texto = document.getElementById("inputTraza").value.trim();
 
-// pasar a mayúsculas para evitar problemas
+  // 👉 Se convierte todo a mayúsculas. Evita errores al buscar textos (TR_, literales, etc.)
 const traza = texto.toUpperCase();
 
+  // 👉 Si no hay texto → error
 if (!texto) {
   abrirPanel("Validación", "Todavía no ha pegado trazas");
   return;
 }
-
+  
+// 👉 Si no contiene TR_ → no es traza válida
 if (!traza.includes("TR_")) {
   abrirPanel("Validación", `Esto no es una traza válida`);
   return;
@@ -177,7 +213,7 @@ if (!traza.includes("TR_")) {
 // 🔴 DETECCIÓN DE EVENTOS TR_
 // =====================================
 // 👉 Aquí se detecta en qué punto del flujo está el trámite
-// 👉 NO tocar salvo que aparezcan nuevos TR_
+// 👉 NO modificar salvo que aparezcan nuevos TR_
 
 const hayFRI = traza.includes("TR_FRI"); // Inicio formulario
 const hayFRF = traza.includes("TR_FRF"); // Fin formulario
@@ -193,13 +229,18 @@ const haySGO = traza.includes("TR_SGO"); // Firma OK
 // 👉 SOLO modificar aquí para añadir nuevos literales
 // 👉 NO tocar el resto del código
 
+
 const hayErrorFlujo =
-  traza.includes("FLUXE NO VÀLID") ||
-  traza.includes("EXCEPCIÓ");
+  traza.includes("FLUXE NO VÀLID") ||   // error típico de sesión/flujo
+  traza.includes("EXCEPCIÓ");           // excepciones generales
+
 
 const hayAutofirmaError =
   traza.includes("SAF_27");
 
+  
+// 👉 Cl@ve no se detecta por texto (por ahora)
+// 👉 Se identifica por el método seleccionado por el usuario
 // const hayClaveError = ... → pendiente definir con ejemplos reales
   
 
@@ -219,7 +260,7 @@ const esCert = metodoCert.checked;
 // ==========================================================================
 // 🔴 ÁRBOL DE DECISIÓN DEL FLUJO
 // ==========================================================================
-// 👉 EL CEREBRO - AQUÍ se decide qué regla aplicar
+// 👉 EL CEREBRO - AQUÍ se decide qué regla aplicar en función del flujo + contexto
 // 👉 Para añadir nuevas reglas:
 //    1. Añadir condición en este árbol
 //    2. Crear la regla correspondiente en reglas.json con el mismo id
@@ -232,7 +273,7 @@ let idReglaDetectada = null;
 
 if (!haySGI) {
 
-  // 🔸 NO LLEGA A FIRMA
+  // 🔸 NO se llega a invocar la firma
 
   if (hayFRF && !hayErrorFlujo) {
     // ✅ FORMULARIO TERMINA PERO NO INICIA FIRMA
@@ -240,7 +281,7 @@ if (!haySGI) {
   }
 
   else if (hayFRF && hayErrorFlujo) {
-    // ✅ ERROR DE SESIÓN / FLUJO (PORTAFIB / SOFFID)
+    // ✅ ERROR DE SESIÓN / FLUJO (PORTAFIB)
     idReglaDetectada = "fallo_portafib";
   }
 
@@ -300,11 +341,15 @@ console.log("Regla detectada:", idReglaDetectada);
 
   
   
-// TODO OK
-  cerrarPanelFunc();
-  placeholder.style.display = "none";
-  resultados.classList.remove("hidden");
-  const formulario = document.getElementById("inputFormulario").value.trim();
+
+// =====================================
+// 🔴 TODO OK - MOSTRAR RESULTADOS EN PANTALLA
+// =====================================
+
+  cerrarPanelFunc();                                                           // 👉 Se oculta el panel de validación
+  placeholder.style.display = "none";                                          // 👉 Se oculta el mensaje inicial
+  resultados.classList.remove("hidden");                                       // 👉 Se muestran los resultados
+  const formulario = document.getElementById("inputFormulario").value.trim();  // 👉 Se obtiene el formulario pegado (si existe)
   
 // ✅ VERIFICACIÓN JSON
 console.log("JSON disponible:", reglasJSON);
