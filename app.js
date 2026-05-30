@@ -186,6 +186,8 @@ btnAnalizar.onclick = () => {      // 👉 Inicia el análisis completo de la tr
   // 👉 Se obtiene la traza pegada por el usuario
 const texto = document.getElementById("inputTraza").value.trim();
 
+
+  
   // 👉 Se convierte todo a mayúsculas. Evita errores al buscar textos (TR_, literales, etc.)
 const traza = texto.toUpperCase();
 
@@ -240,7 +242,9 @@ const hayAutofirmaError =
 // =====================================
 // 🔴 MÉTODO UTILIZADO
 // =====================================
-// 👉 Se usa SOLO en la fase de firma, de momento Método seleccionado manualmente por el técnico, pero en un futuro se cogerá del formulario pegado
+// 👉 Método seleccionado manualmente por el técnico
+// 👉 Tiene prioridad sobre cualquier dato que pudiera inferirse de la traza
+// 👉 En el futuro se podrá leer automáticamente desde el formulario pegado
 
 const esClave = metodoClave.checked;
 const esCert = metodoCert.checked;
@@ -469,21 +473,6 @@ else if (haySGI && haySGO) {
 else {
   clasificacion = "[Caso no identificado]";
 }  
-
-
-
-// =====================================
-// 🔴 TEXTO CAI (SALIDA FINAL)
-// =====================================
-// 👉 Plantilla base cuando no se usa JSON
-// 👉 Se sustituirá completamente en futuras versiones
-
-document.getElementById("resCAI").value =      // 👉 añade formulario si existe
-  (formulario ? formulario + "\n\n" : "") +
-  "[Diagnóstico pendiente de análisis]\n\n" +
-  "Se ha enviado correo al ciudadano:\n\n" +
-  "[Correo pendiente]";
-
 };
 
 
