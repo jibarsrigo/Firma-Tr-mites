@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.5";
+const VERSION_JS = "1.1.4";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -294,17 +294,40 @@ if (!contexto.llegaFirma) {
 
   // 🔸 NO se llega a invocar la firma
 
-  if (contexto.errorPreFirma && !hayErrorFlujo) {
-    // ✅ FORMULARIO TERMINA PERO NO INICIA FIRMA
-    idReglaDetectada = "fallo_formulario";
-  }
-
-  else if (contexto.errorPreFirma && hayErrorFlujo) {
-    // ✅ ERROR DE SESIÓN / FLUJO (PORTAFIB)
+  if (contexto.errorPreFirma && hayErrorFlujo) {
+    // ✅ PRIORIDAD → error flujo
     idReglaDetectada = "fallo_portafib";
   }
 
+  else if (contexto.errorPreFirma) {
+    // ✅ formulario sin firma
+    idReglaDetectada = "fallo_formulario";
+  }
+
 } else {
+
+  // 🔹 SÍ llega a firma
+
+  if (contexto.errorFirma) {
+
+    if (esClave) {
+      idReglaDetectada = "error_clave";
+
+    } else if (esCert) {
+
+      if (hayAutofirmaError) {
+        idReglaDetectada = "error_autofirma";
+
+      } else {
+        idReglaDetectada = "error_fire";
+      }
+    }
+
+  } else if (contexto.firmaOK) {
+    idReglaDetectada = "firma_correcta";
+  }
+}
+``
 
 
   // ===============================
