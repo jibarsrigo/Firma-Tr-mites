@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.5";
+const VERSION_JS = "1.1.4";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -232,6 +232,33 @@ const contexto = {
   hayFormulario: hayFRI || hayFRF,
   hayFinFormulario: hayFRF
 };
+
+
+// ─────────────────────────────
+// 🔹 FASE DEL FLUJO (PASO 3)
+// ─────────────────────────────
+// Aquí damos un paso más: no solo booleanos,
+// ahora clasificamos el estado del trámite en una "fase"
+// Esto nos permitirá simplificar el árbol en siguientes versiones
+
+if (!contexto.llegaFirma) {
+  contexto.fase = "pre_firma";   // No ha llegado a invocar firma
+
+} else if (contexto.errorFirma) {
+  contexto.fase = "error_firma"; // Llegó a firma pero falló
+
+} else if (contexto.firmaOK) {
+  contexto.fase = "firma_ok";    // Firma completada
+
+} else {
+  contexto.fase = "desconocida"; // Caso raro (por si aparece algo nuevo)
+}
+
+// DEBUG para ver claramente en qué fase está cada traza
+console.log("FASE:", contexto.fase);
+
+  
+  
 
 // 🔍 DEBUG
 console.log("CONTEXTO:", contexto);
