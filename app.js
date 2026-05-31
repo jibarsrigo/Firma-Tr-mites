@@ -286,21 +286,17 @@ const esCert = metodoCert.checked;
 
 let idReglaDetectada = null;
 
+
 // ===============================
 // 🔹 NIVEL 1 → ¿LLEGA A FIRMA?
 // ===============================
 
 if (!contexto.llegaFirma) {
 
-  // 🔸 NO se llega a invocar la firma
-
   if (contexto.errorPreFirma && hayErrorFlujo) {
-    // ✅ PRIORIDAD → error flujo
     idReglaDetectada = "fallo_portafib";
   }
-
   else if (contexto.errorPreFirma) {
-    // ✅ formulario sin firma
     idReglaDetectada = "fallo_formulario";
   }
 
@@ -327,7 +323,6 @@ if (!contexto.llegaFirma) {
     idReglaDetectada = "firma_correcta";
   }
 }
-``
 
 
   // ===============================
