@@ -614,7 +614,6 @@ metodoClave.onchange = () => {
   sisMovil.checked = false;
 };
 
-
 // =====================================
 // 🔴 CAMBIO DE MÉTODO (Certificado)
 // =====================================
@@ -623,5 +622,4 @@ metodoClave.onchange = () => {
 metodoCert.onchange = () => {
   bloqueSistema.style.display = "block";
 };
-}
-
+});
