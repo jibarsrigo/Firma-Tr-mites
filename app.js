@@ -479,14 +479,65 @@ else {
 // =====================================
 // 👉 Reinicia la interfaz al estado inicial
 
-btnLimpiar.onclick = () => {           // 👉 Desmarca opciones de ayuda visual
+btnLimpiar.onclick = () => {
+
+  // ─────────────────────────────
+  // 🔹 LIMPIEZA DE CHECKS DE ERROR VISUAL
+  // ─────────────────────────────
+  // Quitamos los radios de SAML / página en blanco
+  // (esto es solo ayuda visual, no afecta al análisis)
   checkSaml.checked = false;
   checkBlanco.checked = false;
-  cerrarPanelFunc();                   // 👉 Cierra panel de información si está abierto
-  resultados.classList.add("hidden");  // 👉 Oculta resultados
-  placeholder.style.display = "";      // 👉 Muestra el mensaje inicial
+
+
+  // ─────────────────────────────
+  // 🔹 LIMPIEZA DE CAMPOS DE TEXTO
+  // ─────────────────────────────
+  // Aquí realmente limpiamos lo importante:
+  // la traza y el formulario pegado por el técnico
+  document.getElementById("inputTraza").value = "";
+  document.getElementById("inputFormulario").value = "";
+
+
+  // ─────────────────────────────
+  // 🔹 RESET DE MÉTODO DE FIRMA
+  // ─────────────────────────────
+  // Quitamos selección de Cl@ve / certificado
+  metodoClave.checked = false;
+  metodoCert.checked = false;
+
+  // También limpiamos selección de sistema
+  sisPC.checked = false;
+  sisMovil.checked = false;
+
+  // Y ocultamos el bloque de sistema (como si empezaras de cero)
+  bloqueSistema.style.display = "none";
+
+
+  // ─────────────────────────────
+  // 🔹 LIMPIEZA DE RESULTADOS EN PANTALLA
+  // ─────────────────────────────
+  // Cerramos panel si está abierto (SAML, blanco, etc.)
+  cerrarPanelFunc();
+
+  // Ocultamos resultados anteriores
+  resultados.classList.add("hidden");
+
+  // Volvemos al estado inicial con el mensaje de "pega traza"
+  placeholder.style.display = "";
+
+
+  // ─────────────────────────────
+  // 🔹 INFO EN CONSOLA (PARA DEBUG)
+  // ─────────────────────────────
+  console.log("Sistema reiniciado (limpiar)");
+
 };
 
+
+
+
+  
 
 // =====================================
 // 🔴 BOTÓN ACTUALIZAR
