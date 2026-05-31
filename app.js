@@ -475,7 +475,7 @@ if (idReglaDetectada && reglasJSON) {
   return;
 }
 
-
+};
 
 
 
