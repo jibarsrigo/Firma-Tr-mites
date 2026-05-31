@@ -325,44 +325,6 @@ if (!contexto.llegaFirma) {
 }
 
 
-  // ===============================
-  // 🔹 SÍ LLEGA A FIRMA
-  // ===============================
-
-  // ===========================
-  // 🔸 NIVEL 2 → RESULTADO FIRMA
-  // ===========================
-
-  if (haySGX) {
-
-    // 🔻 FIRMA KO
-
-    // =======================
-    // 🔹 NIVEL 3 → PROVEEDOR
-    // =======================
-    // 👉 Aquí diferenciamos el origen del error
-
-    if (esClave) {
-      // ✅ ERROR EN CL@VE FIRMA
-      idReglaDetectada = "error_clave";
-
-    } else if (esCert) {
-
-      if (hayAutofirmaError) {
-        // ✅ ERROR EN AUTOFIRMA (cliente local)
-        idReglaDetectada = "error_autofirma";
-
-      } else {
-        // ✅ ERROR EN FIRE / CERTIFICADO (navegador / DNIe)
-        idReglaDetectada = "error_fire";
-      }
-    }
-  }
-  else if (haySGO) {
-    // 🔻 FIRMA OK
-    idReglaDetectada = "firma_correcta";
-  }
-}
 
 // ==========================================================================
 // ✅ FIN ÁRBOL DE DECISIÓN DEL FLUJO
@@ -372,12 +334,6 @@ if (!contexto.llegaFirma) {
 // 🔎 DEBUG FINAL (NO TOCAR)
 console.log("Regla detectada:", idReglaDetectada);
 
-  
-
-
-  
-
-  
   
 
 // =====================================
