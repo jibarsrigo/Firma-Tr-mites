@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.3";
+const VERSION_JS = "1.1.4";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -215,6 +215,26 @@ const hayFRF = traza.includes("TR_FRF"); // Fin formulario
 const haySGI = traza.includes("TR_SGI"); // Inicio firma
 const haySGX = traza.includes("TR_SGX"); // Firma KO
 const haySGO = traza.includes("TR_SGO"); // Firma OK
+
+  // =====================================
+// 🔴 CONTEXTO DE FLUJO (PASO 1)
+// =====================================
+// 👉 NO sustituye lógica actual
+// 👉 Solo encapsula el flujo en un objeto reutilizable
+
+const contexto = {
+  llegaFirma: haySGI,
+  errorPreFirma: hayFRF && !haySGI,
+  errorFirma: haySGX,
+  firmaOK: haySGO,
+
+  // 🔹 información adicional (no usada aún)
+  hayFormulario: hayFRI || hayFRF,
+  hayFinFormulario: hayFRF
+};
+
+// 🔍 DEBUG
+console.log("CONTEXTO:", contexto);
 
 
 // =====================================
