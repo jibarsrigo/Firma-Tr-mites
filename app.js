@@ -623,5 +623,5 @@ metodoClave.onchange = () => {
 metodoCert.onchange = () => {
   bloqueSistema.style.display = "block";
 };
-});
+}
 
