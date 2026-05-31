@@ -290,21 +290,22 @@ let idReglaDetectada = null;
 // 🔹 NIVEL 1 → ¿LLEGA A FIRMA?
 // ===============================
 
-if (!haySGI) {
+if (!contexto.llegaFirma) {
 
   // 🔸 NO se llega a invocar la firma
 
-  if (hayFRF && !hayErrorFlujo) {
+  if (contexto.errorPreFirma && !hayErrorFlujo) {
     // ✅ FORMULARIO TERMINA PERO NO INICIA FIRMA
     idReglaDetectada = "fallo_formulario";
   }
 
-  else if (hayFRF && hayErrorFlujo) {
+  else if (contexto.errorPreFirma && hayErrorFlujo) {
     // ✅ ERROR DE SESIÓN / FLUJO (PORTAFIB)
     idReglaDetectada = "fallo_portafib";
   }
 
 } else {
+
 
   // ===============================
   // 🔹 SÍ LLEGA A FIRMA
