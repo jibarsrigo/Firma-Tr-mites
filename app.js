@@ -477,54 +477,6 @@ if (idReglaDetectada && reglasJSON) {
 
 
 
-// =====================================
-// 🔴 LÓGICA BÁSICA (FALLBACK)
-// =====================================
-// 👉 Se usa cuando NO hay regla específica en JSON
-// 👉 Proporciona una interpretación simple del flujo
-
-  
-if (!haySGI) {
-  accionTexto = "Error de acceso o sesión antes de la firma";
-}
-else if (haySGI && haySGX) {
-  accionTexto = "Error en el proceso de firma";
-}
-else if (haySGI && haySGO) {
-  accionTexto = "Firma completada correctamente";
-}
-else {
-  accionTexto = "Caso no identificado";
-}
-
-console.log("ACCION FINAL:", accionTexto);    // 👉 Debug del resultado final
-
-document.getElementById("resAccionRecomendada").innerText = accionTexto;    // 👉 Se muestra la acción en pantalla
-
-let clasificacion = "";
-
-
-// =====================================
-// 🔴 CLASIFICACIÓN CAU (BASE)
-// =====================================
-// 👉 Clasificación general según flujo detectado
-// 👉 Se usará mientras no esté todo en JSON
-
-
-if (!haySGI) {
-  clasificacion = "[Acceso-Sesión] – Portafib/Soffid (pre-proveedor)";
-}
-else if (haySGI && haySGX) {
-  clasificacion = "[Firma] – proveedor de firma (Cl@ve / Autofirma / FIRE)";
-}
-else if (haySGI && haySGO) {
-  clasificacion = "[Correcto] – Firma completada";
-}
-else {
-  clasificacion = "[Caso no identificado]";
-}  
-};
-
 
 
 // =====================================
