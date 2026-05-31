@@ -318,37 +318,63 @@ let idReglaDetectada = null;
 // 🔹 NIVEL 1 → ¿LLEGA A FIRMA?
 // ===============================
 
-if (!contexto.llegaFirma) {
+// ===============================
+// 🔹 DECISIÓN POR FASE (PASO 4)
+// ===============================
+// Ahora el árbol deja de depender de mil condiciones
+// y pasa a trabajar por "fase del flujo"
+// → más claro, más mantenible, menos errores
 
-  if (contexto.errorPreFirma && hayErrorFlujo) {
+if (contexto.fase === "pre_firma") {
+
+  // ─────────────────────────────
+  // No ha llegado a firma (Portafib / formulario)
+  // ─────────────────────────────
+
+  if (hayErrorFlujo) {
+    // errores tipo FLUXE, sesión, etc.
     idReglaDetectada = "fallo_portafib";
-  }
-  else if (contexto.errorPreFirma) {
+
+  } else {
+    // simplemente no ha invocado la firma
     idReglaDetectada = "fallo_formulario";
   }
 
-} else {
+}
 
-  // 🔹 SÍ llega a firma
 
-  if (contexto.errorFirma) {
+else if (contexto.fase === "error_firma") {
 
-    if (esClave) {
-      idReglaDetectada = "error_clave";
+  // ─────────────────────────────
+  // Ha llegado a firma pero ha fallado
+  // Aquí diferenciamos proveedor
+  // ─────────────────────────────
 
-    } else if (esCert) {
+  if (esClave) {
+    idReglaDetectada = "error_clave";
 
-      if (hayAutofirmaError) {
-        idReglaDetectada = "error_autofirma";
+  } else if (esCert) {
 
-      } else {
-        idReglaDetectada = "error_fire";
-      }
+    if (hayAutofirmaError) {
+      idReglaDetectada = "error_autofirma";
+
+    } else {
+      idReglaDetectada = "error_fire";
     }
-
-  } else if (contexto.firmaOK) {
-    idReglaDetectada = "firma_correcta";
   }
+
+}
+
+
+else if (contexto.fase === "firma_ok") {
+
+  // ─────────────────────────────
+  // Firma correcta
+  // OJO: no implica registro correcto
+  // ─────────────────────────────
+
+  idReglaDetectada = "firma_correcta";
+
 }
 
 
