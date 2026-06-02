@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<script>
+const VERSION_HTML = "2.0.0";
+</script>
+
+<meta charset="UTF-8">
+<title>Analizador Trazas</title>
+
+<style>
+body { font-family: system-ui; margin:0; background:#f5f4f0; }
+
+/* HEADER */
+.header {
+  display:flex;
+  align-items:center;
+  padding:10px 16px;
+  background:white;
+  border-bottom:1px solid #ccc;
+}
+.header-left { display:flex; gap:10px; align-items:center; }
+.header-right { margin-left:auto; font-size:12px; color:#666; }
+
+.badge {
+  background:#01696f;
+  color:white;
+  padding:3px 8px;
+  border-radius:10px;
+  font-size:10px;
+}
+
+/* LAYOUT */
+.container { display:flex; }
+.sidebar { width:300px; padding:16px; background:#faf9f7; }
+.main { flex:1; padding:20px; }
+
+/* BLOQUES */
+.card { background:white; padding:12px; border-radius:10px; margin-bottom:12px; }
+
+textarea {
+  width:100%;
+  height:140px;
+  font-family:monospace;
+  padding:10px;
+}
+
+/* BOTONES */
+button {
+  padding:8px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+#btnAnalizar { background:#01696f; color:white; width:100%; }
+#btnLimpiar { background:#ddd; width:100%; margin-top:5px; }
+
+/* RESULTADO */
+#resultado { white-space:pre-wrap; }
+
+/* PANEL */
+.panel {
+  display:none;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:white;
+  border:1px solid #ccc;
+  padding:15px;
+  width:420px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <b>Analizador de Trazas</b>
+    <div class="badge">v2.0</div>
+    <span id="btnDetalles" style="cursor:pointer;color:#01696f;">Ver detalles</span>
+  </div>
+
+  <div class="header-right">
+    html <span id="versionHTML"></span> - 
+    json <span id="versionJSON"></span> - 
+    js <span id="versionJS"></span> 
+    | <a href="#" id="btnTabla">Reglas</a>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+  
+<div class="card">
+<b>Problemas acceso</b><br><br>
+<input type="radio" id="checkSaml"> Error SAML<br>
+<input type="radio" id="checkBlanco"> Página en blanco
+</div>
+
+<div class="card">
+<b>Traza</b><br><br>
+<textarea id="traza"></textarea>
+</div>
+
+<button id="btnAnalizar">Analizar</button>
+<button id="btnLimpiar">Limpiar</button>
+
+</div>
+
+<div class="main">
+<div id="resultado">Pega una traza y pulsa Analizar</div>
+</div>
+
+</div>
+
+<!-- PANEL -->
+<div id="panel" class="panel">
+  <b id="panelTitulo"></b><br><br>
+  <div id="panelContenido"></div><br>
+  <button onclick="cerrarPanel()">Cerrar</button>
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
