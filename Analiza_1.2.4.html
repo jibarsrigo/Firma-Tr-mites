@@ -1,42 +1,14 @@
-<!--// =====================================
-//   NOTA SOBRE CACHÉ - GITHUB PAGE             
-// =====================================
-// Si se suben cambios y no se ven en producción:
-//    - Pulsar Ctrl + F5 O usar botón "Actualizar"
-// 👉 HTML se cachea más que JS/JSON
-// 👉 reglas.json usa timestamp para evitar caché-->
-
-
-<!-- VERSION 1.0   - Sistema método OK + Visual Básico sin errores-->
-<!--         1.1   - Mover lógica JavaScript del html hacia app.js -->
-<!--               - Campo para Formulario Recibido -->
-<!--               - Mostrar resultados(Diagnostico-Acción-CAI) tras analizar -->
-<!-- VERSIÓN 1.2   - Mostrar versiones htlm json js, tambien en F12 console -->
-<!-- VERSION 1.2.1 - Se Añade MOTOR BASE: TR_ → detección → ID regla → control → salida personalizada-->
-<!-- VERSION 1.2.2 - Se Añade sistema de reglas activo: el flujo ya se controla por patrones detectados -->
-<!-- CÓMO AÑADIR REGLAS:
-1. Definir condición en app.js (detección de patrón)
-2. Añadir contenido en reglas.json (clasificación, acción, CAI) -->
-
-<!--   JS → lógica, detecta patrones/reglas (usa includes, textos, TR_).  motor + estructura mínima    
-       JSON → contenido (editable) a mostrar  -->
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
 
-<!-- VERSION ACTUAL --> 
 <script>
   // 🔹 VERSION HTML (editable manual)
-  const VERSION_HTML = "1.2.2";
+  const VERSION_HTML = "1.0.1";
 </script>
 
-  
 <meta charset="UTF-8">
-<title>Analizador V6</title>
-<!-- VERSION 1.1 - Añadido sistema método OK -->
-<!--             - Visual Básico sin errores -->
+<title>Analizador V1.0</title>
 
 <style>
 body {
@@ -107,7 +79,6 @@ body {
   margin-bottom:14px;
 }
 
-/* CHECKS */
 .check {
   display:flex;
   gap:10px;
@@ -117,8 +88,6 @@ body {
   margin-bottom:6px;
 }
 
-/* TEXTAREA */
-
 textarea {
   width:100%;
   height:100px;
@@ -127,11 +96,6 @@ textarea {
   padding:10px;
   font-family: monospace;
   box-sizing: border-box;
-}
-
-
-#inputFormulario {
-  height:60px;
 }
 
 textarea:focus {
@@ -193,19 +157,13 @@ textarea:focus {
 
 .hidden { display:none; }
 
-
 #placeholder {
   text-align:center;
   color:#999;
   margin-top:120px;
 }
-
-#resCAI {
-  height: 200px;
-}
 </style>
 
-  
 </head>
 
 <body>
@@ -216,7 +174,7 @@ textarea:focus {
     <b>Analizador de Trazas</b>
 
     <div>
-      <div class="badge">BETA v 1.2.4</div>
+      <div class="badge">v1.0</div>
       <div class="ver-detalles" id="btnDetalles">Ver detalles ▾</div>
     </div>
 
@@ -239,65 +197,60 @@ textarea:focus {
 
   <div class="sidebar">
 
+    <!-- ✅ SIN CAMBIOS -->
     <div class="card">
       <b>Problemas de acceso</b><br><br>
 
-     
-<label class="check">
-  <input type="radio" name="problema" id="checkSaml"> Error SAML
-</label>
+      <label class="check">
+        <input type="radio" name="problema" id="checkSaml"> Error SAML
+      </label>
 
-<label class="check">
-  <input type="radio" name="problema" id="checkBlanco"> Página en blanco
-</label>
+      <label class="check">
+        <input type="radio" name="problema" id="checkBlanco"> Página en blanco
+      </label>
 
     </div>
 
-    
-<div class="card">
-  <b>Traza</b><br><br>
-  <textarea id="inputTraza" placeholder="Pega la traza aquí..."></textarea>
-</div>
+    <!-- ✅ TRAZA -->
+    <div class="card">
+      <b>Traza</b><br><br>
+      <textarea id="inputTraza" placeholder="Pega la traza aquí..."></textarea>
+    </div>
 
-<div class="card">
-  <b>Formulario recibido</b><br><br>
-  <textarea id="inputFormulario" placeholder="Pega aquí el formulario recibido..."></textarea>
-</div>
+    <!-- ✅ MÉTODO (SIN CAMBIOS) -->
+    <div class="card">
 
-<div class="card">
+      <b>Método</b><br><br>
 
-  <b>Método</b><br><br>
+      <label class="check">
+        <input type="radio" name="metodo" id="metodoClave"> Cl@ve
+      </label>
 
-  <label class="check">
-    <input type="radio" name="metodo" id="metodoClave"> Cl@ve
-  </label>
+      <label class="check">
+        <input type="radio" name="metodo" id="metodoCert"> Certificado local
+      </label>
 
-  <label class="check">
-    <input type="radio" name="metodo" id="metodoCert"> Certificado local
-  </label>
+      <div id="bloqueSistema" style="display:none; margin-top:10px;">
+        <b>Sistema</b><br><br>
 
-  <div id="bloqueSistema" style="display:none; margin-top:10px;">
-    <b>Sistema</b><br><br>
+        <label class="check">
+          <input type="radio" name="sistema" id="sisPC">
+          <div>
+            Ordenador<br>
+            <span style="font-size:11px;color:#777;">Windows / Mac / Linux</span>
+          </div>
+        </label>
 
-    <label class="check">
-      <input type="radio" name="sistema" id="sisPC">
-      <div>
-        Ordenador<br>
-        <span style="font-size:11px;color:#777;">Windows / Mac / Linux</span>
+        <label class="check">
+          <input type="radio" name="sistema" id="sisMovil">
+          <div>
+            Dispositivo móvil<br>
+            <span style="font-size:11px;color:#777;">Android / iPhone / iPad</span>
+          </div>
+        </label>
       </div>
-    </label>
 
-    <label class="check">
-      <input type="radio" name="sistema" id="sisMovil">
-      <div>
-        Dispositivo móvil<br>
-        <span style="font-size:11px;color:#777;">Android / iPhone / iPad</span>
-      </div>
-    </label>
-  </div>
-
-</div>
-
+    </div>
 
     <div class="actions">
       <button id="btnAnalizar">Analizar</button>
@@ -308,6 +261,7 @@ textarea:focus {
 
   <div class="main">
 
+    <!-- ✅ PANEL ORIGINAL (NO TOCADO) -->
     <div id="panel" class="panel hidden">
       <div class="panel-header">
         <span id="panelTitulo"></span>
@@ -316,36 +270,18 @@ textarea:focus {
       <div class="panel-body" id="panelContenido"></div>
     </div>
 
-   <div id="placeholder">
-  Pega una traza y pulsa Analizar
-</div>
+    <!-- ✅ PLACEHOLDER ORIGINAL -->
+    <div id="placeholder">
+      Pega una traza y pulsa Analizar
+    </div>
 
-<div id="resultados" class="hidden">
-
-   <!-- 🔴 Análisis Trazas -->
-  <div class="card">
-    <b>Análisis Trazas</b><br><br>
-    <div id="resDiagnostico"></div>
-  </div>
-
-   <!-- 🔴 ACCIÓN RECOMENDADA -->
-  <div class="card">
-    <b>Acción recomendada</b><br><br>
-    <div id="resAccionRecomendada"></div>
-  </div>
-
-  <!-- 🔴 TEXTO PARA CAI -->
-  <div class="card">
-    <b>Texto para CAI</b><br><br>
-    <textarea id="resCAI"></textarea>
-  </div>
-
-</div>
+    <!-- ✅ RESULTADO (solo esto sustituye CAI y demás) -->
+    <div id="resultado"></div>
 
   </div>
 </div>
 
-<script src="app.js"></script>
+<script src="Analiza_Formulario_Portafib.js"></script>
 
 </body>
 </html>
