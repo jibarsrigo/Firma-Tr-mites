@@ -3,7 +3,8 @@
 <head>
 
 <script>
-const VERSION_HTML = "1.0.1";
+  // 🔹 VERSION HTML (editable manual)
+  const VERSION_HTML = "1.0.2";
 </script>
 
 <meta charset="UTF-8">
@@ -89,11 +90,17 @@ body {
 
 textarea {
   width:100%;
-  height:140px;
+  height:100px;
   border-radius:10px;
   border:1px solid rgba(0,0,0,0.1);
   padding:10px;
   font-family: monospace;
+  box-sizing: border-box;
+}
+
+textarea:focus {
+  outline:none;
+  border-color:#01696f;
 }
 
 /* BOTONES */
@@ -132,10 +139,12 @@ textarea {
   display:flex;
   justify-content:space-between;
   font-weight:600;
+  color:#964219;
 }
 
 .panel-body {
   padding:12px 14px;
+  font-size:13px;
 }
 
 .btn-close {
@@ -173,9 +182,12 @@ textarea {
   </div>
 
   <div class="header-right">
-    html <span id="versionHTML"></span> -
-    json <span id="versionJSON"></span> -
-    js <span id="versionJS"></span>
+   Lectura:
+<span id="versionHTML"></span>
+-
+<span id="versionJSON"></span>
+-
+<span id="versionJS"></span>
     <a href="#" id="btnTabla">Reglas</a>
   </div>
 
@@ -183,72 +195,90 @@ textarea {
 
 <div class="container">
 
-<div class="sidebar">
+  <div class="sidebar">
 
-  <!-- ✅ PROBLEMAS ACCESO (MISMO COMPORTAMIENTO) -->
-  <div class="card">
-    <b>Problemas de acceso</b><br><br>
+    <!-- ✅ SIN CAMBIOS -->
+    <div class="card">
+      <b>Problemas de acceso</b><br><br>
 
-    <!-- ✅ AHORA SON RADIO EXCLUSIVO -->
-    <label class="check">
-      <input type="radio" name="problema" id="checkSaml">
-      Error SAML
-    </label>
+      <label class="check">
+        <input type="radio" name="problema" id="checkSaml"> Error SAML
+      </label>
 
-    <label class="check">
-      <input type="radio" name="problema" id="checkBlanco">
-      Página en blanco
-    </label>
+      <label class="check">
+        <input type="radio" name="problema" id="checkBlanco"> Página en blanco
+      </label>
 
-  </div>
-
-  <!-- ✅ TRAZA -->
-  <div class="card">
-    <b>Traza</b><br><br>
-    <textarea id="inputTraza"></textarea>
-  </div>
-
-  <!-- ✅ NUEVO MÉTODO (copiado de tu versión original) -->
-  <div class="card">
-
-    <b>Método</b><br><br>
-
-    <label class="check">
-      <input type="radio" name="metodo" id="metodoClave"> Cl@ve
-    </label>
-
-    <label class="check">
-      <input type="radio" name="metodo" id="metodoCert"> Certificado local
-    </label>
-
-  </div>
-
-  <div class="actions">
-    <button id="btnAnalizar">Analizar</button>
-    <button id="btnLimpiar">Limpiar</button>
-  </div>
-
-</div>
-
-<div class="main">
-
-  <!-- ✅ PANEL ORIGINAL -->
-  <div id="panel" class="panel hidden">
-    <div class="panel-header">
-      <span id="panelTitulo"></span>
-      <button class="btn-close" id="btnCerrarPanel">Cerrar ✕</button>
     </div>
-    <div class="panel-body" id="panelContenido"></div>
+
+    <!-- ✅ TRAZA -->
+    <div class="card">
+      <b>Traza</b><br><br>
+      <textarea id="inputTraza" placeholder="Pega la traza aquí..."></textarea>
+    </div>
+
+    <!-- ✅ MÉTODO (SIN CAMBIOS) -->
+    <div class="card">
+
+      <b>Método</b><br><br>
+
+      <label class="check">
+        <input type="radio" name="metodo" id="metodoClave"> Cl@ve
+      </label>
+
+      <label class="check">
+        <input type="radio" name="metodo" id="metodoCert"> Certificado local
+      </label>
+
+      <div id="bloqueSistema" style="display:none; margin-top:10px;">
+        <b>Sistema</b><br><br>
+
+        <label class="check">
+          <input type="radio" name="sistema" id="sisPC">
+          <div>
+            Ordenador<br>
+            <span style="font-size:11px;color:#777;">Windows / Mac / Linux</span>
+          </div>
+        </label>
+
+        <label class="check">
+          <input type="radio" name="sistema" id="sisMovil">
+          <div>
+            Dispositivo móvil<br>
+            <span style="font-size:11px;color:#777;">Android / iPhone / iPad</span>
+          </div>
+        </label>
+      </div>
+
+    </div>
+
+    <div class="actions">
+      <button id="btnAnalizar">Analizar</button>
+      <button id="btnLimpiar">Limpiar</button>
+    </div>
+
   </div>
 
-  <div id="placeholder">
-    Pega una traza y pulsa Analizar
+  <div class="main">
+
+    <!-- ✅ PANEL ORIGINAL (NO TOCADO) -->
+    <div id="panel" class="panel hidden">
+      <div class="panel-header">
+        <span id="panelTitulo"></span>
+        <button class="btn-close" id="btnCerrarPanel">Cerrar ✕</button>
+      </div>
+      <div class="panel-body" id="panelContenido"></div>
+    </div>
+
+    <!-- ✅ PLACEHOLDER ORIGINAL -->
+    <div id="placeholder">
+      Pega una traza y pulsa Analizar
+    </div>
+
+    <!-- ✅ RESULTADO (solo esto sustituye CAI y demás) -->
+    <div id="resultado"></div>
+
   </div>
-
-  <div id="resultado"></div>
-
-</div>
-
 </div>
 
 <script src="Analiza_Formulario_Portafib.js"></script>
