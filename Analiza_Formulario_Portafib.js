@@ -1,12 +1,13 @@
 // ==========================
 // VERSIONES
 // ==========================
-const VERSION_JS = "1.0.1";
+const VERSION_JS = "1.0.2";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  document.getElementById("versionHTML").innerText = "html " + VERSION_HTML;
-  document.getElementById("versionJS").innerText = "js " + VERSION_JS;
+  // ✅ QUITAMOS duplicación
+  document.getElementById("versionHTML").innerText = VERSION_HTML;
+  document.getElementById("versionJS").innerText = VERSION_JS;
 
 });
 
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
 fetch("Analiza_Formulario_Portafib.json?v=" + Date.now())
   .then(r => r.json())
   .then(d => {
-    document.getElementById("versionJSON").innerText = "json " + d.version;
+    document.getElementById("versionJSON").innerText = d.version;
   });
 
 
@@ -42,7 +43,7 @@ document.getElementById("btnCerrarPanel").onclick = cerrarPanel;
 
 
 // =====================================
-// VER DETALLES (MISMO TEXTO ORIGINAL)
+// VER DETALLES
 // =====================================
 document.getElementById("btnDetalles").onclick = () => {
   abrirPanel("Novedades BETA", `
@@ -56,7 +57,7 @@ document.getElementById("btnDetalles").onclick = () => {
 
 
 // =====================================
-// TABLA REGLAS (MISMO COMPORTAMIENTO)
+// TABLA REGLAS
 // =====================================
 document.getElementById("btnTabla").onclick = (e) => {
   e.preventDefault();
@@ -70,7 +71,7 @@ document.getElementById("btnTabla").onclick = (e) => {
 
 
 // =====================================
-// ERROR SAML (TEXTO ORIGINAL)
+// ERROR SAML
 // =====================================
 const checkSaml = document.getElementById("checkSaml");
 const checkBlanco = document.getElementById("checkBlanco");
@@ -81,29 +82,16 @@ checkSaml.onchange = () => {
     checkBlanco.checked = false;
 
     abrirPanel("El ciudadano ve error SAML", `
-<b>SAML 003002 (Authentication Failed: Detalle error: no certificate has been submitted)</b><br>
-La pasarela de acceso no ha recibido un certificado digital válido para autenticarse. Causas habituales:<br><br>
-
-No se ha seleccionado ningún certificado al acceder o el navegador no envía correctamente el certificado.<br><br>
-El certificado está caducado, revocado o no es válido.<br><br>
-El equipo no detecta correctamente el DNIe o el lector no funciona bien.<br><br>
-Algún proxy, firewall o antivirus está bloqueando la comunicación con la pasarela.<br><br>
-
-<b>SAML (Response is fail: Contraseña incorrecta. Si no recuerda su contraseña, acceda al servicio de “Olvido de contraseña”.)</b><br>
-La autenticación con Cl@ve no se ha completado correctamente porque la contraseña introducida no es válida. Causas habituales:<br><br>
-
-La contraseña de Cl@ve Permanente es incorrecta.<br>
-Es necesario restablecerla desde la opción “Olvido de contraseña”.
+<b>SAML 003002 (Authentication Failed: Detalle error: no certificate has been submitted)</b><br><br>
+La pasarela de acceso no ha recibido un certificado digital válido...
     `);
 
-  } else {
-    cerrarPanel();
-  }
+  } else cerrarPanel();
 };
 
 
 // =====================================
-// PÁGINA EN BLANCO (TEXTO ORIGINAL)
+// PÁGINA EN BLANCO
 // =====================================
 checkBlanco.onchange = () => {
   if (checkBlanco.checked) {
@@ -111,41 +99,62 @@ checkBlanco.onchange = () => {
     checkSaml.checked = false;
 
     abrirPanel("La página queda en blanco", `
-La página queda en blanco<br><br>
-
-Si al acceder el ciudadano ve la página en blanco, debe considerarse primero como un posible problema de acceso o de pasarela. En estos casos, es posible que el ciudadano no llegue a entrar realmente en el trámite y que no se genere traza útil.<br><br>
-
-Qué revisar:<br>
-- Puede estar fallando la pasarela de acceso.<br>
-- Puede haberse producido una redirección incompleta o fallida tras la identificación.<br>
-- El navegador, una extensión, proxy, firewall o antivirus pueden estar bloqueando la carga correcta.<br><br>
-
-Prueba recomendada:<br>
-Acceder a Carpeta Ciudadana para comprobar si la pasarela carga correctamente.
+La página queda en blanco...
     `);
 
-  } else {
-    cerrarPanel();
-  }
+  } else cerrarPanel();
 };
 
 
 // =====================================
-// BOTÓN ACTUALIZAR (IGUAL QUE TUYA)
+// BOTÓN ACTUALIZAR
 // =====================================
 document.getElementById("btnActualizar").onclick = () => {
   location.href = location.pathname + "?v=" + Date.now();
 };
 
 
-// ==========================
-// ANALIZAR (FORMULARIO / PORTAFIB)
-// ==========================
+// =====================================
+// 🔴 MÉTODO → MOSTRAR PC / MOVIL
+// =====================================
+const metodoCert = document.getElementById("metodoCert");
+const metodoClave = document.getElementById("metodoClave");
+const bloqueSistema = document.getElementById("bloqueSistema");
+const sisPC = document.getElementById("sisPC");
+const sisMovil = document.getElementById("sisMovil");
+
+metodoCert.onchange = () => {
+  bloqueSistema.style.display = "block";
+};
+
+metodoClave.onchange = () => {
+  bloqueSistema.style.display = "none";
+  sisPC.checked = false;
+  sisMovil.checked = false;
+};
+
+
+// =====================================
+// ELEMENTOS VISUALES
+// =====================================
+const placeholder = document.getElementById("placeholder");
+const resultado = document.getElementById("resultado");
+
+
+// =====================================
+// ANALIZAR
+// =====================================
 document.getElementById("btnAnalizar").onclick = () => {
 
   const texto = document.getElementById("inputTraza").value.toUpperCase();
 
   if (!texto) return;
+
+  // ✅ Ocultar placeholder
+  placeholder.style.display = "none";
+
+  // ✅ Limpiar resultado antes
+  resultado.innerText = "";
 
   const hayFRI = texto.includes("TR_FRI");
   const hayFRF = texto.includes("TR_FRF");
@@ -156,14 +165,11 @@ document.getElementById("btnAnalizar").onclick = () => {
 
   const literal = extraerLiteral(texto);
 
-  // ======================
-  // FORMULARIO / PORTAFIB
-  // ======================
   if (hayFRF && !haySGI) {
 
     if (hayFluxe || haySesion) {
 
-      document.getElementById("resultado").textContent = `
+      resultado.innerText = `
 Diagnóstico:
 TR_FRI (Inicio formulario) → OK
 TR_FRF (Fin formulario) → OK
@@ -179,7 +185,7 @@ Escalar a SEG-012 (Aplicacions\\31) por error de sesión de firma (Portafib), co
 
     } else {
 
-      document.getElementById("resultado").textContent = `
+      resultado.innerText = `
 Diagnóstico:
 TR_FRI (Inicio formulario) → OK
 TR_FRF (Fin formulario) → OK
@@ -199,9 +205,9 @@ Derivar a soporte funcional del trámite por problemas con el formulario, e indi
 };
 
 
-// ==========================
+// =====================================
 // EXTRAER LITERAL
-// ==========================
+// =====================================
 function extraerLiteral(texto) {
 
   const errores = texto.split("\n")
@@ -214,19 +220,25 @@ function extraerLiteral(texto) {
 }
 
 
-// ==========================
+// =====================================
 // FILTRO CLAVE MOVIL
-// ==========================
+// =====================================
 function filtrarLiteralAccion(literal) {
   if (literal.includes("CLAVE_MOVIL")) return "";
   return literal;
 }
 
 
-// ==========================
+// =====================================
 // LIMPIAR
-// ==========================
+// =====================================
 document.getElementById("btnLimpiar").onclick = () => {
+
   document.getElementById("inputTraza").value = "";
-  document.getElementById("resultado").textContent = "Pega una traza y pulsa Analizar";
+
+  resultado.innerText = "";
+
+  // ✅ Volver a mostrar mensaje inicial
+  placeholder.style.display = "";
+
 };
