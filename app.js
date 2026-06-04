@@ -319,7 +319,7 @@ const lineasError = lineas.filter(linea =>
   linea.includes("EXCEPCIÓ") ||
   linea.includes("EXCEPTION") ||
   linea.includes("SAF_") ||
-  linea.includes("ERROR") && !linea.includes("CLAVEFIRMA")
+  (linea.includes("ERROR") && !linea.includes("CLAVEFIRMA"))
 );
 
   
