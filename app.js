@@ -483,9 +483,14 @@ if (idReglaDetectada && reglasJSON) {
 
 }
 
+// 👉 Primero ocultamos el placeholder (mensaje inicial)
+placeholder.style.display = "none";
+
 // 👉 Mostramos SIEMPRE el resultado en pantalla
 document.getElementById("resultado").innerText = salidaFinal;
 
+// 👉 Nos aseguramos de que el bloque resultado esté visible
+document.getElementById("resultado").style.display = "block";
 };
 
 
@@ -537,9 +542,14 @@ btnLimpiar.onclick = () => {
   cerrarPanelFunc();
 
 
-  // Volvemos al estado inicial con el mensaje de "pega traza"
-  placeholder.style.display = "";
-  document.getElementById("resultado").innerText = "";
+  // 👉 Volvemos al estado inicial
+placeholder.style.display = "";
+
+// 👉 Limpiamos el contenido del resultado
+document.getElementById("resultado").innerText = "";
+
+// 👉 Ocultamos el bloque de resultado
+document.getElementById("resultado").style.display = "none";
 
 
   // ─────────────────────────────
