@@ -6,7 +6,7 @@
 <!--                - Se normaliza la traza a mayúsculas para evitar problemas en la detección -->
 <!--                - Se detectan los eventos TR_ principales dentro de la traza -->
 <!--                - Se genera un diagnóstico técnico dinámico en función de los TR_ detectados -->
-<!--                - Se construye automáticamente un texto base para CAI incluyendo el formulario si existe -->
+<!--                - Se genera diagnóstico + acción basada en flujo TR_ -->
 <!-- VERSION 1.1    - Se muestra lectura html json y js panel superior html y editable desde codigo -->
 <!-- VERSION 1.1.1  - Se Añade 🔴 DETECCIÓN DE REGLAS (PATRONES) con la primera regla par el Formulario-->
 <!-- VERSION 1.1.2  - MOTOR BASE DE ANÁLISIS TR_ → detección → ID regla → control → salida personalizada → stop -->
