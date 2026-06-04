@@ -462,8 +462,6 @@ if (idReglaDetectada && reglasJSON) {
 document.getElementById("resultado").innerText = salidaFinal;
 
   return;
-}
-
 };
 
 
