@@ -401,19 +401,29 @@ if (contexto.fase === "pre_firma") {
   // Aquí diferenciamos proveedor
   // ─────────────────────────────
 
-  if (esClave) {
-    idReglaDetectada = "error_clave";
+ // 👉 Primero comprobamos si el error es de Autofirma (SAF_27)
+// 🔹 PRIORIDAD: si aparece SAF_27, SIEMPRE es Autofirma
+// 🔹 aunque el técnico haya marcado Cl@ve
 
-  } else if (esCert) {
+if (hayAutofirmaError) {
 
-    if (hayAutofirmaError) {
-      idReglaDetectada = "error_autofirma";
+  // 👉 Error real: Autofirma (certificado local)
+  idReglaDetectada = "error_autofirma";
 
-    } else {
-      idReglaDetectada = "error_fire";
-    }
-  }
+}
+else if (esClave) {
 
+  // 👉 Error real: Cl@ve
+  idReglaDetectada = "error_clave";
+
+}
+else if (esCert) {
+
+  // 👉 Certificado local sin SAF → FIRE
+  idReglaDetectada = "error_fire";
+}
+
+  
 }
 
 
