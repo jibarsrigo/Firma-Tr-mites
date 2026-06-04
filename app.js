@@ -280,12 +280,28 @@ const lineas = traza.split("\n");
 
 
 // 👉 Paso 2: filtramos solo líneas que contienen errores reales
-// 🔹 evitamos detectar palabras sueltas fuera de contexto
+// 🔹 ampliamos detección para cubrir casos de sesión, firma y técnicos
+
 const lineasError = lineas.filter(linea =>
-  linea.includes("ERROR") ||
+  // 👉 errores de flujo
+  linea.includes("FLUXE") ||
+
+  // 👉 errores de sesión
+  linea.includes("SESSIÓ") ||
+  linea.includes("SESSION") ||
+
+  // 👉 errores técnicos
   linea.includes("EXCEPCIÓ") ||
-  linea.includes("FLUXE")
+  linea.includes("EXCEPTION") ||
+
+  // 👉 errores de firma (AutoFirma)
+  linea.includes("SAF_") ||
+
+  // 👉 errores genéricos reales
+  linea.includes("ERROR")
 );
+
+  
 
 
 // 👉 Paso 3: eliminamos duplicados
