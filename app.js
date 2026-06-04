@@ -327,8 +327,9 @@ const lineasError = lineas.filter(linea =>
   // 👉 errores de firma (AutoFirma)
   linea.includes("SAF_") ||
 
-  // 👉 errores genéricos reales
-  linea.includes("ERROR")
+// 👉 errores genéricos (evitamos mezclar con Cl@ve real)
+(linea.includes("ERROR") && !linea.includes("CLAVEFIRMA"))
+
 );
   
 // 👉 Paso 2: eliminamos duplicados
@@ -456,7 +457,7 @@ const numFRF = eventos.filter(e => e === "TR_FRF").length;
 
 // 👉 Caso: NO llega a firma (pre_firma)
 
-if (hayErrorPortafibReal){
+if (!haySGI && hayErrorPortafibReal){
 
   // 👉 Error técnico REAL de sesión/flujo (Portafib / Soffid)
   // 🔹 hay literales tipo FLUXE, SESSION, 227, timestamp…
@@ -498,7 +499,26 @@ if (hayAutofirmaError) {
 }
 // 👉 Cl@ve real (por código)
 else if (hayErrorClaveReal) {
-  idReglaDetectada = "error_clave";
+
+  // 👉 Clasificación según código real Cl@ve
+
+  if (/^(8|9|10|11|12|13|14|15)$/.test(codigoClaveDetectado)) {
+
+    // 👉 Error real de credencial (el más común)
+    idReglaDetectada = "error_clave";
+
+  }
+  else if (codigoClaveDetectado === "103") {
+
+    // 👉 Certificado bloqueado tras intentos
+    idReglaDetectada = "error_clave_103";
+
+  }
+  else if (codigoClaveDetectado === "101") {
+
+    idReglaDetectada = "error_clave_registro";
+
+  }
 }
 // 👉 Método seleccionado (fallback)
 else if (esClave) {
@@ -597,10 +617,14 @@ diagnosticoTexto += "\n=== INTERPRETACIÓN ===\n\n";
 
 if (!haySGI) {
 
-  // 👉 No llega a firmar → problema de acceso/sesión
-  diagnosticoTexto += "La firma NO llega a iniciarse (problema de acceso/sesión).\n";
+  if (hayErrorPortafibReal) {
 
-}
+    diagnosticoTexto += "La firma NO se inicia por error de sesión/flujo (Portafib/Soffid).\n";
+
+  } else {
+
+    diagnosticoTexto += "La firma NO se inicia (posible fallo en
+      
 else if (hayAutofirmaError) {
 
   // 👉 SAF_27 detectado → error REAL de Autofirma
