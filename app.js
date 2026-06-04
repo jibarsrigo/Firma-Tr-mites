@@ -396,7 +396,6 @@ console.log("Regla detectada:", idReglaDetectada);
   cerrarPanelFunc();                                                           // 👉 Se oculta el panel de validación
   placeholder.style.display = "none";                                          // 👉 Se oculta el mensaje inicial
   resultados.classList.remove("hidden");                                       // 👉 Se muestran los resultados
-  const formulario = document.getElementById("inputFormulario").value.trim();  // 👉 Se obtiene el formulario pegado (si existe)
 
   
 // =====================================
