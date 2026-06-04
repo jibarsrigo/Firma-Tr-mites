@@ -569,7 +569,7 @@ async function cargarReglas() {
   try {
 
     // 👉 Se añade timestamp para evitar que el navegador use caché
-    const r = await fetch("reglas (5).json?v=" + Date.now());
+    const r = await fetch("reglas.json?v=" + Date.now());
 
     // 👉 Convierte la respuesta a objeto JSON
     const d = await r.json();
