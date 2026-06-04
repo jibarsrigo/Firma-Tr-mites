@@ -345,19 +345,20 @@ if (contexto.fase === "pre_firma") {
  // 👉 Caso: NO llega a firma (pre_firma)
 // 🔹 Diferenciamos si el problema es de flujo o no
 
-if (hayFluxe || haySesion) {
+// 👉 Solo consideramos errores de flujo si NO ha llegado a firma
+// 🔹 Si hay TR_SGI, ignoramos errores anteriores (FLUXE, sesión, etc.)
 
-  // 👉 Hay errores de flujo/sesión → Portafib
+if (!haySGI && (hayFluxe || haySesion)) {
+
+  // 👉 Error real de flujo (Portafib/Soffid)
   idReglaDetectada = "fallo_portafib";
 
 } else {
 
-  // 👉 No hay errores → fallo del formulario
+  // 👉 No hay error de flujo válido → fallo del formulario
   idReglaDetectada = "fallo_formulario";
 }
 
-  
-}
 
 
 else if (contexto.fase === "error_firma") {
