@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.6";
+const VERSION_JS = "1.1.7";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -269,8 +269,16 @@ console.log("CONTEXTO:", contexto);
 // 👉 NO tocar el resto del código
 
 
+  
+// 👉 Detectamos errores de flujo típicos (Portafib)
+// 🔹 No usamos texto exacto para evitar fallos
+// 🔹 Detectamos cualquier referencia a "FLUXE"
+
 const hayFluxe =
   traza.includes("FLUXE");   // error típico de sesión/flujo
+
+// 👉 Detectamos errores de sesión
+// 🔹 Puede aparecer en distintos formatos
 
 const haySesion =
   traza.includes("SESSIÓ") ||
@@ -334,15 +342,21 @@ if (contexto.fase === "pre_firma") {
   // No ha llegado a firma (Portafib / formulario)
   // ─────────────────────────────
 
-  if (hayErrorFlujo) {
-    // errores tipo FLUXE, sesión, etc.
-    idReglaDetectada = "fallo_portafib";
+ // 👉 Caso: NO llega a firma (pre_firma)
+// 🔹 Diferenciamos si el problema es de flujo o no
 
-  } else {
-    // simplemente no ha invocado la firma
-    idReglaDetectada = "fallo_formulario";
-  }
+if (hayFluxe || haySesion) {
 
+  // 👉 Hay errores de flujo/sesión → Portafib
+  idReglaDetectada = "fallo_portafib";
+
+} else {
+
+  // 👉 No hay errores → fallo del formulario
+  idReglaDetectada = "fallo_formulario";
+}
+
+  
 }
 
 
@@ -398,6 +412,8 @@ console.log("Regla detectada:", idReglaDetectada);
 
   cerrarPanelFunc();                                                           // 👉 Se oculta el panel de validación
   placeholder.style.display = "none";                                          // 👉 Se oculta el mensaje inicial
+  document.getElementById("resultado").style.display = "block";
+
   
 
   
