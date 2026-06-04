@@ -354,24 +354,37 @@ const hayAutofirmaError =
 // 👉 Detectamos códigos reales de Cl@ve (FASE 10)
 // 🔹 patrón completo: Codi Error + Proveedor clavefirma + Tipus Resultat
 
-const codigosClave = erroresUnicos.find(linea =>
-  
-  // 👉 debe contener proveedor clavefirma
+// ======================================================
+// 👉 DETECCIÓN REAL CL@VE CON ORDEN (FASE 10 PRO)
+// ======================================================
+
+
+// 👉 Buscamos la PRIMERA aparición real en la traza
+// 🔹 usamos lineas (NO erroresUnicos) para respetar orden real
+
+const lineaErrorClave = lineas.find(linea =>
   linea.includes("CLAVEFIRMA") &&
-
-  // 👉 debe contener código de error 8–15 / 101 / 103 / 104
-  linea.match(/CODI ERROR:\s*(8|9|10|11|12|13|14|15|101|103|104)/) &&
-
-  // 👉 debe contener tipo resultado
-  linea.match(/TIPUS RESULTAT:\s*\d+/)
+  linea.includes("CODI ERROR") &&
+  linea.includes("TIPUS RESULTAT")
 );
 
 
-// 👉 Detectamos error tipo Cl@ve real
-const hayErrorClaveReal = !!codigosClave;
+// 👉 Extraemos código real detectado
+let codigoClaveDetectado = null;
 
-// 👉 Detectamos error tipo Cl@ve
-const hayErrorClaveReal = !!codigosClave;
+if (lineaErrorClave) {
+
+  const match = lineaErrorClave.match(/CODI ERROR:\s*(\d+)/);
+
+  if (match) {
+    codigoClaveDetectado = match[1];
+  }
+}
+
+
+// 👉 Flag final
+const hayErrorClaveReal = !!codigoClaveDetectado;
+
 
 // 👉 Detectamos errores reales de Portafib / sesión
 // 🔹 típicos antes de invocar firma
