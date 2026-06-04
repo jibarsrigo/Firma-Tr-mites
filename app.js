@@ -53,7 +53,6 @@ const btnAnalizar = document.getElementById("btnAnalizar");
 const btnLimpiar = document.getElementById("btnLimpiar");
 const btnActualizar = document.getElementById("btnActualizar");
 const placeholder = document.getElementById("placeholder");
-const resultados = document.getElementById("resultado");
 const metodoClave = document.getElementById("metodoClave");
 const metodoCert = document.getElementById("metodoCert");
 const bloqueSistema = document.getElementById("bloqueSistema");
@@ -448,17 +447,19 @@ if (haySGO) {    // 👉 Si la firma ha ido bien, se indica
 // =====================================
 // 👉 Aplica automáticamente cualquier regla definida en JSON
 
+let salidaFinal = diagnosticoTexto;
+
 if (idReglaDetectada && reglasJSON) {
 
   const regla = reglasJSON.reglas.find(r => r.id === idReglaDetectada);
-
-  let salidaFinal = diagnosticoTexto;
 
   if (regla) {
     salidaFinal += "\n\n" + regla.clasificacion + "\n\n" + regla.accion;
   }
 
-  document.getElementById("resultado").innerText = salidaFinal;
+}
+
+document.getElementById("resultado").innerText = salidaFinal;
 
   return;
 }
@@ -515,6 +516,7 @@ btnLimpiar.onclick = () => {
 
   // Volvemos al estado inicial con el mensaje de "pega traza"
   placeholder.style.display = "";
+  document.getElementById("resultado").innerText = "";
 
 
   // ─────────────────────────────
