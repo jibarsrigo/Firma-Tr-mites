@@ -350,15 +350,42 @@ const haySesion = erroresUnicos.some(linea =>
 
                                         
 
-// 👉 Detectamos error de Autofirma SOLO a partir de errores reales
-// 🔹 usamos erroresUnicos para evitar falsos positivos
+// ======================================================
+// 👉 DETECCIÓN AVANZADA DE ERRORES REALES (FASE 10)
+// ======================================================
 
+// 👉 Detectamos Autofirma (caso prioritario)
 const hayAutofirmaError =
   erroresUnicos.some(linea =>
     linea.includes("SAF_27")
   );
 
+// 👉 Detectamos códigos reales de Cl@ve
+// 🔹 estos SIEMPRE indican proveedor Cl@ve
+
+const codigosClave = erroresUnicos.find(linea =>
+  linea.match(/\b(8|9|10|11|12|13|14|15|101|103|104)\b/)
+);
+
+// 👉 Detectamos error tipo Cl@ve
+const hayErrorClaveReal = !!codigosClave;
+
+// 👉 Detectamos errores reales de Portafib / sesión
+// 🔹 típicos antes de invocar firma
+const hayErrorPortafibReal = erroresUnicos.some(linea =>
+  linea.includes("FLUXE") ||
+  linea.includes("SESSIÓ FIRMA") ||
+  linea.includes("SESION FIRMA") ||
+  linea.includes("SESSION") ||
+  linea.includes("TIMESTAMPINVALIDEXCEPTION") ||
+  linea.includes("TRASLLAT NO") ||
+  linea.includes("227") ||
+  linea.includes("2287")
+);
+
   
+
+ 
 // 👉 Cl@ve no se detecta por texto (por ahora)
 // 👉 Se identifica por el método seleccionado por el usuario
 // const hayClaveError = ... → pendiente definir con ejemplos reales
@@ -426,24 +453,23 @@ if (contexto.fase === "pre_firma") {
 // 🔹 PRIORIDAD: si aparece SAF_27, SIEMPRE es Autofirma
 // 🔹 aunque el técnico haya marcado Cl@ve
 
+// 👉 PRIORIDAD REAL DE ERRORES (FASE 10)
+
+// 👉 Autofirma SIEMPRE gana
 if (hayAutofirmaError) {
-
-  // 👉 Error real: Autofirma (certificado local)
   idReglaDetectada = "error_autofirma";
-
 }
-else if (esClave) {
-
-  // 👉 Error real: Cl@ve
+// 👉 Cl@ve real (por código)
+else if (hayErrorClaveReal) {
   idReglaDetectada = "error_clave";
-
+}
+// 👉 Método seleccionado (fallback)
+else if (esClave) {
+  idReglaDetectada = "error_clave";
 }
 else if (esCert) {
-
-  // 👉 Certificado local sin SAF → FIRE
   idReglaDetectada = "error_fire";
 }
-
   
 }
 
