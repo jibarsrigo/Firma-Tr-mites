@@ -421,6 +421,7 @@ console.log("JSON disponible:", reglasJSON);
 // 👉 SOLO diagnóstico técnico (lo que ha pasado en el sistema) 👉 NO interpreta el error (eso se hace en el árbol)
 
 let diagnosticoTexto = "";
+let salidaFinal = "";
 
 // FORMULARIO
 diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "\n";    // 👉 Indica si el formulario se ha iniciado
@@ -436,8 +437,6 @@ if (haySGX) {    // 👉 Si hay error en firma, se indica
 if (haySGO) {    // 👉 Si la firma ha ido bien, se indica                                              
   diagnosticoTexto += "TR_SGO (Firma OK) → OK\n";
 }
-
-document.getElementById("resDiagnostico").innerText = diagnosticoTexto;    // 👉 Se muestra el diagnóstico en pantalla
 
 
 // =====================================
@@ -458,13 +457,13 @@ if (idReglaDetectada && reglasJSON) {
 
   const regla = reglasJSON.reglas.find(r => r.id === idReglaDetectada);
 
-  if (regla) {
+  let salidaFinal = diagnosticoTexto;
 
-    // 👉 Acción recomendada desde JSON
-    document.getElementById("resAccionRecomendada").innerText =
-      regla.clasificacion + "\n\n" + regla.accion;
-   
+  if (regla) {
+    salidaFinal += "\n\n" + regla.clasificacion + "\n\n" + regla.accion;
   }
+
+  document.getElementById("resultado").innerText = salidaFinal;
 
   return;
 }
