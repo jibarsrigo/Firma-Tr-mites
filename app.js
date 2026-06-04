@@ -31,9 +31,10 @@ console.log("HTML v" + VERSION_HTML);
 console.log("JS v" + VERSION_JS);
 
   
-document.getElementById("versionHTML").innerText =      // Mostrar versión HTML en la cabecera
+document.getElementById("versionHTML").innerText =
   "html " + VERSION_HTML;
-  document.getElementById("versionJS").innerText =       // Mostrar versión JS en la cabecera
+
+document.getElementById("versionJS").innerText =
   "js " + VERSION_JS;
 
 
@@ -574,7 +575,7 @@ async function cargarReglas() {
   try {
 
     // 👉 Se añade timestamp para evitar que el navegador use caché
-    const r = await fetch("reglas.json?v=" + Date.now());
+    const r = await fetch("reglas (5).json?v=" + Date.now());
 
     // 👉 Convierte la respuesta a objeto JSON
     const d = await r.json();
