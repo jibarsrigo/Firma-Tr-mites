@@ -421,7 +421,6 @@ console.log("JSON disponible:", reglasJSON);
 // 👉 SOLO diagnóstico técnico (lo que ha pasado en el sistema) 👉 NO interpreta el error (eso se hace en el árbol)
 
 let diagnosticoTexto = "";
-let salidaFinal = "";
 
 // FORMULARIO
 diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "\n";    // 👉 Indica si el formulario se ha iniciado
@@ -494,8 +493,7 @@ btnLimpiar.onclick = () => {
   // Aquí realmente limpiamos lo importante:
   // la traza y el formulario pegado por el técnico
   document.getElementById("inputTraza").value = "";
-  document.getElementById("inputFormulario").value = "";
-
+ 
 
   // ─────────────────────────────
   // 🔹 RESET DE MÉTODO DE FIRMA
@@ -518,8 +516,6 @@ btnLimpiar.onclick = () => {
   // Cerramos panel si está abierto (SAML, blanco, etc.)
   cerrarPanelFunc();
 
-  // Ocultamos resultados anteriores
-  resultados.classList.add("hidden");
 
   // Volvemos al estado inicial con el mensaje de "pega traza"
   placeholder.style.display = "";
