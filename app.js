@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.8";
+const VERSION_JS = "1.1.9";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -508,15 +508,36 @@ if (haySGO) {
 // 👉 Añadimos una conclusión técnica de flujo
 diagnosticoTexto += "\n=== INTERPRETACIÓN ===\n\n";
 
+// 👉 Interpretación técnica del fallo
+// 🔹 Añadimos caso especial: SAF_27 SIEMPRE es Autofirma
+
 if (!haySGI) {
+
+  // 👉 No llega a firmar → problema de acceso/sesión
   diagnosticoTexto += "La firma NO llega a iniciarse (problema de acceso/sesión).\n";
+
+}
+else if (hayAutofirmaError) {
+
+  // 👉 SAF_27 detectado → error REAL de Autofirma
+  diagnosticoTexto += "El error corresponde a Autofirma (certificado local), no a Cl@ve.\n";
+
 }
 else if (haySGX) {
+
+  // 👉 Error genérico de proveedor
   diagnosticoTexto += "La firma se inicia pero falla en el proveedor.\n";
+
 }
 else if (haySGO) {
+
+  // 👉 Firma correcta
   diagnosticoTexto += "La firma se completa correctamente.\n";
+
 }
+
+
+  
 
 
   
