@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.8";
+const VERSION_JS = "1.1.9";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -274,15 +274,36 @@ console.log("CONTEXTO:", contexto);
 // 🔹 No usamos texto exacto para evitar fallos
 // 🔹 Detectamos cualquier referencia a "FLUXE"
 
-const hayFluxe =
-  traza.includes("FLUXE");   // error típico de sesión/flujo
+// 👉 Paso 1: dividimos la traza en líneas
+// 🔹 así podemos analizar cada mensaje real por separado
+const lineas = traza.split("\n");
 
-// 👉 Detectamos errores de sesión
-// 🔹 Puede aparecer en distintos formatos
 
-const haySesion =
-  traza.includes("SESSIÓ") ||
-  traza.includes("SESSION");
+// 👉 Paso 2: filtramos solo líneas que contienen errores reales
+// 🔹 evitamos detectar palabras sueltas fuera de contexto
+const lineasError = lineas.filter(linea =>
+  linea.includes("ERROR") ||
+  linea.includes("EXCEPCIÓ") ||
+  linea.includes("FLUXE")
+);
+
+
+// 👉 Paso 3: eliminamos duplicados
+// 🔹 nos quedamos solo con errores únicos
+const erroresUnicos = [...new Set(lineasError)];
+
+
+// 👉 Paso 4: detectamos tipos de error usando SOLO líneas reales
+// 🔹 esto evita falsos positivos
+
+const hayFluxe = erroresUnicos.some(linea =>
+  linea.includes("FLUXE")
+);
+
+const haySesion = erroresUnicos.some(linea =>
+  linea.includes("SESSIÓ") ||
+  linea.includes("SESSION")
+);
 
 
   
