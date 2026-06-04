@@ -220,7 +220,12 @@ const eventos = lineas
   .filter(Boolean);
 
 // 👉 Último evento real del flujo
-const ultimoEvento = eventos[eventos.length - 1];
+// 🔹 controlamos caso sin eventos para evitar error
+
+const ultimoEvento = eventos.length > 0
+  ? eventos[eventos.length - 1]
+  : null;
+
 
 // 👉 Detectamos presencia básica (seguimos usando lógica actual)
 const hayFRI = eventos.includes("TR_FRI");
@@ -251,22 +256,24 @@ const contexto = {
 // ahora clasificamos el estado del trámite en una "fase"
 // Esto nos permitirá simplificar el árbol en siguientes versiones
 
-// 👉 Fase basada en el ÚLTIMO evento real (más preciso)
+// 👉 Fase basada en último evento (seguro)
 
-if (ultimoEvento === "TR_FRF") {
-  // 👉 Se queda en formulario
+if (!ultimoEvento) {
+
+  // 👉 No hay eventos → tratamos como pre_firma
+  contexto.fase = "pre_firma";
+}
+else if (ultimoEvento === "TR_FRF") {
   contexto.fase = "pre_firma";
 }
 else if (ultimoEvento === "TR_SGX") {
-  // 👉 Último evento = error de firma
   contexto.fase = "error_firma";
 }
 else if (ultimoEvento === "TR_SGO") {
-  // 👉 Último evento = firma correcta
   contexto.fase = "firma_ok";
 }
 else {
-  // 👉 fallback (por seguridad)
+  // 👉 fallback seguridad
   if (!contexto.llegaFirma) {
     contexto.fase = "pre_firma";
   } else if (contexto.errorFirma) {
@@ -277,6 +284,7 @@ else {
     contexto.fase = "desconocida";
   }
 }
+
 
   
 
