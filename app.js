@@ -463,13 +463,7 @@ if (idReglaDetectada && reglasJSON) {
     // 👉 Acción recomendada desde JSON
     document.getElementById("resAccionRecomendada").innerText =
       regla.clasificacion + "\n\n" + regla.accion;
-
-    // 👉 Texto CAI desde JSON
-    document.getElementById("resCAI").value =
-      (formulario ? formulario + "\n\n" : "") +
-      regla.clasificacion + "\n\n" +
-      regla.cai + "\n\n" +
-      "Se ha informado al ciudadano.";
+   
   }
 
   return;
