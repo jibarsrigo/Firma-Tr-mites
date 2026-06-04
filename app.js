@@ -338,30 +338,22 @@ let idReglaDetectada = null;
 
 if (contexto.fase === "pre_firma") {
 
-  // ─────────────────────────────
-  // No ha llegado a firma (Portafib / formulario)
-  // ─────────────────────────────
+  // 👉 Caso: NO llega a firma (pre_firma)
+  // 🔹 Solo consideramos error de flujo si NO aparece TR_SGI
 
- // 👉 Caso: NO llega a firma (pre_firma)
-// 🔹 Diferenciamos si el problema es de flujo o no
+  if (!haySGI && (hayFluxe || haySesion)) {
 
-// 👉 Solo consideramos errores de flujo si NO ha llegado a firma
-// 🔹 Si hay TR_SGI, ignoramos errores anteriores (FLUXE, sesión, etc.)
+    // 👉 Error real de flujo (Portafib / sesión)
+    idReglaDetectada = "fallo_portafib";
 
-if (!haySGI && (hayFluxe || haySesion)) {
+  } else {
 
-  // 👉 Error real de flujo (Portafib/Soffid)
-  idReglaDetectada = "fallo_portafib";
+    // 👉 No hay error de flujo → fallo del formulario
+    idReglaDetectada = "fallo_formulario";
+  }
 
-} else {
+} else if (contexto.fase === "error_firma") {
 
-  // 👉 No hay error de flujo válido → fallo del formulario
-  idReglaDetectada = "fallo_formulario";
-}
-
-
-
-else if (contexto.fase === "error_firma") {
 
   // ─────────────────────────────
   // Ha llegado a firma pero ha fallado
