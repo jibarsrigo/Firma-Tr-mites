@@ -427,19 +427,41 @@ let idReglaDetectada = null;
 
 if (contexto.fase === "pre_firma") {
 
-  // 👉 Caso: NO llega a firma (pre_firma)
-  // 🔹 Solo consideramos error de flujo si NO aparece TR_SGI
+  // ======================================================
+// 👉 MEJORA FORMULARIO vs PORTAFIB (FASE 10)
+// ======================================================
 
-  if (!haySGI && (hayFluxe || haySesion)) {
 
-    // 👉 Error real de flujo (Portafib / sesión)
-    idReglaDetectada = "fallo_portafib";
+// 👉 Contamos intentos de formulario
+// 🔹 si hay varios TR_FRI o TR_FRF → el usuario está reintentando
 
-  } else {
+const numFRI = eventos.filter(e => e === "TR_FRI").length;
+const numFRF = eventos.filter(e => e === "TR_FRF").length;
 
-    // 👉 No hay error de flujo → fallo del formulario
-    idReglaDetectada = "fallo_formulario";
-  }
+
+// 👉 Caso: NO llega a firma (pre_firma)
+
+if (!haySGI && hayErrorPortafibReal) {
+
+  // 👉 Error técnico REAL de sesión/flujo (Portafib / Soffid)
+  // 🔹 hay literales tipo FLUXE, SESSION, 227, timestamp…
+  idReglaDetectada = "fallo_portafib";
+
+}
+else if (!haySGI && (numFRI > 1 || numFRF > 1)) {
+
+  // 👉 Reintentos de formulario SIN errores técnicos
+  // 🔹 el usuario vuelve atrás o intenta varias veces
+  // 🔹 esto es fallo funcional del formulario (NO Portafib)
+  idReglaDetectada = "fallo_formulario";
+
+}
+else {
+
+  // 👉 Caso base: no llega a firma sin errores claros
+  // 🔹 se trata también como formulario
+  idReglaDetectada = "fallo_formulario";
+}
 
 } else if (contexto.fase === "error_firma") {
 
