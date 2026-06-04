@@ -394,9 +394,8 @@ const hayErrorPortafibReal = erroresUnicos.some(linea =>
   linea.includes("SESION FIRMA") ||
   linea.includes("SESSION") ||
   linea.includes("TIMESTAMPINVALIDEXCEPTION") ||
-  linea.includes("TRASLLAT NO") ||
-  linea.includes("227") ||
-  linea.includes("2287")
+  linea.includes("TRASLLAT NO")
+  
 );
 
   
