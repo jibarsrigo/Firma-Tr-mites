@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.9";
+const VERSION_JS = "1.2.0";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -208,13 +208,25 @@ if (!traza.includes("TR_")) {
 // 🔴 DETECCIÓN DE EVENTOS TR_
 // =====================================
 // 👉 Aquí se detecta en qué punto del flujo está el trámite
-// 👉 NO modificar salvo que aparezcan nuevos TR_
+// 👉 Extraemos eventos TR_ en ORDEN REAL
+// 🔹 esto nos permite saber cuál es el último evento válido
 
-const hayFRI = traza.includes("TR_FRI"); // Inicio formulario
-const hayFRF = traza.includes("TR_FRF"); // Fin formulario
-const haySGI = traza.includes("TR_SGI"); // Inicio firma
-const haySGX = traza.includes("TR_SGX"); // Firma KO
-const haySGO = traza.includes("TR_SGO"); // Firma OK
+const eventos = lineas
+  .filter(linea => linea.includes("TR_"))
+  .map(linea => linea.match(/TR_[A-Z]+/)?.[0])
+  .filter(Boolean);
+
+
+// 👉 Último evento real del flujo
+const ultimoEvento = eventos[eventos.length - 1];
+
+
+// 👉 Detectamos presencia básica (seguimos usando lógica actual)
+const hayFRI = eventos.includes("TR_FRI");
+const hayFRF = eventos.includes("TR_FRF");
+const haySGI = eventos.includes("TR_SGI");
+const haySGX = eventos.includes("TR_SGX");
+const haySGO = eventos.includes("TR_SGO");
 
   // =====================================
 // 🔴 CONTEXTO DE FLUJO (PASO 1)
@@ -238,18 +250,34 @@ const contexto = {
 // ahora clasificamos el estado del trámite en una "fase"
 // Esto nos permitirá simplificar el árbol en siguientes versiones
 
-if (!contexto.llegaFirma) {
-  contexto.fase = "pre_firma";   // No ha llegado a invocar firma
+// 👉 Fase basada en el ÚLTIMO evento real (más preciso)
 
-} else if (contexto.errorFirma) {
-  contexto.fase = "error_firma"; // Llegó a firma pero falló
-
-} else if (contexto.firmaOK) {
-  contexto.fase = "firma_ok";    // Firma completada
-
-} else {
-  contexto.fase = "desconocida"; // Caso raro (por si aparece algo nuevo)
+if (ultimoEvento === "TR_FRF") {
+  // 👉 Se queda en formulario
+  contexto.fase = "pre_firma";
 }
+else if (ultimoEvento === "TR_SGX") {
+  // 👉 Último evento = error de firma
+  contexto.fase = "error_firma";
+}
+else if (ultimoEvento === "TR_SGO") {
+  // 👉 Último evento = firma correcta
+  contexto.fase = "firma_ok";
+}
+else {
+  // 👉 fallback (por seguridad)
+  if (!contexto.llegaFirma) {
+    contexto.fase = "pre_firma";
+  } else if (contexto.errorFirma) {
+    contexto.fase = "error_firma";
+  } else if (contexto.firmaOK) {
+    contexto.fase = "firma_ok";
+  } else {
+    contexto.fase = "desconocida";
+  }
+}
+
+  
 
 // DEBUG para ver claramente en qué fase está cada traza
 console.log("FASE:", contexto.fase);
