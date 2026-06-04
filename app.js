@@ -336,18 +336,6 @@ const lineasError = lineas.filter(linea =>
 const erroresUnicos = [...new Set(lineasError)];
 
 
-// 👉 Paso 3: detectamos tipos de error usando SOLO líneas reales
-// 🔹 esto evita falsos positivos
-
-const hayFluxe = erroresUnicos.some(linea =>
-  linea.includes("FLUXE")
-);
-
-const haySesion = erroresUnicos.some(linea =>
-  linea.includes("SESSIÓ") ||
-  linea.includes("SESSION")
-);
-
                                         
 
 // ======================================================
