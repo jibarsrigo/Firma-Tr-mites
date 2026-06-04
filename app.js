@@ -313,24 +313,15 @@ console.log("CONTEXTO:", contexto);
 // 🔹 ampliamos detección para cubrir casos de sesión, firma y técnicos
 
 const lineasError = lineas.filter(linea =>
-  // 👉 errores de flujo
   linea.includes("FLUXE") ||
-
-  // 👉 errores de sesión
   linea.includes("SESSIÓ") ||
   linea.includes("SESSION") ||
-
-  // 👉 errores técnicos
   linea.includes("EXCEPCIÓ") ||
   linea.includes("EXCEPTION") ||
-
-  // 👉 errores de firma (AutoFirma)
   linea.includes("SAF_") ||
-
-// 👉 errores genéricos (evitamos mezclar con Cl@ve real)
-(linea.includes("ERROR") && !linea.includes("CLAVEFIRMA"))
-
+  linea.includes("ERROR") && !linea.includes("CLAVEFIRMA")
 );
+
   
 // 👉 Paso 2: eliminamos duplicados
 // 🔹 nos quedamos solo con errores únicos
