@@ -269,10 +269,16 @@ console.log("CONTEXTO:", contexto);
 // 👉 NO tocar el resto del código
 
 
-const hayErrorFlujo =
-  traza.includes("FLUXE NO VÀLID") ||   // error típico de sesión/flujo
-  traza.includes("EXCEPCIÓ");           // ⚠️ MUY genérico → NO usar como criterio definitivo sin contexto completo
-                                        // 👉 sustituir por literal exacto cuando se identifique (ej: "Excepció sessió firma")
+const hayFluxe =
+  traza.includes("FLUXE");   // error típico de sesión/flujo
+
+const haySesion =
+  traza.includes("SESSIÓ") ||
+  traza.includes("SESSION");
+
+
+  
+                                      
 
 
 
@@ -447,8 +453,10 @@ if (haySGO) {    // 👉 Si la firma ha ido bien, se indica
 // =====================================
 // 👉 Aplica automáticamente cualquier regla definida en JSON
 
+// 👉 Construimos la salida final partiendo del diagnóstico
 let salidaFinal = diagnosticoTexto;
 
+// 👉 Si hay una regla detectada, añadimos clasificación y acción
 if (idReglaDetectada && reglasJSON) {
 
   const regla = reglasJSON.reglas.find(r => r.id === idReglaDetectada);
@@ -459,10 +467,11 @@ if (idReglaDetectada && reglasJSON) {
 
 }
 
+// 👉 Mostramos SIEMPRE el resultado en pantalla
 document.getElementById("resultado").innerText = salidaFinal;
 
-  return;
 };
+
 
 
 
