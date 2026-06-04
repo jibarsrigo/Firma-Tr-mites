@@ -53,7 +53,7 @@ const btnAnalizar = document.getElementById("btnAnalizar");
 const btnLimpiar = document.getElementById("btnLimpiar");
 const btnActualizar = document.getElementById("btnActualizar");
 const placeholder = document.getElementById("placeholder");
-const resultados = document.getElementById("resultados");
+const resultados = document.getElementById("resultado");
 const metodoClave = document.getElementById("metodoClave");
 const metodoCert = document.getElementById("metodoCert");
 const bloqueSistema = document.getElementById("bloqueSistema");
@@ -169,7 +169,7 @@ Conviene probar a acceder a Carpeta Ciudadana GOB para comprobar si la pasarela 
 btnAnalizar.onclick = () => {      // 👉 Inicia el análisis completo de la traza y genera resultados
 
   // Oculta resultados anteriores
-  resultados.classList.add("hidden");
+
 
   // ✅ 1. VALIDACIÓN MÉTODO
   if (!metodoClave.checked && !metodoCert.checked) {
@@ -396,7 +396,7 @@ console.log("Regla detectada:", idReglaDetectada);
 
   cerrarPanelFunc();                                                           // 👉 Se oculta el panel de validación
   placeholder.style.display = "none";                                          // 👉 Se oculta el mensaje inicial
-  resultados.classList.remove("hidden");                                       // 👉 Se muestran los resultados
+  
 
   
 // =====================================
