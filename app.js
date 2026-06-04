@@ -351,9 +351,24 @@ const hayAutofirmaError =
 // 👉 Detectamos códigos reales de Cl@ve
 // 🔹 estos SIEMPRE indican proveedor Cl@ve
 
+// 👉 Detectamos códigos reales de Cl@ve (FASE 10)
+// 🔹 patrón completo: Codi Error + Proveedor clavefirma + Tipus Resultat
+
 const codigosClave = erroresUnicos.find(linea =>
-  linea.match(/\b(8|9|10|11|12|13|14|15|101|103|104)\b/)
+  
+  // 👉 debe contener proveedor clavefirma
+  linea.includes("CLAVEFIRMA") &&
+
+  // 👉 debe contener código de error 8–15 / 101 / 103 / 104
+  linea.match(/CODI ERROR:\s*(8|9|10|11|12|13|14|15|101|103|104)/) &&
+
+  // 👉 debe contener tipo resultado
+  linea.match(/TIPUS RESULTAT:\s*\d+/)
 );
+
+
+// 👉 Detectamos error tipo Cl@ve real
+const hayErrorClaveReal = !!codigosClave;
 
 // 👉 Detectamos error tipo Cl@ve
 const hayErrorClaveReal = !!codigosClave;
