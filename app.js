@@ -495,35 +495,40 @@ else {
 
 // 👉 Autofirma SIEMPRE gana
 if (hayAutofirmaError) {
+
   idReglaDetectada = "error_autofirma";
+
 }
-// 👉 Cl@ve real (por código)
 else if (hayErrorClaveReal) {
 
   // 👉 Clasificación según código real Cl@ve
 
   if (/^(8|9|10|11|12|13|14|15)$/.test(codigoClaveDetectado)) {
 
-    // 👉 Error real de credencial (el más común)
     idReglaDetectada = "error_clave";
 
   }
   else if (codigoClaveDetectado === "103") {
 
-    // 👉 Certificado bloqueado tras intentos
     idReglaDetectada = "error_clave_103";
-  }
- else if (codigoClaveDetectado === "101") {
-  idReglaDetectada = "error_clave_registro";
-}
 
-// 👉 Método seleccionado (fallback)
-// 🔹 solo si NO hay detección previa
+  }
+  else if (codigoClaveDetectado === "101") {
+
+    idReglaDetectada = "error_clave_registro";
+
+  }
+
+}
 else if (esClave) {
+
   idReglaDetectada = "error_clave";
+
 }
 else if (esCert) {
+
   idReglaDetectada = "error_fire";
+
 }
   
 }
