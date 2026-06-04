@@ -617,26 +617,28 @@ diagnosticoTexto += "\n=== INTERPRETACIÓN ===\n\n";
 
 if (!haySGI) {
 
+  // 👉 No llega a firma
   if (hayErrorPortafibReal) {
 
+    // 👉 Error de sesión / flujo (Portafib)
     diagnosticoTexto += "La firma NO se inicia por error de sesión/flujo (Portafib/Soffid).\n";
 
- 
-} else {
+  } else {
 
+    // 👉 Sin errores técnicos → problema de formulario
     diagnosticoTexto += "La firma NO se inicia (posible fallo en formulario o trámite).\n";
+  }
 
 }
-      
 else if (hayAutofirmaError) {
 
-  // 👉 SAF_27 detectado → error REAL de Autofirma
+  // 👉 SAF_27 → Autofirma SIEMPRE
   diagnosticoTexto += "El error corresponde a Autofirma (certificado local), no a Cl@ve.\n";
 
 }
 else if (haySGX) {
 
-  // 👉 Error genérico de proveedor
+  // 👉 Error proveedor genérico
   diagnosticoTexto += "La firma se inicia pero falla en el proveedor.\n";
 
 }
@@ -646,9 +648,7 @@ else if (haySGO) {
   diagnosticoTexto += "La firma se completa correctamente.\n";
 
 }
-
-
-  
+ 
 
 
   
