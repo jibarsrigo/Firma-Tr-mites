@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.9";
+const VERSION_JS = "1.1.8";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -576,13 +576,22 @@ placeholder.style.display = "none";
 // 👉 Si hay errores reales, los añadimos al diagnóstico
 // 🔹 mostramos solo errores detectados (sin duplicados)
 
+// 👉 Mostramos errores si existen
 if (erroresUnicos.length > 0) {
+
   salidaFinal += "\n\n--- ERRORES DETECTADOS ---\n";
 
   erroresUnicos.forEach(err => {
     salidaFinal += "- " + err + "\n";
   });
+
+} else {
+
+  // 👉 Si NO hay errores reales detectados
+  salidaFinal += "\n\n--- SIN ERRORES DETECTADOS ---\n";
 }
+
+  
 
 // 👉 Mostramos SIEMPRE el resultado final
 // 🔹 diagnóstico técnico + acción + errores reales
