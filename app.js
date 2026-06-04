@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.0";
+const VERSION_JS = "1.2.1";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -207,19 +207,20 @@ if (!traza.includes("TR_")) {
 // =====================================
 // 🔴 DETECCIÓN DE EVENTOS TR_
 // =====================================
-// 👉 Aquí se detecta en qué punto del flujo está el trámite
+
+// 👉 Paso 0: dividimos la traza en líneas (ANTES de usarla)
+// 🔹 necesario para fase 9 (orden real)
+const lineas = traza.split("\n");
+
 // 👉 Extraemos eventos TR_ en ORDEN REAL
 // 🔹 esto nos permite saber cuál es el último evento válido
-
 const eventos = lineas
   .filter(linea => linea.includes("TR_"))
   .map(linea => linea.match(/TR_[A-Z]+/)?.[0])
   .filter(Boolean);
 
-
 // 👉 Último evento real del flujo
 const ultimoEvento = eventos[eventos.length - 1];
-
 
 // 👉 Detectamos presencia básica (seguimos usando lógica actual)
 const hayFRI = eventos.includes("TR_FRI");
@@ -296,18 +297,11 @@ console.log("CONTEXTO:", contexto);
 // 👉 SOLO modificar aquí para añadir nuevos literales
 // 👉 NO tocar el resto del código
 
-
-  
 // 👉 Detectamos errores de flujo típicos (Portafib)
 // 🔹 No usamos texto exacto para evitar fallos
 // 🔹 Detectamos cualquier referencia a "FLUXE"
 
-// 👉 Paso 1: dividimos la traza en líneas
-// 🔹 así podemos analizar cada mensaje real por separado
-const lineas = traza.split("\n");
-
-
-// 👉 Paso 2: filtramos solo líneas que contienen errores reales
+// 👉 Paso 1: filtramos solo líneas que contienen errores reales
 // 🔹 ampliamos detección para cubrir casos de sesión, firma y técnicos
 
 const lineasError = lineas.filter(linea =>
@@ -328,16 +322,13 @@ const lineasError = lineas.filter(linea =>
   // 👉 errores genéricos reales
   linea.includes("ERROR")
 );
-
   
-
-
-// 👉 Paso 3: eliminamos duplicados
+// 👉 Paso 2: eliminamos duplicados
 // 🔹 nos quedamos solo con errores únicos
 const erroresUnicos = [...new Set(lineasError)];
 
 
-// 👉 Paso 4: detectamos tipos de error usando SOLO líneas reales
+// 👉 Paso 3: detectamos tipos de error usando SOLO líneas reales
 // 🔹 esto evita falsos positivos
 
 const hayFluxe = erroresUnicos.some(linea =>
@@ -349,7 +340,6 @@ const haySesion = erroresUnicos.some(linea =>
   linea.includes("SESSION")
 );
 
-
                                         
 
 // 👉 Detectamos error de Autofirma SOLO a partir de errores reales
@@ -360,8 +350,6 @@ const hayAutofirmaError =
     linea.includes("SAF_27")
   );
 
-
-  
   
 // 👉 Cl@ve no se detecta por texto (por ahora)
 // 👉 Se identifica por el método seleccionado por el usuario
@@ -377,9 +365,6 @@ const hayAutofirmaError =
 
 const esClave = metodoClave.checked;
 const esCert = metodoCert.checked;
-
-
-
 
 
   
