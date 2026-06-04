@@ -429,7 +429,7 @@ const numFRF = eventos.filter(e => e === "TR_FRF").length;
 
 // 👉 Caso: NO llega a firma (pre_firma)
 
-if (!haySGI && hayErrorPortafibReal) {
+if (hayErrorPortafibReal){
 
   // 👉 Error técnico REAL de sesión/flujo (Portafib / Soffid)
   // 🔹 hay literales tipo FLUXE, SESSION, 227, timestamp…
