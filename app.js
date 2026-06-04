@@ -512,15 +512,13 @@ else if (hayErrorClaveReal) {
 
     // 👉 Certificado bloqueado tras intentos
     idReglaDetectada = "error_clave_103";
-
   }
-  else if (codigoClaveDetectado === "101") {
-
-    idReglaDetectada = "error_clave_registro";
-
-  }
+ else if (codigoClaveDetectado === "101") {
+  idReglaDetectada = "error_clave_registro";
 }
+
 // 👉 Método seleccionado (fallback)
+// 🔹 solo si NO hay detección previa
 else if (esClave) {
   idReglaDetectada = "error_clave";
 }
