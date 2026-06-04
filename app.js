@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.8";
+const VERSION_JS = "1.1.9";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -565,7 +565,15 @@ if (idReglaDetectada && reglasJSON) {
   const regla = reglasJSON.reglas.find(r => r.id === idReglaDetectada);
 
   if (regla) {
-    salidaFinal += "\n\n" + regla.clasificacion + "\n\n" + regla.accion;
+
+    // 👉 Formato tipo CAU (limpio y listo para pegar)
+    salidaFinal += "\n\n=== CLASIFICACIÓN ===\n";
+
+    salidaFinal += regla.clasificacion + "\n";
+
+    salidaFinal += "\n=== ACCIÓN ===\n";
+
+    salidaFinal += regla.accion + "\n";
   }
 
 }
