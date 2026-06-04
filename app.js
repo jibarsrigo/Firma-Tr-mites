@@ -228,9 +228,6 @@ const contexto = {
   errorPreFirma: hayFRF && !haySGI,
   errorFirma: haySGX,
   firmaOK: haySGO,
-
-  // 🔹 información adicional (no usada aún)
-  hayFormulario: hayFRI || hayFRF,
   hayFinFormulario: hayFRF
 };
 
@@ -442,7 +439,6 @@ if (haySGO) {    // 👉 Si la firma ha ido bien, se indica
 // 🔴 ACCIÓN RECOMENDADA
 // =====================================
 
-let accionTexto = ""; // 👉 Variable donde se construirá la acción final
 
   console.log("haySGI:", haySGI, "haySGX:", haySGX, "haySGO:", haySGO);    // 🔍 DEBUG DEL FLUJO 👉 Permite ver en consola qué está pasando
 
@@ -491,7 +487,7 @@ btnLimpiar.onclick = () => {
   // 🔹 LIMPIEZA DE CAMPOS DE TEXTO
   // ─────────────────────────────
   // Aquí realmente limpiamos lo importante:
-  // la traza y el formulario pegado por el técnico
+  // la traza pegada por el técnico
   document.getElementById("inputTraza").value = "";
  
 
