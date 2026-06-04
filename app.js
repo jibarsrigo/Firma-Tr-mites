@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.8";
+const VERSION_JS = "1.1.9";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -452,23 +452,45 @@ console.log("JSON disponible:", reglasJSON);
 // 👉 Muestra el estado de cada evento TR_. SOLO diagnóstico técnico, NO interpretación funcional
 // 👉 SOLO diagnóstico técnico (lo que ha pasado en el sistema) 👉 NO interpreta el error (eso se hace en el árbol)
 
+
 let diagnosticoTexto = "";
 
+// 👉 Mostramos la traza como flujo real (ordenado y claro)
+diagnosticoTexto += "=== FLUJO DETECTADO ===\n\n";
+
 // FORMULARIO
-diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "\n";    // 👉 Indica si el formulario se ha iniciado
-diagnosticoTexto += "TR_FRF (Fin formulario) → " + (hayFRF ? "OK" : "NO aparece") + "\n";       // 👉 Indica si el formulario se ha enviado correctamente
+diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "\n";
+diagnosticoTexto += "TR_FRF (Fin formulario) → " + (hayFRF ? "OK" : "NO aparece") + "\n";
 
 // FIRMA
-diagnosticoTexto += "TR_SGI (Inicio firma) → " + (haySGI ? "OK" : "NO aparece") + "\n";          // 👉 Indica si se ha intentado iniciar la firma
+diagnosticoTexto += "TR_SGI (Inicio firma) → " + (haySGI ? "OK" : "NO aparece") + "\n";
 
-if (haySGX) {    // 👉 Si hay error en firma, se indica                                                                                
+// 👉 Interpretamos estado de firma
+if (haySGX) {
   diagnosticoTexto += "TR_SGX (Firma KO) → ERROR\n";
 }
 
-if (haySGO) {    // 👉 Si la firma ha ido bien, se indica                                              
+if (haySGO) {
   diagnosticoTexto += "TR_SGO (Firma OK) → OK\n";
 }
 
+
+// 👉 Añadimos una conclusión técnica de flujo
+diagnosticoTexto += "\n=== INTERPRETACIÓN ===\n\n";
+
+if (!haySGI) {
+  diagnosticoTexto += "La firma NO llega a iniciarse (problema de acceso/sesión).\n";
+}
+else if (haySGX) {
+  diagnosticoTexto += "La firma se inicia pero falla en el proveedor.\n";
+}
+else if (haySGO) {
+  diagnosticoTexto += "La firma se completa correctamente.\n";
+}
+
+
+  
+  
 
 // =====================================
 // 🔴 ACCIÓN RECOMENDADA
