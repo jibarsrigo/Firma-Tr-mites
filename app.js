@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.1.8";
+const VERSION_JS = "1.1.9";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -322,14 +322,18 @@ const haySesion = erroresUnicos.some(linea =>
 );
 
 
-  
-                                      
+                                        
 
-
+// 👉 Detectamos error de Autofirma SOLO a partir de errores reales
+// 🔹 usamos erroresUnicos para evitar falsos positivos
 
 const hayAutofirmaError =
-  traza.includes("SAF_27");
+  erroresUnicos.some(linea =>
+    linea.includes("SAF_27")
+  );
 
+
+  
   
 // 👉 Cl@ve no se detecta por texto (por ahora)
 // 👉 Se identifica por el método seleccionado por el usuario
