@@ -621,9 +621,12 @@ if (!haySGI) {
 
     diagnosticoTexto += "La firma NO se inicia por error de sesión/flujo (Portafib/Soffid).\n";
 
-  } else {
+ 
+} else {
 
-    diagnosticoTexto += "La firma NO se inicia (posible fallo en
+    diagnosticoTexto += "La firma NO se inicia (posible fallo en formulario o trámite).\n";
+
+}
       
 else if (hayAutofirmaError) {
 
