@@ -792,7 +792,6 @@ if (err.includes("ERROR")) {
 
   salidaFinal += "\n\n--- SIN ERRORES DETECTADOS ---\n";
 }
-``
   
 
   
