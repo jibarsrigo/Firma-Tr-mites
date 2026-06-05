@@ -717,14 +717,27 @@ erroresUnicos.forEach(err => {
   limpio = limpio.replace(/at line number.*$/gi, "");
   limpio = limpio.replace(/Could not[^.]*\./gi, "");
 
-  // 🔥 NUEVO: eliminar datos iniciales (fechas, IDs, etc.)
-  // 👉 buscamos el inicio del texto real (letras mayúsculas seguidas de palabras)
-  const match = limpio.match(/([A-ZÀ-Ú]{3,}.*)/);
+ // 🔥 NUEVO: eliminar datos iniciales de SistraHelp
 
-  if (match) {
-    limpio = match[1];
+// 👉 patrones típicos de inicio de literal real
+const patronesLiteral = [
+  "LES ",
+  "ES ",
+  "EL ",
+  "LA ",
+  "DOMINI ",
+  "ERROR "
+];
+
+for (let patron of patronesLiteral) {
+  const idx = limpio.indexOf(patron);
+  if (idx !== -1) {
+    limpio = limpio.substring(idx);
+    break;
   }
+}
 
+  
   // 👉 limpiar espacios
   limpio = limpio.replace(/\s+/g, " ").trim();
 
