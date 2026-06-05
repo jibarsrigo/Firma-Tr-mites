@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.0";
+const VERSION_JS = "1.2.1";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
