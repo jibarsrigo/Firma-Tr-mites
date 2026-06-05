@@ -692,65 +692,74 @@ placeholder.style.display = "none";
 // 👉 Mostramos errores si existen
 if (erroresUnicos.length > 0) {
 
-  // 👉 Caso formulario (tu lógica)
-  if (contexto.fase === "pre_firma") {
+  // 🔥 PRIMERO: si hay error de flujo (Portafib)
+  if (hayErrorPortafibReal) {
+
+    salidaFinal += "\n\n--- ERROR DE SESIÓN / FLUJO ---\n";
+    salidaFinal += "Se detecta error técnico de Portafib/Soffid previo a la firma.\n";
+
+    erroresUnicos.forEach(err => {
+      salidaFinal += "- " + err + "\n";
+    });
+
+  }
+
+  // 🔥 SEGUNDO: caso formulario REAL
+  else if (contexto.fase === "pre_firma") {
 
     salidaFinal += "\n\n--- ERROR EN FORMULARIO ---\n";
     salidaFinal += "El literal del error que aparece en el formulario es:\n";
 
-erroresUnicos.forEach(err => {
+    erroresUnicos.forEach(err => {
 
-  let limpio = err;
+      let limpio = err;
 
-  // 👉 Quitar cabecera de ERROR
-  limpio = limpio.replace(/^ERROR\s*-\s*ERROR\s*/i, "");
-  limpio = limpio.replace(/^ERROR\s*/i, "");
+      // 👉 Quitar cabecera
+      limpio = limpio.replace(/^ERROR\s*-\s*ERROR\s*/i, "");
+      limpio = limpio.replace(/^ERROR\s*/i, "");
 
-  // 👉 Quitar todo lo técnico (igual que antes)
-  limpio = limpio.replace(/Error executant script:/gi, "");
-  limpio = limpio.replace(/WrappedException:/gi, "");
-  limpio = limpio.replace(/ScriptException:/gi, "");
-  limpio = limpio.replace(/EngineScriptException/gi, "");
-  limpio = limpio.replace(/ErrorConfiguracionException/gi, "");
-  limpio = limpio.replace(/DominioErrorException/gi, "");
-  limpio = limpio.replace(/<Unknown source>.*$/gi, "");
-  limpio = limpio.replace(/at line number.*$/gi, "");
-  limpio = limpio.replace(/Could not[^.]*\./gi, "");
+      // 👉 Limpiar técnico
+      limpio = limpio.replace(/Error executant script:/gi, "");
+      limpio = limpio.replace(/WrappedException:/gi, "");
+      limpio = limpio.replace(/ScriptException:/gi, "");
+      limpio = limpio.replace(/EngineScriptException/gi, "");
+      limpio = limpio.replace(/ErrorConfiguracionException/gi, "");
+      limpio = limpio.replace(/DominioErrorException/gi, "");
+      limpio = limpio.replace(/<Unknown source>.*$/gi, "");
+      limpio = limpio.replace(/at line number.*$/gi, "");
+      limpio = limpio.replace(/Could not[^.]*\./gi, "");
 
- // 🔥 NUEVO: eliminar datos iniciales de SistraHelp
+      // 👉 detectar inicio del literal
+      const patronesLiteral = [
+        "DOMINI ",
+        "LES ",
+        "EL ",
+        "LA ",
+        "ES ",
+        "ERROR "
+      ];
 
-// 👉 patrones típicos de inicio de literal real
-const patronesLiteral = [
-  "DOMINI ",
-  "LES ",
-  "EL ",
-  "LA ",
-  "ES ",
-  "ERROR "
-];
+      for (let patron of patronesLiteral) {
+        const idx = limpio.indexOf(patron);
+        if (idx !== -1) {
+          limpio = limpio.substring(idx);
+          break;
+        }
+      }
 
-for (let patron of patronesLiteral) {
-  const idx = limpio.indexOf(patron);
-  if (idx !== -1) {
-    limpio = limpio.substring(idx);
-    break;
+      limpio = limpio.replace(/\s+/g, " ").trim();
+
+      if (limpio.length > 0) {
+        salidaFinal += "- " + limpio + "\n";
+      }
+
+    });
+
   }
-}
 
-  
-  // 👉 limpiar espacios
-  limpio = limpio.replace(/\s+/g, " ").trim();
+  // 🔹 resto casos
+  else {
 
-  // 👉 añadir resultado
-  if (limpio.length > 0) {
-    salidaFinal += "- " + limpio + "\n";
-  }
-
-});
-
-  } else {
-
-    // 👉 comportamiento normal (otros casos)
     salidaFinal += "\n\n--- ERRORES DETECTADOS ---\n";
 
     erroresUnicos.forEach(err => {
@@ -763,7 +772,7 @@ for (let patron of patronesLiteral) {
 
   salidaFinal += "\n\n--- SIN ERRORES DETECTADOS ---\n";
 }
-
+``
   
 
   
