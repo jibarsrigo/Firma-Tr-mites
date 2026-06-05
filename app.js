@@ -691,15 +691,25 @@ placeholder.style.display = "none";
 
 // 👉 Mostramos errores si existen
 if (erroresUnicos.length > 0) {
-
-  salidaFinal += "\n\n--- ERRORES DETECTADOS ---\n";
-
-  erroresUnicos.forEach(err => {
-    salidaFinal += "- " + err + "\n";
-  });
+  // 👉 Si estamos en pre_firma (tu caso de formulario)
+  if (contexto.fase === "pre_firma") {
+    salidaFinal += "\n\n--- ERROR EN FORMULARIO ---\n";
+    salidaFinal += "El literal del error que aparece en el formulario es:\n";
+    erroresUnicos.forEach(err => {
+      salidaFinal += "- " + err + "\n";
+    });
+  } else {
+    // 👉 comportamiento normal (otros casos)
+    salidaFinal += "\n\n--- ERRORES DETECTADOS ---\n";
+    erroresUnicos.forEach(err => {
+      salidaFinal += "- " + err + "\n";
+    });
+  }
+} else {
+  salidaFinal += "\n\n--- SIN ERRORES DETECTADOS ---\n";
+}
 
 } else {
-
   // 👉 Si NO hay errores reales detectados
   salidaFinal += "\n\n--- SIN ERRORES DETECTADOS ---\n";
 }
