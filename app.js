@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.2";
+const VERSION_JS = "1.2.3";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -706,11 +706,6 @@ if (erroresUnicos.length > 0) {
     });
   }
 } else {
-  salidaFinal += "\n\n--- SIN ERRORES DETECTADOS ---\n";
-}
-
-} else {
-  // 👉 Si NO hay errores reales detectados
   salidaFinal += "\n\n--- SIN ERRORES DETECTADOS ---\n";
 }
 
