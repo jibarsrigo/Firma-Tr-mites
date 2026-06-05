@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.2";
+const VERSION_JS = "1.2.3";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -721,11 +721,11 @@ erroresUnicos.forEach(err => {
 
 // 👉 patrones típicos de inicio de literal real
 const patronesLiteral = [
+  "DOMINI ",
   "LES ",
-  "ES ",
   "EL ",
   "LA ",
-  "DOMINI ",
+  "ES ",
   "ERROR "
 ];
 
