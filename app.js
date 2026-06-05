@@ -450,7 +450,7 @@ const numFRF = eventos.filter(e => e === "TR_FRF").length;
 
 if (!haySGI && hayErrorPortafibReal){
 
-  // 👉 Error técnico REAL de sesión/flujo (Portafib / Soffid)
+  // 👉 Error técnico REAL de sesión/flujo (Portafib)
   // 🔹 hay literales tipo FLUXE, SESSION, 227, timestamp…
   idReglaDetectada = "fallo_portafib";
 
@@ -615,7 +615,7 @@ if (!haySGI) {
   if (hayErrorPortafibReal) {
 
     // 👉 Error de sesión / flujo (Portafib)
-    diagnosticoTexto += "La firma NO se inicia por error de sesión/flujo (Portafib/Soffid).\n";
+    diagnosticoTexto += "La firma NO se inicia por error de sesión/flujo (Portafib).\n";
 
   } else {
 
@@ -696,7 +696,7 @@ if (erroresUnicos.length > 0) {
   if (hayErrorPortafibReal) {
 
     salidaFinal += "\n\n--- ERROR DE SESIÓN / FLUJO ---\n";
-    salidaFinal += "Se detecta error técnico de Portafib/Soffid previo a la firma.\n";
+    salidaFinal += "Se detecta error técnico de Portafib previo a la firma.\n";
 
     erroresUnicos.forEach(err => {
       salidaFinal += "- " + err + "\n";
