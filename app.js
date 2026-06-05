@@ -698,40 +698,42 @@ if (erroresUnicos.length > 0) {
     salidaFinal += "\n\n--- ERROR EN FORMULARIO ---\n";
     salidaFinal += "El literal del error que aparece en el formulario es:\n";
 
-    erroresUnicos.forEach(err => {
+erroresUnicos.forEach(err => {
 
-      // 🔹 Limpiar el literal paso a paso
+  let limpio = err;
 
-      let limpio = err;
+  // 👉 Quitar cabecera de ERROR
+  limpio = limpio.replace(/^ERROR\s*-\s*ERROR\s*/i, "");
+  limpio = limpio.replace(/^ERROR\s*/i, "");
 
-      // 👉 Quitar "ERROR - Error"
-      limpio = limpio.replace(/^ERROR\s*-\s*ERROR\s*/i, "");
-      limpio = limpio.replace(/^ERROR\s*/i, "");
+  // 👉 Quitar todo lo técnico (igual que antes)
+  limpio = limpio.replace(/Error executant script:/gi, "");
+  limpio = limpio.replace(/WrappedException:/gi, "");
+  limpio = limpio.replace(/ScriptException:/gi, "");
+  limpio = limpio.replace(/EngineScriptException/gi, "");
+  limpio = limpio.replace(/ErrorConfiguracionException/gi, "");
+  limpio = limpio.replace(/DominioErrorException/gi, "");
+  limpio = limpio.replace(/<Unknown source>.*$/gi, "");
+  limpio = limpio.replace(/at line number.*$/gi, "");
+  limpio = limpio.replace(/Could not[^.]*\./gi, "");
 
-      // 👉 Quitar partes técnicas comunes
-      limpio = limpio.replace(/Error executant script:/gi, "");
-      limpio = limpio.replace(/WrappedException:/gi, "");
-      limpio = limpio.replace(/ScriptException:/gi, "");
-      limpio = limpio.replace(/EngineScriptException/gi, "");
-      limpio = limpio.replace(/ErrorConfiguracionException/gi, "");
-      limpio = limpio.replace(/DominioErrorException/gi, "");
+  // 🔥 NUEVO: eliminar datos iniciales (fechas, IDs, etc.)
+  // 👉 buscamos el inicio del texto real (letras mayúsculas seguidas de palabras)
+  const match = limpio.match(/([A-ZÀ-Ú]{3,}.*)/);
 
-      // 👉 Quitar referencias técnicas largas
-      limpio = limpio.replace(/<Unknown source>.*$/gi, "");
-      limpio = limpio.replace(/at line number.*$/gi, "");
+  if (match) {
+    limpio = match[1];
+  }
 
-      // 👉 Quitar partes tipo "Could not..."
-      limpio = limpio.replace(/Could not[^.]*\./gi, "");
+  // 👉 limpiar espacios
+  limpio = limpio.replace(/\s+/g, " ").trim();
 
-      // 👉 Limpiar espacios duplicados
-      limpio = limpio.replace(/\s+/g, " ").trim();
+  // 👉 añadir resultado
+  if (limpio.length > 0) {
+    salidaFinal += "- " + limpio + "\n";
+  }
 
-      // 👉 Añadir solo si queda texto útil
-      if (limpio.length > 0) {
-        salidaFinal += "- " + limpio + "\n";
-      }
-
-    });
+});
 
   } else {
 
