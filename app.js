@@ -691,23 +691,65 @@ placeholder.style.display = "none";
 
 // 👉 Mostramos errores si existen
 if (erroresUnicos.length > 0) {
-  // 👉 Si estamos en pre_firma (tu caso de formulario)
+
+  // 👉 Caso formulario (tu lógica)
   if (contexto.fase === "pre_firma") {
+
     salidaFinal += "\n\n--- ERROR EN FORMULARIO ---\n";
     salidaFinal += "El literal del error que aparece en el formulario es:\n";
+
     erroresUnicos.forEach(err => {
-      salidaFinal += "- " + err + "\n";
+
+      // 🔹 Limpiar el literal paso a paso
+
+      let limpio = err;
+
+      // 👉 Quitar "ERROR - Error"
+      limpio = limpio.replace(/^ERROR\s*-\s*ERROR\s*/i, "");
+      limpio = limpio.replace(/^ERROR\s*/i, "");
+
+      // 👉 Quitar partes técnicas comunes
+      limpio = limpio.replace(/Error executant script:/gi, "");
+      limpio = limpio.replace(/WrappedException:/gi, "");
+      limpio = limpio.replace(/ScriptException:/gi, "");
+      limpio = limpio.replace(/EngineScriptException/gi, "");
+      limpio = limpio.replace(/ErrorConfiguracionException/gi, "");
+      limpio = limpio.replace(/DominioErrorException/gi, "");
+
+      // 👉 Quitar referencias técnicas largas
+      limpio = limpio.replace(/<Unknown source>.*$/gi, "");
+      limpio = limpio.replace(/at line number.*$/gi, "");
+
+      // 👉 Quitar partes tipo "Could not..."
+      limpio = limpio.replace(/Could not[^.]*\./gi, "");
+
+      // 👉 Limpiar espacios duplicados
+      limpio = limpio.replace(/\s+/g, " ").trim();
+
+      // 👉 Añadir solo si queda texto útil
+      if (limpio.length > 0) {
+        salidaFinal += "- " + limpio + "\n";
+      }
+
     });
+
   } else {
+
     // 👉 comportamiento normal (otros casos)
     salidaFinal += "\n\n--- ERRORES DETECTADOS ---\n";
+
     erroresUnicos.forEach(err => {
       salidaFinal += "- " + err + "\n";
     });
+
   }
+
 } else {
+
   salidaFinal += "\n\n--- SIN ERRORES DETECTADOS ---\n";
 }
+
+  
 
   
 
