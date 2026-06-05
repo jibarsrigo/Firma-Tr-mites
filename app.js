@@ -19,7 +19,7 @@
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.3";
+const VERSION_JS = "1.2.4";
 
 // Variable global donde se guarda el contenido de reglas.json
 let reglasJSON = null;
@@ -744,23 +744,28 @@ if (erroresUnicos.length > 0) {
       limpio = limpio.replace(/at line number.*$/gi, "");
       limpio = limpio.replace(/Could not[^.]*\./gi, "");
 
-      // 👉 detectar inicio del literal
-      const patronesLiteral = [
-        "DOMINI ",
-        "LES ",
-        "EL ",
-        "LA ",
-        "ES ",
-        "ERROR "
-      ];
+    // 👉 SOLO aplicar recorte si viene de línea con ERROR
+if (err.includes("ERROR")) {
 
-      for (let patron of patronesLiteral) {
-        const idx = limpio.indexOf(patron);
-        if (idx !== -1) {
-          limpio = limpio.substring(idx);
-          break;
-        }
-      }
+  const patronesLiteral = [
+    "DOMINI ",
+    "LES ",
+    "EL ",
+    "LA ",
+    "ES ",
+    "ERROR "
+  ];
+
+  for (let patron of patronesLiteral) {
+    const idx = limpio.indexOf(patron);
+    if (idx !== -1) {
+      limpio = limpio.substring(idx);
+      break;
+    }
+  }
+
+}
+
 
       limpio = limpio.replace(/\s+/g, " ").trim();
 
