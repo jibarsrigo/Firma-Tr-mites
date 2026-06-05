@@ -10,6 +10,39 @@
 <!-- VERSION 1.1    - Se muestra lectura html json y js panel superior html y editable desde codigo -->
 <!-- VERSION 1.1.1  - Se Añade 🔴 DETECCIÓN DE REGLAS (PATRONES) con la primera regla par el Formulario-->
 <!-- VERSION 1.1.2  - MOTOR BASE DE ANÁLISIS TR_ → detección → ID regla → control → salida personalizada → stop -->
+<!-- VERSION 1.2.0  - Introducción de contexto de flujo estructurado (objeto contexto)
+                    - Modelización de estados: pre_firma / error_firma / firma_ok
+                    - Simplificación del árbol de decisión basado en fase del flujo
+                    - Mejora de robustez ante trazas incompletas o con orden irregular-->
+<!-- VERSION 1.2.1  - Detección avanzada de errores técnicos:
+                         FLUXE, SESSION, EXCEPTION, SAF_
+                    - Detección específica de Autofirma (SAF_27)
+                    - Detección básica de Cl@ve por patrón "CODI ERROR"
+                    - Separación proveedor firma: Cl@ve / Autofirma / FIRE-->                
+<!-- VERSION 1.2.2  - Mejora del análisis en pre_firma:
+                        diferenciación entre fallo formulario vs Portafib
+                    - Introducción de lógica de reintentos (contadores TR_FRI / TR_FRF)
+                    - Detección de errores reales de sesión (Portafib/Soffid)
+                    - Primer separación conceptual CAU:error ciudadano vs error plataforma-->
+<!-- VERSION 1.2.3  - Limpieza avanzada de literales de error:
+                        eliminación de cabeceras "ERROR"
+                        eliminación de trazas técnicas (Exception, Script, Unknown source…)
+                    - Eliminación de ruido inicial (fechas, IDs, NIF, etc.)
+                    - Extracción del literal funcional real del formulario
+                    - Introducción de patrones de corte (DOMINI, LES, EL, LA, ES)-->
+
+<!-- VERSION 1.2.4  - Separación definitiva de tipos de error: ✔ Error de sesión / flujo (Portafib) y ✔ Error de formulario (usuario)
+                    - Prioridad absoluta del error de sesión sobre el resto
+                    - Implementación FASE 2:
+                        detección de errores SIN "ERROR"
+                        (mensajes funcionales tipo "Debe ser...", "Campo obligatorio…")
+                    - Limpieza contextual inteligente:
+                        solo se aplica recorte si la línea contiene "ERROR"
+                    - Integración final:
+                        detección + clasificación + limpieza coherente según tipo de error
+                    - Motor alineado con diagnóstico real CAU:
+                        flujo + proveedor + literal interpretado correctamente-->
+
   
 // CÓMO AÑADIR REGLAS:
 // 1. Añadir condición en “DETECCIÓN DE REGLAS” → idReglaDetectada = "nombre_regla"
