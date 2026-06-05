@@ -312,15 +312,30 @@ console.log("CONTEXTO:", contexto);
 // 👉 Paso 1: filtramos solo líneas que contienen errores reales
 // 🔹 ampliamos detección para cubrir casos de sesión, firma y técnicos
 
-const lineasError = lineas.filter(linea =>
-  linea.includes("FLUXE") ||
-  linea.includes("SESSIÓ") ||
-  linea.includes("SESSION") ||
-  linea.includes("EXCEPCIÓ") ||
-  linea.includes("EXCEPTION") ||
-  linea.includes("SAF_") ||
-  (linea.includes("ERROR") && !linea.includes("CLAVEFIRMA"))
-);
+const lineasError = lineas.filter(linea => {
+
+  // 👉 errores técnicos existentes (igual que antes)
+  const esErrorTecnico =
+    linea.includes("FLUXE") ||
+    linea.includes("SESSIÓ") ||
+    linea.includes("SESSION") ||
+    linea.includes("EXCEPCIÓ") ||
+    linea.includes("EXCEPTION") ||
+    linea.includes("SAF_") ||
+    (linea.includes("ERROR") && !linea.includes("CLAVEFIRMA"));
+
+  // 🔥 NUEVO: detectar posibles errores de formulario sin "ERROR"
+  const esPosibleErrorFormulario =
+    !linea.includes("TR_") &&            // no es evento
+    !linea.includes("HTTP") &&          // evitar ruido técnico
+    !linea.includes("HTTPS") &&
+    linea.length > 20 &&                // evitar basura corta
+    /[A-ZÀ-Ú]{3,}/.test(linea);         // contiene texto real
+
+  // 👉 devolver cualquiera de los dos
+  return esErrorTecnico || esPosibleErrorFormulario;
+
+});
 
   
 // 👉 Paso 2: eliminamos duplicados
