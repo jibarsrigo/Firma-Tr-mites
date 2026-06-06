@@ -708,23 +708,22 @@ else if (haySGO) {
 // =====================================
 // 🔴 CONTROL POR REGLA (GENÉRICO)
 // =====================================
-// 👉 Aplica automáticamente cualquier regla definida en JSON
+// 👉 Aplica automáticamente cualquier acción definida en acciones.json
 
 // 👉 Construimos la salida final partiendo del diagnóstico
 let salidaFinal = diagnosticoTexto;
 
-// 👉 Si hay una regla detectada, añadimos clasificación y acción
+// 👉 Si hay una acción detectada, la añadimos
 if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
   const accionData = accionesJSON.acciones.find(r => r.id === idReglaDetectada);
 
-  if (accionData) {
+  if (accionData && accionData.accion) {
 
-    // 👉 Formato tipo CAU (limpio y listo para pegar)
-   
-    salidaFinal += "\nAcción Recomendada:\n\n";
-
+    // 👉 Formato tipo CAU limpio
+    salidaFinal += "\nAcción recomendada:\n";
     salidaFinal += accionData.accion + "\n";
+
   }
 
 }
