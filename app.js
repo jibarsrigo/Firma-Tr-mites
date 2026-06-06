@@ -633,7 +633,7 @@ console.log("JSON disponible:", accionesJSON);
 let diagnosticoTexto = "";
 
 // 👉 Mostramos la traza como flujo real (ordenado y claro)
-diagnosticoTexto += "=== FLUJO DETECTADO ===\n\n";
+diagnosticoTexto += "Flujo:\n\n";
 
 // FORMULARIO
 diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "\n";
@@ -653,7 +653,7 @@ if (haySGO) {
 
 
 // 👉 Añadimos una conclusión técnica de flujo
-diagnosticoTexto += "\n=== INTERPRETACIÓN ===\n\n";
+diagnosticoTexto += "\nInterpretación: \n\n";
 
 // 👉 Interpretación técnica del fallo
 // 🔹 Añadimos caso especial: SAF_27 SIEMPRE es Autofirma
@@ -716,13 +716,13 @@ let salidaFinal = diagnosticoTexto;
 // 👉 Si hay una regla detectada, añadimos clasificación y acción
 if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
-  const regla = accionesJSON.acciones.find(r => r.id === idReglaDetectada);
+  const accionData = accionesJSON.acciones.find(r => r.id === idReglaDetectada);
 
   if (regla) {
 
     // 👉 Formato tipo CAU (limpio y listo para pegar)
    
-    salidaFinal += "\n=== ACCIÓN ===\n";
+    salidaFinal += "\nAcción Recomendada:\n\n";
 
     salidaFinal += regla.accion + "\n";
   }
@@ -753,7 +753,7 @@ if (erroresUnicos.length > 0) {
   // 🔥 SEGUNDO: caso formulario REAL
   else if (contexto.fase === "pre_firma") {
 
-    salidaFinal += "\n\n--- ERROR EN FORMULARIO ---\n";
+    salidaFinal += "\n\n--- Errores en el Formulario ---\n";
     salidaFinal += "El literal del error que aparece en el formulario es:\n";
 
     erroresUnicos.forEach(err => {
@@ -963,7 +963,7 @@ async function cargarAcciones() {
 }
 
 
-cargaracciones();      // 👉 Ejecuta la carga al iniciar la aplicación
+cargarAcciones();      // 👉 Ejecuta la carga al iniciar la aplicación
 // =====================================
 // 🔴 CAMBIO DE MÉTODO (Cl@ve)
 // =====================================
