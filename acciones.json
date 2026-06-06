@@ -1,0 +1,36 @@
+{
+  "version": "1.2",
+  "acciones": [
+
+    {
+      "id": "fallo_formulario",
+      "accion": "Remitir al ciudadano a formulario de incidencias (dudas funcionales)."
+    },
+
+    {
+      "id": "fallo_portafib",
+      "accion": "Escalar a SEG-012. Error de sesión/flujo en Portafib."
+    },
+
+    {
+      "id": "error_clave",
+      "accion": "Remitir a incidencias Cl@ve."
+    },
+
+    {
+      "id": "error_autofirma",
+      "accion": "Revisar Autofirma y equipo del usuario."
+    },
+
+    {
+      "id": "error_fire",
+      "accion": "Revisar certificado o navegador."
+    },
+
+    {
+      "id": "firma_correcta",
+      "accion": "Acción para firma correcta"
+    }
+
+  ]
+}
