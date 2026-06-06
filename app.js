@@ -721,7 +721,7 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
   if (accionData && accionData.accion) {
 
     // 👉 Formato tipo CAU limpio
-    salidaFinal += "\nAcción recomendada:\n\n";
+    salidaFinal += "\n- Acción recomendada -\n\n";
     salidaFinal += accionData.accion + "\n\n";
 
   } else {
