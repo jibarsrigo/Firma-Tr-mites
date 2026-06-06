@@ -779,13 +779,10 @@ if (erroresUnicos.length > 0) {
 if (err.includes("ERROR")) {
 
   const patronesLiteral = [
-    "DOMINI ",
-    "LES ",
-    "EL ",
-    "LA ",
-    "ES ",
-    "ERROR "
-  ];
+  "DOMINI ",
+  "LES ",
+  "ERROR "
+];
 
   for (let patron of patronesLiteral) {
     const idx = limpio.indexOf(patron);
