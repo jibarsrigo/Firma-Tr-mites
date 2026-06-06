@@ -653,7 +653,7 @@ if (haySGO) {
 
 
 // 👉 Añadimos una conclusión técnica de flujo
-diagnosticoTexto += "\n▶ Interpretación: ";
+diagnosticoTexto += "\n- Interpretación: ";
 
 // 👉 Interpretación técnica del fallo
 // 🔹 Añadimos caso especial: SAF_27 SIEMPRE es Autofirma
@@ -720,12 +720,12 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
   if (accionData && accionData.accion) {
 
-  salidaFinal += "\n▶ Acción recomendada: ";
+  salidaFinal += "\n- Acción recomendada: ";
   salidaFinal += accionData.accion + "\n\n";
 
 } else {
 
-  salidaFinal += "\n▶ Acción recomendada: No definida\n";
+  salidaFinal += "\n- Acción recomendada: No definida\n";
 
 }
 }
@@ -801,7 +801,7 @@ if (err.includes("ERROR")) {
       limpio = limpio.replace(/\s+/g, " ").trim();
 
       if (limpio.length > 0) {
-        salidaFinal += "- " + limpio + "\n";
+        salidaFinal += limpio + "\n";
       }
 
     });
