@@ -4,32 +4,32 @@
 
     {
       "id": "fallo_formulario",
-      "accion": "Remitir al ciudadano a formulario de incidencias (dudas funcionales). E indicar que literal de error aparece, si lo hay"
+      "accion": "Remitir al ciudadano a formulario de incidencias (dudas funcionales). E indicar que literal de error aparece, si lo hay.\n\n"
     },
 
     {
       "id": "fallo_portafib",
-      "accion": "Escalar a SEG-012. Error de sesión/flujo en Portafib."
+      "accion": "Escalar a SEG-012. Error de sesión/flujo en Portafib.\n\n"
     },
 
     {
       "id": "error_clave",
-      "accion": "Remitir a incidencias Cl@ve."
+      "accion": "Remitir a incidencias Cl@ve.\n\n"
     },
 
     {
       "id": "error_autofirma",
-      "accion": "Revisar Autofirma y equipo del usuario."
+      "accion": "Revisar Autofirma y equipo del usuario.\n\n"
     },
 
     {
       "id": "error_fire",
-      "accion": "Revisar certificado o navegador."
+      "accion": "Revisar certificado o navegador.\n\n"
     },
 
     {
       "id": "firma_correcta",
-      "accion": "Firma correcta"
+      "accion": "Firma correcta\n\n"
     }
 
   ]
