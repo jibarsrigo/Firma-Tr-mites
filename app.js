@@ -653,7 +653,7 @@ if (haySGO) {
 
 
 // 👉 Añadimos una conclusión técnica de flujo
-diagnosticoTexto += "\n> Interpretación: ";
+diagnosticoTexto += "\n▶ Interpretación: ";
 
 // 👉 Interpretación técnica del fallo
 // 🔹 Añadimos caso especial: SAF_27 SIEMPRE es Autofirma
@@ -720,16 +720,14 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
   if (accionData && accionData.accion) {
 
-  // 👉 Cabecera + acción correctamente separadas
-  salidaFinal += "\n> Acción recomendada:\n";
+  salidaFinal += "\n▶ Acción recomendada: ";
   salidaFinal += accionData.accion + "\n\n";
 
 } else {
 
-  salidaFinal += "\n> Acción recomendada:\nNo definida\n";
+  salidaFinal += "\n▶ Acción recomendada: No definida\n";
 
 }
-
 }
 
 // 👉 Primero ocultamos el placeholder (mensaje inicial)
