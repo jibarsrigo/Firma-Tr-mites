@@ -157,13 +157,45 @@ btnDetalles.onclick = () => {
 
 btnTabla.onclick = (e) => {
   e.preventDefault();
-  abrirPanel("Tabla reglas", `
-  <ul>
-    <li>Reglas en desarrollo</li>
-    <li>Motor pendiente</li>
-  </ul>
-  `);
+  abrirPanel("Motor de análisis (reglas)", `
+<ul>
+  <li><b>Funcionamiento del analizador:</b></li>
+  <li>Analiza la traza completa en bruto (SistraHelp) respetando el orden real de ejecución.</li>
+  <li>Normaliza el contenido (mayúsculas) para garantizar detección consistente.</li>
+  <li>Identifica eventos clave TR_ para reconstruir el flujo del trámite:</li>
+  <li>TR_FRI (inicio formulario) → TR_FRF (fin formulario) → TR_SGI (inicio firma) → TR_SGX / TR_SGO</li>
+
+  <br>
+
+  <li><b>Análisis por fases del flujo:</b></li>
+  <li>✔ Pre-firma → validación de formulario y sesión</li>
+  <li>✔ Error en firma → fallo en proveedor (Cl@ve, Autofirma, FIRE)</li>
+  <li>✔ Firma correcta → validación de registro</li>
+
+  <br>
+
+  <li><b>Casos actualmente cubiertos:</b></li>
+  <li>✔ Fallos de formulario (errores funcionales del ciudadano)</li>
+  <li>✔ Fallos de sesión / Portafib (errores técnicos previos a firma)</li>
+  <li>✔ Detección de reintentos (TR_FRI / TR_FRF repetidos)</li>
+  <li>✔ Extracción de literales reales desde la traza</li>
+
+  <br>
+
+  <li><b>Pendiente de implementación:</b></li>
+  <li>🔧 Clasificación completa de errores en Autofirma (SAF_xx)</li>
+  <li>🔧 Diagnóstico detallado de certificados locales (FIRE)</li>
+  <li>🔧 Interpretación de códigos reales de Cl@ve (8–15, 101, 103...)</li>
+  <li>🔧 Mejora del análisis en fase de firma (proveedor)</li>
+
+  <br>
+
+  <li><b>Nota técnica:</b></li>
+  <li>El motor prioriza errores de sesión (Portafib) sobre errores funcionales, siguiendo el flujo real de ejecución del sistema.</li>
+</ul>
+`);
 };
+
 
 
 // =====================================
