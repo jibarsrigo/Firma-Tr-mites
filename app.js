@@ -47,7 +47,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
   
 // CÓMO AÑADIR REGLAS:
 // 1. Añadir condición en “DETECCIÓN DE REGLAS” → idReglaDetectada = "nombre_regla"
-// 2. Añadir la regla en reglas.json con mismo id (clasificación, acción, CAI)
+// 2. Añadir la regla en acciones.json con mismo id (diagnostico, acción, errores)
 // 3. La regla tiene prioridad y sustituye la lógica estándar
 
 
@@ -55,8 +55,8 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 // 🔹 VERSION JS (editable manual) 
 const VERSION_JS = "1.2.4";
 
-// Variable global donde se guarda el contenido de reglas.json
-let reglasJSON = null;
+// Variable global donde se guarda el contenido de acciones.json
+let accionesJSON = null;
 
 // Espera a que el HTML esté completamente cargado antes de ejecutar
 document.addEventListener("DOMContentLoaded", () => {
@@ -465,7 +465,7 @@ const esCert = metodoCert.checked;
 // 👉 EL CEREBRO - AQUÍ se decide qué regla aplicar en función del flujo + contexto
 // 👉 Para añadir nuevas reglas:
 //    1. Añadir condición en este árbol
-//    2. Crear la regla correspondiente en reglas.json con el mismo id
+//    2. Crear la regla correspondiente en acciones.json con el mismo id
 
 let idReglaDetectada = null;
 
@@ -618,7 +618,7 @@ console.log("Regla detectada:", idReglaDetectada);
 //    - texto para CAI
 
 // ✅ VERIFICACIÓN JSON para comprobar en consola que el JSON se ha cargado correctamente
-console.log("JSON disponible:", reglasJSON);
+console.log("JSON disponible:", accionesJSON);
 
 
 
@@ -714,17 +714,14 @@ else if (haySGO) {
 let salidaFinal = diagnosticoTexto;
 
 // 👉 Si hay una regla detectada, añadimos clasificación y acción
-if (idReglaDetectada && reglasJSON) {
+if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
-  const regla = reglasJSON.reglas.find(r => r.id === idReglaDetectada);
+  const regla = accionesJSON.acciones.find(r => r.id === idReglaDetectada);
 
   if (regla) {
 
     // 👉 Formato tipo CAU (limpio y listo para pegar)
-    salidaFinal += "\n\n=== CLASIFICACIÓN ===\n";
-
-    salidaFinal += regla.clasificacion + "\n";
-
+   
     salidaFinal += "\n=== ACCIÓN ===\n";
 
     salidaFinal += regla.accion + "\n";
@@ -930,26 +927,26 @@ btnActualizar.onclick = () => {
 
 
 // =====================================
-// 🔴 CARGAR REGLAS DESDE JSON
+// 🔴 CARGAR acciones DESDE JSON
 // =====================================
-// 👉 Trae el archivo reglas.json y lo guarda en memoria
-// 👉 Este archivo contiene TODO el contenido (clasificación, acción, CAI)
+// 👉 Trae el archivo acciones.json y lo guarda en memoria
+// 👉 Este archivo contiene TODO el contenido (diagnostico, acción, errores)
 
-async function cargarReglas() {
+async function cargarAcciones() {
 
   try {
 
     // 👉 Se añade timestamp para evitar que el navegador use caché
-    const r = await fetch("reglas.json?v=" + Date.now());
+    const r = await fetch("acciones.json?v=" + Date.now());
 
     // 👉 Convierte la respuesta a objeto JSON
     const d = await r.json();
 
-    // 👉 Guarda las reglas en variable global
-    reglasJSON = d;
+    // 👉 Guarda las acciones en variable global
+    accionesJSON = d;
 
     // 👉 Debug en consola (ver contenido completo)
-    console.log("REGLAS JSON:", d);
+    console.log("acciones JSON:", d);
 
     // 👉 Muestra versión del JSON en cabecera
     document.getElementById("versionJSON").innerText =
@@ -966,7 +963,7 @@ async function cargarReglas() {
 }
 
 
-cargarReglas();      // 👉 Ejecuta la carga al iniciar la aplicación
+cargaracciones();      // 👉 Ejecuta la carga al iniciar la aplicación
 // =====================================
 // 🔴 CAMBIO DE MÉTODO (Cl@ve)
 // =====================================
