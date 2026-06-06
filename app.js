@@ -53,7 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.5";
+const VERSION_JS = "1.2.6";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
