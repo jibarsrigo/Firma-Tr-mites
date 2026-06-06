@@ -720,16 +720,15 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
   if (accionData && accionData.accion) {
 
-    // 👉 Formato tipo CAU limpio
-    salidaFinal += accionData.accion + "\n\n";
-    salidaFinal += "\n> Acción recomendada: ";
+  // 👉 Cabecera + acción correctamente separadas
+  salidaFinal += "\n> Acción recomendada:\n";
+  salidaFinal += accionData.accion + "\n\n";
 
-  } else {
+} else {
 
-    // 👉 fallback seguro (muy raro pero evita huecos)
-    salidaFinal += "\n> Acción recomendada: \nNo definida\n";
+  salidaFinal += "\n> Acción recomendada:\nNo definida\n";
 
-  }
+}
 
 }
 
