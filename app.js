@@ -53,7 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.6";
+const VERSION_JS = "1.2.5";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -653,7 +653,7 @@ if (haySGO) {
 
 
 // 👉 Añadimos una conclusión técnica de flujo
-diagnosticoTexto += "\n►Interpretación: ";
+diagnosticoTexto += "\n> Interpretación: ";
 
 // 👉 Interpretación técnica del fallo
 // 🔹 Añadimos caso especial: SAF_27 SIEMPRE es Autofirma
@@ -722,12 +722,12 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
     // 👉 Formato tipo CAU limpio
     salidaFinal += accionData.accion + "\n\n";
-    salidaFinal += "\n►Acción recomendada: ";
+    salidaFinal += "\n> Acción recomendada: ";
 
   } else {
 
     // 👉 fallback seguro (muy raro pero evita huecos)
-    salidaFinal += "\n►Acción recomendada: \nNo definida\n";
+    salidaFinal += "\n> Acción recomendada: \nNo definida\n";
 
   }
 
