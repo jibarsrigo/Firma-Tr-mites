@@ -799,7 +799,7 @@ if (erroresUnicos.length > 0) {
     salidaFinal += "Se detecta error técnico de Portafib previo a la firma.\n";
 
     erroresUnicos.forEach(err => {
-      salidaFinal += "- " + err + "\n";
+      salidaFinal += err + "\n";
     });
 
   }
