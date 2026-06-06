@@ -1,37 +1,38 @@
+/* =====================================================
+           FUNCIONALIDADES IMPLEMENTADAS
+   =====================================================
 
-<!-- FUNCIONALIDADES IMPLEMENTADAS -->
-
-<!-- VERSION 1.0    - Se valida que la traza y el método de firma sean correctos antes de analizar -->
-<!--                - Se muestran paneles informativos para errores de acceso (SAML y página en blanco) -->
-<!--                - Se normaliza la traza a mayúsculas para evitar problemas en la detección -->
-<!--                - Se detectan los eventos TR_ principales dentro de la traza -->
-<!--                - Se genera un diagnóstico técnico dinámico en función de los TR_ detectados -->
-<!--                - Se genera diagnóstico + acción basada en flujo TR_ -->
-<!-- VERSION 1.1    - Se muestra lectura html json y js panel superior html y editable desde codigo -->
-<!-- VERSION 1.1.1  - Se Añade 🔴 DETECCIÓN DE REGLAS (PATRONES) con la primera regla par el Formulario-->
-<!-- VERSION 1.1.2  - MOTOR BASE DE ANÁLISIS TR_ → detección → ID regla → control → salida personalizada → stop -->
-<!-- VERSION 1.2.0  - Introducción de contexto de flujo estructurado (objeto contexto)
+VERSION 1.0     - Se valida que la traza y el método de firma sean correctos antes de analizar 
+                - Se muestran paneles informativos para errores de acceso (SAML y página en blanco) 
+                - Se normaliza la traza a mayúsculas para evitar problemas en la detección 
+                - Se detectan los eventos TR_ principales dentro de la traza 
+                - Se genera un diagnóstico técnico dinámico en función de los TR_ detectados 
+                - Se genera diagnóstico + acción basada en flujo TR_ 
+ VERSION 1.1    - Se muestra lectura html json y js panel superior html y editable desde codigo 
+ VERSION 1.1.1  - Se Añade 🔴 DETECCIÓN DE REGLAS (PATRONES) con la primera regla par el Formulario
+ VERSION 1.1.2  - MOTOR BASE DE ANÁLISIS TR_ → detección → ID regla → control → salida personalizada → stop 
+ VERSION 1.2.0  - Introducción de contexto de flujo estructurado (objeto contexto)
                     - Modelización de estados: pre_firma / error_firma / firma_ok
                     - Simplificación del árbol de decisión basado en fase del flujo
-                    - Mejora de robustez ante trazas incompletas o con orden irregular-->
-<!-- VERSION 1.2.1  - Detección avanzada de errores técnicos:
+                    - Mejora de robustez ante trazas incompletas o con orden irregular
+ VERSION 1.2.1  - Detección avanzada de errores técnicos:
                          FLUXE, SESSION, EXCEPTION, SAF_
                     - Detección específica de Autofirma (SAF_27)
                     - Detección básica de Cl@ve por patrón "CODI ERROR"
-                    - Separación proveedor firma: Cl@ve / Autofirma / FIRE-->                
-<!-- VERSION 1.2.2  - Mejora del análisis en pre_firma:
+                    - Separación proveedor firma: Cl@ve / Autofirma / FIRE                
+ VERSION 1.2.2  - Mejora del análisis en pre_firma:
                         diferenciación entre fallo formulario vs Portafib
                     - Introducción de lógica de reintentos (contadores TR_FRI / TR_FRF)
                     - Detección de errores reales de sesión (Portafib/Soffid)
-                    - Primer separación conceptual CAU:error ciudadano vs error plataforma-->
-<!-- VERSION 1.2.3  - Limpieza avanzada de literales de error:
+                    - Primer separación conceptual CAU:error ciudadano vs error plataforma
+ VERSION 1.2.3  - Limpieza avanzada de literales de error:
                         eliminación de cabeceras "ERROR"
                         eliminación de trazas técnicas (Exception, Script, Unknown source…)
                     - Eliminación de ruido inicial (fechas, IDs, NIF, etc.)
                     - Extracción del literal funcional real del formulario
-                    - Introducción de patrones de corte (DOMINI, LES, EL, LA, ES)-->
+                    - Introducción de patrones de corte (DOMINI, LES, EL, LA, ES)
 
-<!-- VERSION 1.2.4  - Separación definitiva de tipos de error: ✔ Error de sesión / flujo (Portafib) y ✔ Error de formulario (usuario)
+ VERSION 1.2.4  - Separación definitiva de tipos de error: ✔ Error de sesión / flujo (Portafib) y ✔ Error de formulario (usuario)
                     - Prioridad absoluta del error de sesión sobre el resto
                     - Implementación FASE 2:
                         detección de errores SIN "ERROR"
@@ -41,8 +42,8 @@
                     - Integración final:
                         detección + clasificación + limpieza coherente según tipo de error
                     - Motor alineado con diagnóstico real CAU:
-                        flujo + proveedor + literal interpretado correctamente-->
-
+                        flujo + proveedor + literal interpretado correctamente
+*/
   
 // CÓMO AÑADIR REGLAS:
 // 1. Añadir condición en “DETECCIÓN DE REGLAS” → idReglaDetectada = "nombre_regla"
