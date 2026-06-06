@@ -669,7 +669,7 @@ if (!haySGI) {
   } else {
 
     // 👉 Sin errores técnicos → problema de formulario
-    diagnosticoTexto += "La firma NO se inicia (posible fallo en formulario o trámite).\n";
+    diagnosticoTexto += "La firma NO se inicia (posible fallo en el formulario).\n";
   }
 
 }
