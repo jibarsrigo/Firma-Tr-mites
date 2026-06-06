@@ -120,13 +120,34 @@ document.getElementById("btnCerrarPanel").onclick = cerrarPanelFunc;
 // =====================================
 
 btnDetalles.onclick = () => {
-  abrirPanel("Novedades BETA", `
-  <ul>
-    <li>Nuevo panel único sin conflictos</li>
-    <li>Base limpia para motor</li>
-    <li>UI mejorada progresivamente</li>
-  </ul>
-  `);
+  abrirPanel("Detalles del analizador", `
+<ul>
+  <li><b>Analizador de trazas SistraHelp</b> orientado a soporte técnico CAU.</li>
+
+  <li>Identifica automáticamente el flujo del trámite mediante eventos TR_ (inicio de formulario, firma, resultado).</li>
+
+  <li>Genera un diagnóstico técnico basado en el flujo real del proceso (formulario, firma y registro).</li>
+
+  <li>Extrae y muestra los literales de error directamente desde la traza, manteniendo el contexto real de ejecución.</li>
+
+  <br>
+
+  <li><b>Estado actual:</b></li>
+  <li>✔ Casos de error de formulario definidos y validados.</li>
+  <li>✔ Casos de error técnico de sesión / Portafib identificados correctamente.</li>
+
+  <br>
+
+  <li><b>Pendiente de mejora:</b></li>
+  <li>🔧 Análisis detallado de errores en Autofirma y certificados locales (FIRE).</li>
+  <li>🔧 Clasificación completa de códigos de error de Cl@ve (paso de firma).</li>
+  <li>🔧 Mejora del diagnóstico en fase de proveedor de firma.</li>
+
+  <br>
+
+  <li><b>Nota:</b> La herramienta se encuentra en evolución continua para cubrir todos los escenarios reales de firma electrónica en CAIB.</li>
+</ul>
+`);
 };
 
 
