@@ -9,22 +9,22 @@
 
     {
       "id": "fallo_portafib",
-      "accion": "Escalar a SEG-012. Error de sesión/flujo en Portafib.\n\n"
+      "accion": "Escalar a SEG-012. Error de sesión/flujo en Portafib.\n"
     },
 
     {
       "id": "error_clave",
-      "accion": "Remitir a incidencias Cl@ve.\n\n"
+      "accion": "Remitir a incidencias Cl@ve.\n"
     },
 
     {
       "id": "error_autofirma",
-      "accion": "Revisar Autofirma y equipo del usuario.\n\n"
+      "accion": "Revisar Autofirma y equipo del usuario.\n"
     },
 
     {
       "id": "error_fire",
-      "accion": "Revisar certificado o navegador.\n\n"
+      "accion": "Revisar certificado o navegador.\n"
     },
 
     {
