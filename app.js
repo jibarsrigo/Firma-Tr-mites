@@ -47,7 +47,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
   
 // CÓMO AÑADIR REGLAS:
 // 1. Añadir condición en “DETECCIÓN DE REGLAS” → idReglaDetectada = "nombre_regla"
-// 2. Añadir la regla en acciones.json con mismo id (diagnostico, acción, errores)
+// 2. Añadir la acción en acciones.json con el mismo id
 // 3. La regla tiene prioridad y sustituye la lógica estándar
 
 
@@ -934,7 +934,7 @@ btnActualizar.onclick = () => {
 // 🔴 CARGAR acciones DESDE JSON
 // =====================================
 // 👉 Trae el archivo acciones.json y lo guarda en memoria
-// 👉 Este archivo contiene solo acciones recomendadas
+// 👉 Este archivo contiene solo acciones del sistema
 
 async function cargarAcciones() {
 
