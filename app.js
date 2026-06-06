@@ -821,7 +821,7 @@ if (err.includes("ERROR")) {
 
 } else {
 
-  salidaFinal += "\n\nSin Literales de Errores Detectados\n";
+  salidaFinal += "\n\n*Sin Literales de Errores Detectados\n";
 }
   
 
