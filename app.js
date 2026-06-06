@@ -633,7 +633,7 @@ console.log("JSON disponible:", accionesJSON);
 let diagnosticoTexto = "";
 
 // 👉 Mostramos la traza como flujo real (ordenado y claro)
-diagnosticoTexto += "Flujo:\n\n";
+diagnosticoTexto += "- Flujo -\n\n";
 
 // FORMULARIO
 diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "\n";
@@ -653,7 +653,7 @@ if (haySGO) {
 
 
 // 👉 Añadimos una conclusión técnica de flujo
-diagnosticoTexto += "\nInterpretación:\n\n";
+diagnosticoTexto += "\n- Interpretación -\n\n";
 
 // 👉 Interpretación técnica del fallo
 // 🔹 Añadimos caso especial: SAF_27 SIEMPRE es Autofirma
@@ -727,7 +727,7 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
   } else {
 
     // 👉 fallback seguro (muy raro pero evita huecos)
-    salidaFinal += "\nAcción recomendada:\nNo definida\n";
+    salidaFinal += "\n- Acción recomendada -\nNo definida\n";
 
   }
 
@@ -757,7 +757,7 @@ if (erroresUnicos.length > 0) {
   // 🔥 SEGUNDO: caso formulario REAL
   else if (contexto.fase === "pre_firma") {
 
-    salidaFinal += "El literal del error que aparece en el formulario es:\n\n";
+    salidaFinal += "- Literal del error que aparece en el formulario -\n\n";
 
     erroresUnicos.forEach(err => {
 
