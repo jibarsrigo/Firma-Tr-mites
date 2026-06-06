@@ -757,7 +757,6 @@ if (erroresUnicos.length > 0) {
   // 🔥 SEGUNDO: caso formulario REAL
   else if (contexto.fase === "pre_firma") {
 
-    salidaFinal += "\n\nLiterales de error en el formulario:\n\n";
     salidaFinal += "El literal del error que aparece en el formulario es:\n";
 
     erroresUnicos.forEach(err => {
