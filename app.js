@@ -734,7 +734,7 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 }
 
 // 👉 Primero ocultamos el placeholder (mensaje inicial)
-placeholder.style.display = "none";;
+placeholder.style.display = "none";
 
 // 👉 Si hay errores reales, los añadimos al diagnóstico
 // 🔹 mostramos solo errores detectados (sin duplicados)
@@ -745,7 +745,7 @@ if (erroresUnicos.length > 0) {
   // 🔥 PRIMERO: si hay error de flujo (Portafib)
   if (hayErrorPortafibReal) {
 
-    salidaFinal += "\n\n--- ERROR DE SESIÓN / FLUJO ---\n";
+    salidaFinal += "\n\nErrores de sesión / Flujo:\n";
     salidaFinal += "Se detecta error técnico de Portafib previo a la firma.\n";
 
     erroresUnicos.forEach(err => {
@@ -757,7 +757,7 @@ if (erroresUnicos.length > 0) {
   // 🔥 SEGUNDO: caso formulario REAL
   else if (contexto.fase === "pre_firma") {
 
-    salidaFinal += "\n\n--- Errores en el Formulario ---\n";
+    salidaFinal += "\n\nLiterales de Error en el Formulario:\n";
     salidaFinal += "El literal del error que aparece en el formulario es:\n";
 
     erroresUnicos.forEach(err => {
@@ -815,7 +815,7 @@ if (err.includes("ERROR")) {
   // 🔹 resto casos
   else {
 
-    salidaFinal += "\n\n--- ERRORES DETECTADOS ---\n";
+    salidaFinal += "\n\nLiterales de Errores Detectados:\n";
 
     erroresUnicos.forEach(err => {
       salidaFinal += "- " + err + "\n";
@@ -825,7 +825,7 @@ if (err.includes("ERROR")) {
 
 } else {
 
-  salidaFinal += "\n\n--- SIN ERRORES DETECTADOS ---\n";
+  salidaFinal += "\n\nSin Literales de Errores Detectados\n";
 }
   
 
