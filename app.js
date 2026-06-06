@@ -653,7 +653,7 @@ if (haySGO) {
 
 
 // 👉 Añadimos una conclusión técnica de flujo
-diagnosticoTexto += "\nInterpretación: \n\n";
+diagnosticoTexto += "\nInterpretación:\n\n";
 
 // 👉 Interpretación técnica del fallo
 // 🔹 Añadimos caso especial: SAF_27 SIEMPRE es Autofirma
@@ -718,13 +718,13 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
   const accionData = accionesJSON.acciones.find(r => r.id === idReglaDetectada);
 
-  if (regla) {
+  if (accionData) {
 
     // 👉 Formato tipo CAU (limpio y listo para pegar)
    
     salidaFinal += "\nAcción Recomendada:\n\n";
 
-    salidaFinal += regla.accion + "\n";
+    salidaFinal += accionData.accion + "\n";
   }
 
 }
@@ -930,7 +930,7 @@ btnActualizar.onclick = () => {
 // 🔴 CARGAR acciones DESDE JSON
 // =====================================
 // 👉 Trae el archivo acciones.json y lo guarda en memoria
-// 👉 Este archivo contiene TODO el contenido (diagnostico, acción, errores)
+// 👉 Este archivo contiene solo acciones recomendadas
 
 async function cargarAcciones() {
 
