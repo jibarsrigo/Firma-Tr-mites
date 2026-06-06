@@ -724,12 +724,17 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
     salidaFinal += "\nAcción recomendada:\n";
     salidaFinal += accionData.accion + "\n";
 
+  } else {
+
+    // 👉 fallback seguro (muy raro pero evita huecos)
+    salidaFinal += "\nAcción recomendada:\nNo definida\n";
+
   }
 
 }
 
 // 👉 Primero ocultamos el placeholder (mensaje inicial)
-placeholder.style.display = "none";
+placeholder.style.display = "none";;
 
 // 👉 Si hay errores reales, los añadimos al diagnóstico
 // 🔹 mostramos solo errores detectados (sin duplicados)
