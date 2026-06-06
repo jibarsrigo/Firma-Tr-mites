@@ -745,7 +745,7 @@ if (erroresUnicos.length > 0) {
   // 🔥 PRIMERO: si hay error de flujo (Portafib)
   if (hayErrorPortafibReal) {
 
-    salidaFinal += "\n\nErrores de sesión / Flujo:\n";
+    salidaFinal += "\n\nErrores de sesión / flujo:\n";
     salidaFinal += "Se detecta error técnico de Portafib previo a la firma.\n";
 
     erroresUnicos.forEach(err => {
@@ -757,7 +757,7 @@ if (erroresUnicos.length > 0) {
   // 🔥 SEGUNDO: caso formulario REAL
   else if (contexto.fase === "pre_firma") {
 
-    salidaFinal += "\n\nLiterales de Error en el Formulario:\n";
+    salidaFinal += "\n\nLiterales de error en el formulario:\n";
     salidaFinal += "El literal del error que aparece en el formulario es:\n";
 
     erroresUnicos.forEach(err => {
