@@ -4,7 +4,7 @@
 
     {
       "id": "fallo_formulario",
-      "accion": "Remitir al ciudadano a formulario de incidencias (dudas funcionales). Usar plantila mail formulario, e indicar que literal de error aparece (solo texto interpretable por el ciudadano), si lo hay (*)."
+      "accion": "Remitir al ciudadano a formulario (dudas funcionales). Ver plantilla mail formulario. Indicar que literal de error aparece, si lo hay (*). Nota: indicar solo el texto del literal, que sea interpretable por el ciudadano"
     },
 
     {
