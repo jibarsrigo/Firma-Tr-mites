@@ -456,11 +456,17 @@ const hayAutofirmaError =
 // 👉 Buscamos la PRIMERA aparición real en la traza
 // 🔹 usamos lineas (NO erroresUnicos) para respetar orden real
 
-const lineaErrorClave = lineas.find(linea =>
+const lineasClave = lineas.filter(linea =>
   linea.includes("CLAVEFIRMA") &&
   linea.includes("CODI ERROR") &&
   linea.includes("TIPUS RESULTAT")
 );
+
+// 👉 coger la última línea (la más reciente en el flujo, para detecar bien 8-15 + 103-15)
+const lineaErrorClave = lineasClave.length > 0
+  ? lineasClave[lineasClave.length - 1]
+  : null;
+
 
 
 // 👉 Extraemos código real detectado
