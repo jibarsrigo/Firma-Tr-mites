@@ -53,7 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.6";
+const VERSION_JS = "1.2.7";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -813,14 +813,19 @@ else if (contexto.fase === "pre_firma") {
 
     let limpio = err;
 
-    // 👉 quitar solo cabecera básica (sin romper contenido)
-    limpio = limpio.replace(/^ERROR\s*-\s*/i, "");
-    limpio = limpio.replace(/^ERROR\s*/i, "");
+   let limpio = err;
 
-    // 👉 SOLO excluir eventos TR_, mostrar TODO lo demás
-    if (!limpio.includes("TR_")) {
-      salidaFinal += limpio + "\n";
-    }
+// 👉 quitar cabecera ERROR
+limpio = limpio.replace(/^ERROR\s*-\s*/i, "");
+limpio = limpio.replace(/^ERROR\s*/i, "");
+
+// 👉 quitar fecha + hora + ids iniciales (cabecera típica)
+limpio = limpio.replace(/^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+\s+[^\s]+\s+/, "");
+
+// 👉 SOLO excluir eventos TR_, mostrar TODO lo demás
+if (!limpio.includes("TR_")) {
+  salidaFinal += limpio + "\n";
+}
 
   });
 
