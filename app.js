@@ -53,7 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.7";
+const VERSION_JS = "1.2.6";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -594,21 +594,31 @@ if (hayAutofirmaError) {
 }
 else if (hayErrorClaveReal) {
 
-  // 👉 Clasificación según código real Cl@ve
-
+  // 🔹 Códigos 8–15 → error Cl@ve individual
   if (/^(8|9|10|11|12|13|14|15)$/.test(codigoClaveDetectado)) {
 
     idReglaDetectada = "error_clave";
 
   }
+
+  // 🔹 103 → bloqueo de certificado Cl@ve
   else if (codigoClaveDetectado === "103") {
 
     idReglaDetectada = "error_clave_103";
 
   }
+
+  // 🔹 101 → nivel insuficiente / registro no válido
   else if (codigoClaveDetectado === "101") {
 
-    idReglaDetectada = "error_clave_registro";
+    idReglaDetectada = "error_clave_101";
+
+  }
+
+  // 🔹 104 → registro débil
+  else if (codigoClaveDetectado === "104") {
+
+    idReglaDetectada = "error_clave_104";
 
   }
 
