@@ -471,13 +471,19 @@ const lineaErrorClave = lineasClave.length > 0
 
 // 👉 Extraemos código real detectado
 let codigoClaveDetectado = null;
+let tipusResultatDetectado = null;
 
 if (lineaErrorClave) {
 
-  const match = lineaErrorClave.match(/CODI ERROR:\s*(\d+)/);
+  const matchCodigo = lineaErrorClave.match(/CODI ERROR:\s*(\d+)/);
+  const matchTipus = lineaErrorClave.match(/TIPUS RESULTAT:\s*(\d+)/);
 
-  if (match) {
-    codigoClaveDetectado = match[1];
+  if (matchCodigo) {
+    codigoClaveDetectado = matchCodigo[1];
+  }
+
+  if (matchTipus) {
+    tipusResultatDetectado = matchTipus[1];
   }
 }
 
@@ -607,13 +613,19 @@ else if (hayErrorClaveReal) {
 
 }
 
-  // 🔹 103 → bloqueo de certificado Cl@ve
-  else if (codigoClaveDetectado === "103") {
+ else if (codigoClaveDetectado === "103") {
 
-    idReglaDetectada = "error_clave_103";
-
+  // 🔹 103-15 → certificado bloqueado
+  if (tipusResultatDetectado === "15") {
+    idReglaDetectada = "error_clave_103_15";
   }
 
+  // 🔹 103 → contraseña bloqueada
+  else {
+    idReglaDetectada = "error_clave_103";
+  }
+
+}
   // 🔹 101 → nivel insuficiente / registro no válido
   else if (codigoClaveDetectado === "101") {
 
