@@ -53,7 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.6";
+const VERSION_JS = "1.2.7";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -804,62 +804,28 @@ if (erroresUnicos.length > 0) {
 
   }
 
-  // 🔥 SEGUNDO: caso formulario REAL
-  else if (contexto.fase === "pre_firma") {
+// 🔥 SEGUNDO: caso formulario REAL (simplificado y robusto)
+else if (contexto.fase === "pre_firma") {
 
-    salidaFinal += "* Literal del error que aparece en el formulario:\n\n";
+  salidaFinal += "* Literal del error que aparece en el formulario:\n\n";
 
-    erroresUnicos.forEach(err => {
+  erroresUnicos.forEach(err => {
 
-      let limpio = err;
+    let limpio = err;
 
-      // 👉 Quitar cabecera
-      limpio = limpio.replace(/^ERROR\s*-\s*ERROR\s*/i, "");
-      limpio = limpio.replace(/^ERROR\s*/i, "");
+    // 👉 quitar solo cabecera básica (sin romper contenido)
+    limpio = limpio.replace(/^ERROR\s*-\s*/i, "");
+    limpio = limpio.replace(/^ERROR\s*/i, "");
 
-      // 👉 Limpiar técnico
-      limpio = limpio.replace(/Error executant script:/gi, "");
-      limpio = limpio.replace(/WrappedException:/gi, "");
-      limpio = limpio.replace(/ScriptException:/gi, "");
-      limpio = limpio.replace(/EngineScriptException/gi, "");
-      limpio = limpio.replace(/ErrorConfiguracionException/gi, "");
-      limpio = limpio.replace(/DominioErrorException/gi, "");
-      limpio = limpio.replace(/<Unknown source>.*$/gi, "");
-      limpio = limpio.replace(/at line number.*$/gi, "");
-      limpio = limpio.replace(/Could not[^.]*\./gi, "");
-
-    // 👉 SOLO aplicar recorte si viene de línea con ERROR
-if (err.includes("ERROR")) {
-
-  const patronesLiteral = [
-  "DOMINI ",
-  "LES ",
-  "ERROR "
-];
-
-  for (let patron of patronesLiteral) {
-    const idx = limpio.indexOf(patron);
-    if (idx !== -1) {
-      limpio = limpio.substring(idx);
-      break;
+    // 👉 evitar ruido puro
+    if (limpio.length > 20 && !limpio.includes("TR_")) {
+      salidaFinal += limpio + "\n";
     }
-  }
+
+  });
 
 }
 
-
-      limpio = limpio.replace(/\s+/g, " ").trim();
-
-// 👉 eliminar basura final como "(" "#" ":"
-limpio = limpio.replace(/[(:#.\-]+$/g, "").trim();
-
-      if (limpio.length > 0) {
-        salidaFinal += limpio + "\n";
-      }
-
-    });
-
-  }
 
   // 🔹 resto casos
   else {
