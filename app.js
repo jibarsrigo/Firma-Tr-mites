@@ -813,8 +813,6 @@ else if (contexto.fase === "pre_firma") {
 
     let limpio = err;
 
-   let limpio = err;
-
 // 👉 quitar cabecera ERROR
 limpio = limpio.replace(/^ERROR\s*-\s*/i, "");
 limpio = limpio.replace(/^ERROR\s*/i, "");
