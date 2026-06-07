@@ -597,9 +597,9 @@ else if (hayErrorClaveReal) {
   // 🔹 Códigos 8–15 → error Cl@ve individual
   if (/^(8|9|10|11|12|13|14|15)$/.test(codigoClaveDetectado)) {
 
-    idReglaDetectada = "error_clave";
+  idReglaDetectada = "error_clave_8_15";
 
-  }
+}
 
   // 🔹 103 → bloqueo de certificado Cl@ve
   else if (codigoClaveDetectado === "103") {
