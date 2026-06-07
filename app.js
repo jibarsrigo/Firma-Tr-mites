@@ -623,11 +623,7 @@ else if (hayErrorClaveReal) {
   }
 
 }
-else if (esClave) {
 
-  idReglaDetectada = "error_clave";
-
-}
 else if (esCert) {
 
   idReglaDetectada = "error_fire";
