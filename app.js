@@ -870,11 +870,13 @@ if (!limpio.includes("TR_")) {
   // 🔹 resto casos
   else {
 
-    salidaFinal += "\n\nLiterales de Errores Detectados:\n";
+   salidaFinal += "\n\n<span class='literales'>Literales de Errores Detectados:\n";
 
-    erroresUnicos.forEach(err => {
-      salidaFinal += "- " + err + "\n";
-    });
+erroresUnicos.forEach(err => {
+  salidaFinal += "- " + err + "\n";
+});
+
+salidaFinal += "</span>";
 
   }
 
@@ -888,7 +890,7 @@ if (!limpio.includes("TR_")) {
 
 // 👉 Mostramos SIEMPRE el resultado final
 // 🔹 diagnóstico técnico + acción + errores reales
-document.getElementById("resultado").innerText = salidaFinal;
+document.getElementById("resultado").innerHTML = salidaFinal;
 
 // 👉 Nos aseguramos de que el bloque resultado esté visible
 document.getElementById("resultado").style.display = "block";
