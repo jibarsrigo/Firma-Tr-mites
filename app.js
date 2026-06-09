@@ -465,7 +465,7 @@ const hayAutofirmaError =
 let lineaErrorClave = null;
 
 // 👉 recorrer desde el final (último evento real)
-for (let i = lineas.length - 1; i >= 0; i--) {
+for (let i = 0; i < lineas.length; i++) {
   const linea = lineas[i];
 
   if (
