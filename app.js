@@ -464,15 +464,9 @@ const hayAutofirmaError =
 
 const lineasClave = lineas.filter(linea =>
   linea.includes("CLAVEFIRMA") &&
-  (
-    linea.includes("CODI ERROR") ||
-    linea.includes("CÓDIGO ERROR")
-  ) &&
-  (
-    linea.includes("TIPUS RESULTAT") ||
-    linea.includes("TIPO RESULTADO")
-  )
+  linea.includes("ERROR")
 );
+           
 // 👉 coger la última línea (la más reciente en el flujo, para detecar bien 8-15 + 103-15)
 const lineaErrorClave = lineasClave.length > 0
   ? lineasClave[lineasClave.length - 1]
@@ -486,16 +480,16 @@ let tipusResultatDetectado = null;
 
 if (lineaErrorClave) {
 
-  const matchCodigo = lineaErrorClave.match(/CODI ERROR:\s*(\d+)/);
-  const matchTipus = lineaErrorClave.match(/TIPUS RESULTAT:\s*(\d+)/);
+ const matchCodigo = lineaErrorClave.match(/(CODI|CÓDIGO|CODIGO)\s*ERROR:\s*(\d+)/);
+const matchTipus = lineaErrorClave.match(/(TIPUS|TIPO)\s*RESULTADO?:\s*(\d+)/);
 
-  if (matchCodigo) {
-    codigoClaveDetectado = matchCodigo[1];
-  }
+if (matchCodigo) {
+  codigoClaveDetectado = matchCodigo[2];
+}
 
-  if (matchTipus) {
-    tipusResultatDetectado = matchTipus[1];
-  }
+if (matchTipus) {
+  tipusResultatDetectado = matchTipus[2];
+}
 }
 
 
