@@ -53,7 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.6";
+const VERSION_JS = "1.2.7";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -484,6 +484,9 @@ let codigoClaveDetectado = null;
 let tipusResultatDetectado = null;
 
 if (lineaErrorClave) {
+console.log("LINEA:", lineaErrorClave);
+console.log("CODIGO:", codigoClaveDetectado);
+console.log("TIPO:", tipusResultatDetectado);
 
 const matchCodigo = lineaErrorClave.match(/ERROR:\s*(\d+)/);
 const matchTipus = lineaErrorClave.match(/RESULTAD[OA]?\s*:\s*(\d+)/);
