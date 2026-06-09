@@ -749,6 +749,7 @@ if (haySGO) {
 // 👉 Añadimos una conclusión técnica de flujo
 diagnosticoTexto += "<br>- Interpretación: ";
 
+
 // 👉 Interpretación técnica del fallo
 // 🔹 Añadimos caso especial: SAF_27 SIEMPRE es Autofirma
 
