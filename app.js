@@ -480,15 +480,15 @@ let tipusResultatDetectado = null;
 
 if (lineaErrorClave) {
 
- const matchCodigo = lineaErrorClave.match(/(CODI|CÓDIGO|CODIGO)\s*ERROR:\s*(\d+)/);
-const matchTipus = lineaErrorClave.match(/(TIPUS|TIPO)\s*RESULTADO?:\s*(\d+)/);
+ const matchCodigo = lineaErrorClave.match(/ERROR:\s*(\d+)/);
+const matchTipus = lineaErrorClave.match(/RESULTADO?:\s*(\d+)/);
 
 if (matchCodigo) {
-  codigoClaveDetectado = matchCodigo[2];
+  codigoClaveDetectado = matchCodigo[1];
 }
 
 if (matchTipus) {
-  tipusResultatDetectado = matchTipus[2];
+  tipusResultatDetectado = matchTipus[1];
 }
 }
 
