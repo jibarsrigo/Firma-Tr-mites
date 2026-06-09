@@ -321,6 +321,17 @@ const haySGI = eventos.includes("TR_SGI");
 const haySGX = eventos.includes("TR_SGX");
 const haySGO = eventos.includes("TR_SGO");
 
+// 🔹 NUEVO: eventos para flujo visual
+const eventosFlujo = {
+  TR_FRI: hayFRI,
+  TR_FRF: hayFRF,
+  TR_SGI: haySGI,
+  TR_SGX: haySGX,
+  TR_SGO: haySGO,
+  TR_REG: eventos.includes("TR_REG"),
+  TR_FIN: eventos.includes("TR_FIN")
+};
+
   // =====================================
 // 🔴 CONTEXTO DE FLUJO (PASO 1)
 // =====================================
@@ -892,12 +903,16 @@ salidaFinal += "</div>";
 
   
 
+// 🔹 NUEVO: pintar flujo visual encima
+renderFlujoVisual(eventosFlujo);
+
 // 👉 Mostramos SIEMPRE el resultado final
 // 🔹 diagnóstico técnico + acción + errores reales
 document.getElementById("resultado").innerHTML = salidaFinal;
 
 // 👉 Nos aseguramos de que el bloque resultado esté visible
 document.getElementById("resultado").style.display = "block";
+
 };
 
 
