@@ -53,7 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.6";
+const VERSION_JS = "1.2.7";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -403,13 +403,19 @@ const lineasError = lineas.filter(linea => {
 
   // 👉 errores técnicos existentes (igual que antes)
   const esErrorTecnico =
-    linea.includes("FLUXE") ||
-    linea.includes("SESSIÓ") ||
-    linea.includes("SESSION") ||
-    linea.includes("EXCEPCIÓ") ||
-    linea.includes("EXCEPTION") ||
-    linea.includes("SAF_") ||
-    (linea.includes("ERROR") && !linea.includes("CLAVEFIRMA"));
+linea.includes("FLUXE") ||
+linea.includes("SESSIÓ") ||
+linea.includes("SESSION") ||
+linea.includes("EXCEPCIÓ") ||
+linea.includes("EXCEPTION") ||
+linea.includes("SAF_") ||
+linea.includes("ERROR") ||
+(
+  linea.includes("CLAVEFIRMA") ||
+  linea.includes("CODI ERROR") ||
+  linea.includes("PROVEÏDOR: CLAVEFIRMA")
+);
+
 
   // 🔥 NUEVO: detectar posibles errores de formulario sin "ERROR"
   const esPosibleErrorFormulario =
