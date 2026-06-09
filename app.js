@@ -814,12 +814,12 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
   if (accionData && accionData.accion) {
 
-  salidaFinal += "\n- Acción recomendada: ";
-  salidaFinal += accionData.accion + "\n\n";
+  salidaFinal += "<br>- Acción recomendada: ";
+  salidaFinal += accionData.accion + "<br><br>";
 
 } else {
 
-  salidaFinal += "\n- Acción recomendada: No definida\n";
+  salidaFinal += "<br>- Acción recomendada: No definida<br>";
 
 }
 }
