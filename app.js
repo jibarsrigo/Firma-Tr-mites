@@ -53,7 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.6";
+const VERSION_JS = "1.2.7";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -462,15 +462,20 @@ const hayAutofirmaError =
 // 👉 Buscamos la PRIMERA aparición real en la traza
 // 🔹 usamos lineas (NO erroresUnicos) para respetar orden real
 
-const lineasClave = lineas.filter(linea =>
-  linea.includes("CLAVEFIRMA") &&
-  linea.includes("ERROR")
-);
-           
-// 👉 coger la última línea (la más reciente en el flujo, para detecar bien 8-15 + 103-15)
-const lineaErrorClave = lineasClave.length > 0
-  ? lineasClave[lineasClave.length - 1]
-  : null;
+let lineaErrorClave = null;
+
+// 👉 recorrer desde el final (último evento real)
+for (let i = lineas.length - 1; i >= 0; i--) {
+  const linea = lineas[i];
+
+  if (
+    linea.includes("CLAVEFIRMA") &&
+    linea.includes("ERROR")
+  ) {
+    lineaErrorClave = linea;
+    break;
+  }
+}
 
 
 
