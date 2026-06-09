@@ -870,13 +870,13 @@ if (!limpio.includes("TR_")) {
   // 🔹 resto casos
   else {
 
-salidaFinal += "<br><br><span class='literales'>Literales de Errores Detectados:<br>";
+salidaFinal += "<div class='literales'><br><br>Literales de Errores Detectados:<br>";
 
 erroresUnicos.forEach(err => {
   salidaFinal += "- " + err + "<br>";
 });
 
-salidaFinal += "</span>";
+salidaFinal += "</div>";
 
   }
 
