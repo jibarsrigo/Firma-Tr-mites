@@ -612,14 +612,8 @@ if (hayAutofirmaError) {
 }
 else if (hayErrorClaveReal) {
 
-  // 🔹 Códigos 8–15 → error Cl@ve individual
-  if (/^(8|9|10|11|12|13|14|15)$/.test(codigoClaveDetectado)) {
-
-  idReglaDetectada = "error_clave_8_15";
-
-}
-
- else if (codigoClaveDetectado === "103") {
+// 🔹 PRIORIDAD: 103 SIEMPRE por encima de 8–15
+if (codigoClaveDetectado === "103") {
 
   // 🔹 103-15 → certificado bloqueado
   if (tipusResultatDetectado === "15") {
@@ -630,6 +624,13 @@ else if (hayErrorClaveReal) {
   else {
     idReglaDetectada = "error_clave_103";
   }
+
+}
+
+// 🔹 Códigos 8–15 → error Cl@ve individual
+else if (/^(8|9|10|11|12|13|14|15)$/.test(codigoClaveDetectado)) {
+
+  idReglaDetectada = "error_clave_8_15";
 
 }
   // 🔹 101 → nivel insuficiente / registro no válido
