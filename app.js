@@ -1065,3 +1065,50 @@ metodoCert.onchange = () => {
   bloqueSistema.style.display = "block";
 };
 });
+
+// =====================================
+// 🔹 NUEVO: FUNCIÓN FLUJO VISUAL
+// =====================================
+
+function renderFlujoVisual(eventos) {
+
+  const contenedor = document.getElementById("flujoVisual");
+  if (!contenedor) return;
+
+  const pasos = ["TR_FRI","TR_FRF","TR_SGI","TR_SGX","TR_SGO","TR_REG","TR_FIN"];
+
+  let html = "<div style='display:flex;gap:6px;margin-bottom:10px;'>";
+
+  let fallo = false;
+
+  pasos.forEach((p, i) => {
+
+    let color = "#ccc"; // gris por defecto
+
+    if (p === "TR_SGX" && eventos[p]) {
+      color = "#a12c7b"; // rojo error
+      fallo = true;
+    } else if (!fallo && eventos[p]) {
+      color = "#2e6e14"; // verde OK
+    }
+
+    html += `<div style="
+      padding:4px 10px;
+      border-radius:20px;
+      border:1px solid ${color};
+      color:${color};
+      font-size:11px;
+      font-family: monospace;
+      background:#fff;
+    ">${p}</div>`;
+
+    if (i < pasos.length - 1) {
+      html += "<span style='color:#999;'>→</span>";
+    }
+
+  });
+
+  html += "</div>";
+
+  contenedor.innerHTML = html;
+}
