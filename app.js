@@ -464,10 +464,15 @@ const hayAutofirmaError =
 
 const lineasClave = lineas.filter(linea =>
   linea.includes("CLAVEFIRMA") &&
-  linea.includes("CODI ERROR") &&
-  linea.includes("TIPUS RESULTAT")
+  (
+    linea.includes("CODI ERROR") ||
+    linea.includes("CÓDIGO ERROR")
+  ) &&
+  (
+    linea.includes("TIPUS RESULTAT") ||
+    linea.includes("TIPO RESULTADO")
+  )
 );
-
 // 👉 coger la última línea (la más reciente en el flujo, para detecar bien 8-15 + 103-15)
 const lineaErrorClave = lineasClave.length > 0
   ? lineasClave[lineasClave.length - 1]
