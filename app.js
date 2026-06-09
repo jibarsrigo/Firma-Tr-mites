@@ -53,7 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.6";
+const VERSION_JS = "1.2.7";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -721,30 +721,33 @@ console.log("JSON disponible:", accionesJSON);
 // 👉 SOLO diagnóstico técnico (lo que ha pasado en el sistema) 👉 NO interpreta el error (eso se hace en el árbol)
 
 
+// =====================================
+// 🔴 DIAGNÓSTICO TÉCNICO (TR_)
+// =====================================
+
 let diagnosticoTexto = "";
 
 // 👉 Mostramos la traza como flujo real (ordenado y claro)
-diagnosticoTexto += "- Flujo -\n\n";
+diagnosticoTexto += "- Flujo -<br><br>";
 
 // FORMULARIO
-diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "\n";
-diagnosticoTexto += "TR_FRF (Fin formulario) → " + (hayFRF ? "OK" : "NO aparece") + "\n";
+diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "<br>";
+diagnosticoTexto += "TR_FRF (Fin formulario) → " + (hayFRF ? "OK" : "NO aparece") + "<br>";
 
 // FIRMA
-diagnosticoTexto += "TR_SGI (Inicio firma) → " + (haySGI ? "OK" : "NO aparece") + "\n";
+diagnosticoTexto += "TR_SGI (Inicio firma) → " + (haySGI ? "OK" : "NO aparece") + "<br>";
 
 // 👉 Interpretamos estado de firma
 if (haySGX) {
-  diagnosticoTexto += "TR_SGX (Firma KO) → ERROR\n";
+  diagnosticoTexto += "TR_SGX (Firma KO) → ERROR<br>";
 }
 
 if (haySGO) {
-  diagnosticoTexto += "TR_SGO (Firma OK) → OK\n";
+  diagnosticoTexto += "TR_SGO (Firma OK) → OK<br>";
 }
 
-
 // 👉 Añadimos una conclusión técnica de flujo
-diagnosticoTexto += "\n- Interpretación: ";
+diagnosticoTexto += "<br>- Interpretación: ";
 
 // 👉 Interpretación técnica del fallo
 // 🔹 Añadimos caso especial: SAF_27 SIEMPRE es Autofirma
