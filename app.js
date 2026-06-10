@@ -739,7 +739,7 @@ console.log("JSON disponible:", accionesJSON);
 let diagnosticoTexto = "";
 
 // 👉 Mostramos la traza como flujo real (ordenado y claro)
-diagnosticoTexto += "- Flujo -<br><br>";
+diagnosticoTexto += " <br><br>";
 
 // FORMULARIO
 diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "<br>";
