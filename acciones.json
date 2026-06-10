@@ -1,6 +1,5 @@
 {
-  "version": "1.2.1",
-  "acciones": [
+  "version": "1.2.1",  "acciones": [
 
 {
   "id": "fallo_formulario",
@@ -16,39 +15,38 @@
   "id": "error_clave_8_15",
   "accion": "Error en Cl@ve Firma (código 8–15). Incidencia individual del ciudadano. Indicar renovar/acreditar Cl@ve Permanente o revisar credenciales. No escalar salvo múltiples casos simultáneos.<br><br>🔗 \"https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave815\"Mail Cl@ve 8-15</a>"
 },
-    
+
 {
   "id": "error_clave_103",
   "accion": "Error en Cl@ve (código 103). Contraseña bloqueada. Indicar recuperación de contraseña en Cl@ve."
 },
+
 {
   "id": "error_clave_103_15",
   "accion": "Error en Cl@ve (código 103-15). Certificado bloqueado. Indicar revocación y emisión de nuevo certificado en Cl@ve."
 },
-    
+
 {
   "id": "error_clave_101",
   "accion": "Error en Cl@ve (código 101). Nivel de registro insuficiente. Indicar completar registro o aumentar nivel en Cl@ve."
 },
+
 {
   "id": "error_clave_104",
   "accion": "Error en Cl@ve (código 104). Registro débil. Indicar actualizar registro en Cl@ve."
 },
 
-    {
-      "id": "error_autofirma",
-      "accion": "Revisar Autofirma y equipo del usuario."
-    },
+{
+  "id": "error_autofirma",
+  "accion": "Revisar Autofirma y equipo del usuario."
+},
 
-    {
-      "id": "error_fire",
-      "accion": "Revisar certificado o navegador."
-    },
+{
+  "id": "error_fire",
+  "accion": "Revisar certificado o navegador."
+},
 
-    {
-      "id": "firma_correcta",
-      "accion": "Firma correcta."
-    }
-
-  ]
+{
+  "id": "firma_correcta",
+  "accion": "Firma correcta."
 }
