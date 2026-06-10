@@ -764,7 +764,6 @@ if (haySGO) {
 
            
 // 👉 Añadimos una conclusión técnica de flujo interpretacion. Interpretación, es la primera frase que muestra tras el flujo. Ahora no muestra la palabra interpretacion, solo el contenido del mismo.
-diagnosticoTexto += "<br>- ";
 
 // 🔹 NUEVO: cerrar contenedor interpretacion
 diagnosticoTexto += "</div>";
@@ -781,31 +780,31 @@ if (!haySGI) {
   if (hayErrorPortafibReal) {
 
     // 👉 Error de sesión / flujo (Portafib)
-    diagnosticoTexto += "La firma NO se inicia por error de sesión/flujo (Portafib).\n";
+    diagnosticoTexto += "- La firma NO se inicia por error de sesión/flujo (Portafib).\n";
 
   } else {
 
     // 👉 Sin errores técnicos → problema de formulario
-    diagnosticoTexto += "La firma NO se inicia (probable fallo en el formulario).\n";
+    diagnosticoTexto += "- La firma NO se inicia (probable fallo en el formulario).\n";
   }
 
 }
 else if (hayAutofirmaError) {
 
   // 👉 SAF_27 → Autofirma SIEMPRE
-  diagnosticoTexto += "El error corresponde a Autofirma (certificado local), no a Cl@ve.\n";
+  diagnosticoTexto += "- El error corresponde a Autofirma (certificado local), no a Cl@ve.\n";
 
 }
 else if (haySGX) {
 
   // 👉 Error proveedor genérico
-  diagnosticoTexto += "La firma se inicia pero falla en el proveedor.\n";
+  diagnosticoTexto += "- La firma se inicia pero falla en el proveedor.\n";
 
 }
 else if (haySGO) {
 
   // 👉 Firma correcta
-  diagnosticoTexto += "La firma se completa correctamente.\n";
+  diagnosticoTexto += "- La firma se completa correctamente.\n";
 
 }
  
