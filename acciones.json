@@ -1,45 +1,56 @@
 {
-"version": "1.1.6",
-"acciones": [
-{
-"id": "fallo_formulario",
-"accion": "Remitir al ciudadano a formulario (dudas funcionales). Ver plantilla mail formulario.<a href="https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario" target="_blank">📘 Ver mail formulario en la wikiNota: indicar solo el texto del literal, que sea interpretable por el ciudadano"
-},
-{
-"id": "fallo_portafib",
-"accion": "Escalar a SEG-012. Error de sesión/flujo en Portafib.🔗 <a href="https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaGeneral" target="_blank">Problemas con el servicio🔗 <a href="https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaResuelta" target="_blank">Problemas con el servicio (resuelto)"
-},
-{
-"id": "error_clave_8_15",
-"accion": "Error en Cl@ve Firma (código 8–15). Incidencia individual del ciudadano. Indicar renovar/acreditar Cl@ve Permanente o revisar credenciales. No escalar salvo múltiples casos simultáneos.🔗 <a href="https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave815" target="_blank">Mail Cl@ve 8-15"
-},
-{
-"id": "error_clave_103",
-"accion": "Error en Cl@ve (código 103). Contraseña bloqueada. Indicar recuperación de contraseña en Cl@ve."
-},
-{
-"id": "error_clave_103_15",
-"accion": "Error en Cl@ve (código 103-15). Certificado bloqueado. Indicar revocación y emisión de nuevo certificado en Cl@ve."
-},
-{
-"id": "error_clave_101",
-"accion": "Error en Cl@ve (código 101). Nivel de registro insuficiente. Indicar completar registro o aumentar nivel en Cl@ve."
-},
-{
-"id": "error_clave_104",
-"accion": "Error en Cl@ve (código 104). Registro débil. Indicar actualizar registro en Cl@ve."
-},
-{
-"id": "error_autofirma",
-"accion": "Revisar Autofirma y equipo del usuario."
-},
-{
-"id": "error_fire",
-"accion": "Revisar certificado o navegador."
-},
-{
-"id": "firma_correcta",
-"accion": "Firma correcta."
-}
-]
+  "version": "1.1.6",
+  "acciones": [
+
+    {
+      "id": "fallo_formulario",
+      "accion": "Remitir al ciudadano a formulario (dudas funcionales). Ver plantilla mail formulario.<br>\"https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario\"📘 Ver mail formulario en la wiki</a><br>Nota: indicar solo el texto del literal, que sea interpretable por el ciudadano"
+    },
+
+    {
+      "id": "fallo_portafib",
+      "accion": "Escalar a SEG-012. Error de sesión/flujo en Portafib.<br><br>🔗 \"https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaGeneral\"Problemas con el servicio</a><br>🔗 \"https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaResuelta\"Problemas con el servicio (resuelto)</a>"
+    },
+
+    {
+      "id": "error_clave_8_15",
+      "accion": "Error en Cl@ve Firma (código 8–15). Incidencia individual del ciudadano. Indicar renovar/acreditar Cl@ve Permanente o revisar credenciales. No escalar salvo múltiples casos simultáneos.<br><br>🔗 \"https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave815\"Mail Cl@ve 8-15</a>"
+    },
+
+    {
+      "id": "error_clave_103",
+      "accion": "Error en Cl@ve (código 103). Contraseña bloqueada. Indicar recuperación de contraseña en Cl@ve."
+    },
+
+    {
+      "id": "error_clave_103_15",
+      "accion": "Error en Cl@ve (código 103-15). Certificado bloqueado. Indicar revocación y emisión de nuevo certificado en Cl@ve."
+    },
+
+    {
+      "id": "error_clave_101",
+      "accion": "Error en Cl@ve (código 101). Nivel de registro insuficiente. Indicar completar registro o aumentar nivel en Cl@ve."
+    },
+
+    {
+      "id": "error_clave_104",
+      "accion": "Error en Cl@ve (código 104). Registro débil. Indicar actualizar registro en Cl@ve."
+    },
+
+    {
+      "id": "error_autofirma",
+      "accion": "Revisar Autofirma y equipo del usuario."
+    },
+
+    {
+      "id": "error_fire",
+      "accion": "Revisar certificado o navegador."
+    },
+
+    {
+      "id": "firma_correcta",
+      "accion": "Firma correcta."
+    }
+
+  ]
 }
