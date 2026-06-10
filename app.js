@@ -766,7 +766,7 @@ if (haySGO) {
 // 👉 Añadimos una conclusión técnica de flujo interpretacion. Interpretación, es la primera frase que muestra tras el flujo. Ahora no muestra la palabra interpretacion, solo el contenido del mismo.
 
 // 🔹 NUEVO: cerrar contenedor interpretacion
-diagnosticoTexto += "</div>";
+diagnosticoTexto += "</div><br><br>";
 
 
            
