@@ -53,7 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
-const VERSION_JS = "1.2.7";
+const VERSION_JS = "1.2.6";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -969,6 +969,9 @@ placeholder.style.display = "";
 
 // 👉 Limpiamos el contenido del resultado
 document.getElementById("resultado").innerText = "";
+
+// 🔹 NUEVO: limpiar flujo visual
+document.getElementById("flujoVisual").innerHTML = "";
 
 // 👉 Ocultamos el bloque de resultado
 document.getElementById("resultado").style.display = "none";
