@@ -758,7 +758,7 @@ if (haySGO) {
 }
 
 // 👉 Añadimos una conclusión técnica de flujo
-diagnosticoTexto += "<br>- Interpretación: ";
+diagnosticoTexto += "<br>- ";
 
 
 // 👉 Interpretación técnica del fallo
