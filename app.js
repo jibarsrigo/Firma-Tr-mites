@@ -906,8 +906,10 @@ salidaFinal += "</div>";
 // 🔹 NUEVO: pintar flujo visual encima
 renderFlujoVisual(eventosFlujo);
 
+// 🔹 NUEVO: mostrar flujo visual
+document.getElementById("flujoVisual").style.display = "block";
+
 // 👉 Mostramos SIEMPRE el resultado final
-// 🔹 diagnóstico técnico + acción + errores reales
 document.getElementById("resultado").innerHTML = salidaFinal;
 
 // 👉 Nos aseguramos de que el bloque resultado esté visible
@@ -970,12 +972,13 @@ placeholder.style.display = "";
 // 👉 Limpiamos el contenido del resultado
 document.getElementById("resultado").innerText = "";
 
-// 🔹 NUEVO: limpiar flujo visual
-document.getElementById("flujoVisual").innerHTML = "";
+// 🔹 NUEVO: limpiar y ocultar flujo visual
+const flujo = document.getElementById("flujoVisual");
+flujo.innerHTML = "";
+flujo.style.display = "none";
 
 // 👉 Ocultamos el bloque de resultado
 document.getElementById("resultado").style.display = "none";
-
 
   // ─────────────────────────────
   // 🔹 INFO EN CONSOLA (PARA DEBUG)
