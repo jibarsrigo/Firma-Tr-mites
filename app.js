@@ -798,7 +798,7 @@ else if (hayAutofirmaError) {
 else if (haySGX) {
 
   // 👉 Error proveedor genérico
-  diagnosticoTexto += "- La firma se inicia pero falla en el proveedor.\n";
+  diagnosticoTexto += "- La firma se inicia pero falla en el sistema de firma.\n";
 
 }
 else if (haySGO) {
