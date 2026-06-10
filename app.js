@@ -738,7 +738,7 @@ console.log("JSON disponible:", accionesJSON);
 
 let diagnosticoTexto = "";
 
-// 👉 Mostramos la traza como flujo real (ordenado y claro)
+// 👉 Mostramos FLUJO en texto (ordenado y claro)
 diagnosticoTexto += " <br>";
 
 // 🔹 NUEVO: abrir contenedor visual pequeño
