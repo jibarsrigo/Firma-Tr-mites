@@ -919,6 +919,12 @@ renderFlujoVisual(eventosFlujo);
 // 🔹 NUEVO: mostrar flujo visual
 document.getElementById("flujoVisual").style.display = "block";
 
+// 🔹 Convertir automáticamente cualquier URL en enlace HTML clicable
+salidaFinal = salidaFinal.replace(
+  /(https?:\/\/[^\s]+)/g,
+  '<a href="$1" target="_blank">$1</a>'
+);
+
 // 👉 Mostramos SIEMPRE el resultado final
 document.getElementById("resultado").innerHTML = salidaFinal;
 
