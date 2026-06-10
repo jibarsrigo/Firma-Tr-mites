@@ -4,7 +4,7 @@
 
 {
 "id": "fallo_formulario",
-"accion": "Remitir al ciudadano a formulario (dudas funcionales). Ver plantilla mail formulario. https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario Nota: indicar solo el texto del literal, que sea interpretable por el ciudadano"
+"accion": "Remitir al ciudadano a formulario (dudas funcionales).<br>Ver plantilla mail formulario. https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario <br>Nota: indicar solo el texto del literal, que sea interpretable por el ciudadano"
 },
 
 {
