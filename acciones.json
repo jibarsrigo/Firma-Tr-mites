@@ -3,9 +3,10 @@
   "acciones": [
 
 {
-  "id": "fallo_formulario",
-  "accion": "Remitir al ciudadano a formulario (dudas funcionales). Ver plantilla mail formulario.<br>\"https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario\"📘 Ver mail formulario en la wiki</a><br>Nota: indicar solo el texto del literal, que sea interpretable por el ciudadano"
+"id": "fallo_formulario",
+"accion": "Remitir al ciudadano a formulario (dudas funcionales). Ver plantilla mail formulario.<a href="https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario" target="_blank">📘 Ver mail formulario en la wikiNota: indicar solo el texto del literal, que sea interpretable por el ciudadano"
 },
+
 
 {
   "id": "fallo_portafib",
