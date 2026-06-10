@@ -834,10 +834,14 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
   const accionData = accionesJSON.acciones.find(r => r.id === idReglaDetectada);
 
-  if (accionData && accionData.accion) {
+if (accionData && accionData.accion) {
 
-  salidaFinal += "<br>- ";
-  salidaFinal += accionData.accion + "<br><br>";
+  salidaFinal += "<br>- " + accionData.accion + "<br>";
+
+  // 🔹 NUEVO: añadir enlace del mail debajo de la acción
+  if (accionData.mail) {
+    salidaFinal += "<br>📘 \""Ver plantilla mail</a><br><br>";
+  }
 
 } else {
 
