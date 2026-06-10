@@ -739,7 +739,11 @@ console.log("JSON disponible:", accionesJSON);
 let diagnosticoTexto = "";
 
 // 👉 Mostramos la traza como flujo real (ordenado y claro)
-diagnosticoTexto += " <br><br>";
+diagnosticoTexto += " <br>";
+
+// 🔹 NUEVO: abrir contenedor visual pequeño
+diagnosticoTexto += "<div class='flujo-texto'>";
+
 
 // FORMULARIO
 diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "<br>";
@@ -757,10 +761,13 @@ if (haySGO) {
   diagnosticoTexto += "TR_SGO (Firma OK) → OK<br>";
 }
 
-// 👉 Añadimos una conclusión técnica de flujo
+// 👉 Añadimos una conclusión técnica de flujo interpretacion. Interpretación, es la primera frase que muestra tras el flujo.
 diagnosticoTexto += "<br>- ";
 
+// 🔹 NUEVO: cerrar contenedor interpretacion
+diagnosticoTexto += "</div>";
 
+           
 // 👉 Interpretación técnica del fallo
 // 🔹 Añadimos caso especial: SAF_27 SIEMPRE es Autofirma
 
