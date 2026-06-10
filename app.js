@@ -826,7 +826,7 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
   if (accionData && accionData.accion) {
 
-  salidaFinal += "<br>- Acción recomendada: ";
+  salidaFinal += "<br>- ";
   salidaFinal += accionData.accion + "<br><br>";
 
 } else {
