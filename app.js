@@ -840,7 +840,7 @@ if (accionData && accionData.accion) {
 
   // 🔹 NUEVO: añadir enlace del mail debajo de la acción
   if (accionData.mail) {
-    salidaFinal += "<br>📘 \""Ver plantilla mail</a><br><br>";
+    salidaFinal += '<br>📘 <a href="' + accionData.mail + '" target="_blank" rel="noopener">Ver plantilla mail</a><br><br>';
   }
 
 } else {
@@ -926,7 +926,7 @@ document.getElementById("flujoVisual").style.display = "block";
 // 🔹 Convertir automáticamente cualquier URL en enlace HTML clicable
 salidaFinal = salidaFinal.replace(
   /(https?:\/\/[^\s]+)/g,
-  '$1$1</a>'
+  '<a href="$1" target="_blank" rel="noopener">$1</a>'
 );
 // 👉 Mostramos SIEMPRE el resultado final
 document.getElementById("resultado").innerHTML = salidaFinal;
