@@ -131,6 +131,26 @@ body {
   margin-bottom:14px;
 }
 
+/* Cambios 2026-06-12: flujo visual compacto con marco blanco oculto hasta analizar */
+#flujoVisualCard {
+  display:none;
+  background:white;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:12px;
+  padding:8px 10px;
+  margin:0 auto 14px;
+  box-sizing:border-box;
+  max-width: calc(100% - 32px);
+}
+
+#flujoVisual {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+}
+
 .check {
   display:flex;
   gap:10px;
@@ -340,7 +360,10 @@ textarea:focus {
     <!-- ✅ RESULTADO (solo esto sustituye CAI y demás) -->
 
 <!-- 🔹 NUEVO: flujo visual -->
-<div id="flujoVisual"></div>
+<!-- Cambio 2026-06-12: el contenedor solo se muestra tras pulsar Analizar -->
+<div id="flujoVisualCard">
+  <div id="flujoVisual"></div>
+</div>
 
 <div id="resultado" style="white-space: normal;"></div>
 

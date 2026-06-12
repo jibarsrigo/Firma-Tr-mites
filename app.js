@@ -53,6 +53,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 
 // 🔹 VERSION JS (editable manual) 
+// Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
 const VERSION_JS = "1.2.7";
 
 // Variable global donde se guarda el contenido de acciones.json
@@ -920,8 +921,12 @@ salidaFinal += "</div>";
 // 🔹 NUEVO: pintar flujo visual encima
 renderFlujoVisual(eventosFlujo);
 
-// 🔹 NUEVO: mostrar flujo visual
-document.getElementById("flujoVisual").style.display = "block";
+// Cambios 2026-06-12: mostrar el card del flujo solo cuando hay resultado
+const flujoCard = document.getElementById("flujoVisualCard");
+if (flujoCard) {
+  flujoCard.style.display = "inline-block";
+}
+document.getElementById("flujoVisual").style.display = "flex";
 
 // 🔹 Convertir automáticamente cualquier URL en enlace HTML clicable
 // 🔹 Evitar reemplazar URLs que ya están dentro de un atributo href de un enlace
@@ -1002,9 +1007,16 @@ placeholder.style.display = "";
 document.getElementById("resultado").innerText = "";
 
 // 🔹 NUEVO: limpiar y ocultar flujo visual
+// Cambios 2026-06-12: ocultar el marco del flujo al pulsar Limpiar o al volver al estado inicial
+const flujoCard = document.getElementById("flujoVisualCard");
 const flujo = document.getElementById("flujoVisual");
-flujo.innerHTML = "";
-flujo.style.display = "none";
+if (flujo) {
+  flujo.innerHTML = "";
+  flujo.style.display = "none";
+}
+if (flujoCard) {
+  flujoCard.style.display = "none";
+}
 
 // 👉 Ocultamos el bloque de resultado
 document.getElementById("resultado").style.display = "none";
@@ -1103,6 +1115,7 @@ metodoCert.onchange = () => {
 
 // =====================================
 // 🔹 NUEVO: FUNCIÓN FLUJO VISUAL
+// Cambios 2026-06-12: renderiza los pasos TR_ con etiquetas de estado y color
 // =====================================
 
 function renderFlujoVisual(eventos) {
@@ -1112,7 +1125,7 @@ function renderFlujoVisual(eventos) {
 
   const pasos = ["TR_FRI","TR_FRF","TR_SGI","TR_SGX","TR_SGO","TR_REG","TR_FIN"];
 
-  let html = "<div style='display:flex;gap:6px;margin-bottom:10px;'>";
+  let html = "<div style='display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;'>";
 
   let fallo = false;
 
@@ -1127,15 +1140,16 @@ function renderFlujoVisual(eventos) {
       color = "#2e6e14"; // verde OK
     }
 
-    html += `<div style="
-      padding:4px 10px;
-      border-radius:20px;
-      border:1px solid ${color};
-      color:${color};
-      font-size:11px;
-      font-family: monospace;
-      background:#fff;
-    ">${p}</div>`;
+    html += `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="padding:4px 10px;border-radius:20px;border:1px solid ${color};color:${color};font-size:11px;font-family: monospace;background:#fff;">
+        ${p}
+      </div>`;
+
+    if (eventos[p]) {
+      html += `<div style="font-size:9px;color:${color};line-height:1.2;">(${p === 'TR_FRI' ? 'Inicio formulario' : p === 'TR_FRF' ? 'Fin formulario' : p === 'TR_SGI' ? 'Inicio firma' : p === 'TR_SGX' ? 'Firma KO' : p === 'TR_SGO' ? 'Firma OK' : p === 'TR_REG' ? 'Registro' : 'Fin trámite'})</div>`;
+    }
+
+    html += `</div>`;
 
     if (i < pasos.length - 1) {
       html += "<span style='color:#999;'>→</span>";

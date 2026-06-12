@@ -1,10 +1,11 @@
 {
   "version": "1.1.6",
+  "_changes_today": "2026-06-12: added hidden flow card, compact white frame, step status labels, and show/hide behavior on analyze/clear",
   "acciones": [
 
     {
       "id": "fallo_formulario",
-      "accion": "Remitir al ciudadano a formulario (dudas funcionales).\n*Si aparecen literales, facilitar literal (Texto entendible) para que lo añada al formulario de dudas funcionales.",
+      "accion": "Remitir al ciudadano a formulario de incidencias y tipo de problema dudas funcionales.\n*Si aparecen literales, facilitar literal (Texto entendible) para que lo añada al formulario de dudas funcionales.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario"
     },
 
