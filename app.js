@@ -840,7 +840,7 @@ if (accionData && accionData.accion) {
 
   // 🔹 NUEVO: añadir enlace del mail debajo de la acción
   if (accionData.mail) {
-    salidaFinal += '<br>📘 <a href="' + accionData.mail + '" target="_blank" rel="noopener">Ver plantilla mail</a><br><br>';
+    salidaFinal += '<br>📘 <a href="' + accionData.mail + '" target="_blank" rel="noopener">Mail</a><br><br>';
   }
 
 } else {
