@@ -924,8 +924,9 @@ renderFlujoVisual(eventosFlujo);
 document.getElementById("flujoVisual").style.display = "block";
 
 // 🔹 Convertir automáticamente cualquier URL en enlace HTML clicable
+// 🔹 Excluir comillas y caracteres especiales para evitar romper atributos href existentes
 salidaFinal = salidaFinal.replace(
-  /(https?:\/\/[^\s]+)/g,
+  /(https?:\/\/[^\s"<>]+)/g,
   '<a href="$1" target="_blank" rel="noopener">$1</a>'
 );
 // 👉 Mostramos SIEMPRE el resultado final
