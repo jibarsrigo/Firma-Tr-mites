@@ -134,13 +134,17 @@ body {
 /* Cambios 2026-06-12: flujo visual compacto con marco blanco oculto hasta analizar */
 #flujoVisualCard {
   display:none;
-  background:white;
-  border:1px solid rgba(0,0,0,0.08);
+  /* Outline-only card: transparent background so it matches the results panel */
+  background: transparent;
+  /* More visible contour */
+  border:1px solid rgba(0,0,0,0.14);
   border-radius:12px;
-  padding:8px 10px;
+  padding:6px 10px;
   margin:0 auto 14px;
   box-sizing:border-box;
   max-width: calc(100% - 32px);
+  /* Subtle shadow to lift the outline slightly from the background */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
 
 #flujoVisual {
@@ -149,6 +153,15 @@ body {
   flex-wrap:wrap;
   align-items:center;
   justify-content:center;
+}
+
+/* Ensure label space below every step so vertical alignment is consistent */
+.flujo-paso__label {
+  min-height:20px; /* reserve vertical space even if label is empty */
+  font-size:9px;
+  color:#666;
+  line-height:1.2;
+  text-align:center;
 }
 
 .check {

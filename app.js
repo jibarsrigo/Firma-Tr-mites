@@ -1145,9 +1145,10 @@ function renderFlujoVisual(eventos) {
         ${p}
       </div>`;
 
-    if (eventos[p]) {
-      html += `<div style="font-size:9px;color:${color};line-height:1.2;">(${p === 'TR_FRI' ? 'Inicio formulario' : p === 'TR_FRF' ? 'Fin formulario' : p === 'TR_SGI' ? 'Inicio firma' : p === 'TR_SGX' ? 'Firma KO' : p === 'TR_SGO' ? 'Firma OK' : p === 'TR_REG' ? 'Registro' : 'Fin trámite'})</div>`;
-    }
+    // Always render the label element to keep vertical alignment consistent.
+    const labelText = eventos[p] ? `(${p === 'TR_FRI' ? 'Inicio formulario' : p === 'TR_FRF' ? 'Fin formulario' : p === 'TR_SGI' ? 'Inicio firma' : p === 'TR_SGX' ? 'Firma KO' : p === 'TR_SGO' ? 'Firma OK' : p === 'TR_REG' ? 'Registro' : 'Fin trámite'})` : '\u00A0';
+    const labelColor = eventos[p] ? color : 'transparent';
+    html += `<div style="font-size:9px;color:${labelColor};line-height:1.2;">${labelText}</div>`;
 
     html += `</div>`;
 
