@@ -836,7 +836,7 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
 if (accionData && accionData.accion) {
 
-  salidaFinal += "<br>- " + accionData.accion + "<br>";
+  salidaFinal += "<br>- " + accionData.accion.replace(/\n/g, '<br>') + "<br>";
 
   // 🔹 NUEVO: añadir enlace del mail debajo de la acción
   if (accionData.mail) {

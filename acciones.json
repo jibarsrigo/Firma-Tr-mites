@@ -4,7 +4,7 @@
 
     {
       "id": "fallo_formulario",
-      "accion": "Remitir al ciudadano a formulario (dudas funcionales).",
+      "accion": "Remitir al ciudadano a formulario (dudas funcionales).\n*Si aparecen literales, facilitar literal (Texto entendible) para que lo añada al formulario de dudas funcionales.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario"
     },
 
