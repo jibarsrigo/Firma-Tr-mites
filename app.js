@@ -924,10 +924,19 @@ renderFlujoVisual(eventosFlujo);
 document.getElementById("flujoVisual").style.display = "block";
 
 // 🔹 Convertir automáticamente cualquier URL en enlace HTML clicable
-// 🔹 Excluir comillas y caracteres especiales para evitar romper atributos href existentes
+// 🔹 Evitar reemplazar URLs que ya están dentro de un atributo href de un enlace
 salidaFinal = salidaFinal.replace(
   /(https?:\/\/[^\s"<>]+)/g,
-  '<a href="$1" target="_blank" rel="noopener">$1</a>'
+  (match, url, offset, str) => {
+    const before = str.slice(0, offset);
+    const hrefDbl = before.lastIndexOf('href="');
+    const hrefSgl = before.lastIndexOf("href='");
+    const tagA = before.lastIndexOf('<a ');
+    if ((hrefDbl > tagA) || (hrefSgl > tagA)) {
+      return match;
+    }
+    return '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
+  }
 );
 // 👉 Mostramos SIEMPRE el resultado final
 document.getElementById("resultado").innerHTML = salidaFinal;
