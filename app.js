@@ -875,25 +875,43 @@ if (erroresUnicos.length > 0) {
 // 🔥 SEGUNDO: caso formulario REAL (versión final sin pérdida de datos)
 else if (contexto.fase === "pre_firma") {
 
-  salidaFinal += "* Literal del error que aparece en el formulario:\n\n";
+  salidaFinal += "<div class='literales'><b>* Literales:</b></div><br>";
 
-  erroresUnicos.forEach(err => {
+  salidaFinal += "<div class='literal-pequeno'>";
 
-    let limpio = err;
+  // Agrupar literales limpiando cada línea original y contando repeticiones
+  const literalCounts = {};
+  const literalOrder = [];
 
-// 👉 quitar cabecera ERROR
-limpio = limpio.replace(/^ERROR\s*-\s*/i, "");
-limpio = limpio.replace(/^ERROR\s*/i, "");
-
-// 👉 quitar fecha + hora + ids iniciales (cabecera típica)
-limpio = limpio.replace(/^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+\s+[^\s]+\s+/, "");
-
-// 👉 SOLO excluir eventos TR_, mostrar TODO lo demás
-if (!limpio.includes("TR_")) {
-  salidaFinal += limpio + "\n";
-}
-
+  lineasError.forEach(orig => {
+    let limpio = orig;
+    // quitar cabecera ERROR
+    limpio = limpio.replace(/^ERROR\s*-\s*/i, "");
+    limpio = limpio.replace(/^ERROR\s*/i, "");
+    // quitar fecha + hora + ids iniciales (cabecera típica)
+    limpio = limpio.replace(/^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+\s+[^\s]+\s+/, "");
+    limpio = limpio.trim();
+    if (!limpio) return;
+    if (limpio.includes("TR_")) return; // ignorar eventos
+    // mantener orden de primera aparición
+    if (!literalCounts[limpio]) {
+      literalCounts[limpio] = 0;
+      literalOrder.push(limpio);
+    }
+    literalCounts[limpio]++;
   });
+
+  // Imprimir literales respetando orden; si aparecen varias veces, prefijar con xN
+  for (let i = 0; i < literalOrder.length; i++) {
+    const lit = literalOrder[i];
+    const cnt = literalCounts[lit] || 0;
+    const pref = cnt > 1 ? ('(' + cnt + 'x) ') : '';
+    salidaFinal += pref + lit + "<br>";
+    // salto extra entre literales diferentes
+    if (i < literalOrder.length - 1) salidaFinal += "<br>";
+  }
+
+  salidaFinal += "</div>";
 
 }
 
