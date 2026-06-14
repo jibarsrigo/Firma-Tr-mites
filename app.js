@@ -54,7 +54,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.2.7";
+const VERSION_JS = "1.2.8";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
