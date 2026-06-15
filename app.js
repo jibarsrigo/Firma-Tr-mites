@@ -767,35 +767,13 @@ console.log("JSON disponible:", accionesJSON);
 
 let diagnosticoTexto = "";
 
-// 👉 Mostramos FLUJO en texto (ordenado y claro)
-diagnosticoTexto += " <br>";
+// 🔹 Frase explicativa del diagnóstico (se muestra dentro del recuadro de la acción)
+let fraseDiagnostico = "";
 
-// 🔹 NUEVO: abrir contenedor visual pequeño
-diagnosticoTexto += "<div class='flujo-texto'>";
+// 🔹 Cartel del veredicto (Fallo Formulario / Fallo Portafib) que se muestra dentro del recuadro
+let cartelDiagnostico = "";
 
-
-// FORMULARIO
-diagnosticoTexto += "TR_FRI (Inicio formulario) → " + (hayFRI ? "OK" : "NO aparece") + "<br>";
-diagnosticoTexto += "TR_FRF (Fin formulario) → " + (hayFRF ? "OK" : "NO aparece") + "<br>";
-
-// FIRMA
-diagnosticoTexto += "TR_SGI (Inicio firma) → " + (haySGI ? "OK" : "NO aparece") + "<br>";
-
-// 👉 Interpretamos estado de firma
-if (haySGX) {
-  diagnosticoTexto += "TR_SGX (Firma KO) → ERROR<br>";
-}
-
-if (haySGO) {
-  diagnosticoTexto += "TR_SGO (Firma OK) → OK<br>";
-}
-
-
-           
-// 👉 Añadimos una conclusión técnica de flujo interpretacion. Interpretación, es la primera frase que muestra tras el flujo. Ahora no muestra la palabra interpretacion, solo el contenido del mismo.
-
-// 🔹 NUEVO: cerrar contenedor interpretacion
-diagnosticoTexto += "</div><br><br>";
+// 🔹 El flujo en texto se eliminó: ahora el flujo se muestra solo con el flujo visual (píldoras).
 
 
            
@@ -809,12 +787,14 @@ if (!haySGI) {
   if (hayErrorPortafibReal) {
 
     // 👉 Error de sesión / flujo (Portafib)
-    diagnosticoTexto += "- La firma NO se inicia por error de sesión/flujo (Portafib).\n";
+    cartelDiagnostico = "<div style=\"display:inline-block;background:#e7f0fb;color:#1456b8;border:1px solid #1456b8;border-radius:8px;padding:6px 14px;font-weight:600;font-size:14px;\">Fallo Portafib</div>";
+    fraseDiagnostico = "La firma no se inicia por un error de sesión/flujo (Portafib).";
 
   } else {
 
     // 👉 Sin errores técnicos → problema de formulario
-    diagnosticoTexto += "- La firma NO se inicia (probable fallo en el formulario).\n";
+    cartelDiagnostico = "<div style=\"display:inline-block;background:#e7f0fb;color:#1456b8;border:1px solid #1456b8;border-radius:8px;padding:6px 14px;font-weight:600;font-size:14px;\">Fallo Formulario</div>";
+    fraseDiagnostico = "La firma no se inicia (probable fallo en el formulario).";
   }
 
 }
@@ -865,12 +845,22 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
 if (accionData && accionData.accion) {
 
-  salidaFinal += "<br>- " + accionData.accion.replace(/\n/g, '<br>') + "<br>";
-
-  // 🔹 NUEVO: añadir enlace del mail debajo de la acción
-  if (accionData.mail) {
-    salidaFinal += '<br>📘 <a href="' + accionData.mail + '" target="_blank" rel="noopener">Mail</a><br><br>';
+  salidaFinal += "<div style=\"margin-top:14px;border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;\">";
+  if (cartelDiagnostico) {
+    salidaFinal += "<div style=\"margin-bottom:10px;\">" + cartelDiagnostico + "</div>";
   }
+  if (fraseDiagnostico) {
+    salidaFinal += "<div style=\"background:#f6f6f4;border-left:4px solid #c9c9c9;border-radius:4px;padding:8px 10px;font-size:13px;color:#555;margin-bottom:10px;\">" + fraseDiagnostico + "</div>";
+  }
+  salidaFinal += "<div style=\"font-weight:600;color:#1e1c17;margin-bottom:6px;\">Acción</div>";
+  salidaFinal += "<div style=\"font-size:14px;color:#1e1c17;\">" + accionData.accion.replace(/\n/g, '<br>') + "</div>";
+
+  // 🔹 NUEVO: enlace del mail DENTRO del recuadro, debajo de la acción
+  if (accionData.mail) {
+    salidaFinal += '<div style="margin-top:10px;"><a href="' + accionData.mail + '" target="_blank" rel="noopener" style="color:#1e1c17;text-decoration:underline;">Mail</a></div>';
+  }
+
+  salidaFinal += "</div>";
 
 } else {
 
@@ -891,7 +881,7 @@ if (erroresUnicos.length > 0) {
   // 🔥 PRIMERO: si hay error de flujo (Portafib)
   if (hayErrorPortafibReal) {
 
-    salidaFinal += "<div class='literales'><b>* Literales técnicos detectados:</b></div><br>";
+    salidaFinal += "<div class='literales' style='margin-top:14px;'><b>Literales detectados</b></div>";
     salidaFinal += "<div class='literal-pequeno'>";
 
     const literalCounts = {};
@@ -939,7 +929,7 @@ if (erroresUnicos.length > 0) {
 // 🔥 SEGUNDO: caso formulario REAL (versión final sin pérdida de datos)
 else if (contexto.fase === "pre_firma") {
 
-  salidaFinal += "<div class='literales'><b>* Literales:</b></div><br>";
+  salidaFinal += "<div class='literales' style='margin-top:14px;'><b>*Literales detectados</b></div>";
 
   salidaFinal += "<div class='literal-pequeno'>";
 
@@ -982,7 +972,8 @@ else if (contexto.fase === "pre_firma") {
   // 🔹 resto casos
   else {
 
-salidaFinal += "<div class='literales'><br><br>Literales de Errores Detectados:<br>";
+salidaFinal += "<div class='literales' style='margin-top:14px;'><b>Literales detectados</b></div>";
+salidaFinal += "<div class='literal-pequeno'>";
 
 erroresUnicos.forEach(err => {
   salidaFinal += "- " + err + "<br>";
@@ -1239,9 +1230,10 @@ function renderFlujoVisual(eventos) {
         ${p}
       </div>`;
 
-    // Always render the label element to keep vertical alignment consistent.
-    const labelText = eventos[p] ? `(${p === 'TR_FRI' ? 'Inicio formulario' : p === 'TR_FRF' ? 'Fin formulario' : p === 'TR_SGI' ? 'Inicio firma' : p === 'TR_SGX' ? 'Firma KO' : p === 'TR_SGO' ? 'Firma OK' : p === 'TR_REG' ? 'Registro' : 'Fin trámite'})` : '\u00A0';
-    const labelColor = eventos[p] ? color : 'transparent';
+    // Mostramos SIEMPRE la etiqueta; en gris cuando el evento no aparece en la traza.
+    const nombrePaso = p === 'TR_FRI' ? 'Inicio formulario' : p === 'TR_FRF' ? 'Fin formulario' : p === 'TR_SGI' ? 'Inicio firma' : p === 'TR_SGX' ? 'Firma KO' : p === 'TR_SGO' ? 'Firma OK' : p === 'TR_REG' ? 'Registro' : 'Fin trámite';
+    const labelText = `(${nombrePaso})`;
+    const labelColor = eventos[p] ? color : '#ccc';
     html += `<div style="font-size:9px;color:${labelColor};line-height:1.2;">${labelText}</div>`;
 
     html += `</div>`;
