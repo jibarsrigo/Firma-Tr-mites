@@ -54,10 +54,21 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.2.8";
+const VERSION_JS = "1.2.9";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
+
+// =====================================
+// 🔹 CONSTANTES CENTRALIZADAS
+// =====================================
+// Valores importantes que se usan en varias partes del código
+
+const LITERAL_FIELD_INDEX = 10;           // Estructura de traza: la primera información funcional empieza en el campo 10
+                                           // (después de fecha, hora, ID y 7 campos técnicos iniciales)
+const MIN_LITERAL_LENGTH = 20;            // Longitud mínima para considerar una línea como posible error (evitar ruido)
+const RE_FECHA_CABECERA = /^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+\s+[^\s]+\s+/; // Patrón: elimina cabecera de fecha/hora
+
 
 // Espera a que el HTML esté completamente cargado antes de ejecutar
 document.addEventListener("DOMContentLoaded", () => {
@@ -274,7 +285,9 @@ btnAnalizar.onclick = () => {      // 👉 Inicia el análisis completo de la tr
   // 👉 Se obtiene la traza pegada por el usuario
 const texto = document.getElementById("inputTraza").value.trim();
 
-  // 👉 Guardamos la traza original para mostrar literales tal cual se pegaron
+  // 👉 IMPORTANTE: Guardar líneas originales ANTES de convertir a mayúsculas.
+  // Esto preserva el formato original (tabuladores, espacios, caracteres especiales) 
+  // para mostrar los literales de error exactamente como el usuario los pegó.
 const lineasOriginales = texto.split(/\r?\n/);
 
   // 👉 Se convierte todo a mayúsculas. Evita errores al buscar textos (TR_, literales, etc.)
@@ -399,15 +412,38 @@ console.log("CONTEXTO:", contexto);
 
 
 // =====================================
+// � HELPERS PUROS (sin duplicación)
+// =====================================
+// Funciones reutilizables para detectar tipos de error
+
+const esErrorTecnicoHelper = (linea) => {
+  return linea.includes("FLUXE") ||
+         linea.includes("SESSIÓ") ||
+         linea.includes("SESSION") ||
+         linea.includes("EXCEPCIÓ") ||
+         linea.includes("EXCEPTION") ||
+         linea.includes("SAF_") ||
+         linea.includes("ERROR") ||
+         linea.includes("CLAVEFIRMA") ||
+         linea.includes("CODI ERROR") ||
+         linea.includes("PROVEÏDOR: CLAVEFIRMA");
+};
+
+const esPosibleErrorFormularioHelper = (linea) => {
+  return !linea.includes("TR_") &&
+         !linea.includes("HTTP") &&
+         !linea.includes("HTTPS") &&
+         linea.length > MIN_LITERAL_LENGTH &&
+         /[A-ZÀ-Ú]{3,}/.test(linea);
+};
+
+
+// =====================================
 // 🔴 DETECCIÓN DE LITERALES (ERRORES)
 // =====================================
 // 👉 AQUÍ es donde se añaden nuevos textos de error
 // 👉 SOLO modificar aquí para añadir nuevos literales
 // 👉 NO tocar el resto del código
-
-// 👉 Detectamos errores de flujo típicos (Portafib)
-// 🔹 No usamos texto exacto para evitar fallos
-// 🔹 Detectamos cualquier referencia a "FLUXE"
 
 // 👉 Paso 1: filtramos solo líneas que contienen errores reales
 // 🔹 ampliamos detección para cubrir casos de sesión, firma y técnicos
@@ -415,35 +451,10 @@ console.log("CONTEXTO:", contexto);
 const lineasErrorEntries = lineas
   .map((linea, indice) => ({ linea, original: lineasOriginales[indice] || linea }))
   .filter(entry => {
-
-  // 👉 errores técnicos existentes (igual que antes)
-  const esErrorTecnico =
-entry.linea.includes("FLUXE") ||
-entry.linea.includes("SESSIÓ") ||
-entry.linea.includes("SESSION") ||
-entry.linea.includes("EXCEPCIÓ") ||
-entry.linea.includes("EXCEPTION") ||
-entry.linea.includes("SAF_") ||
-entry.linea.includes("ERROR") ||
-(
-  entry.linea.includes("CLAVEFIRMA") ||
-  entry.linea.includes("CODI ERROR") ||
-  entry.linea.includes("PROVEÏDOR: CLAVEFIRMA")
-);
-
-
-  // 🔥 NUEVO: detectar posibles errores de formulario sin "ERROR"
-  const esPosibleErrorFormulario =
-    !entry.linea.includes("TR_") &&            // no es evento
-    !entry.linea.includes("HTTP") &&          // evitar ruido técnico
-    !entry.linea.includes("HTTPS") &&
-    entry.linea.length > 20 &&                // evitar basura corta
-    /[A-ZÀ-Ú]{3,}/.test(entry.linea);         // contiene texto real
-
-  // 👉 devolver cualquiera de los dos
-  return esErrorTecnico || esPosibleErrorFormulario;
-
-});
+    const esErrorTecnico = esErrorTecnicoHelper(entry.linea);
+    const esPosibleErrorFormulario = esPosibleErrorFormularioHelper(entry.linea);
+    return esErrorTecnico || esPosibleErrorFormulario;
+  });
 
 const lineasError = lineasErrorEntries.map(entry => entry.linea);
 
@@ -586,8 +597,11 @@ let idReglaDetectada = null;
 if (contexto.fase === "pre_firma") {
 
   // ======================================================
-// 👉 MEJORA FORMULARIO vs PORTAFIB (FASE 10)
-// ======================================================
+  // FASE: PRE_FIRMA (antes de invocar el sistema de firma)
+  // ======================================================
+  // Detecta: problemas de formulario o errores de sesión/Portafib
+  // Ejemplos: validación fallida, error de sesión, flujo incorrecto
+  // 👉 MEJORA FORMULARIO vs PORTAFIB (FASE 10)
 
 
 // 👉 Contamos intentos de formulario
@@ -623,11 +637,12 @@ else {
 
 } else if (contexto.fase === "error_firma") {
 
-
-  // ─────────────────────────────
-  // Ha llegado a firma pero ha fallado
-  // Aquí diferenciamos proveedor
-  // ─────────────────────────────
+  // ======================================================
+  // FASE: ERROR_FIRMA (llegó a firma pero falló)
+  // ======================================================
+  // Detecta: qué proveedor causó el fallo (Autofirma, Cl@ve, FIRE)
+  // Ejemplos: certificado bloqueado, contraseña incorrecta, error técnico
+  // 👉 Prioridad: Autofirma > Cl@ve > FIRE
 
  // 👉 Primero comprobamos si el error es de Autofirma (SAF_27)
 // 🔹 PRIORIDAD: si aparece SAF_27, SIEMPRE es Autofirma
@@ -691,11 +706,12 @@ else if (esCert) {
 
 else if (contexto.fase === "firma_ok") {
 
-  // ─────────────────────────────
-  // Firma correcta
-  // OJO: no implica registro correcto
-  // ─────────────────────────────
-
+  // ======================================================
+  // FASE: FIRMA_OK (firma completada correctamente)
+  // ======================================================
+  // Detecta: firma exitosa (posibles errores posteriores: registro, archivo, etc.)
+  // Nota: firma OK no garantiza que el trámite se haya completado correctamente.
+  
   idReglaDetectada = "firma_correcta";
 
 }
@@ -882,11 +898,13 @@ if (erroresUnicos.length > 0) {
     const literalOrder = [];
     const literalOriginal = {};
 
+    // Normalizar el literal: extrae el mensaje real eliminando campos técnicos y espacios redundantes
+    // Esto permite agrupar y deduplicar correctamente los literales similares pero con formatos diferentes
     const normalizarAgrupacion = (linea) => {
       let key = linea.replace(/^ERROR\s*-\s*/i, "");
       const partes = key.split(/\t+/).map(p => p.trim()).filter(Boolean);
-      if (partes.length > 10) {
-        key = partes.slice(10).join(" ");
+      if (partes.length > LITERAL_FIELD_INDEX) {
+        key = partes.slice(LITERAL_FIELD_INDEX).join(" ");
       }
       key = key.replace(/\s+/g, ' ').trim();
       return key;
@@ -905,6 +923,8 @@ if (erroresUnicos.length > 0) {
     });
 
     literalOrder.forEach((clave, index) => {
+      // Construir el prefijo: si el literal aparece múltiples veces, mostrar (Nx)
+      // Esto ayuda al técnico a identificar rápidamente errores repetidos
       const cnt = literalCounts[clave] || 0;
       const pref = cnt > 1 ? ('(' + cnt + 'x) ') : '';
       const textoLiteral = literalOriginal[clave] || clave;
@@ -991,6 +1011,8 @@ if (flujoCard) {
 document.getElementById("flujoVisual").style.display = "flex";
 
 // Función auxiliar para escapar texto antes de mostrarlo como HTML
+// IMPORTANTE: convierte caracteres especiales (< > & " ') para evitar que se interpreten como HTML
+// Esto garantiza que los literales se muestren como texto plano, no como código HTML renderizado
 function escapeHtml(text) {
   return text
     .replace(/&/g, '&amp;')
