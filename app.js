@@ -1275,8 +1275,8 @@ btnLimpiar.onclick = () => {
   // ─────────────────────────────
   // 🔹 RESET DE MÉTODO DE FIRMA
   // ─────────────────────────────
-  // Quitamos selección de Cl@ve / certificado
-  metodoClave.checked = false;
+  // Volvemos al método por defecto: Cl@ve marcado (Cambios 2026-06-17)
+  metodoClave.checked = true;
   metodoCert.checked = false;
 
   // También limpiamos selección de sistema
