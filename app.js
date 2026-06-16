@@ -135,29 +135,37 @@ btnDetalles.onclick = () => {
   abrirPanel("Detalles del analizador", `
 <ul>
   <li><b>Analizador de trazas SistraHelp</b> orientado a soporte técnico CAU.</li>
-
-  <li>Identifica automáticamente el flujo del trámite mediante eventos TR_ (inicio de formulario, firma, resultado).</li>
-
-  <li>Genera un diagnóstico técnico basado en el flujo real del proceso (formulario, firma y registro).</li>
-
-  <li>Extrae y muestra los literales de error directamente desde la traza, manteniendo el contexto real de ejecución.</li>
+  <li>Versión actual: <b>v 1.2.9</b> (interfaz <b>index.html</b>).</li>
 
   <br>
 
-  <li><b>Estado actual:</b></li>
-  <li>✔ Casos de error de formulario definidos y validados.</li>
-  <li>✔ Casos de error técnico de sesión / Portafib identificados correctamente.</li>
+  <li><b>Qué hace al analizar una traza:</b></li>
+  <li>Muestra el <b>flujo del trámite</b> (eventos TR_) con píldoras de colores y etiquetas.</li>
+  <li>Indica el <b>diagnóstico</b> (cartel + frase explicativa dentro del flujo, cuando aplica).</li>
+  <li>Propone la <b>acción recomendada</b> y el enlace <b>Mail</b> cuando existe.</li>
+  <li>Lista los <b>literales detectados</b> con contador de repeticiones (xN), o avisa si no hay literales.</li>
+
+  <br>
+
+  <li><b>Estado actual (completado y validado):</b></li>
+  <li>✔ Interfaz estilo V5: tarjetas con cabecera gris (Flujo del trámite, Acción, Literales detectados).</li>
+  <li>✔ Apartados laterales plegables (Problemas de acceso, Traza SistraHelp, Método).</li>
+  <li>✔ <b>Fallo formulario</b>: presentación completa (flujo + acción + literales + mail).</li>
+  <li>✔ <b>Fallo Portafib</b>: presentación completa, con acción dinámica según literales
+      (<i>El fluxe no es vàlid</i> y/o <i>Excepció al generar sessió firma</i>).</li>
+  <li>✔ <b>Trámite finalizado OK</b> sin incidencias.</li>
+  <li>✔ <b>Trámite finalizado OK con incidencia Portafib</b> en la traza (caso especial).</li>
 
   <br>
 
   <li><b>Pendiente de mejora:</b></li>
-  <li>🔧 Análisis detallado de errores en Autofirma y certificados locales (FIRE).</li>
-  <li>🔧 Clasificación completa de códigos de error de Cl@ve (paso de firma).</li>
-  <li>🔧 Mejora del diagnóstico en fase de proveedor de firma.</li>
+  <li>🔧 Misma presentación visual del flujo (cartel + frase) para Autofirma, Cl@ve y FIRE.</li>
+  <li>🔧 Limpieza de literales: mostrar solo el mensaje útil, sin ruido técnico (fechas, IDs, excepciones).</li>
+  <li>🔧 Ajustes menores en casos de firma (Cl@ve, Autofirma, certificado local).</li>
 
   <br>
 
-  <li><b>Nota:</b> La herramienta se encuentra en evolución continua para cubrir todos los escenarios reales de firma electrónica en CAIB.</li>
+  <li><b>Nota:</b> La herramienta evoluciona por fases. Cada cambio se prueba antes de pasar al siguiente.</li>
 </ul>
 `);
 };
@@ -172,38 +180,45 @@ btnTabla.onclick = (e) => {
   abrirPanel("Motor de análisis (reglas)", `
 <ul>
   <li><b>Funcionamiento del analizador:</b></li>
-  <li>Analiza la traza completa en bruto (SistraHelp) respetando el orden real de ejecución.</li>
-  <li>Normaliza el contenido (mayúsculas) para garantizar detección consistente.</li>
-  <li>Identifica eventos clave TR_ para reconstruir el flujo del trámite:</li>
-  <li>TR_FRI (inicio formulario) → TR_FRF (fin formulario) → TR_SGI (inicio firma) → TR_SGX / TR_SGO</li>
+  <li>Lee la traza completa de SistraHelp respetando el orden real de ejecución.</li>
+  <li>Reconstruye el flujo con eventos TR_: TR_FRI → TR_FRF → TR_SGI → TR_SGX / TR_SGO → TR_REG → TR_FIN.</li>
+  <li>Clasifica el caso en una de tres fases: <b>pre-firma</b>, <b>error en firma</b> o <b>firma correcta</b>.</li>
+  <li>Aplica la regla correspondiente de <b>acciones.json</b> (v 1.1.6) y muestra acción + mail cuando existe.</li>
 
   <br>
 
-  <li><b>Análisis por fases del flujo:</b></li>
-  <li>✔ Pre-firma → validación de formulario y sesión</li>
-  <li>✔ Error en firma → fallo en proveedor (Cl@ve, Autofirma, FIRE)</li>
-  <li>✔ Firma correcta → validación de registro</li>
+  <li><b>Reglas activas y estado de presentación:</b></li>
+  <li>✔ <b>fallo_formulario</b> — No llega a firma, sin error de flujo Portafib. Presentación completa.</li>
+  <li>✔ <b>fallo_portafib</b> — No llega a firma por error de flujo/sesión. Presentación completa; acción dinámica si aparecen
+      <i>El fluxe no es vàlid</i> y/o <i>Excepció al generar sessió firma</i>.</li>
+  <li>✔ <b>firma_correcta</b> — Trámite finalizado correctamente, sin incidencias Portafib.</li>
+  <li>✔ <b>firma_correcta_portafib</b> — Trámite OK pero con error Portafib en la traza. Acción dinámica según literales.</li>
+  <li>⚙ <b>error_clave_8_15</b> — Cl@ve códigos 8–15. Lógica activa; presentación visual del flujo pendiente.</li>
+  <li>⚙ <b>error_clave_103</b> — Cl@ve contraseña bloqueada. Lógica activa; presentación visual pendiente.</li>
+  <li>⚙ <b>error_clave_103_15</b> — Cl@ve certificado bloqueado. Lógica activa; presentación visual pendiente.</li>
+  <li>⚙ <b>error_clave_101</b> — Cl@ve nivel de registro insuficiente. Lógica activa; presentación visual pendiente.</li>
+  <li>⚙ <b>error_clave_104</b> — Cl@ve registro débil. Lógica activa; presentación visual pendiente.</li>
+  <li>⚙ <b>error_autofirma</b> — Error SAF_27 (Autofirma). Lógica activa; presentación visual pendiente.</li>
+  <li>⚙ <b>error_fire</b> — Certificado local (FIRE). Lógica activa; presentación visual pendiente.</li>
 
   <br>
 
-  <li><b>Casos actualmente cubiertos:</b></li>
-  <li>✔ Fallos de formulario (errores funcionales del ciudadano)</li>
-  <li>✔ Fallos de sesión / Portafib (errores técnicos previos a firma)</li>
-  <li>✔ Detección de reintentos (TR_FRI / TR_FRF repetidos)</li>
-  <li>✔ Extracción de literales reales desde la traza</li>
+  <li><b>Criterios clave de decisión:</b></li>
+  <li>Si hay <b>TR_FRF</b> pero no <b>TR_SGI</b> → no llega a firma (formulario o Portafib).</li>
+  <li>Si aparece literal de flujo (<i>El fluxe no es vàlid</i>, sesión firma, etc.) → Portafib.</li>
+  <li>Si no hay error de flujo → formulario.</li>
+  <li>Si hay <b>TR_SGO</b> → firma correcta (con o sin incidencia Portafib previa).</li>
+  <li>En fase de firma: prioridad Autofirma (SAF_27) → Cl@ve → FIRE.</li>
 
   <br>
 
-  <li><b>Pendiente de implementación:</b></li>
-  <li>🔧 Clasificación completa de errores en Autofirma (SAF_xx)</li>
-  <li>🔧 Diagnóstico detallado de certificados locales (FIRE)</li>
-  <li>🔧 Interpretación de códigos reales de Cl@ve (8–15, 101, 103...)</li>
-  <li>🔧 Mejora del análisis en fase de firma (proveedor)</li>
+  <li><b>Pendiente:</b></li>
+  <li>🔧 Cartel + frase en el flujo para casos de firma (Cl@ve, Autofirma, FIRE).</li>
+  <li>🔧 Limpieza estructural de literales (mostrar mensaje útil sin ruido técnico).</li>
 
   <br>
 
-  <li><b>Nota técnica:</b></li>
-  <li>El motor prioriza errores de sesión (Portafib) sobre errores funcionales, siguiendo el flujo real de ejecución del sistema.</li>
+  <li><b>Nota:</b> ✔ = regla con presentación completa validada. ⚙ = regla detectada, presentación visual en progreso.</li>
 </ul>
 `);
 };
@@ -539,7 +554,8 @@ console.log("CODIGO:", codigoClaveDetectado);
 console.log("TIPO:", tipusResultatDetectado);
 
 const matchCodigo = lineaErrorClave.match(/ERROR:\s*(\d+)/);
-const matchTipus = lineaErrorClave.match(/RESULTAD[OA]?\s*:\s*(\d+)/);
+const matchTipus = lineaErrorClave.match(/(?:TIPUS\s+)?RESULTAT\s*:\s*(\d+)/i)
+  || lineaErrorClave.match(/RESULTAD[OA]?\s*:\s*(\d+)/i);
            
 if (matchCodigo) {
   codigoClaveDetectado = matchCodigo[1];
@@ -791,8 +807,18 @@ let diagnosticoTexto = "";
 // 🔹 Frase explicativa del diagnóstico (se muestra dentro del recuadro de la acción)
 let fraseDiagnostico = "";
 
-// 🔹 Cartel del veredicto (Fallo Formulario / Fallo Portafib) que se muestra dentro del recuadro
+// 🔹 Cartel del veredicto (Fallo Formulario / Fallo Portafib / Error Cl@ve…) dentro de la tarjeta del flujo
 let cartelDiagnostico = "";
+
+// Helper: cartel azul estándar (mismo estilo en todos los casos)
+function cartelAzul(texto) {
+  return "<div style=\"display:inline-block;background:#e7f0fb;color:#1456b8;border:1px solid #1456b8;border-radius:8px;padding:5px 12px;font-weight:600;font-size:13px;\">" + texto + "</div>";
+}
+
+// Helper: literal técnico en gris pequeño (dentro de la frase del flujo)
+function literalFlujo(texto) {
+  return "<span style=\"color:#9a9890;font-size:11px;\">\"" + texto + "\"</span>";
+}
 
 // 🔹 El flujo en texto se eliminó: ahora el flujo se muestra solo con el flujo visual (píldoras).
 
@@ -808,15 +834,41 @@ if (!haySGI) {
   if (hayErrorPortafibReal) {
 
     // 👉 Error de sesión / flujo (Portafib)
-    cartelDiagnostico = "<div style=\"display:inline-block;background:#e7f0fb;color:#1456b8;border:1px solid #1456b8;border-radius:8px;padding:5px 12px;font-weight:600;font-size:13px;\">Fallo Portafib</div>";
+    cartelDiagnostico = cartelAzul("Fallo Portafib");
     fraseDiagnostico = "La firma no se inicia por un error de flujo.";
 
   } else {
 
     // 👉 Sin errores técnicos → problema de formulario
-    cartelDiagnostico = "<div style=\"display:inline-block;background:#e7f0fb;color:#1456b8;border:1px solid #1456b8;border-radius:8px;padding:5px 12px;font-weight:600;font-size:13px;\">Fallo Formulario</div>";
-    fraseDiagnostico = "La firma no se inicia, y no hay errores de flujo <span style=\"color:#9a9890;font-size:11px;\">\"Fluxe no vàlid\"</span>.";
+    cartelDiagnostico = cartelAzul("Fallo Formulario");
+    fraseDiagnostico = "La firma no se inicia, y no hay errores de flujo " + literalFlujo("Fluxe no vàlid") + ".";
   }
+
+}
+else if (idReglaDetectada && idReglaDetectada.indexOf("error_clave") === 0) {
+
+  // 👉 Errores de Cl@ve (8–15, 101, 103, 103-15, 104): mismo formato visual que formulario / Portafib
+  cartelDiagnostico = cartelAzul("Error Cl@ve");
+
+  // Texto del código según la regla detectada
+  let codigoTexto;
+  switch (idReglaDetectada) {
+    case "error_clave_8_15":   codigoTexto = "código 8–15"; break;
+    case "error_clave_101":    codigoTexto = "código 101"; break;
+    case "error_clave_103":    codigoTexto = "código 103"; break;
+    case "error_clave_103_15": codigoTexto = "código 103-15"; break;
+    case "error_clave_104":    codigoTexto = "código 104"; break;
+    default:                   codigoTexto = "código " + (codigoClaveDetectado || "?");
+  }
+
+  // Literal técnico (gris pequeño) reconstruido desde la traza
+  let literalClave = "CODI ERROR: " + (codigoClaveDetectado || "?")
+    + " - PROVEÏDOR: CLAVEFIRMA";
+  if (tipusResultatDetectado) {
+    literalClave += " - TIPUS RESULTAT: " + tipusResultatDetectado;
+  }
+
+  fraseDiagnostico = "La firma se inicia pero falla en Cl@ve (" + codigoTexto + "). " + literalFlujo(literalClave);
 
 }
 else if (hayAutofirmaError) {
@@ -825,9 +877,9 @@ else if (hayAutofirmaError) {
   diagnosticoTexto += "- El error corresponde a Autofirma (certificado local), no a Cl@ve.\n";
 
 }
-else if (haySGX) {
+else if (haySGX && !cartelDiagnostico) {
 
-  // 👉 Error proveedor genérico
+  // 👉 Error proveedor genérico (solo si no hay cartel ya asignado, p. ej. Cl@ve)
   diagnosticoTexto += "- La firma se inicia pero falla en el sistema de firma.\n";
 
 }
@@ -902,6 +954,16 @@ if (accionData && accionData.accion) {
         + literalGris("El fluxe no es vàlid", true);
     }
     textoAccion = lineaPortafib + "\nEl trámite está finalizado correctamente.";
+  } else if (idReglaDetectada === "error_clave_103_15") {
+    // 🔹 Caso especial: 103-15 precedido por un error 8-15 en la misma traza.
+    const hayClave8_15 = lineas.some(l =>
+      l.includes("CLAVEFIRMA") &&
+      /ERROR:\s*8\b/.test(l) &&
+      /RESULTA[TD][OA]?\s*:\s*15\b/.test(l)
+    );
+    if (hayClave8_15) {
+      textoAccion = "Se detecta uno o varios Error Cl@ve (código 8-15) y posteriormente uno o varios Errores Cl@ve (código 103-15).\nCertificado bloqueado. Indicar revocación y emisión de nuevo certificado en Cl@ve.";
+    }
   }
 
   const accionHtml = textoAccion.split("\n").map(linea => {
@@ -1032,7 +1094,7 @@ else if (contexto.fase === "pre_firma") {
 
 }
 
-  // 🔹 resto casos
+  // 🔹 resto casos (error_firma, firma_ok con errores, Autofirma, Cl@ve, FIRE…)
   else {
 
 salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
@@ -1040,9 +1102,46 @@ salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">"
 salidaFinal += "<div class=\"panel-card__body\">";
 salidaFinal += "<div class='literal-pequeno'>";
 
-erroresUnicos.forEach(err => {
-  salidaFinal += "- " + err + "<br>";
+// Agrupamos contando repeticiones y mostramos el texto original una sola vez.
+// No filtramos por "TR_": en Cl@ve el error suele ir en la misma línea que el evento TR_SGX.
+// Para agrupar líneas equivalentes que solo difieren en datos volátiles
+// (fecha, hora, IDs de sesión/expediente), normalizamos la clave de agrupación:
+//   - quitamos fechas (dd/mm/aaaa) y horas (hh:mm:ss)
+//   - quitamos tokens de sesión tipo XXXX-XXXX-XXXX
+//   - quitamos números largos (5+ dígitos) → conservamos códigos como 8 o 15
+const normalizarClave = (linea) => {
+  let k = linea;
+  k = k.replace(/\d{1,2}\/\d{1,2}\/\d{2,4}/g, "");
+  k = k.replace(/\d{1,2}:\d{2}:\d{2}/g, "");
+  k = k.replace(/\b[A-Z0-9]{5,}-[A-Z0-9]{5,}-[A-Z0-9]{5,}\b/g, "");
+  k = k.replace(/\b\d{5,}\b/g, "");
+  k = k.replace(/\s+/g, " ").trim();
+  return k;
+};
+
+const literalCounts = {};
+const literalOrder = [];
+const literalOriginal = {};
+
+lineasErrorEntries.forEach(entry => {
+  if (!entry.linea || !entry.linea.trim()) return;
+  const clave = normalizarClave(entry.linea);
+  if (!clave) return;
+  if (!literalCounts[clave]) {
+    literalCounts[clave] = 0;
+    literalOrder.push(clave);
+    literalOriginal[clave] = entry.original;
+  }
+  literalCounts[clave]++;
 });
+
+for (let i = 0; i < literalOrder.length; i++) {
+  const lit = literalOrder[i];
+  const cnt = literalCounts[lit] || 0;
+  const pref = '(x' + cnt + ') ';
+  salidaFinal += pref + escapeHtml(literalOriginal[lit] || lit) + "<br>";
+  if (i < literalOrder.length - 1) salidaFinal += "<br>";
+}
 
 salidaFinal += "</div></div></div>";
 
