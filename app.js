@@ -726,8 +726,14 @@ else if (contexto.fase === "firma_ok") {
   // ======================================================
   // Detecta: firma exitosa (posibles errores posteriores: registro, archivo, etc.)
   // Nota: firma OK no garantiza que el trámite se haya completado correctamente.
-  
-  idReglaDetectada = "firma_correcta";
+
+  // 🔹 Cambios 2026-06-16: si el trámite finaliza OK pero por el camino hubo
+  // un error de Portafib ("El fluxe no es vàlid"), lo indicamos aparte.
+  if (hayErrorPortafibReal) {
+    idReglaDetectada = "firma_correcta_portafib";
+  } else {
+    idReglaDetectada = "firma_correcta";
+  }
 
 }
 
@@ -802,14 +808,14 @@ if (!haySGI) {
   if (hayErrorPortafibReal) {
 
     // 👉 Error de sesión / flujo (Portafib)
-    cartelDiagnostico = "<div style=\"display:inline-block;background:#e7f0fb;color:#1456b8;border:1px solid #1456b8;border-radius:8px;padding:6px 14px;font-weight:600;font-size:14px;\">Fallo Portafib</div>";
-    fraseDiagnostico = "La firma no se inicia por un error de sesión/flujo (Portafib).";
+    cartelDiagnostico = "<div style=\"display:inline-block;background:#e7f0fb;color:#1456b8;border:1px solid #1456b8;border-radius:8px;padding:5px 12px;font-weight:600;font-size:13px;\">Fallo Portafib</div>";
+    fraseDiagnostico = "La firma no se inicia por un error de flujo.";
 
   } else {
 
     // 👉 Sin errores técnicos → problema de formulario
-    cartelDiagnostico = "<div style=\"display:inline-block;background:#e7f0fb;color:#1456b8;border:1px solid #1456b8;border-radius:8px;padding:6px 14px;font-weight:600;font-size:14px;\">Fallo Formulario</div>";
-    fraseDiagnostico = "La firma no se inicia (probable fallo en el formulario).";
+    cartelDiagnostico = "<div style=\"display:inline-block;background:#e7f0fb;color:#1456b8;border:1px solid #1456b8;border-radius:8px;padding:5px 12px;font-weight:600;font-size:13px;\">Fallo Formulario</div>";
+    fraseDiagnostico = "La firma no se inicia, y no hay errores de flujo <span style=\"color:#9a9890;font-size:11px;\">\"Fluxe no vàlid\"</span>.";
   }
 
 }
@@ -827,8 +833,8 @@ else if (haySGX) {
 }
 else if (haySGO) {
 
-  // 👉 Firma correcta
-  diagnosticoTexto += "- La firma se completa correctamente.\n";
+  // 👉 Firma correcta: el mensaje se muestra en la tarjeta de Acción (ver acciones.json),
+  // ya no como texto suelto fuera de las tarjetas.
 
 }
  
@@ -860,22 +866,58 @@ if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
 
 if (accionData && accionData.accion) {
 
-  salidaFinal += "<div style=\"margin-top:14px;border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;\">";
-  if (cartelDiagnostico) {
-    salidaFinal += "<div style=\"margin-bottom:10px;\">" + cartelDiagnostico + "</div>";
-  }
-  if (fraseDiagnostico) {
-    salidaFinal += "<div style=\"background:#f6f6f4;border-left:4px solid #c9c9c9;border-radius:4px;padding:8px 10px;font-size:13px;color:#555;margin-bottom:10px;\">" + fraseDiagnostico + "</div>";
-  }
-  salidaFinal += "<div style=\"font-weight:600;color:#1e1c17;margin-bottom:6px;\">Acción</div>";
-  salidaFinal += "<div style=\"font-size:14px;color:#1e1c17;\">" + accionData.accion.replace(/\n/g, '<br>') + "</div>";
+  // El cartel azul (Fallo Formulario / Fallo Portafib) y la frase explicativa ya no van aquí:
+  // ahora se muestran dentro de la tarjeta del flujo, debajo de las píldoras
+  // (ver el bloque que rellena #flujoDiagnostico).
+  // 🔹 Cambios 2026-06-16: la acción usa el mismo formato de tarjeta V5 (cabecera gris + cuerpo blanco).
+  salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
+  salidaFinal += "<div class=\"panel-card__head\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#01696f\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polyline points=\"13 17 18 12 13 7\"/><polyline points=\"6 17 11 12 6 7\"/></svg>Acción</div>";
+  salidaFinal += "<div class=\"panel-card__body\">";
+  // Las líneas que empiezan por "*" (notas) se muestran más grises y un poco más pequeñas.
+  // 🔹 Casos especiales Portafib → texto dinámico según literales detectados en la traza.
+  let textoAccion = accionData.accion;
+  const trazaCompleta = lineas.join("\n");
+  const hayFluxe = /fluxe no es v[àa]lid/i.test(trazaCompleta);
+  const hayExcepcioSessio = /excepci[oó]\s+al\s+generar\s+sessi[oó]\s+firma/i.test(trazaCompleta);
+  const literalGris = (texto, cursiva) =>
+    "<span style=\"color:#9a9890;font-size:12px" + (cursiva ? ";font-style:italic" : "") + "\">\"" + texto + "\"</span>";
 
-  // 🔹 NUEVO: enlace del mail DENTRO del recuadro, debajo de la acción
+  if (idReglaDetectada === "fallo_portafib") {
+    if (hayFluxe && hayExcepcioSessio) {
+      textoAccion = "Escalar a SEG-012. Error de flujo / Portafib "
+        + literalGris("El fluxe no es vàlid", true) + " / "
+        + literalGris("Excepció al generar sessió firma", true) + ".";
+    } else {
+      textoAccion = "Escalar a SEG-012. Error de flujo / Portafib "
+        + literalGris("El fluxe no es vàlid", true);
+    }
+  } else if (idReglaDetectada === "firma_correcta_portafib") {
+    let lineaPortafib;
+    if (hayFluxe && hayExcepcioSessio) {
+      lineaPortafib = "Se detecta error de portafib en la traza "
+        + literalGris("El fluxe no es valid", false) + " / "
+        + literalGris("Excepció al generar sessió firma", false);
+    } else {
+      lineaPortafib = "Se detecta error de portafib en la traza. "
+        + literalGris("El fluxe no es vàlid", true);
+    }
+    textoAccion = lineaPortafib + "\nEl trámite está finalizado correctamente.";
+  }
+
+  const accionHtml = textoAccion.split("\n").map(linea => {
+    if (linea.trim().startsWith("*")) {
+      return "<span style=\"color:#9a9890;font-size:12px;\">" + linea + "</span>";
+    }
+    return linea;
+  }).join("<br>");
+  salidaFinal += "<div style=\"font-size:14px;color:#1e1c17;\">" + accionHtml + "</div>";
+
+  // 🔹 enlace del mail DENTRO del cuerpo, debajo de la acción
   if (accionData.mail) {
     salidaFinal += '<div style="margin-top:10px;"><a href="' + accionData.mail + '" target="_blank" rel="noopener" style="color:#1e1c17;text-decoration:underline;">Mail</a></div>';
   }
 
-  salidaFinal += "</div>";
+  salidaFinal += "</div></div>";
 
 } else {
 
@@ -890,13 +932,18 @@ placeholder.style.display = "none";
 // 👉 Si hay errores reales, los añadimos al diagnóstico
 // 🔹 mostramos solo errores detectados (sin duplicados)
 
+// 🔹 Cambios 2026-06-16: icono para la cabecera de la tarjeta de literales (formato V5)
+const iconoLiterales = "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#01696f\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"8\" y1=\"6\" x2=\"21\" y2=\"6\"/><line x1=\"8\" y1=\"12\" x2=\"21\" y2=\"12\"/><line x1=\"8\" y1=\"18\" x2=\"21\" y2=\"18\"/><line x1=\"3\" y1=\"6\" x2=\"3.01\" y2=\"6\"/><line x1=\"3\" y1=\"12\" x2=\"3.01\" y2=\"12\"/><line x1=\"3\" y1=\"18\" x2=\"3.01\" y2=\"18\"/></svg>";
+
 // 👉 Mostramos errores si existen
 if (erroresUnicos.length > 0) {
 
   // 🔥 PRIMERO: si hay error de flujo (Portafib)
   if (hayErrorPortafibReal) {
 
-    salidaFinal += "<div class='literales' style='margin-top:14px;'><b>Literales detectados</b></div>";
+    salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
+    salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
+    salidaFinal += "<div class=\"panel-card__body\">";
     salidaFinal += "<div class='literal-pequeno'>";
 
     const literalCounts = {};
@@ -931,21 +978,22 @@ if (erroresUnicos.length > 0) {
       // Construir el prefijo: si el literal aparece múltiples veces, mostrar (Nx)
       // Esto ayuda al técnico a identificar rápidamente errores repetidos
       const cnt = literalCounts[clave] || 0;
-      const pref = cnt > 1 ? ('(' + cnt + 'x) ') : '';
+      const pref = '(x' + cnt + ') ';
       const textoLiteral = literalOriginal[clave] || clave;
       salidaFinal += pref + escapeHtml(textoLiteral) + '<br>';
       if (index < literalOrder.length - 1) salidaFinal += '<br>';
     });
 
-    salidaFinal += '</div>';
+    salidaFinal += '</div></div></div>';
 
   }
 
 // 🔥 SEGUNDO: caso formulario REAL (versión final sin pérdida de datos)
 else if (contexto.fase === "pre_firma") {
 
-  salidaFinal += "<div class='literales' style='margin-top:14px;'><b>*Literales detectados</b></div>";
-
+  salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
+  salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
+  salidaFinal += "<div class=\"panel-card__body\">";
   salidaFinal += "<div class='literal-pequeno'>";
 
   // Agrupar literales limpiando cada línea original y contando repeticiones
@@ -974,33 +1022,40 @@ else if (contexto.fase === "pre_firma") {
   for (let i = 0; i < literalOrder.length; i++) {
     const lit = literalOrder[i];
     const cnt = literalCounts[lit] || 0;
-    const pref = cnt > 1 ? ('(' + cnt + 'x) ') : '';
+    const pref = '(x' + cnt + ') ';
     salidaFinal += pref + lit + "<br>";
     // salto extra entre literales diferentes
     if (i < literalOrder.length - 1) salidaFinal += "<br>";
   }
 
-  salidaFinal += "</div>";
+  salidaFinal += "</div></div></div>";
 
 }
 
   // 🔹 resto casos
   else {
 
-salidaFinal += "<div class='literales' style='margin-top:14px;'><b>Literales detectados</b></div>";
+salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
+salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
+salidaFinal += "<div class=\"panel-card__body\">";
 salidaFinal += "<div class='literal-pequeno'>";
 
 erroresUnicos.forEach(err => {
   salidaFinal += "- " + err + "<br>";
 });
 
-salidaFinal += "</div>";
+salidaFinal += "</div></div></div>";
 
   }
 
 } else {
 
-  salidaFinal += "\n\n*Sin Literales de Errores Detectados\n";
+  // 🔹 Cambios 2026-06-16: aunque no haya literales, mostramos la tarjeta con el aviso.
+  salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
+  salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
+  salidaFinal += "<div class=\"panel-card__body\">";
+  salidaFinal += "<div class='literal-pequeno'>Sin literales de error en la traza</div>";
+  salidaFinal += "</div></div>";
 }
   
 
@@ -1012,9 +1067,31 @@ renderFlujoVisual(eventosFlujo);
 // Cambios 2026-06-12: mostrar el card del flujo solo cuando hay resultado
 const flujoCard = document.getElementById("flujoVisualCard");
 if (flujoCard) {
-  flujoCard.style.display = "inline-block";
+  flujoCard.style.display = "block";
 }
 document.getElementById("flujoVisual").style.display = "flex";
+
+// 🔹 Cambios 2026-06-16: dentro de la tarjeta del flujo, debajo de las píldoras y
+// separada por una línea fina, mostramos el cartel del veredicto (azul) seguido
+// de la frase explicativa (⚠ ...).
+const flujoDiag = document.getElementById("flujoDiagnostico");
+if (flujoDiag) {
+  if (cartelDiagnostico || fraseDiagnostico) {
+    let contenidoDiag = "<div style=\"display:flex;align-items:center;gap:10px;flex-wrap:wrap;\">";
+    if (cartelDiagnostico) {
+      contenidoDiag += cartelDiagnostico;
+    }
+    if (fraseDiagnostico) {
+      contenidoDiag += "<span>⚠ " + fraseDiagnostico + "</span>";
+    }
+    contenidoDiag += "</div>";
+    flujoDiag.innerHTML = contenidoDiag;
+    flujoDiag.style.display = "block";
+  } else {
+    flujoDiag.innerHTML = "";
+    flujoDiag.style.display = "none";
+  }
+}
 
 // Función auxiliar para escapar texto antes de mostrarlo como HTML
 // IMPORTANTE: convierte caracteres especiales (< > & " ') para evitar que se interpreten como HTML
@@ -1048,6 +1125,17 @@ document.getElementById("resultado").innerHTML = salidaFinal;
 
 // 👉 Nos aseguramos de que el bloque resultado esté visible
 document.getElementById("resultado").style.display = "block";
+
+// 🔹 Cambios 2026-06-16: el ancho de "Acción" y "Literales" se limita al ancho
+// de la tarjeta del flujo, para que todas las tarjetas tengan el mismo ancho máximo.
+const flowCardEl = document.getElementById("flujoVisualCard");
+const resultadoEl = document.getElementById("resultado");
+if (flowCardEl && resultadoEl) {
+  const anchoFlujo = flowCardEl.offsetWidth;
+  if (anchoFlujo > 0) {
+    resultadoEl.style.maxWidth = anchoFlujo + "px";
+  }
+}
 
 };
 
@@ -1106,6 +1194,9 @@ placeholder.style.display = "";
 // 👉 Limpiamos el contenido del resultado
 document.getElementById("resultado").innerText = "";
 
+// 🔹 Cambios 2026-06-16: quitamos el ancho máximo fijado al analizar
+document.getElementById("resultado").style.maxWidth = "";
+
 // 🔹 NUEVO: limpiar y ocultar flujo visual
 // Cambios 2026-06-12: ocultar el marco del flujo al pulsar Limpiar o al volver al estado inicial
 const flujoCard = document.getElementById("flujoVisualCard");
@@ -1113,6 +1204,12 @@ const flujo = document.getElementById("flujoVisual");
 if (flujo) {
   flujo.innerHTML = "";
   flujo.style.display = "none";
+}
+// 🔹 Cambios 2026-06-16: limpiar también la frase del diagnóstico del flujo
+const flujoDiag = document.getElementById("flujoDiagnostico");
+if (flujoDiag) {
+  flujoDiag.innerHTML = "";
+  flujoDiag.style.display = "none";
 }
 if (flujoCard) {
   flujoCard.style.display = "none";
@@ -1225,7 +1322,7 @@ function renderFlujoVisual(eventos) {
 
   const pasos = ["TR_FRI","TR_FRF","TR_SGI","TR_SGX","TR_SGO","TR_REG","TR_FIN"];
 
-  let html = "<div style='display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;'>";
+  let html = "<div style='display:flex;gap:6px;margin-bottom:2px;flex-wrap:wrap;align-items:center;'>";
 
   let fallo = false;
 

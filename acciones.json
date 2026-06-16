@@ -5,13 +5,13 @@
 
     {
       "id": "fallo_formulario",
-      "accion": "Remitir al ciudadano a formulario de incidencias y tipo de problema dudas funcionales.\n*Si aparecen literales, facilitar literal (Texto entendible) para que lo añada al formulario de dudas funcionales.",
+      "accion": "Remitir al ciudadano a formulario de incidencias / dudas funcionales.\n*Si aparecen literales, facilitar el mensaje de error legible (las palabras de la traza que describen el problema) para que el ciudadano lo indique en el formulario de indicencias / dudas funcionales.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario"
     },
 
     {
       "id": "fallo_portafib",
-      "accion": "Escalar a SEG-012. Error de sesión/flujo en Portafib.",
+      "accion": "Escalar a SEG-012. Error de flujo / Portafib <span style='color:#9a9890;font-size:12px;font-style:italic;'>\"El fluxe no es vàlid\"</span>",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaGeneral"
     },
 
@@ -53,7 +53,12 @@
 
     {
       "id": "firma_correcta",
-      "accion": "Firma correcta."
+      "accion": "El trámite ha finalizado correctamente."
+    },
+
+    {
+      "id": "firma_correcta_portafib",
+      "accion": "Se detecta error de portafib en la traza.\nEl trámite está finalizado correctamente."
     }
 
   ]
