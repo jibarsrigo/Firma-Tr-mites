@@ -1158,6 +1158,13 @@ salidaFinal += "</div></div></div>";
 }
   
 
+// 🔹 Cambios 2026-06-16: enlace discreto para reportar un análisis incorrecto.
+// Aparece siempre al final de cualquier análisis y lleva al formulario de Google.
+const URL_REPORTE = "https://docs.google.com/forms/d/e/1FAIpQLScmWTRYanI4PYO_1EL18g_PVbY2Nfway4FWnHrshj5hNf_zMw/viewform";
+salidaFinal += "<div style=\"margin-top:18px;text-align:center;\">"
+  + "<a href=\"" + URL_REPORTE + "\" target=\"_blank\" rel=\"noopener\" style=\"color:#9a9890;font-size:12px;text-decoration:underline;\">Reportar análisis incorrecto</a>"
+  + "</div>";
+
   
 
 // 🔹 NUEVO: pintar flujo visual encima
