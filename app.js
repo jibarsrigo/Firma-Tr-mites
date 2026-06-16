@@ -1466,3 +1466,26 @@ function renderFlujoVisual(eventos) {
 
   contenedor.innerHTML = html;
 }
+
+
+// =====================================
+// 🔹 ATAJOS DE TECLADO Y FOCO (Cambios 2026-06-17)
+// =====================================
+// #4 Auto-focus: al abrir la app, el cursor ya está en el textarea de la traza
+//    (abres → pegas → analizas, sin clics extra).
+// #5 Ctrl+Enter dentro del textarea ejecuta "Analizar".
+(function inicializarAtajos() {
+  const areaTraza = document.getElementById("inputTraza");
+  if (!areaTraza) return;
+
+  // #4 — foco automático al cargar
+  areaTraza.focus();
+
+  // #5 — Ctrl+Enter = Analizar
+  areaTraza.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.key === "Enter") {
+      e.preventDefault();
+      if (btnAnalizar) btnAnalizar.click();
+    }
+  });
+})();

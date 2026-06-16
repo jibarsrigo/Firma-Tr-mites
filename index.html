@@ -71,7 +71,15 @@
 </style>
   
 <meta charset="UTF-8">
-<title>Analizador V1.2.4</title>
+<title>Analizador de Trazas</title>
+
+<!-- Icono / PWA (barra de tareas al abrir con Chrome --app). Cambiar ?v= si no refresca el icono -->
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=1">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=1">
+<link rel="shortcut icon" href="favicon.ico?v=1">
+<link rel="apple-touch-icon" href="icon-192.png?v=1">
+<link rel="manifest" href="manifest.json?v=1">
+<meta name="theme-color" content="#01696f">
 
 <style>
 body {
@@ -358,7 +366,7 @@ textarea:focus {
       <div class="ver-detalles" id="btnDetalles">Ver detalles ▾</div>
     </div>
 
-    <button class="btn-mini" id="btnActualizar"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Actualizar</button>
+    <button class="btn-mini" id="btnActualizar" title="Recarga las reglas y textos desde acciones.json (sin recargar toda la página). Úsalo si has cambiado el JSON."><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Actualizar</button>
   </div>
 
   <div class="header-right">
@@ -382,7 +390,7 @@ textarea:focus {
       <summary class="panel-card__head">🔐 Problemas de acceso<span class="chevron">▾</span></summary>
       <div class="panel-card__body">
 
-        <label class="opcion">
+        <label class="opcion" title="El ciudadano ve una pantalla de error SAML al autenticarse (problema de certificado o de contraseña Cl@ve). Muestra ayuda al seleccionarlo.">
           <input type="radio" name="problema" id="checkSaml">
           <div>
             <div class="opcion__titulo">El ciudadano ve error SAML</div>
@@ -390,7 +398,7 @@ textarea:focus {
           </div>
         </label>
 
-        <label class="opcion">
+        <label class="opcion" title="El trámite carga una pantalla vacía/en blanco al acceder. Muestra ayuda al seleccionarlo.">
           <input type="radio" name="problema" id="checkBlanco">
           <div>
             <div class="opcion__titulo">La página queda en blanco</div>
@@ -415,12 +423,12 @@ textarea:focus {
       <summary class="panel-card__head">⚙ Método<span class="chevron">▾</span></summary>
       <div class="panel-card__body">
 
-        <label class="opcion">
+        <label class="opcion" title="Firma con Cl@ve (Cl@ve Firma / Cl@ve Permanente). El ciudadano firma en la nube, sin certificado instalado en su equipo.">
           <input type="radio" name="metodo" id="metodoClave">
           <div class="opcion__titulo">Cl@ve</div>
         </label>
 
-        <label class="opcion">
+        <label class="opcion" title="Firma con certificado instalado en el equipo del ciudadano (Autofirma / FIRE). Requiere certificado y, normalmente, la aplicación Autofirma.">
           <input type="radio" name="metodo" id="metodoCert">
           <div class="opcion__titulo">Certificado local</div>
         </label>
@@ -470,6 +478,7 @@ textarea:focus {
     <div id="placeholder">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c9c7c0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 14px;" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
       Pega una traza y pulsa Analizar
+      <div style="margin-top:6px;font-size:12px;color:#bdbcb6;">Ctrl V + Ctrl Enter</div>
     </div>
 
     <!-- ✅ RESULTADO (solo esto sustituye CAI y demás) -->
