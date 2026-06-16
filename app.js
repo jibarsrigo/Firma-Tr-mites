@@ -261,6 +261,21 @@ Conviene probar a acceder a Carpeta Ciudadana GOB para comprobar si la pasarela 
   
 
 // =====================================
+// 🔹 PLEGAR "PROBLEMAS DE ACCESO"
+// =====================================
+// 👉 Al contraer el apartado, limpiamos la selección y cerramos el panel mostrado
+const cardAcceso = document.getElementById("cardAcceso");
+if (cardAcceso) {
+  cardAcceso.addEventListener("toggle", () => {
+    if (!cardAcceso.open) {
+      checkSaml.checked = false;
+      checkBlanco.checked = false;
+      cerrarPanelFunc();
+    }
+  });
+}
+
+// =====================================
 // 🔴 BOTÓN ANALIZAR 
 // =====================================
 
