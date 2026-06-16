@@ -17,7 +17,7 @@
 
     {
       "id": "error_clave_8_15",
-      "accion": "Error en Cl@ve Firma (código 8–15). Incidencia individual del ciudadano. Indicar renovar/acreditar Cl@ve Permanente o revisar credenciales. No escalar salvo múltiples casos simultáneos.",
+      "accion": "Cl@ve se abre y acepta las credenciales, pero la firma falla. El proveedor Cl@ve Firma devuelve el código 8–15.\nIndicar renovar/acreditar Cl@ve Permanente.\n<span style='color:#9a9890;font-size:13px;font-style:italic;'>Escalar si aparecen múltiples casos simultáneos (Posible fallo Proveedor Cl@ve Firma).</span>",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave815"
     },
 
