@@ -54,7 +54,7 @@ VERSION 1.0     - Se valida que la traza y el método de firma sean correctos an
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.2.9";
+const VERSION_JS = "1.3.0";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -936,11 +936,11 @@ if (accionData && accionData.accion) {
 
   if (idReglaDetectada === "fallo_portafib") {
     if (hayFluxe && hayExcepcioSessio) {
-      textoAccion = "Escalar a SEG-012. Error de flujo / Portafib "
+      textoAccion = "Error de flujo / Portafib. Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2"
         + literalGris("El fluxe no es vàlid", true) + " / "
         + literalGris("Excepció al generar sessió firma", true) + ".";
     } else {
-      textoAccion = "Escalar a SEG-012. Error de flujo / Portafib "
+      textoAccion = "Error de flujo / Portafib. Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2"
         + literalGris("El fluxe no es vàlid", true);
     }
   } else if (idReglaDetectada === "firma_correcta_portafib") {
