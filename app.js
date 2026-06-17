@@ -934,26 +934,19 @@ if (accionData && accionData.accion) {
   const literalGris = (texto, cursiva) =>
     "<span style=\"color:#9a9890;font-size:12px" + (cursiva ? ";font-style:italic" : "") + "\">\"" + texto + "\"</span>";
 
-  if (idReglaDetectada === "fallo_portafib") {
+  // 🔹 Portafib: el texto base se edita en acciones.json. Aquí solo sustituimos el
+  // marcador {lit} por los literales detectados en la traza (en gris pequeño).
+  // En "firma_correcta_portafib" los literales van sin cursiva; en el resto, en cursiva.
+  if (textoAccion.indexOf("{lit}") !== -1) {
+    const usarCursiva = (idReglaDetectada !== "firma_correcta_portafib");
+    let lits;
     if (hayFluxe && hayExcepcioSessio) {
-      textoAccion = "Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2.   Error de flujo / Portafib."
-        + literalGris("El fluxe no es vàlid", true) + " / "
-        + literalGris("Excepció al generar sessió firma", true) + ".";
+      lits = literalGris("El fluxe no es vàlid", usarCursiva) + " / "
+           + literalGris("Excepció al generar sessió firma", usarCursiva);
     } else {
-      textoAccion = "Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2.   Error de flujo / Portafib."
-        + literalGris("El fluxe no es vàlid", true);
+      lits = literalGris("El fluxe no es vàlid", usarCursiva);
     }
-  } else if (idReglaDetectada === "firma_correcta_portafib") {
-    let lineaPortafib;
-    if (hayFluxe && hayExcepcioSessio) {
-      lineaPortafib = "Se detecta error de portafib en la traza "
-        + literalGris("El fluxe no es valid", false) + " / "
-        + literalGris("Excepció al generar sessió firma", false);
-    } else {
-      lineaPortafib = "Se detecta error de portafib en la traza. "
-        + literalGris("El fluxe no es vàlid", true);
-    }
-    textoAccion = lineaPortafib + "\nEl trámite está finalizado correctamente.";
+    textoAccion = textoAccion.replace("{lit}", lits);
   } else if (idReglaDetectada === "error_clave_103_15") {
     // 🔹 Caso especial: 103-15 precedido por un error 8-15 en la misma traza.
     const hayClave8_15 = lineas.some(l =>
