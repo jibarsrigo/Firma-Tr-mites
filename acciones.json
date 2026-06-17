@@ -24,21 +24,25 @@
     {
       "id": "error_clave_103",
       "accion": "Error en Cl@ve (código 103). Contraseña bloqueada. Indicar recuperación de contraseña en Cl@ve."
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_ClaveCredenciales"
     },
 
     {
       "id": "error_clave_103_15",
       "accion": "Error en Cl@ve (código 103-15). Certificado bloqueado. Indicar revocación y emisión de nuevo certificado en Cl@ve."
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave10315"
     },
 
     {
       "id": "error_clave_101",
       "accion": "Error en Cl@ve (código 101). Nivel de registro insuficiente. Indicar completar registro o aumentar nivel en Cl@ve."
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave101"
     },
 
     {
       "id": "error_clave_104",
       "accion": "Error en Cl@ve (código 104). Registro débil. Indicar actualizar registro en Cl@ve."
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave104"
     },
 
     {
