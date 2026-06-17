@@ -936,11 +936,11 @@ if (accionData && accionData.accion) {
 
   if (idReglaDetectada === "fallo_portafib") {
     if (hayFluxe && hayExcepcioSessio) {
-      textoAccion = "Error de flujo / Portafib. Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2"
+      textoAccion = "Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2.   Error de flujo / Portafib."
         + literalGris("El fluxe no es vàlid", true) + " / "
         + literalGris("Excepció al generar sessió firma", true) + ".";
     } else {
-      textoAccion = "Error de flujo / Portafib. Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2"
+      textoAccion = "Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2.   Error de flujo / Portafib."
         + literalGris("El fluxe no es vàlid", true);
     }
   } else if (idReglaDetectada === "firma_correcta_portafib") {
