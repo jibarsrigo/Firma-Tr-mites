@@ -118,6 +118,12 @@ VERSION 1.3.13  - Cl@ve marcado + KO inequívoco Autofirm@/timeout → acción i
                 - Criterio CAU: Método de firma del KO > selector; acceso ≠ firma; trazas antiguas sin campo KO
 
 VERSION 1.3.14  - SAF_27: flujo y acción alineados con criterio CAU (cliente local primero; servidor si masivo)
+
+VERSION 1.3.15  - Solo TR_SGI sin KO: Posible Autofirma Android; Linux en traza → acción/mail Android
+
+VERSION 1.3.16  - Flujo Autofirma: no pedir confirmar acceso Cl@ve si certificado + Autofirm@ en KO
+
+VERSION 1.3.17  - Discrepancia Cl@ve marcado + Autofirm@ en KO: texto técnico; sin PDF en flujo
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -129,7 +135,7 @@ VERSION 1.3.14  - SAF_27: flujo y acción alineados con criterio CAU (cliente lo
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.14";
+const VERSION_JS = "1.3.17";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -808,6 +814,10 @@ function resolverReglaAutofirmaCliente() {
     if (/IPHONE|IPAD\b|\bIOS\b/.test(trazaEstructurada)) return "error_autofirma_cliente_iphone";
     return "error_autofirma_cliente_android";
   }
+  // 👉 Solo Inicio firma sin cierre + Linux en traza: suele ser Android mal reportado
+  if (hayPatronSgiSinCierre && hayLinuxPosibleAndroid) {
+    return "error_autofirma_cliente_android";
+  }
   // 👉 Prioridad 1: SO marcado por el técnico (certificado local)
   if (metodoCert.checked && sisMovil && sisMovil.checked) {
     if (/IPHONE|IPAD\b|\bIOS\b/.test(trazaEstructurada)) return "error_autofirma_cliente_iphone";
@@ -875,6 +885,10 @@ const hayIntentosPosterioresSinCierre = (() => {
 
 // 👉 Firma iniciada pero sin Firma KO ni Firma OK ni Fin trámite (patrón típico Cl@ve móvil o FIRE no invoca)
 const hayPatronSgiSinCierre = haySGI && !haySGX && !haySGO && !hayFIN;
+
+// 👉 Linux en traza sin ANDROID explícito: en móvil suele reportarse como Linux (p. ej. detalle Inicio firma)
+const hayLinuxPosibleAndroid =
+  /LINUX|UBUNTU|DEBIAN|FEDORA/.test(trazaEstructurada) && !/ANDROID/.test(trazaEstructurada);
 
 // 👉 Detectamos códigos reales de Cl@ve
 // 🔹 estos SIEMPRE indican proveedor Cl@ve
@@ -973,6 +987,16 @@ const esCert = metodoCert.checked;
 const hayDiscrepanciaAccesoClaveFirmaAutofirma =
   (esClave && !esCert && hayMetodoFirmaAutofirmaEnKo) ||
   /ACCEDE.*CLAVE.*AUTOFIRMA|ACCESO.*CLAVE.*AUTOFIRMA|CLAVE PERMANENT.*AUTOFIRMA|CLAVE PERMANENT.*FIRM.*AUTOFIRMA/i.test(trazaEstructurada);
+
+function textoDiscrepanciaClaveAutofirmaEnFlujo() {
+  if (esClave && !esCert && hayMetodoFirmaAutofirmaEnKo) {
+    return " El técnico ha marcado Método Cl@ve, pero la firma se intentó con certificado/AutoFirma.";
+  }
+  if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
+    return " Acceso con Cl@ve, firma con certificado/AutoFirma.";
+  }
+  return "";
+}
 
 // Cancelada sin código Cl@ve → entorno Autofirma (certificado local), no Cl@ve Firma
 const hayCanceladaAutofirma = haySignaturaCancelada && !hayCanceladaConClave && !hayErrorClaveReal &&
@@ -1435,7 +1459,7 @@ else if (idReglaDetectada && idReglaDetectada.indexOf("error_autofirma_cliente")
       motivo += " " + literalFlujo("Método de firma: Autofirm@") + " en el Firma KO.";
     }
     if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
-      motivo += " Acceso con Cl@ve, firma con certificado/AutoFirma.";
+      motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
     }
   } else if (hayClienteFirmaMovilEnTraza) {
     motivo = "Error del Cliente de Firma Móvil (componente AutoFirma en dispositivo móvil).";
@@ -1443,13 +1467,13 @@ else if (idReglaDetectada && idReglaDetectada.indexOf("error_autofirma_cliente")
       motivo += " " + literalFlujo("Método de firma: Autofirm@") + " en el Firma KO.";
     }
     if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
-      motivo += " Acceso con Cl@ve, firma con certificado/AutoFirma.";
+      motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
     }
   } else if (hayTimeoutClienteFirmaEnKo && hayMetodoFirmaAutofirmaEnKo) {
     motivo = "Tiempo de firma expirado o cliente de firma no invocado/instalado (AutoFirma / FIRE). "
       + literalFlujo("Método de firma: Autofirm@") + " en el Firma KO.";
     if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
-      motivo += " Acceso con Cl@ve, firma con certificado/AutoFirma.";
+      motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
     }
     if (metodoCert.checked && sisPC && sisPC.checked && !hayIndiciosEscritorioEnTraza) {
       motivo += " Sin indicios de SO de escritorio en la traza: confirmar si firmó desde iPhone/móvil antes de pasos Windows.";
@@ -1457,12 +1481,12 @@ else if (idReglaDetectada && idReglaDetectada.indexOf("error_autofirma_cliente")
   } else if (hayMetodoFirmaAutofirmaEnKo && haySignaturaCancelada) {
     motivo = "Firma cancelada. " + literalFlujo("Método de firma: Autofirm@") + " confirmado en el Firma KO.";
     if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
-      motivo += " El acceso al trámite fue con Cl@ve, pero la firma se intentó con certificado/AutoFirma.";
+      motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
     }
   } else if (hayMetodoFirmaAutofirmaEnKo) {
     motivo = "Error de firma con Autofirm@ (" + literalFlujo("Método de firma: Autofirm@") + " en el Firma KO).";
     if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
-      motivo += " Acceso con Cl@ve, firma con certificado/AutoFirma.";
+      motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
     }
   } else if (hayAutofirmaFitxerBuit) {
     motivo = "El fichero firmado llega vacío (fitxer signat buit / plugin AutoFirma).";
@@ -1491,13 +1515,22 @@ else if (idReglaDetectada && idReglaDetectada.indexOf("error_autofirma_cliente")
     motivo += " Los últimos intentos quedaron solo en Inicio firma, sin Firma KO ni Firma OK.";
   }
   const esCertificadoMovilMarcado = esCert && sisMovil && sisMovil.checked;
+  // 👉 Con certificado marcado y Autofirm@ en el KO: no pedir confirmar acceso Cl@ve (firma ya es inequívoca).
   if (
-    hayMetodoFirmaAutofirmaEnKo &&
-    !hayDiscrepanciaAccesoClaveFirmaAutofirma &&
+    haySignaturaCancelada &&
+    !hayMetodoFirmaAutofirmaEnKo &&
+    !hayMetodoFirmaClaveEnKo &&
     esCert &&
-    !(esCertificadoMovilMarcado && (hayClienteFirmaMovilEnTraza || hayTimeoutClienteFirmaEnKo))
+    !esClave
   ) {
-    motivo += " Confirmar en SistraHelp si el acceso fue Cl@ve (Inicio trámite o Carga del trámite).";
+    motivo += " Confirmar método de firma en el detalle del Firma KO (doble clic en SistraHelp).";
+  } else if (
+    hayAccesoClaveMovilEnTraza &&
+    hayMetodoFirmaAutofirmaEnKo &&
+    esCert &&
+    !esClave
+  ) {
+    motivo += " Acceso con Cl@ve móvil en Inicio/Carga del trámite; firma con certificado (Autofirm@).";
   }
   if (hayClienteFirmaMovilEnTraza && metodoCert.checked && sisPC && sisPC.checked) {
     motivo += " Los literales apuntan a Cliente de Firma Móvil (Android), no Autofirma de escritorio.";
@@ -1510,7 +1543,8 @@ else if (idReglaDetectada && idReglaDetectada.indexOf("error_autofirma_cliente")
     "error_autofirma_cliente_linux", "error_autofirma_cliente_android",
     "error_autofirma_cliente_iphone", "error_autofirma_cliente_movil"
   ];
-  fraseDiagnostico = reglasAutofirmaClienteConAccion.includes(idReglaDetectada)
+  fraseDiagnostico = (reglasAutofirmaClienteConAccion.includes(idReglaDetectada) ||
+    (hayDiscrepanciaAccesoClaveFirmaAutofirma && esClave && !esCert))
     ? motivo
     : motivo + " Solicitar prueba de firma local con PDF antes de escalar.";
 
@@ -1626,7 +1660,7 @@ if (accionData && accionData.accion) {
     textoAccion = "Acceso marcado como Cl@ve; el Firma KO indica certificado local (Autofirm@).\n" + textoAccion;
   } else if (idReglaDetectada === "error_autofirma_cliente_generico" && hayMetodoFirmaAutofirmaEnKo && haySignaturaCancelada) {
     textoAccion = "Firma cancelada con Autofirm@ (Método de firma confirmado en el Firma KO).\n"
-      + "El acceso al trámite fue con Cl@ve, pero la firma se intentó con certificado/AutoFirma.\n"
+      + "El técnico ha marcado Método Cl@ve, pero la firma se intentó con certificado/AutoFirma.\n"
       + "Solicitar prueba de firma local con PDF antes de indicar pasos concretos de instalación.\n"
       + "*Seleccione Certificado local + Sistema si conoce el SO para obtener la acción y el mail específicos.";
   } else if (idReglaDetectada === "error_clave_firma_cancelada") {

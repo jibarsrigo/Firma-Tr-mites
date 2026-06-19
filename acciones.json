@@ -1,5 +1,5 @@
 {
-  "version": "1.2.7",
+  "version": "1.2.9",
   "_changes_today": "2026-06-12: added hidden flow card, compact white frame, step status labels, and show/hide behavior on analyze/clear",
   "acciones": [
 
@@ -59,7 +59,7 @@
 
     {
       "id": "error_clave_movil",
-      "accion": "La firma se inicia pero no se completa (solo aparece Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil.\nRevisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL.",
+      "accion": "La firma se inicia pero no se completa (solo aparece Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil.\nPosible Autofirma Android.\nRevisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave_movil_No_Permitido"
     },
 
@@ -83,13 +83,13 @@
 
     {
       "id": "error_autofirma_entorno",
-      "accion": "La firma se inicia pero no se completa (solo Inicio firma, sin Firma KO ni Firma OK).\nPosible bloqueo de invocación FIRE/AutoFirma: proxy, VPN, firewall o navegador.\nRevisar instalación AutoFirma.\nSolicitar prueba de firma local con PDF. Probar otro navegador y red distinta.\n*El mail se orienta según el SO detectado en la traza",
+      "accion": "La firma se inicia pero no se completa (solo Inicio firma, sin Firma KO ni Firma OK).\nPosible bloqueo de invocación FIRE/AutoFirma: proxy, VPN, firewall o navegador.\nProblema habitual Autofirma en Android.\nPosible Autofirma Android.\nRevisar instalación AutoFirma.\nSolicitar prueba de firma local con PDF. Probar otro navegador y red distinta.\n*El mail se orienta según el SO detectado en la traza",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
     {
       "id": "error_autofirma_cliente_windows",
-      "accion": "Error Autofirma / FIRE en Windows.\nCerrar todos los navegadores antes de instalar o reinstalar. Reiniciar el equipo tras instalar.\nVerificar que AutoFirma abre manualmente y firma un PDF local antes de probar el trámite.\nSi Chrome/Edge fallan, probar Firefox. Revisar firewall, VPN y antivirus.",
+      "accion": "Error Autofirma.\nCerrar todos los navegadores y reintentar. Reinstalar autofirma.\nVerificar que AutoFirma abre manualmente y firma un PDF local antes de probar el trámite.\nSi fallo con varios navegadores, revisar firewall, VPN y antivirus.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
