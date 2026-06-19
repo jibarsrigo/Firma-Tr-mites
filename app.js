@@ -1541,7 +1541,7 @@ else if (idReglaDetectada && idReglaDetectada.indexOf("error_autofirma_cliente")
       motivo += " Sin indicios de SO de escritorio en la traza: confirmar si firmó desde iPhone/móvil antes de pasos Windows.";
     }
   } else if (hayMetodoFirmaAutofirmaEnKo && haySignaturaCancelada) {
-    motivo = "Firma cancelada. " + literalFlujo("Método de firma: Autofirm@") + " confirmado en el Firma KO.";
+    motivo = "Firma cancelada. " + literalFlujo("Método de firma: Autofirm@");
     if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
       motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
     }
@@ -1721,9 +1721,8 @@ if (accionData && accionData.accion) {
   ) {
     textoAccion = "Acceso marcado como Cl@ve; el Firma KO indica certificado local (Autofirm@).\n" + textoAccion;
   } else if (idReglaDetectada === "error_autofirma_cliente_generico" && hayMetodoFirmaAutofirmaEnKo && haySignaturaCancelada) {
-    textoAccion = "Firma cancelada con Autofirm@ (Método de firma confirmado en el Firma KO).\n"
+    textoAccion = "Firma cancelada (Método de firma Autofirm@).\n"
       + "El técnico ha marcado Método Cl@ve, pero la firma se intentó con certificado/AutoFirma.\n"
-      + "Solicitar prueba de firma local con PDF antes de indicar pasos concretos de instalación.\n"
       + "*Seleccione Certificado local + Sistema si conoce el SO para obtener la acción y el mail específicos.";
   } else if (idReglaDetectada === "error_clave_firma_cancelada") {
     if (esCert && !esClave) {

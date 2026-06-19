@@ -125,7 +125,7 @@
 
     {
       "id": "error_autofirma_cliente_generico",
-      "accion": "Error Autofirma / FIRE (entorno local). Acceso marcado como Cl@ve, pero la traza apunta a firma con certificado/AutoFirma.\nEn trazas recientes, SistraHelp muestra «Método de firma» en el Firma KO; en trazas anteriores a ese cambio puede no aparecer al pegar la traza.\nConfirmar método de firma real y SO: revisar literales del KO (timeout, cliente de firma, cancelada), acceso en Inicio trámite o Carga (doble clic), o preguntar al ciudadano.\nSolicitar prueba de firma local con PDF antes de indicar pasos concretos de instalación.\n*Seleccione Certificado local + Sistema si conoce el SO para obtener la acción y el mail específicos.",
+      "accion": "Error Autofirma / FIRE (entorno local). Acceso marcado como Cl@ve, pero la traza apunta a firma con certificado/AutoFirma.\nEn trazas recientes, SistraHelp muestra «Método de firma» en el Firma KO; en trazas anteriores a ese cambio puede no aparecer al pegar la traza.\nConfirmar método de firma real y SO: revisar literales del KO (timeout, cliente de firma, cancelada), acceso en Inicio trámite o Carga (doble clic), o preguntar al ciudadano.\n*Seleccione Certificado local + Sistema si conoce el SO para obtener la acción y el mail específicos.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
