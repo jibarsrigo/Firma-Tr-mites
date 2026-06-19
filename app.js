@@ -132,6 +132,10 @@ VERSION 1.3.19  - Ayuda (Detalles/Reglas/SAML/blanco): oculta análisis; al cerr
 VERSION 1.3.20  - Ayuda sin análisis previo: oculta «Pega traza»; al cerrar la restaura si no hay traza
 
 VERSION 1.3.21  - Al cerrar ayuda sin análisis previo: «Pega traza» aunque haya traza pegada
+
+VERSION 1.3.22  - Literales: «Firma OK» verde; «Firma KO», fluxe inválido y Error 8/101/103/104 rojo
+
+VERSION 1.3.23  - Validación fallida (método/sistema/traza): oculta análisis previo como la ayuda
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -143,7 +147,7 @@ VERSION 1.3.21  - Al cerrar ayuda sin análisis previo: «Pega traza» aunque ha
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.21";
+const VERSION_JS = "1.3.23";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -273,6 +277,33 @@ function claveLiteralParaAgrupacion(linea) {
   k = k.replace(/\s+/g, " ").trim();
   return k;
 }
+
+function htmlLiteralDetectado(texto) {
+  let html = String(texto ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+  html = html.replace(
+    /\b(Firma\s+OK)\b/gi,
+    '<span style="color:#2e6e14;font-weight:600">$1</span>'
+  );
+  html = html.replace(
+    /\b(Firma\s+KO)\b/gi,
+    '<span style="color:#c0392b;font-weight:600">$1</span>'
+  );
+  html = html.replace(
+    /(El\s+fluxe\s+no\s+(?:es|és)\s+v(?:à|a|á)?lid)/gi,
+    '<span style="color:#c0392b;font-weight:600">$1</span>'
+  );
+  html = html.replace(
+    /(Error:\s*(?:103|101|104|8)(?!\d))/gi,
+    '<span style="color:#c0392b;font-weight:600">$1</span>'
+  );
+  return html;
+}
+
 const RE_FECHA_CABECERA = /^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+\s+[^\s]+\s+/; // Patrón: elimina cabecera de fecha/hora
 
 
@@ -379,6 +410,13 @@ function abrirPanelAyuda(titulo, contenido) {
   ocultarResultadosAnalisis();
   placeholder.style.display = "none";
   abrirPanel(titulo, contenido);
+}
+
+function abrirPanelValidacion(contenido) {
+  ocultarResultadosAnalisis();
+  ultimoAnalisisValido = false;
+  placeholder.style.display = "none";
+  abrirPanel("Validación", contenido);
 }
 
 // Botón cerrar panel
@@ -591,22 +629,23 @@ btnAnalizar.onclick = () => {      // 👉 Inicia el análisis completo de la tr
 
   // ✅ 1. VALIDACIÓN MÉTODO
   if (!metodoClave.checked && !metodoCert.checked) {
-    abrirPanel("Validación", "Debe seleccionar método");
+    abrirPanelValidacion("Debe seleccionar método");
     return;
   }
 
+  const texto = document.getElementById("inputTraza").value.trim();
+
   // ✅ 2. VALIDACIÓN SISTEMA (ANTES que la traza)
   if (metodoCert.checked && !sisPC.checked && !sisMovil.checked) {
-    abrirPanel("Validación", "Debe seleccionar sistema");
+    abrirPanelValidacion(
+      texto ? "Debe seleccionar sistema" : "Debe seleccionar sistema y pegar una traza"
+    );
     return;
   }
 
   // ✅ 3. VALIDACIÓN TRAZA
-  // 👉 Se obtiene la traza pegada por el usuario
-const texto = document.getElementById("inputTraza").value.trim();
-
   // 👉 IMPORTANTE: Guardar líneas originales ANTES de convertir a mayúsculas.
-  // Esto preserva el formato original (tabuladores, espacios, caracteres especiales) 
+  // Esto preserva el formato original (tabuladores, espacios, caracteres especiales)
   // para mostrar los literales de error exactamente como el usuario los pegó.
 const lineasOriginales = texto.split(/\r?\n/);
 
@@ -615,13 +654,13 @@ const traza = texto.toUpperCase();
 
   // 👉 Si no hay texto → error
 if (!texto) {
-  abrirPanel("Validación", "Todavía no ha pegado trazas");
+  abrirPanelValidacion("Todavía no ha pegado trazas");
   return;
 }
   
 // 👉 Si no contiene TR_ → no es traza válida
 if (!traza.includes("TR_")) {
-  abrirPanel("Validación", `Esto no es una traza válida`);
+  abrirPanelValidacion("Esto no es una traza válida");
   return;
 }
 
@@ -1457,7 +1496,10 @@ else if (idReglaDetectada && idReglaDetectada.indexOf("error_clave") === 0) {
     literalClave += " - TIPUS RESULTAT: " + tipusResultatDetectado;
   }
 
-  fraseDiagnostico = "La firma se inicia pero falla en Cl@ve (" + codigoTexto + "). " + literalFlujo(literalClave);
+  fraseDiagnostico = "La firma se inicia pero falla en Cl@ve (" + codigoTexto + ").";
+  if (idReglaDetectada !== "error_clave_103_15" && idReglaDetectada !== "error_clave_101") {
+    fraseDiagnostico += " " + literalFlujo(literalClave);
+  }
 
 }
 else if (idReglaDetectada === "error_validacion_certificado") {
@@ -1818,7 +1860,7 @@ if (erroresUnicos.length > 0) {
       const cnt = literalCounts[clave] || 0;
       const pref = '(x' + cnt + ') ';
       const textoLiteral = literalOriginal[clave] || clave;
-      salidaFinal += pref + escapeHtml(textoLiteral) + '<br>';
+      salidaFinal += pref + htmlLiteralDetectado(textoLiteral) + '<br>';
       if (index < literalOrder.length - 1) salidaFinal += '<br>';
     });
 
@@ -1861,7 +1903,7 @@ else if (contexto.fase === "pre_firma") {
     const lit = literalOrder[i];
     const cnt = literalCounts[lit] || 0;
     const pref = '(x' + cnt + ') ';
-    salidaFinal += pref + lit + "<br>";
+    salidaFinal += pref + htmlLiteralDetectado(lit) + "<br>";
     // salto extra entre literales diferentes
     if (i < literalOrder.length - 1) salidaFinal += "<br>";
   }
@@ -1907,7 +1949,7 @@ for (let i = 0; i < literalOrder.length; i++) {
   const lit = literalOrder[i];
   const cnt = literalCounts[lit] || 0;
   const pref = '(x' + cnt + ') ';
-  salidaFinal += pref + escapeHtml(literalOriginal[lit] || lit) + "<br>";
+  salidaFinal += pref + htmlLiteralDetectado(literalOriginal[lit] || lit) + "<br>";
   if (i < literalOrder.length - 1) salidaFinal += "<br>";
 }
 

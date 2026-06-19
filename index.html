@@ -4,12 +4,15 @@
 
 <script>
   // 🔹 VERSION HTML (editable manual)
-  const VERSION_HTML = "1.2.9";
+  const VERSION_HTML = "1.3.0";
 </script>
 
 <!-- =====================================================
      FUNCIONALIDADES HTML
      =====================================================
+
+     VERSION 1.3.0
+     - Tooltips en cabecera (badge, Ver detalles, Lectura, Reglas), sistema, botones y flujo
 
      VERSION 1.2.9
      - PWA: manifest.json, icon-192/512, favicon, apple-touch-icon, theme-color
@@ -19,7 +22,7 @@
 
      VERSION 1.2.8
      - Badge de versión del analizador en cabecera (js + acciones.json)
-     - Botón Actualizar (recarga acciones.json) con icono en cabecera
+     - Botón Actualizar (solo icono) tras lectura js, antes de Reglas
      - Enlace «Reglas» y lectura html / json / js en header-right
 
      VERSION 1.2.7
@@ -116,7 +119,7 @@ body {
   border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 
-.header-left { display:flex; gap:14px; align-items:center;}
+.header-left { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
 .brand { display:flex; align-items:center; gap:8px; }
 .brand__title {
@@ -160,9 +163,22 @@ body {
 }
 
 .header-right {
-  margin-left:auto;
-  font-size:12px;
-  color:#6b6960;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b6960;
+}
+
+.header-right__sep {
+  color: #9a9890;
+}
+
+.btn-actualizar {
+  padding: 3px 5px;
+  margin-left: 2px;
 }
 
 /* LAYOUT */
@@ -377,23 +393,19 @@ textarea:focus {
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#01696f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       <span class="brand__title">Analizador de Trazas</span>
     </div>
-
-    <div style="display:flex; flex-direction:column; align-items:flex-start; gap:2px;">
-      <div class="badge" id="versionBadge">v 1.3.13</div>
-      <div class="ver-detalles" id="btnDetalles">Ver detalles ▾</div>
-    </div>
-
-    <button class="btn-mini" id="btnActualizar" title="Recarga las reglas y textos desde acciones.json (sin recargar toda la página). Úsalo si has cambiado el JSON."><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Actualizar</button>
+    <div class="badge" id="versionBadge" title="Versión del motor de análisis (app.js)">v 1.3.13</div>
+    <div class="ver-detalles" id="btnDetalles" title="Qué hace el analizador, versiones y funcionalidades implementadas">Ver detalles ▾</div>
   </div>
 
   <div class="header-right">
-   Lectura:
-<span id="versionHTML"></span>
--
-<span id="versionJSON"></span>
--
-<span id="versionJS"></span>
-    <a href="#" id="btnTabla">Reglas</a>
+    <span title="Versiones de los ficheros cargados en el navegador">Lectura:</span>
+    <span id="versionHTML" title="Versión del interfaz (index.html). Si no coincide con lo esperado, usa el icono de actualizar"></span>
+    <span class="header-right__sep">-</span>
+    <span id="versionJSON" title="Versión de acciones.json (reglas, textos de acción y mails)"></span>
+    <span class="header-right__sep">-</span>
+    <span id="versionJS" title="Versión de app.js (motor de detección). Si no coincide con lo esperado, usa el icono de actualizar"></span>
+    <button class="btn-mini btn-actualizar" id="btnActualizar" title="Recarga la página completa (HTML, JS y acciones.json) ignorando la caché del navegador. Úsalo si no ves cambios recientes tras subirlos" aria-label="Recargar analizador (HTML, JS y JSON)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+    <a href="#" id="btnTabla" title="Lista de reglas activas, prioridades y criterio CAU (Autofirma, Cl@ve, Portafib…)">Reglas</a>
   </div>
 
 </div>
@@ -407,7 +419,7 @@ textarea:focus {
       <summary class="panel-card__head">🔐 Problemas de acceso<span class="chevron">▾</span></summary>
       <div class="panel-card__body">
 
-        <label class="opcion" title="El ciudadano ve una pantalla de error SAML al autenticarse (problema de certificado o de contraseña Cl@ve). Muestra ayuda al seleccionarlo.">
+        <label class="opcion" title="El ciudadano ve una pantalla de error SAML al autenticarse (problema de certificado o de contraseña Cl@ve). Muestra ayuda al seleccionarlo">
           <input type="radio" name="problema" id="checkSaml">
           <div>
             <div class="opcion__titulo">El ciudadano ve error SAML</div>
@@ -415,7 +427,7 @@ textarea:focus {
           </div>
         </label>
 
-        <label class="opcion" title="El trámite carga una pantalla vacía/en blanco al acceder. Muestra ayuda al seleccionarlo.">
+        <label class="opcion" title="El trámite carga una pantalla vacía/en blanco al acceder. Muestra ayuda al seleccionarlo">
           <input type="radio" name="problema" id="checkBlanco">
           <div>
             <div class="opcion__titulo">La página queda en blanco</div>
@@ -431,7 +443,7 @@ textarea:focus {
       <summary class="panel-card__head">📋 Traza SistraHelp<span class="chevron">▾</span></summary>
       <div class="panel-card__body">
         <div class="campo-label">Pega aquí</div>
-        <textarea id="inputTraza" placeholder="Pega la traza aquí..."></textarea>
+        <textarea id="inputTraza" placeholder="Pega la traza aquí..." title="Pega la traza de SistraHelp tal cual (orden inverso: lo más reciente arriba)"></textarea>
       </div>
     </details>
 
@@ -440,12 +452,12 @@ textarea:focus {
       <summary class="panel-card__head">⚙ Método<span class="chevron">▾</span></summary>
       <div class="panel-card__body">
 
-        <label class="opcion" title="Firma con Cl@ve (Cl@ve Firma / Cl@ve Permanente). El ciudadano firma en la nube, sin certificado instalado en su equipo.">
+        <label class="opcion" title="Firma con Cl@ve (Cl@ve Firma / Cl@ve Permanente)">
           <input type="radio" name="metodo" id="metodoClave" checked>
           <div class="opcion__titulo">Cl@ve</div>
         </label>
 
-        <label class="opcion" title="Firma con certificado instalado en el equipo del ciudadano (Autofirma / FIRE). Requiere certificado y, normalmente, la aplicación Autofirma.">
+        <label class="opcion" title="Firma con certificado instalado en el equipo del ciudadano (Autofirma / FIRE). Requiere certificado y, normalmente, la aplicación Autofirma">
           <input type="radio" name="metodo" id="metodoCert">
           <div class="opcion__titulo">Certificado local</div>
         </label>
@@ -453,7 +465,7 @@ textarea:focus {
         <div id="bloqueSistema" style="display:none; margin-top:10px;">
           <div class="campo-label">Sistema</div>
 
-          <label class="opcion">
+          <label class="opcion" title="Autofirma / FIRE en Windows, Mac o Linux">
             <input type="radio" name="sistema" id="sisPC">
             <div>
               <div class="opcion__titulo">Ordenador</div>
@@ -461,7 +473,7 @@ textarea:focus {
             </div>
           </label>
 
-          <label class="opcion">
+          <label class="opcion" title="Autofirma App en Android o iPhone/iPad">
             <input type="radio" name="sistema" id="sisMovil">
             <div>
               <div class="opcion__titulo">Dispositivo móvil</div>
@@ -474,8 +486,8 @@ textarea:focus {
     </details>
 
     <div class="actions">
-      <button id="btnAnalizar">Analizar</button>
-      <button id="btnLimpiar">Limpiar</button>
+      <button id="btnAnalizar" title="Analiza la traza con el método marcado. Atajo: Ctrl+Enter en el cuadro de texto">Analizar</button>
+      <button id="btnLimpiar" title="Borra la traza, el resultado y vuelve a Cl@ve por defecto">Limpiar</button>
     </div>
 
   </div>
@@ -502,7 +514,7 @@ textarea:focus {
 
 <!-- 🔹 NUEVO: flujo visual (formato tarjeta V5) -->
 <!-- Cambio 2026-06-16: tarjeta con cabecera gris + cuerpo blanco; el contenedor solo se muestra tras pulsar Analizar -->
-<div id="flujoVisualCard" class="panel-card">
+<div id="flujoVisualCard" class="panel-card" title="Resumen visual y diagnóstico del trámite. La acción operativa está en la tarjeta Acción">
   <div class="panel-card__head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#01696f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="12" r="2"/><circle cx="20" cy="12" r="2"/><path d="M6 12h4M14 12h4"/><rect x="10" y="9" width="4" height="6" rx="1"/></svg>Flujo del trámite</div>
   <div class="panel-card__body">
     <div id="flujoVisual"></div>
