@@ -124,6 +124,14 @@ VERSION 1.3.15  - Solo TR_SGI sin KO: Posible Autofirma Android; Linux en traza 
 VERSION 1.3.16  - Flujo Autofirma: no pedir confirmar acceso Cl@ve si certificado + Autofirm@ en KO
 
 VERSION 1.3.17  - Discrepancia Cl@ve marcado + Autofirm@ en KO: texto técnico; sin PDF en flujo
+
+VERSION 1.3.18  - Paneles Ver detalles y Reglas alineados con criterio CAU v1.3.17
+
+VERSION 1.3.19  - Ayuda (Detalles/Reglas/SAML/blanco): oculta análisis; al cerrar panel re-analiza traza
+
+VERSION 1.3.20  - Ayuda sin análisis previo: oculta «Pega traza»; al cerrar la restaura si no hay traza
+
+VERSION 1.3.21  - Al cerrar ayuda sin análisis previo: «Pega traza» aunque haya traza pegada
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -135,7 +143,7 @@ VERSION 1.3.17  - Discrepancia Cl@ve marcado + Autofirm@ en KO: texto técnico; 
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.17";
+const VERSION_JS = "1.3.21";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -323,6 +331,54 @@ function abrirPanel(titulo, contenido) {      // Abre un panel con título + con
 
 function cerrarPanelFunc() {      // 👉 Oculta panel
   panel.classList.add("hidden");
+  if (analisisOcultoPorAyuda) {
+    analisisOcultoPorAyuda = false;
+    const texto = document.getElementById("inputTraza").value.trim();
+    if (texto && texto.toUpperCase().includes("TR_")) {
+      btnAnalizar.click();
+      return;
+    }
+  }
+  // Sin análisis previo: volver a pantalla inicial (aunque haya traza pegada sin analizar)
+  if (!ultimoAnalisisValido) {
+    placeholder.style.display = "";
+  } else {
+    actualizarPlaceholderSegunTraza();
+  }
+}
+
+// 👉 Ayuda (Detalles, Reglas, SAML, blanco): oculta análisis; al cerrar panel re-analiza con método actual
+let analisisOcultoPorAyuda = false;
+let ultimoAnalisisValido = false;
+
+function actualizarPlaceholderSegunTraza() {
+  const hayTraza = document.getElementById("inputTraza").value.trim().length > 0;
+  placeholder.style.display = hayTraza ? "none" : "";
+}
+
+function ocultarResultadosAnalisis() {
+  document.getElementById("resultado").innerText = "";
+  document.getElementById("resultado").style.maxWidth = "";
+  document.getElementById("resultado").style.display = "none";
+  const flujoCard = document.getElementById("flujoVisualCard");
+  const flujo = document.getElementById("flujoVisual");
+  if (flujo) {
+    flujo.innerHTML = "";
+    flujo.style.display = "none";
+  }
+  const flujoDiag = document.getElementById("flujoDiagnostico");
+  if (flujoDiag) {
+    flujoDiag.innerHTML = "";
+    flujoDiag.style.display = "none";
+  }
+  if (flujoCard) flujoCard.style.display = "none";
+}
+
+function abrirPanelAyuda(titulo, contenido) {
+  if (ultimoAnalisisValido) analisisOcultoPorAyuda = true;
+  ocultarResultadosAnalisis();
+  placeholder.style.display = "none";
+  abrirPanel(titulo, contenido);
 }
 
 // Botón cerrar panel
@@ -334,10 +390,10 @@ document.getElementById("btnCerrarPanel").onclick = cerrarPanelFunc;
 
 btnDetalles.onclick = () => {
   const vJson = accionesJSON?.version || "—";
-  abrirPanel("Detalles del analizador", `
+  abrirPanelAyuda("Detalles del analizador", `
 <ul>
   <li><b>Analizador de trazas SistraHelp</b> orientado a soporte técnico CAU.</li>
-  <li>Versión actual: <b>js v ${VERSION_JS}</b> · reglas <b>acciones.json v ${vJson}</b> (interfaz <b>index.html</b>).</li>
+  <li>Versión actual: <b>js v ${VERSION_JS}</b> · reglas <b>acciones.json v ${vJson}</b> · interfaz <b>html v ${typeof VERSION_HTML !== "undefined" ? VERSION_HTML : "—"}</b>.</li>
 
   <br>
 
@@ -356,18 +412,21 @@ btnDetalles.onclick = () => {
   <li>✔ <b>Firma OK:</b> trámite finalizado; caso especial <b>firma_correcta_portafib</b>.</li>
   <li>✔ <b>Cl@ve:</b> códigos 8–15, 101, 103, 103-15, 104; Cl@ve móvil; CLAVE_MOVIL no permitida.</li>
   <li>✔ <b>Cl@ve Permanente cancelada</b> (Signatura cancel·lada + Cl@veFirm@ sin código).</li>
-  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → escalado Portafib.</li>
-  <li>✔ <b>Autofirma:</b> servidor (SAF_27), cancelada, entorno FIRE; cliente por SO (Windows, Mac, Linux, Android, iPhone, móvil).</li>
-  <li>✔ <b>Método de firma en Firma KO</b> (Autofirm@ / Cl@veFirm@); orden cronológico; ignora notas del agente.</li>
-  <li>✔ Discrepancia acceso Cl@ve vs firma certificado; Cliente de Firma Móvil + servidor intermedio.</li>
+  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → escalado Portafib; prefijo según Cl@veFirm@ o Autofirm@.</li>
+  <li>✔ <b>Autofirma:</b> SAF_27 (cliente local primero), cancelada, entorno FIRE; cliente por SO; Android si Linux + solo TR_SGI.</li>
+  <li>✔ <b>Cl@ve móvil / solo TR_SGI:</b> Posible Cl@ve móvil y Posible Autofirma Android en acción.</li>
+  <li>✔ <b>Método de firma en Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector del técnico.</li>
+  <li>✔ Discrepancia: técnico marca Cl@ve pero KO es Autofirm@ (texto en flujo y acción).</li>
+  <li>✔ Cliente de Firma Móvil + servidor intermedio; certificado + Autofirm@ KO sin pedir confirmar acceso Cl@ve.</li>
 
   <br>
 
   <li><b>Pendiente de mejora:</b></li>
   <li>🔧 Limpieza de literales: mensaje útil arriba, traza completa debajo (sin ruido técnico).</li>
   <li>🔧 Mostrar aviso de Firma KO previo también en tarjeta Acción cuando el trámite acaba OK.</li>
-  <li>🔧 Versión del badge desde acciones.json automáticamente; botón Actualizar solo icono.</li>
-  <li>🔧 Más trazas Cl@ve reales para validar casos 8–15, 101, 103 y móvil.</li>
+  <li>🔧 Botón Actualizar solo icono (sin texto «Actualizar»).</li>
+  <li>🔧 Mails Autofirma con anclas específicos por SO (ahora #Autofirma genérico).</li>
+  <li>🔧 Revisar casos Firma Àgil y URL duplicada en reintentos de firma.</li>
 
   <br>
 
@@ -384,7 +443,7 @@ btnDetalles.onclick = () => {
 btnTabla.onclick = (e) => {
   e.preventDefault();
   const vJson = accionesJSON?.version || "—";
-  abrirPanel("Motor de análisis (reglas)", `
+  abrirPanelAyuda("Motor de análisis (reglas)", `
 <ul>
   <li><b>Funcionamiento del analizador (js v ${VERSION_JS}):</b></li>
   <li>Lee la traza de SistraHelp filtrando solo líneas TR_ / ERROR - (ignora notas del agente).</li>
@@ -407,12 +466,12 @@ btnTabla.onclick = (e) => {
   <li>✔ <b>error_clave_101</b> — Nivel de registro insuficiente.</li>
   <li>✔ <b>error_clave_104</b> — Registro débil.</li>
   <li>✔ <b>error_clave_firma_cancelada</b> — Signatura cancel·lada + Cl@veFirm@ sin código 8–15.</li>
-  <li>✔ <b>error_clave_movil</b> — Solo TR_SGI o KO Cl@ve sin código; desempate por método marcado.</li>
+  <li>✔ <b>error_clave_movil</b> — Solo TR_SGI o KO Cl@ve sin código; Posible Autofirma Android.</li>
   <li>✔ <b>error_clave_movil_no_permitida</b> — Literal CLAVE_MOVIL no permitida.</li>
-  <li>✔ <b>error_validacion_certificado</b> — InvalidNotSignerCertificate / validación @firma → Portafib.</li>
-  <li>✔ <b>error_autofirma_servidor</b> — SAF_27 (mayoría cliente local; servidor solo si masivo o tras reinstalar).</li>
+  <li>✔ <b>error_validacion_certificado</b> — InvalidNotSignerCertificate / @firma → Portafib; prefijo por método.</li>
+  <li>✔ <b>error_autofirma_servidor</b> — SAF_27: mayoría instalación AutoFirma local; servidor si masivo o persiste.</li>
   <li>✔ <b>error_autofirma_cancelada</b> — Signatura cancelada + Autofirm@ (sin Cl@ve).</li>
-  <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI con certificado (FIRE no invoca).</li>
+  <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI con certificado; pistas Android en acción.</li>
   <li>✔ <b>error_autofirma_cliente_generico</b> — Cl@ve marcado pero traza Autofirma; confirmar SO y método real.</li>
   <li>✔ <b>error_autofirma_cliente_*</b> — windows, mac, linux, android, iphone, movil (resolverReglaAutofirmaCliente).</li>
   <li>⚙ <b>error_fire</b> — Reserva certificado local sin literales Autofirma concluyentes.</li>
@@ -421,11 +480,11 @@ btnTabla.onclick = (e) => {
   <br>
 
   <li><b>Prioridad en fase error_firma:</b></li>
-  <li>1. SAF_27 (Autofirma servidor) → 2. Validación certificado (@firma) → 3. CLAVE_MOVIL no permitida</li>
+  <li>1. SAF_27 → 2. Validación certificado (@firma) → 3. CLAVE_MOVIL no permitida</li>
   <li>4. Códigos Cl@ve (103 &gt; 8–15 &gt; 101 &gt; 104) → 5. Cancelada Cl@veFirm@ sin código</li>
   <li>6. Autofirma fuerte (fitxer buit / Método Autofirm@ / timeout+cliente móvil) → resolverReglaAutofirmaCliente</li>
   <li>7. Autofirma débil (solo certificado marcado) → 8. Cancelada Autofirma → 9. Cl@ve móvil (KO sin código)</li>
-  <li>10. Solo TR_SGI sin cierre → entorno FIRE (certificado) o Cl@ve móvil (Cl@ve) → 11. Cliente Autofirma genérico</li>
+  <li>10. Solo TR_SGI sin cierre → entorno FIRE (certificado) o Cl@ve móvil (Cl@ve) → 11. Cliente Autofirma por SO</li>
 
   <br>
 
@@ -435,7 +494,10 @@ btnTabla.onclick = (e) => {
   <li>Sin <b>TR_SGI</b> → pre-firma (Portafib si literal de flujo; si no, formulario).</li>
   <li><b>TR_SGO / TR_FIN</b> → firma correcta (con o sin Portafib previo).</li>
   <li>Cliente de Firma Móvil + servidor intermedio → Android/iPhone aunque marquen Ordenador.</li>
+  <li>Linux en traza + solo TR_SGI sin KO → orientar Android (mail/acción).</li>
   <li>Autofirm@ + timeout + client de firma en KO → iPhone si no hay SO escritorio en traza.</li>
+  <li>Certificado marcado + Autofirm@ en KO → no pedir confirmar acceso Cl@ve en flujo.</li>
+  <li>Técnico marca Cl@ve + Autofirm@ en KO → discrepancia en flujo/acción (no «acceso fue Cl@ve»).</li>
 
   <br>
 
@@ -460,7 +522,7 @@ btnTabla.onclick = (e) => {
 checkSaml.onchange = () => {
   if (checkSaml.checked) {
     checkBlanco.checked = false;
-    abrirPanel("El ciudadano ve error SAML", `
+    abrirPanelAyuda("El ciudadano ve error SAML", `
 <b>SAML 003002 (Authentication Failed: Detalle error: no certificate has been submitted)</b><br>
 La pasarela de acceso no ha recibido un certificado digital válido para autenticarse. Causas habituales:<br><br>
 
@@ -486,7 +548,7 @@ Es necesario restablecerla desde la opción “Olvido de contraseña”.
 checkBlanco.onchange = () => {
   if (checkBlanco.checked) {
     checkSaml.checked = false;
-    abrirPanel("La página queda en blanco", `
+    abrirPanelAyuda("La página queda en blanco", `
 La página queda en blanco<br><br>
 
 Si al acceder el ciudadano ve la página en blanco, debe considerarse primero como un posible problema de acceso o de pasarela. En estos casos, es posible que el ciudadano no llegue a entrar realmente en el trámite y que no se genere traza útil en SistraHelp.<br><br>
@@ -1950,6 +2012,9 @@ if (flowCardEl && resultadoEl) {
   }
 }
 
+ultimoAnalisisValido = true;
+analisisOcultoPorAyuda = false;
+
 };
 
 
@@ -1962,78 +2027,30 @@ if (flowCardEl && resultadoEl) {
 
 btnLimpiar.onclick = () => {
 
+  ultimoAnalisisValido = false;
+  analisisOcultoPorAyuda = false;
+
   // ─────────────────────────────
   // 🔹 LIMPIEZA DE CHECKS DE ERROR VISUAL
   // ─────────────────────────────
-  // Quitamos los radios de SAML / página en blanco
-  // (esto es solo ayuda visual, no afecta al análisis)
   checkSaml.checked = false;
   checkBlanco.checked = false;
 
-
-  // ─────────────────────────────
-  // 🔹 LIMPIEZA DE CAMPOS DE TEXTO
-  // ─────────────────────────────
-  // Aquí realmente limpiamos lo importante:
-  // la traza pegada por el técnico
   document.getElementById("inputTraza").value = "";
- 
 
-  // ─────────────────────────────
-  // 🔹 RESET DE MÉTODO DE FIRMA
-  // ─────────────────────────────
-  // Volvemos al método por defecto: Cl@ve marcado (Cambios 2026-06-17)
   metodoClave.checked = true;
   metodoCert.checked = false;
 
-  // También limpiamos selección de sistema
   sisPC.checked = false;
   sisMovil.checked = false;
 
-  // Y ocultamos el bloque de sistema (como si empezaras de cero)
   bloqueSistema.style.display = "none";
 
-
-  // ─────────────────────────────
-  // 🔹 LIMPIEZA DE RESULTADOS EN PANTALLA
-  // ─────────────────────────────
-  // Cerramos panel si está abierto (SAML, blanco, etc.)
   cerrarPanelFunc();
 
+  ocultarResultadosAnalisis();
+  placeholder.style.display = "";
 
-  // 👉 Volvemos al estado inicial
-placeholder.style.display = "";
-
-// 👉 Limpiamos el contenido del resultado
-document.getElementById("resultado").innerText = "";
-
-// 🔹 Cambios 2026-06-16: quitamos el ancho máximo fijado al analizar
-document.getElementById("resultado").style.maxWidth = "";
-
-// 🔹 NUEVO: limpiar y ocultar flujo visual
-// Cambios 2026-06-12: ocultar el marco del flujo al pulsar Limpiar o al volver al estado inicial
-const flujoCard = document.getElementById("flujoVisualCard");
-const flujo = document.getElementById("flujoVisual");
-if (flujo) {
-  flujo.innerHTML = "";
-  flujo.style.display = "none";
-}
-// 🔹 Cambios 2026-06-16: limpiar también la frase del diagnóstico del flujo
-const flujoDiag = document.getElementById("flujoDiagnostico");
-if (flujoDiag) {
-  flujoDiag.innerHTML = "";
-  flujoDiag.style.display = "none";
-}
-if (flujoCard) {
-  flujoCard.style.display = "none";
-}
-
-// 👉 Ocultamos el bloque de resultado
-document.getElementById("resultado").style.display = "none";
-
-  // ─────────────────────────────
-  // 🔹 INFO EN CONSOLA (PARA DEBUG)
-  // ─────────────────────────────
   console.log("Sistema reiniciado (limpiar)");
 
 };
