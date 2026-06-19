@@ -1,5 +1,5 @@
 {
-  "version": "1.2.6",
+  "version": "1.2.7",
   "_changes_today": "2026-06-12: added hidden flow card, compact white frame, step status labels, and show/hide behavior on analyze/clear",
   "acciones": [
 
@@ -47,7 +47,7 @@
 
     {
       "id": "error_clave_firma_cancelada",
-      "accion": "Probar desde ordenador: suele poder emitir certificado y firmar.\nSi el certificado Cl@ve Permanente se emitió o renovó el mismo día, en móvil puede fallar la ventana de emisión.\nRevisar en SistraHelp el acceso al trámite (Inicio trámite o Carga): si figura CLAVE_MOVIL, indicar Cl@ve Permanente desde PC.\nIndicar cerrar ventanas emergentes bloqueadas, probar otro navegador y evitar navegación privada.",
+      "accion": "Si el certificado Cl@ve Permanente se emitió o renovó el mismo día, en móvil puede fallar la ventana de emisión.\nProbar desde ordenador: suele poder emitir certificado y firmar.\nRevisar en SistraHelp el método de acceso al trámite (doble click sobre Inicio trámite o Carga): si figura CLAVE_MOVIL u otro.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave_movil_No_Permitido"
     },
 
@@ -59,19 +59,19 @@
 
     {
       "id": "error_clave_movil",
-      "accion": "La firma se inicia pero no se completa (solo aparece Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil o acceso con nivel insuficiente.\nRevisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL, indicar usar Cl@ve Permanente o certificado si el trámite lo permite.\n*Si el acceso fue con certificado (AUT), valorar entorno Autofirma/FIRE (wiki Autofirma).",
+      "accion": "La firma se inicia pero no se completa (solo aparece Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil.\nRevisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave_movil_No_Permitido"
     },
 
     {
       "id": "error_validacion_certificado",
-      "accion": "Escalar a PENDENTS PORTAFIB - 1.- Pendents 012 para que revisen el servicio de validación de firmas (pueden reiniciarlo).\nAfecta a Cl@ve Permanente y a certificado local (FNMT, DNIe…): FIRE firma y @firma valida siempre.\nEn logs a veces aparece certificado revocado de forma errónea; el fallo suele estar en la validación, no en el ciudadano.\nSi Portafib confirma que todo está correcto, no es revisable por CAIB: indicar esperar y reintentar en otro momento.\nEnviar mail de problema general al ciudadano.\n*Si el literal completo no aparece al pegar la traza, abrir el Firma KO en SistraHelp (doble clic).",
+      "accion": "Escalar a PENDENTS PORTAFIB - 1.- Pendents 012 para que revisen el servicio de validación de firmas (pueden reiniciarlo).\nPuede afectar a firmas con Cl@ve Permanente o a firmas con certificado local. En los casos detectados, suele suceder en uno u otro, es decir: fallo con Cl@ve Permanente o fallo con certificado local. De todos los ciudadanos que usan el método de firma afectado (Cl@ve o certificado), solo algunos ciudadanos presentan problemas para firmar, la mayoría de ciudadanos que usan el mismo método pueden firmar.\nEn ocasiones, en los logs que pueden ver los segundos niveles en el CAI (seguridad, portafib/sistra...), puede aparecer log de certificado revocado, pero no es correcto. El certificado de Cl@ve Permanente no puede comprobarse con VALIDe. El certificado solo se valida en el momento de una firma en un trámite. El fallo suele estar en la validación, no en el certificado del ciudadano.\nSi Portafib confirma que todo está correcto, este error de firma no es revisable por CAIB: indicar esperar y reintentar en otro momento.\nEnviar mail de problema general al ciudadano.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaGeneral"
     },
 
     {
       "id": "error_autofirma_servidor",
-      "accion": "Fallo del servicio Autofirma (SAF_27). Incidencia de proveedor/servidor.\nNo indicar reinstalar AutoFirma al ciudadano como primera acción.\n<span style='color:#9a9890;font-size:13px;font-style:italic;'>Escalar si aparecen múltiples casos simultáneos.</span>",
+      "accion": "SAF_27 — El servicio informó de un error durante la firma del lote.\nTrazas: TR_SGI (Inicio firma) OK → TR_SGX (Firma KO). Problema en fase de firma (proveedor de firma).\nCausa principal: Instalacion AutoFirma defectuosa, no puede acceder a la clave privada. Minoría: Portafib o proveedor servidor.\nActualizar a la última versión (SAF_27 puede deberse a versión anticuada).\nEl certificado puede ser válido en FNMT y no permitir firmar con autofirma, porque AutoFirma necesita la clave privada y el validador FNMT no.\nEscenario A (más común): AutoFirma local no firma + certificado válido FNMT → instalación autofirma defectuosa.\nEscenario B: AutoFirma local firma OK + FNMT OK + trámite KO → instalación autofirma defectuosa.\n\n1. Pregunta clave: ¿Portafib falló en el momento del error?\n\n2. Acción SIEMPRE — Reinstalar AutoFirma: desinstalar → reiniciar equipo → instalar como administrador → reiniciar equipo.\nComprobar certificado vigente, que AutoFirma lo detecta y probar firma local de un PDF.\nSi no se soluciona → instalación limpia:\nhttps://cau.fundaciobit.org/firmawiki/index.php/Autofirma_Cliente_/_Fire_/_@firma#instalacion_limpia_autofirma\n\nSi tras lo anterior sigue SAF_27 → posible AutoFirma servidor. ✉︎ Mail «Problemas con el Servicio».\n<span style='color:#9a9890;font-size:13px;font-style:italic;'>Incidencia general SOLO si múltiples NIF, misma franja horaria y mismo SAF_27 → considerar problema global (proveedor).</span>",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
@@ -83,7 +83,7 @@
 
     {
       "id": "error_autofirma_entorno",
-      "accion": "La firma se inicia pero no se completa (solo Inicio firma, sin Firma KO ni Firma OK).\nPosible bloqueo de invocación FIRE/AutoFirma: proxy, VPN, firewall o navegador.\nSolicitar prueba de firma local con PDF. Probar otro navegador y red distinta.\n*El mail se orienta según el SO detectado en la traza o marcado por el técnico.",
+      "accion": "La firma se inicia pero no se completa (solo Inicio firma, sin Firma KO ni Firma OK).\nPosible bloqueo de invocación FIRE/AutoFirma: proxy, VPN, firewall o navegador.\nRevisar instalación AutoFirma.\nSolicitar prueba de firma local con PDF. Probar otro navegador y red distinta.\n*El mail se orienta según el SO detectado en la traza",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 

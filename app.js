@@ -116,6 +116,8 @@ VERSION 1.3.13  - Cl@ve marcado + KO inequívoco Autofirm@/timeout → acción i
                 - Frase azul sin «Solicitar PDF» duplicado cuando acción SO ya es específica
                 - Acción iPhone con prefijo discrepancia si acceso Cl@ve y firma certificado en KO
                 - Criterio CAU: Método de firma del KO > selector; acceso ≠ firma; trazas antiguas sin campo KO
+
+VERSION 1.3.14  - SAF_27: flujo y acción alineados con criterio CAU (cliente local primero; servidor si masivo)
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -127,7 +129,7 @@ VERSION 1.3.13  - Cl@ve marcado + KO inequívoco Autofirm@/timeout → acción i
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.13";
+const VERSION_JS = "1.3.14";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -402,7 +404,7 @@ btnTabla.onclick = (e) => {
   <li>✔ <b>error_clave_movil</b> — Solo TR_SGI o KO Cl@ve sin código; desempate por método marcado.</li>
   <li>✔ <b>error_clave_movil_no_permitida</b> — Literal CLAVE_MOVIL no permitida.</li>
   <li>✔ <b>error_validacion_certificado</b> — InvalidNotSignerCertificate / validación @firma → Portafib.</li>
-  <li>✔ <b>error_autofirma_servidor</b> — SAF_27 (proveedor Autofirma).</li>
+  <li>✔ <b>error_autofirma_servidor</b> — SAF_27 (mayoría cliente local; servidor solo si masivo o tras reinstalar).</li>
   <li>✔ <b>error_autofirma_cancelada</b> — Signatura cancelada + Autofirm@ (sin Cl@ve).</li>
   <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI con certificado (FIRE no invoca).</li>
   <li>✔ <b>error_autofirma_cliente_generico</b> — Cl@ve marcado pero traza Autofirma; confirmar SO y método real.</li>
@@ -1310,13 +1312,15 @@ else if (idReglaDetectada === "error_clave_movil" || idReglaDetectada === "error
     }
     if (hayAccesoClaveMovilEnTraza) {
       frase += " Se detecta acceso con " + literalFlujo("CLAVE_MOVIL") + ".";
-    } else if (!haySGX || !haySignaturaCancelada) {
-      frase += " Posible Cl@ve móvil: revisar acceso en Inicio trámite o Carga (doble clic en SistraHelp).";
+    } else if (!haySGX) {
+      frase += " Posible Cl@ve móvil.";
+    } else if (!haySignaturaCancelada) {
+      frase += " Revisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL.";
     }
     if (esCert && !esClave) {
       frase += " Si el acceso fue con certificado, valorar entorno Autofirma/FIRE.";
     }
-    if (ultimoEvento === "TR_SGI" && !haySGO && !hayFIN) {
+    if (ultimoEvento === "TR_SGI" && !haySGO && !hayFIN && haySGX) {
       frase += " Los últimos intentos quedaron solo en Inicio firma.";
     }
     fraseDiagnostico = frase;
@@ -1402,8 +1406,10 @@ else if (idReglaDetectada === "error_validacion_certificado") {
 }
 else if (idReglaDetectada === "error_autofirma_servidor") {
 
-  cartelDiagnostico = cartelAzul("Autofirma servidor");
-  fraseDiagnostico = "Fallo del servicio Autofirma (SAF_27). Es incidencia de proveedor, no del entorno local del ciudadano.";
+  cartelDiagnostico = cartelAzul("Autofirma");
+  fraseDiagnostico = "Hay un Firma KO con SAF_27 (error durante la firma del lote): problema en fase de firma. "
+    + "En la mayoría de casos es un problema de AutoFirma (instalación defectuosa, no accede a clave privada). "
+    + "Pocas veces suele ser problema de Portafib o del proveedor de firma.";
 
 }
 else if (idReglaDetectada === "error_autofirma_cancelada") {
@@ -1574,6 +1580,22 @@ if (accionData && accionData.accion) {
   const literalGris = (texto, cursiva) =>
     "<span style=\"color:#9a9890;font-size:12px" + (cursiva ? ";font-style:italic" : "") + "\">\"" + texto + "\"</span>";
 
+  if (idReglaDetectada === "error_validacion_certificado") {
+    let prefijoValidacion;
+    if (hayMetodoFirmaClaveEnKo) {
+      prefijoValidacion = "Se detecta un problema de validación (@firma) al firmar con Cl@ve Permanente.";
+    } else if (hayMetodoFirmaAutofirmaEnKo) {
+      prefijoValidacion = "Se detecta un problema de validación (@firma) al firmar con certificado local.";
+    } else if (esClave && !esCert) {
+      prefijoValidacion = "Se detecta un problema de validación (@firma) al firmar con Cl@ve Permanente.";
+    } else if (esCert && !esClave) {
+      prefijoValidacion = "Se detecta un problema de validación (@firma) al firmar con certificado local.";
+    } else {
+      prefijoValidacion = "Se detecta un problema de validación (@firma). Confirmar método de firma en el Firma KO (doble clic en SistraHelp).";
+    }
+    textoAccion = prefijoValidacion + "\n" + textoAccion;
+  }
+
   // 🔹 Portafib: el texto base se edita en acciones.json. Aquí solo sustituimos el
   // marcador {lit} por los literales detectados en la traza (en gris pequeño).
   // En "firma_correcta_portafib" los literales van sin cursiva; en el resto, en cursiva.
@@ -1615,12 +1637,14 @@ if (accionData && accionData.accion) {
     // 🔹 Hay Firma KO en la traza: no usar el texto de «solo Inicio firma».
     if (haySignaturaCancelada && !hayErrorClaveReal) {
       textoAccion = "La firma se inicia pero falla con Signatura cancel·lada, sin código de error Cl@ve (8–15, 101, 103…).\n"
-        + "Posible Cl@ve móvil, ventana de certificado o acceso con nivel insuficiente.\n"
-        + "Revisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL, indicar usar Cl@ve Permanente o certificado si el trámite lo permite.\n"
-        + "*Si el acceso fue con certificado (AUT), valorar entorno Autofirma/FIRE (wiki Autofirma).";
+        + "Posible: Cl@ve móvil.\n"
+        + "Posible: La ventana de elegir certificado no carga, se bloquea o el usuario la cierra → la firma queda cancelada.\n"
+        + "Posible: acceso con nivel insuficiente.\n"
+        + "Revisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL.\n"
+        + "Si el acceso fue con certificado, valorar entorno Autofirma/FIRE.";
     } else {
       textoAccion = "La firma se inicia pero falla en Cl@ve sin código de error reconocido en la traza (aparece Firma KO).\n"
-        + "Revisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL, indicar usar Cl@ve Permanente o certificado si el trámite lo permite.\n"
+        + "Revisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL.\n"
         + "*Si el acceso fue con certificado (AUT), valorar entorno Autofirma/FIRE (wiki Autofirma).";
     }
   }
