@@ -412,6 +412,13 @@ function abrirPanelAyuda(titulo, contenido) {
   abrirPanel(titulo, contenido);
 }
 
+const TITULO_PANEL_INFO = "Información del analizador";
+const TITULO_PANEL_REGLAS = "Motor de análisis (reglas)";
+
+function panelAyudaEstaAbierto(titulo) {
+  return !panel.classList.contains("hidden") && panelTitulo.innerText === titulo;
+}
+
 function abrirPanelValidacion(contenido) {
   ocultarResultadosAnalisis();
   ultimoAnalisisValido = false;
@@ -427,8 +434,12 @@ document.getElementById("btnCerrarPanel").onclick = cerrarPanelFunc;
 // =====================================
 
 btnDetalles.onclick = () => {
+  if (panelAyudaEstaAbierto(TITULO_PANEL_INFO)) {
+    cerrarPanelFunc();
+    return;
+  }
   const vJson = accionesJSON?.version || "—";
-  abrirPanelAyuda("Detalles del analizador", `
+  abrirPanelAyuda(TITULO_PANEL_INFO, `
 <ul>
   <li><b>Analizador de trazas SistraHelp</b> orientado a soporte técnico CAU.</li>
   <li>Versión actual: <b>js v ${VERSION_JS}</b> · reglas <b>acciones.json v ${vJson}</b> · interfaz <b>html v ${typeof VERSION_HTML !== "undefined" ? VERSION_HTML : "—"}</b>.</li>
@@ -480,8 +491,12 @@ btnDetalles.onclick = () => {
 
 btnTabla.onclick = (e) => {
   e.preventDefault();
+  if (panelAyudaEstaAbierto(TITULO_PANEL_REGLAS)) {
+    cerrarPanelFunc();
+    return;
+  }
   const vJson = accionesJSON?.version || "—";
-  abrirPanelAyuda("Motor de análisis (reglas)", `
+  abrirPanelAyuda(TITULO_PANEL_REGLAS, `
 <ul>
   <li><b>Funcionamiento del analizador (js v ${VERSION_JS}):</b></li>
   <li>Lee la traza de SistraHelp filtrando solo líneas TR_ / ERROR - (ignora notas del agente).</li>
@@ -554,7 +569,7 @@ btnTabla.onclick = (e) => {
 
 
 // =====================================
-// CHECK SAML - Muestra ayuda sobre error SAM
+// PROBLEMAS DE ACCESO — SAML y página en blanco
 // =====================================
 
 checkSaml.onchange = () => {
@@ -575,13 +590,8 @@ La autenticación con Cl@ve no se ha completado correctamente porque la contrase
 La contraseña de Cl@ve Permanente es incorrecta.<br>
 Es necesario restablecerla desde la opción “Olvido de contraseña”.
     `);
-  } else cerrarPanelFunc();
+  }
 };
-
-
-// =====================================
-// CHECK PÁGINA EN BLANCO
-// =====================================
 
 checkBlanco.onchange = () => {
   if (checkBlanco.checked) {
@@ -599,7 +609,7 @@ Qué revisar:<br>
 Prueba recomendada:<br>
 Conviene probar a acceder a Carpeta Ciudadana GOB para comprobar si la pasarela carga correctamente allí. Si tampoco carga o el comportamiento es similar, la orientación principal debe ser problema de acceso/pasarela, más que de firma o del trámite.
     `);
-  } else cerrarPanelFunc();
+  }
 };
   
 

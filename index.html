@@ -12,7 +12,7 @@
      =====================================================
 
      VERSION 1.3.0
-     - Tooltips en cabecera (badge, Ver detalles, Lectura, Reglas), sistema, botones y flujo
+     - Tooltips en cabecera; Info y Reglas en teal sin subrayado (solo al pasar el ratón)
 
      VERSION 1.2.9
      - PWA: manifest.json, icon-192/512, favicon, apple-touch-icon, theme-color
@@ -137,15 +137,22 @@ body {
   border-radius:999px;
 }
 
-.ver-detalles {
-  font-size:11px;
-  color:#01696f;
-  cursor:pointer;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 3px;
+.header-panel-link {
+  font-size: 11px;
+  color: #01696f;
+  cursor: pointer;
+  text-decoration: none;
   display: inline-block;
-  width: fit-content;
+}
+
+.header-panel-link:hover,
+.header-panel-link:visited {
+  color: #01696f;
+}
+
+.header-panel-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .btn-mini {
@@ -394,7 +401,7 @@ textarea:focus {
       <span class="brand__title">Analizador de Trazas</span>
     </div>
     <div class="badge" id="versionBadge" title="Versión del motor de análisis (app.js)">v 1.3.13</div>
-    <div class="ver-detalles" id="btnDetalles" title="Qué hace el analizador, versiones y funcionalidades implementadas">Ver detalles ▾</div>
+    <div class="header-panel-link" id="btnDetalles" title="Qué hace el analizador, versiones y funcionalidades implementadas">Info ▾</div>
   </div>
 
   <div class="header-right">
@@ -405,7 +412,7 @@ textarea:focus {
     <span class="header-right__sep">-</span>
     <span id="versionJS" title="Versión de app.js (motor de detección). Si no coincide con lo esperado, usa el icono de actualizar"></span>
     <button class="btn-mini btn-actualizar" id="btnActualizar" title="Recarga la página completa (HTML, JS y acciones.json) ignorando la caché del navegador. Úsalo si no ves cambios recientes tras subirlos" aria-label="Recargar analizador (HTML, JS y JSON)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
-    <a href="#" id="btnTabla" title="Lista de reglas activas, prioridades y criterio CAU (Autofirma, Cl@ve, Portafib…)">Reglas</a>
+    <a href="#" class="header-panel-link" id="btnTabla" title="Lista de reglas activas, prioridades y criterio CAU (Autofirma, Cl@ve, Portafib…)">Reglas ▾</a>
   </div>
 
 </div>
