@@ -4,46 +4,63 @@
 
 <script>
   // 🔹 VERSION HTML (editable manual)
-  const VERSION_HTML = "1.2.4";
+  const VERSION_HTML = "1.2.9";
 </script>
 
 <!-- =====================================================
      FUNCIONALIDADES HTML
      =====================================================
 
+     VERSION 1.2.9
+     - PWA: manifest.json, icon-192/512, favicon, apple-touch-icon, theme-color
+     - Atajos: autofocus en textarea; pista «Ctrl V + Ctrl Enter» bajo botones
+     - Tooltips (title) en opciones de acceso, método y sistema
+     - Cl@ve marcado por defecto al cargar y al pulsar Limpiar
+
+     VERSION 1.2.8
+     - Badge de versión del analizador en cabecera (js + acciones.json)
+     - Botón Actualizar (recarga acciones.json) con icono en cabecera
+     - Enlace «Reglas» y lectura html / json / js en header-right
+
+     VERSION 1.2.7
+     - Estilos literales: overflow-wrap para textos largos sin espacios
+     - Clase .literal-pequeno en tarjeta de literales detectados
+
+     VERSION 1.2.6
+     - Sidebar con apartados plegables (details/summary + chevron)
+     - Bloque «Problemas de acceso» (SAML / página en blanco) plegable;
+       al cerrar limpia selección y panel de ayuda
+     - Etiquetas .opcion__titulo / .opcion__sub en método y sistema
+
+     VERSION 1.2.5
+     - Tarjeta «Flujo del trámite» (#flujoVisualCard): píldoras TR_ + #flujoDiagnostico
+     - Formato panel-card V5 (cabecera grise + cuerpo blanco) en flujo y resultados
+     - Flujo oculto hasta analizar; marco compacto (width: fit-content)
+     - Tarjetas Acción y Literales detectados con cabecera e icono SVG
+
+     VERSION 1.2.4
+     - Rediseño visual estilo V5: escudo en marca, cabecera blanca, sidebar #faf9f7
+     - Panel emergente validación (Portafib / formulario) con estilo naranja
+     - Placeholder centrado y zona #resultado con tarjetas dinámicas
+
      VERSION 1.2.1
-     - Layout completo de la aplicación:
-         header + sidebar + zona principal
-     - Panel de cabecera con:
-         versión HTML / JSON / JS
-         botón actualizar (control de caché)
-         acceso a tabla de reglas
-     - Panel emergente reutilizable (mensajes dinámicos)
-     - Entrada de traza (textarea optimizado para texto técnico)
-     - Selector de método (Cl@ve / Certificado)
-     - Selector dinámico de sistema (PC / móvil)
-         visible solo para certificado
-     - Bloque de acciones:
-         botón Analizar
-         botón Limpiar
-     - Panel de resultado dinámico conectado al motor JS
-     - Placeholder inicial (estado sin análisis)
-     - Integración completa con app.js (eventos y lógica)
+     - Layout completo: header + sidebar + zona principal
+     - Panel de cabecera con versión HTML / JSON / JS y botón actualizar
+     - Entrada de traza (textarea monospace), selector Cl@ve / Certificado
+     - Selector dinámico de sistema (Ordenador / móvil) solo con certificado
+     - Botones Analizar y Limpiar; panel resultado conectado a app.js
 
      VERSION 1.2.0
-     - Mejora estructural del layout:
-         separación visual clara (sidebar + main)
-     - Introducción del panel de resultado independiente
-     - Mejora de accesibilidad y legibilidad del formulario
+     - Separación sidebar + main; panel de resultado independiente
 
      VERSION 1.1
-     - Introducción de tarjetas (cards) para organización UI
-     - Creación del panel emergente reutilizable
-     - Primer diseño funcional del flujo de usuario
+     - Tarjetas (cards) y panel emergente reutilizable
 
      VERSION 1.0
-     - Estructura base HTML de la aplicación
-     - Entrada de traza y botón de análisis
+     - Estructura base: entrada de traza y botón de análisis
+
+     Nota: desde app.js v1.3.0 los cambios de reglas, flujo y acciones CAU
+     están en app.js y acciones.json; el HTML no cambia de estructura.
 -->
 
 <style>
