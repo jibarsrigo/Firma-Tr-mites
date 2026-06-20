@@ -1,0 +1,7 @@
+# Fixture sintético — patrón wiki TR_SGI → TR_SGX + SAF_27
+# Literal en código: includes("SAF_27") — también acepta SAF27 en el motor por ventana
+# Sustituir por traza real cuando se localice (imagen msg 573 o re-pegar)
+
+TR_SGX - Firma KO	10/06/2026 11:30:05	ID-EJEMPLO-001	NIF1234567A	CIUDADANO EJEMPLO	TRAMITE_TEST	ORG	1	100001	200001		SAF_27 — Exception: unable to find valid certification path to requested target. Método de firma: Autofirm@
+TR_SGI - Inicio firma	10/06/2026 11:29:58	ID-EJEMPLO-001	NIF1234567A	CIUDADANO EJEMPLO	TRAMITE_TEST	ORG	1	100001	200001		
+TR_CAR - Carga del trámite	10/06/2026 11:29:50	ID-EJEMPLO-001	NIF1234567A	CIUDADANO EJEMPLO	TRAMITE_TEST	ORG	1	100001	200001		AUT certificado local

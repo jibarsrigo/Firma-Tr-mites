@@ -136,6 +136,32 @@ VERSION 1.3.21  - Al cerrar ayuda sin análisis previo: «Pega traza» aunque ha
 VERSION 1.3.22  - Literales: «Firma OK» verde; «Firma KO», fluxe inválido y Error 8/101/103/104 rojo
 
 VERSION 1.3.23  - Validación fallida (método/sistema/traza): oculta análisis previo como la ayuda
+
+VERSION 1.3.24  - Flujo de Firma Fase 1: subapartado plegable en tarjeta flujo (lista + resumen por intento)
+
+VERSION 1.3.25  - Flujo de Firma Fase 2: agrupación consecutiva expandible, colores taxonomía, badge acceso≠firma
+
+VERSION 1.3.26  - Flujo de Firma Fase 3: mini-píldoras TR_SGI→cierre por intento
+
+VERSION 1.3.27  - Flujo de Firma Fase 4: sin log consola; docs panel y trazas_prueba
+
+VERSION 1.3.28  - Frase Cl@ve con código: sin literal CODI ERROR en diagnóstico global (queda en Literales)
+
+VERSION 1.3.29  - Flujo de Firma: pista Posible Cl@ve móvil / Autofirma Android / iPhone por intento
+
+VERSION 1.3.30  - Flujo de Firma: etiquetas Cliente firma móvil - Android / Client de firma - iPhone; sin chips Pista SO
+
+VERSION 1.3.31  - Literales: resaltado y aviso Cliente de Firma Móvil / client de firma (color flujo firma)
+
+VERSION 1.3.32  - Flujo de Firma: «Revisar Acceso» con tooltip; sin title en tarjeta Flujo del trámite
+
+VERSION 1.3.33  - Tooltip Revisar Acceso: método de acceso y SO/dispositivo en TR_CAR
+
+VERSION 1.3.34  - Flujo de Firma: tooltip «Sin cierre (Solo Inicio Firma)» en etiqueta sin cierre
+
+VERSION 1.3.35  - Flujo de Firma: sin «Revisar Acceso» en KO Cl@ve (8–15, 101, 103, 104…); basta Método Cl@veFirm@
+
+VERSION 1.3.36  - Flujo de Firma: nota intro «Detalles por cada intento de firma»
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -147,7 +173,7 @@ VERSION 1.3.23  - Validación fallida (método/sistema/traza): oculta análisis 
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.23";
+const VERSION_JS = "1.3.36";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -161,6 +187,7 @@ const LITERAL_FIELD_INDEX = 10;           // Estructura de traza: la primera inf
                                            // (después de fecha, hora, ID y 7 campos técnicos iniciales)
 const MIN_LITERAL_LENGTH = 20;            // Longitud mínima para considerar una línea como posible error (evitar ruido)
 const MAIL_AUTOFIRMA_BASE = "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma";
+const COLOR_CLIENTE_FIRMA_MOVIL = "#a12c7b";
 
 function esLineaFirmaKoHelper(linea) {
   return /TR_SGX|FI FIRMA KO|FIN FIRMA KO/i.test(String(linea || ""));
@@ -301,6 +328,54 @@ function htmlLiteralDetectado(texto) {
     /(Error:\s*(?:103|101|104|8)(?!\d))/gi,
     '<span style="color:#c0392b;font-weight:600">$1</span>'
   );
+  html = resaltarClienteFirmaEnLiteral(html);
+  return html;
+}
+
+function hayLiteralClienteFirmaMovilAndroid(texto) {
+  return /CLIENT(E)? DE FIRMA M[ÒOÓ]?VIL|ERROR DE AUTOFIRMA O DEL CLIENTE DE FIRMA M[ÒOÓ]?VIL/i.test(String(texto || ""));
+}
+
+function hayLiteralClientDeFirmaIphone(texto) {
+  const t = String(texto || "");
+  if (hayLiteralClienteFirmaMovilAndroid(t)) return false;
+  return /\bCLIENT DE FIRMA\b/i.test(t);
+}
+
+function detectarAvisosClienteFirmaLiterales(lineasTraza) {
+  const texto = lineasTraza.join("\n");
+  const avisos = [];
+  if (hayLiteralClienteFirmaMovilAndroid(texto)) {
+    avisos.push("*Cliente de Firma Móvil: Android");
+  }
+  if (hayLiteralClientDeFirmaIphone(texto)) {
+    avisos.push("*Client de firma: iPhone");
+  }
+  return avisos;
+}
+
+function resaltarClienteFirmaEnLiteral(html) {
+  const cls = "literal-cliente-firma";
+  html = html.replace(
+    /(Cliente de Firma M[óoò]vil|CLIENTE DE FIRMA M[ÓOÒ]VIL|Error de Autofirma o del Cliente de Firma M[óoò]vil)/gi,
+    `<span class="${cls}">$1</span>`
+  );
+  html = html.replace(
+    /(client de firma)/gi,
+    `<span class="${cls}">$1</span>`
+  );
+  return html;
+}
+
+function htmlAperturaLiteralesDetectados(lineasTraza) {
+  let html = "<div class='literal-pequeno'>";
+  const avisos = detectarAvisosClienteFirmaLiterales(lineasTraza);
+  if (avisos.length) {
+    avisos.forEach(aviso => {
+      html += `<div class="literal-aviso-cliente-firma">${aviso.replace(/&/g, "&amp;").replace(/</g, "&lt;")}</div>`;
+    });
+    html += "<br>";
+  }
   return html;
 }
 
@@ -402,6 +477,11 @@ function ocultarResultadosAnalisis() {
     flujoDiag.innerHTML = "";
     flujoDiag.style.display = "none";
   }
+  const flujoFirma = document.getElementById("flujoFirmaDetalle");
+  if (flujoFirma) {
+    flujoFirma.innerHTML = "";
+    flujoFirma.style.display = "none";
+  }
   if (flujoCard) flujoCard.style.display = "none";
 }
 
@@ -448,6 +528,7 @@ btnDetalles.onclick = () => {
 
   <li><b>Qué hace al analizar una traza:</b></li>
   <li>Muestra el <b>flujo del trámite</b> (eventos TR_) con píldoras de colores y etiquetas.</li>
+  <li>Subapartado <b>Flujo de Firma</b> (plegable): detalle por intento TR_SGI, acceso, método, mini-píldoras y resumen. No altera cartel ni Acción.</li>
   <li>Indica el <b>diagnóstico</b> (cartel azul + frase explicativa dentro del flujo, cuando aplica).</li>
   <li>Propone la <b>acción recomendada</b> y el enlace <b>Mail</b> cuando existe.</li>
   <li>Lista los <b>literales detectados</b> con contador de repeticiones (xN), o avisa si no hay literales.</li>
@@ -467,6 +548,7 @@ btnDetalles.onclick = () => {
   <li>✔ <b>Método de firma en Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector del técnico.</li>
   <li>✔ Discrepancia: técnico marca Cl@ve pero KO es Autofirm@ (texto en flujo y acción).</li>
   <li>✔ Cliente de Firma Móvil + servidor intermedio; certificado + Autofirm@ KO sin pedir confirmar acceso Cl@ve.</li>
+  <li>✔ <b>Flujo de Firma:</b> ventana por TR_SGI (timestamps), agrupación consecutiva, badge acceso≠firma, taxonomía v1.</li>
 
   <br>
 
@@ -551,6 +633,16 @@ btnTabla.onclick = (e) => {
   <li>Autofirm@ + timeout + client de firma en KO → iPhone si no hay SO escritorio en traza.</li>
   <li>Certificado marcado + Autofirm@ en KO → no pedir confirmar acceso Cl@ve en flujo.</li>
   <li>Técnico marca Cl@ve + Autofirm@ en KO → discrepancia en flujo/acción (no «acceso fue Cl@ve»).</li>
+
+  <br>
+
+  <li><b>Flujo de Firma (detalle por intento, tarjeta Flujo del trámite):</b></li>
+  <li>Cada <b>TR_SGI</b> = un intento; ventana hasta el siguiente SGI (orden por timestamp, no por pegado).</li>
+  <li>Campos: acceso (TR_CAR/INI previo), resultado (taxonomía v1), método de firma si hay KO/OK, mini-píldoras SGI→SGX/SGO/···.</li>
+  <li>Intentos iguales consecutivos → <b>#N–#M (k×)</b> expandible. Resumen agregado por frecuencia.</li>
+  <li>Separador <b>✓ Firma OK — nueva fase</b> si hubo SGO y luego más SGI. Badge <b>acceso ≠ firma</b> si acceso Cl@ve y firma Autofirm@ (o viceversa).</li>
+  <li>No modifica <b>idReglaDetectada</b>, cartel global ni Acción/Mail (solo presentación).</li>
+  <li>Fixtures de prueba en carpeta <b>trazas_prueba/</b> del repositorio.</li>
 
   <br>
 
@@ -1497,17 +1589,7 @@ else if (idReglaDetectada && idReglaDetectada.indexOf("error_clave") === 0) {
     default:                   codigoTexto = "código " + (codigoClaveDetectado || "?");
   }
 
-  // Literal técnico (gris pequeño) reconstruido desde la traza
-  let literalClave = "CODI ERROR: " + (codigoClaveDetectado || "?")
-    + " - PROVEÏDOR: CLAVEFIRMA";
-  if (tipusResultatDetectado) {
-    literalClave += " - TIPUS RESULTAT: " + tipusResultatDetectado;
-  }
-
   fraseDiagnostico = "La firma se inicia pero falla en Cl@ve (" + codigoTexto + ").";
-  if (idReglaDetectada !== "error_clave_103_15" && idReglaDetectada !== "error_clave_101") {
-    fraseDiagnostico += " " + literalFlujo(literalClave);
-  }
 
 }
 else if (idReglaDetectada === "error_validacion_certificado") {
@@ -1840,7 +1922,7 @@ if (erroresUnicos.length > 0) {
     salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
     salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
     salidaFinal += "<div class=\"panel-card__body\">";
-    salidaFinal += "<div class='literal-pequeno'>";
+    salidaFinal += htmlAperturaLiteralesDetectados(lineasError);
 
     const literalCounts = {};
     const literalOrder = [];
@@ -1882,7 +1964,7 @@ else if (contexto.fase === "pre_firma") {
   salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
   salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
   salidaFinal += "<div class=\"panel-card__body\">";
-  salidaFinal += "<div class='literal-pequeno'>";
+  salidaFinal += htmlAperturaLiteralesDetectados(lineasError);
 
   // Agrupar literales limpiando cada línea original y contando repeticiones
   const literalCounts = {};
@@ -1926,7 +2008,7 @@ else if (contexto.fase === "pre_firma") {
 salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
 salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
 salidaFinal += "<div class=\"panel-card__body\">";
-salidaFinal += "<div class='literal-pequeno'>";
+salidaFinal += htmlAperturaLiteralesDetectados(lineasError);
 
 // Agrupamos contando repeticiones y mostramos el texto original una sola vez.
 // No filtramos por "TR_": en Cl@ve el error suele ir en la misma línea que el evento TR_SGX.
@@ -1987,6 +2069,10 @@ salidaFinal += "<div style=\"margin-top:18px;text-align:center;\">"
 
 // 🔹 NUEVO: pintar flujo visual encima
 renderFlujoVisual(eventosFlujo);
+
+// 🔹 Flujo de Firma — motor por ventanas + UI (#flujoFirmaDetalle)
+const flujoFirmaAnalisis = analizarFlujoFirma(lineasTraza);
+renderFlujoFirmaUI(flujoFirmaAnalisis);
 
 // Cambios 2026-06-12: mostrar el card del flujo solo cuando hay resultado
 const flujoCard = document.getElementById("flujoVisualCard");
@@ -2188,6 +2274,525 @@ metodoCert.onchange = () => {
   bloqueSistema.style.display = "block";
 };
 });
+
+// =====================================
+// 🔹 FLUJO DE FIRMA — motor por ventanas + UI
+// Cada TR_SGI abre un intento; ventana = hasta el siguiente TR_SGI (timestamps).
+// Clasificación por ventana (no reutiliza flags globales del árbol idReglaDetectada).
+// =====================================
+
+const ETIQUETA_RESULTADO_FIRMA = {
+  firma_ok: "Firma OK",
+  sin_cierre: "Sin cierre",
+  saf_27: "SAF_27",
+  validacion_certificado: "Validación certificado",
+  clave_movil_no_permitida: "Cl@ve móvil no permitida",
+  ko_clave_8_15: "Cl@ve 8–15",
+  ko_clave_103: "Cl@ve 103",
+  ko_clave_103_15: "Cl@ve 103-15",
+  ko_clave_101: "Cl@ve 101",
+  ko_clave_104: "Cl@ve 104",
+  ko_clave_otro: "Cl@ve (otro código)",
+  cancelada_clave: "Cancelada (Cl@ve)",
+  ko_clave_sin_codigo: "KO Cl@ve sin código",
+  timeout_firma: "Client de firma - iPhone",
+  fitxer_buit: "Fitxer buit",
+  cliente_firma_movil: "Cliente firma móvil - Android",
+  servidor_intermedio: "Servidor intermedio",
+  cancelada_autofirma: "Cancelada (Autofirm@)",
+  cancelada_sin_metodo: "Cancelada (sin método)",
+  ko_autofirma_otro: "KO Autofirma (otro)",
+  ko_generico: "KO genérico",
+  ko_sin_detalle: "KO sin detalle"
+};
+
+const TOOLTIP_SIN_CIERRE_FIRMA = "Sin cierre (Solo Inicio Firma)";
+
+function htmlEtiquetaResultadoFlujoFirma(resultado, etiqueta) {
+  const color = colorResultadoFlujoFirma(resultado);
+  const extra = resultado === "sin_cierre"
+    ? ` class="flujo-firma-resultado flujo-firma-resultado--sin-cierre" title="${TOOLTIP_SIN_CIERRE_FIRMA}"`
+    : ` class="flujo-firma-resultado"`;
+  return `<span${extra} style="color:${color}">${escapeHtmlFlujoFirma(etiqueta)}</span>`;
+}
+
+function esLineaInicioFirmaHelper(linea) {
+  return /^TR_SGI\s+-/.test(String(linea || ""));
+}
+
+function formatearTsTraza(ts) {
+  if (ts == null) return "—";
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2, "0");
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function detectarAccesoEnLineaIniCar(linea) {
+  const t = String(linea || "").toUpperCase();
+  if (/CLAVE[_\s]?MOVIL|CLAVEMOVIL|M[ÈE]TODE.*CLAVE.*MOVIL/.test(t)) return "clave_movil";
+  if (/CLAVE[_\s]?PERMANENT|CLAVEPERMANENT|CLAVEFIRMA/.test(t)) return "clave_permanente";
+  if (/\bAUT\b|CERTIFICAD|AUTOFIRMA|FNMT|DNIe/.test(t)) return "certificado";
+  return "desconocido";
+}
+
+function detectarAccesoPrevioIntento(lineasTraza, tsSgi, indiceSgi) {
+  // Acceso = TR_INI/CAR cronológicamente anterior al SGI (no depende del orden de pegado)
+  if (tsSgi != null) {
+    let mejorLinea = null;
+    let mejorTs = -Infinity;
+    for (const linea of lineasTraza) {
+      if (!/^TR_INI\s+-/.test(linea) && !/^TR_CAR\s+-/.test(linea)) continue;
+      const ts = extraerTimestampLineaTraza(linea);
+      if (ts == null || ts >= tsSgi) continue;
+      if (ts > mejorTs) {
+        mejorTs = ts;
+        mejorLinea = linea;
+      }
+    }
+    if (mejorLinea) return detectarAccesoEnLineaIniCar(mejorLinea);
+  }
+  // Respaldo sin timestamp: buscar hacia arriba en el pegado
+  for (let i = indiceSgi - 1; i >= 0; i--) {
+    const linea = lineasTraza[i];
+    if (/^TR_INI\s+-/.test(linea) || /^TR_CAR\s+-/.test(linea)) {
+      return detectarAccesoEnLineaIniCar(linea);
+    }
+  }
+  return null;
+}
+
+// 👉 Ventana del intento: desde ts del SGI hasta el siguiente SGI (excl.).
+// SistraHelp pega lo más reciente arriba → TR_SGX puede ir ANTES que su TR_SGI en el array.
+function lineasEnVentanaIntento(lineasTraza, lineaSgi, tsSgi, tsSiguienteSgi) {
+  if (tsSgi == null) {
+    // Sin timestamps: recorte por índices (comportamiento anterior)
+    const indiceSgi = lineasTraza.indexOf(lineaSgi);
+    const sgis = lineasTraza.map((l, i) => esLineaInicioFirmaHelper(l) ? i : -1).filter(i => i >= 0);
+    const pos = sgis.indexOf(indiceSgi);
+    const indiceFin = pos >= 0 && pos < sgis.length - 1 ? sgis[pos + 1] : lineasTraza.length;
+    return lineasTraza.slice(indiceSgi, indiceFin);
+  }
+
+  const ventana = lineasTraza.filter(linea => {
+    const ts = extraerTimestampLineaTraza(linea);
+    if (ts == null) return linea === lineaSgi;
+    return ts >= tsSgi && (tsSiguienteSgi == null || ts < tsSiguienteSgi);
+  });
+
+  if (!ventana.includes(lineaSgi)) ventana.push(lineaSgi);
+  return ventana;
+}
+
+function detectarMetodoFirmaEnLineas(lineas) {
+  for (const linea of lineas) {
+    if (esMetodoFirmaClaveEnLineaHelper(linea)) return "clave";
+    if (esMetodoFirmaAutofirmaEnLineaHelper(linea)) return "autofirma";
+  }
+  return null;
+}
+
+function extraerCodigoClaveEnLineas(lineas) {
+  for (const linea of lineas) {
+    if (linea.includes("CLAVEFIRMA") && /ERROR:\s*\d+/.test(linea)) {
+      const matchCodigo = linea.match(/ERROR:\s*(\d+)/);
+      const matchTipus = linea.match(/(?:TIPUS\s+)?RESULTAT\s*:\s*(\d+)/i)
+        || linea.match(/RESULTAD[OA]?\s*:\s*(\d+)/i);
+      return {
+        codigo: matchCodigo ? matchCodigo[1] : null,
+        tipus: matchTipus ? matchTipus[1] : null
+      };
+    }
+  }
+  return null;
+}
+
+function lineasKoOrdenadasCronologicamente(lineas) {
+  return lineas
+    .filter(esLineaFirmaKoHelper)
+    .map(linea => ({ linea, ts: extraerTimestampLineaTraza(linea) }))
+    .sort((a, b) => {
+      if (a.ts != null && b.ts != null) return a.ts - b.ts;
+      if (a.ts != null) return -1;
+      if (b.ts != null) return 1;
+      return 0;
+    })
+    .map(entry => entry.linea);
+}
+
+function clasificarResultadoVentana(lineasVentana) {
+  const textoVentana = lineasVentana.join("\n");
+  const haySgo = lineasVentana.some(l => /^TR_SGO\s+-/.test(l));
+  const kos = lineasKoOrdenadasCronologicamente(lineasVentana);
+  const koAnteriores = kos.length > 1 ? kos.length - 1 : 0;
+  const ultimoKo = kos[kos.length - 1] || null;
+  const metodoFirma = detectarMetodoFirmaEnLineas(lineasVentana);
+
+  if (haySgo && kos.length === 0) {
+    return { resultado: "firma_ok", metodoFirma, koAnteriores: 0, mensajeKo: null };
+  }
+
+  if (!haySgo && kos.length === 0) {
+    return { resultado: "sin_cierre", metodoFirma, koAnteriores: 0, mensajeKo: null };
+  }
+
+  let resultado = "ko_sin_detalle";
+
+  if (/SAF_27|SAF27\b/i.test(textoVentana)) {
+    resultado = "saf_27";
+  } else if (lineasVentana.some(esErrorValidacionCertificadoFirmanteHelper)) {
+    resultado = "validacion_certificado";
+  } else if (/CLAVE[_\s]?MOVIL.*NO.*PERM[EE]|M[ÈE]TODE.*CLAVE.*MOVIL.*NO/i.test(textoVentana)) {
+    resultado = "clave_movil_no_permitida";
+  } else {
+    const clave = extraerCodigoClaveEnLineas(lineasVentana);
+    if (clave && clave.codigo === "103") {
+      resultado = clave.tipus === "15" ? "ko_clave_103_15" : "ko_clave_103";
+    } else if (clave && /^(8|9|10|11|12|13|14|15)$/.test(clave.codigo)) {
+      resultado = "ko_clave_8_15";
+    } else if (clave && clave.codigo === "101") {
+      resultado = "ko_clave_101";
+    } else if (clave && clave.codigo === "104") {
+      resultado = "ko_clave_104";
+    } else if (clave && clave.codigo) {
+      resultado = "ko_clave_otro";
+    } else if (/SIGNATURA CANCEL|FIRMA CANCEL/i.test(textoVentana)) {
+      if (metodoFirma === "clave" || lineasVentana.some(l => /SIGNATURA CANCEL|FIRMA CANCEL/i.test(l) && esMetodoFirmaClaveEnLineaHelper(l))) {
+        resultado = "cancelada_clave";
+      } else if (metodoFirma === "autofirma" || lineasVentana.some(l => /SIGNATURA CANCEL|FIRMA CANCEL/i.test(l) && esMetodoFirmaAutofirmaEnLineaHelper(l))) {
+        resultado = "cancelada_autofirma";
+      } else {
+        resultado = "cancelada_sin_metodo";
+      }
+    } else if (/TIEMPO PARA FIRMAR|TEMPS PER A FIRMAR|EL TEMPS PER A FIRMAR/i.test(textoVentana)) {
+      resultado = "timeout_firma";
+    } else if (/FITXER SIGNAT.*BUIT|FICHIERO SIGNAT.*VAC|SIGNAT EST[AÁ] BUIT/i.test(textoVentana)) {
+      resultado = "fitxer_buit";
+    } else if (/CLIENT(E)? DE FIRMA M[ÒOÓ]?VIL|FIRMA MOVIL|ERROR DE AUTOFIRMA O DEL CLIENTE DE FIRMA/i.test(textoVentana)) {
+      resultado = "cliente_firma_movil";
+    } else if (/SERVIDOR INTERMEDI|NO SE PUDO CONECTAR CON EL SERVIDOR INTERMEDIO|NO S['']HA POGUT CONNECTAR.*SERVIDOR INTERMEDI/i.test(textoVentana)) {
+      resultado = "servidor_intermedio";
+    } else if (/ERROR DE AUTOFIRMA|ERROR D['']AUTOFIRMA|AUTOFIRMA|PLUGIN.*AUTOFIRMA|AI500001/i.test(textoVentana) || metodoFirma === "autofirma") {
+      resultado = "ko_autofirma_otro";
+    } else if (metodoFirma === "clave") {
+      resultado = "ko_clave_sin_codigo";
+    } else if (ultimoKo && extraerMensajeEventoTraza(ultimoKo)) {
+      resultado = "ko_generico";
+    }
+  }
+
+  const mensajeKo = ultimoKo ? (extraerMensajeEventoTraza(ultimoKo) || ultimoKo.slice(0, 120)) : null;
+  return { resultado, metodoFirma, koAnteriores, mensajeKo };
+}
+
+function segmentarIntentosFirma(lineasTraza) {
+  const sgis = lineasTraza
+    .map((linea, idx) => ({ linea, idx, ts: extraerTimestampLineaTraza(linea) }))
+    .filter(entry => esLineaInicioFirmaHelper(entry.linea))
+    .sort((a, b) => {
+      if (a.ts != null && b.ts != null) return a.ts - b.ts;
+      if (a.ts != null) return -1;
+      if (b.ts != null) return 1;
+      return b.idx - a.idx; // pegado nuevo→viejo: idx menor = más reciente
+    });
+
+  return sgis.map((sgi, i) => {
+    const tsSiguienteSgi = i < sgis.length - 1 ? sgis[i + 1].ts : null;
+    const lineasVentana = lineasEnVentanaIntento(lineasTraza, sgi.linea, sgi.ts, tsSiguienteSgi);
+    const clasificacion = clasificarResultadoVentana(lineasVentana);
+
+    return {
+      numIntento: i + 1,
+      indiceSgi: sgi.idx,
+      lineaSgi: sgi.linea,
+      tsSgi: sgi.ts,
+      tsSgiTexto: formatearTsTraza(sgi.ts),
+      acceso: detectarAccesoPrevioIntento(lineasTraza, sgi.ts, sgi.idx),
+      lineasVentana,
+      etiqueta: ETIQUETA_RESULTADO_FIRMA[clasificacion.resultado] || clasificacion.resultado,
+      ...clasificacion
+    };
+  });
+}
+
+function agruparResumenFlujoFirma(intentos) {
+  const resumen = {};
+  intentos.forEach(intento => {
+    const key = intento.resultado;
+    if (!resumen[key]) {
+      resumen[key] = { resultado: key, etiqueta: intento.etiqueta, count: 0 };
+    }
+    resumen[key].count++;
+  });
+  return Object.values(resumen).sort((a, b) => b.count - a.count);
+}
+
+function agruparConsecutivosFlujoFirma(intentos) {
+  const grupos = [];
+  intentos.forEach(intento => {
+    const key = `${intento.resultado}|${intento.metodoFirma || ""}`;
+    const ultimo = grupos[grupos.length - 1];
+    if (ultimo && ultimo.key === key && intento.numIntento === ultimo.hasta + 1) {
+      ultimo.hasta = intento.numIntento;
+      ultimo.cantidad++;
+    } else {
+      grupos.push({
+        key,
+        resultado: intento.resultado,
+        etiqueta: intento.etiqueta,
+        metodoFirma: intento.metodoFirma,
+        desde: intento.numIntento,
+        hasta: intento.numIntento,
+        cantidad: 1
+      });
+    }
+  });
+  return grupos;
+}
+
+function marcarSeparadoresFase(intentos) {
+  intentos.forEach((intento, i) => {
+    intento.separadorFaseAntes = i > 0 && intentos[i - 1].resultado === "firma_ok";
+  });
+  return intentos;
+}
+
+function analizarFlujoFirma(lineasTraza) {
+  const intentos = marcarSeparadoresFase(segmentarIntentosFirma(lineasTraza));
+  const notaQaa = lineasTraza.some(l => /QAARECARGATRAMITE|NIVELL DE QAA|NIVEL DE QAA/i.test(l));
+
+  if (intentos.length === 0) {
+    return {
+      hayFaseFirma: false,
+      motivo: "sin_inicio_firma",
+      intentos: [],
+      resumen: [],
+      gruposConsecutivos: [],
+      notaQaa
+    };
+  }
+
+  return {
+    hayFaseFirma: true,
+    totalIntentos: intentos.length,
+    intentos,
+    resumen: agruparResumenFlujoFirma(intentos),
+    gruposConsecutivos: agruparConsecutivosFlujoFirma(intentos),
+    notaQaa
+  };
+}
+
+function escapeHtmlFlujoFirma(texto) {
+  return String(texto ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function etiquetaAccesoFlujoFirma(acceso) {
+  const map = {
+    clave_movil: "Cl@ve móvil",
+    clave_permanente: "Cl@ve permanente",
+    certificado: "Certificado local"
+  };
+  return acceso ? (map[acceso] || acceso) : "—";
+}
+
+function htmlAccesoFlujoFirma(acceso) {
+  if (acceso === "desconocido") {
+    return '<span class="flujo-firma-acceso flujo-firma-acceso--revisar" title="Revisar TR_CAR (Carga del trámite) anterior al inicio de firma — ahí suele constar el método de acceso (Cl@ve, Certificado) y el SO/dispositivo (Windows, Mac, Android, iPhone).">Revisar Acceso</span>';
+  }
+  return `<span class="flujo-firma-acceso">${escapeHtmlFlujoFirma(etiquetaAccesoFlujoFirma(acceso))}</span>`;
+}
+
+function accesoDesconocidoOmitidoPorKoClave(intento) {
+  return /^ko_clave/.test(intento.resultado) || intento.resultado === "cancelada_clave";
+}
+
+function debeMostrarAccesoFlujoFirma(intento) {
+  if (intento.acceso && intento.acceso !== "desconocido") return true;
+  if (intento.acceso === "desconocido" && accesoDesconocidoOmitidoPorKoClave(intento)) return false;
+  return intento.acceso === "desconocido";
+}
+
+function etiquetaMetodoFlujoFirma(metodo) {
+  if (metodo === "clave") return "Cl@veFirm@";
+  if (metodo === "autofirma") return "Autofirm@";
+  return null;
+}
+
+function colorResultadoFlujoFirma(resultado) {
+  if (resultado === "firma_ok") return "#2e6e14";
+  if (resultado === "sin_cierre") return "#888";
+  if (/^ko_clave|^clave_movil|cancelada_clave|ko_clave_sin/.test(resultado)) return "#c0392b";
+  if (/^cancelada/.test(resultado)) return "#b7770d";
+  if (resultado === "validacion_certificado") return "#8e44ad";
+  if (resultado === "timeout_firma") return "#d35400";
+  if (resultado === "cliente_firma_movil") return COLOR_CLIENTE_FIRMA_MOVIL;
+  return "#a12c7b";
+}
+
+function hayDiscrepanciaAccesoFirmaIntento(intento) {
+  const acc = intento.acceso;
+  const met = intento.metodoFirma;
+  if ((acc === "clave_movil" || acc === "clave_permanente") && met === "autofirma") return true;
+  if (acc === "certificado" && met === "clave") return true;
+  return false;
+}
+
+function metaIntentoFlujoFirma(intento) {
+  const partes = [];
+  if (debeMostrarAccesoFlujoFirma(intento)) {
+    partes.push(htmlAccesoFlujoFirma(intento.acceso));
+  }
+  const metodoTxt = etiquetaMetodoFlujoFirma(intento.metodoFirma);
+  if (metodoTxt) partes.push(`Método: ${escapeHtmlFlujoFirma(metodoTxt)}`);
+  if (hayDiscrepanciaAccesoFirmaIntento(intento)) {
+    partes.push('<span class="flujo-firma-discrepancia">acceso ≠ firma</span>');
+  }
+  return partes.join(" · ");
+}
+
+function metaGrupoFlujoFirma(intentos) {
+  const accesos = [...new Set(
+    intentos.filter(debeMostrarAccesoFlujoFirma).map(i => i.acceso).filter(Boolean)
+  )];
+  const metodos = [...new Set(intentos.map(i => i.metodoFirma).filter(Boolean))];
+  const partes = [];
+  if (accesos.length === 1) {
+    partes.push(htmlAccesoFlujoFirma(accesos[0]));
+  } else if (accesos.length > 1) {
+    partes.push("Acceso: varios");
+  }
+  if (metodos.length === 1) {
+    partes.push(`Método: ${escapeHtmlFlujoFirma(etiquetaMetodoFlujoFirma(metodos[0]))}`);
+  } else if (metodos.length > 1) {
+    partes.push("Método: varios");
+  }
+  if (intentos.some(hayDiscrepanciaAccesoFirmaIntento)) {
+    partes.push('<span class="flujo-firma-discrepancia">acceso ≠ firma</span>');
+  }
+  return partes.join(" · ");
+}
+
+function htmlMiniFlujoIntento(intento) {
+  const haySgo = intento.lineasVentana.some(l => /^TR_SGO\s+-/.test(l));
+  const haySgx = intento.lineasVentana.some(esLineaFirmaKoHelper);
+  const colorSgi = "#2e6e14";
+
+  let html = '<span class="flujo-firma-mini" aria-label="Mini flujo del intento">';
+  html += `<span class="flujo-firma-mini-pill" style="border-color:${colorSgi};color:${colorSgi}" title="Inicio firma">TR_SGI</span>`;
+  html += '<span class="flujo-firma-mini-flecha">→</span>';
+
+  if (intento.resultado === "firma_ok" || haySgo) {
+    html += '<span class="flujo-firma-mini-pill" style="border-color:#2e6e14;color:#2e6e14" title="Firma OK">TR_SGO</span>';
+  } else if (haySgx || (intento.resultado !== "sin_cierre" && intento.resultado !== "firma_ok")) {
+    const cKo = colorResultadoFlujoFirma(intento.resultado);
+    html += `<span class="flujo-firma-mini-pill" style="border-color:${cKo};color:${cKo}" title="Firma KO">TR_SGX</span>`;
+  } else {
+    html += `<span class="flujo-firma-mini-pill flujo-firma-mini-pill--pendiente" style="border-color:#ccc;color:#999" title="${TOOLTIP_SIN_CIERRE_FIRMA}">···</span>`;
+  }
+
+  html += "</span>";
+  return html;
+}
+
+function htmlLineaIntentoFlujoFirma(intento, opts = {}) {
+  const compacto = opts.compacto === true;
+  const koExtra = intento.koAnteriores
+    ? ` <span class="flujo-firma-ko-prev">(+${intento.koAnteriores} KO anterior/es)</span>`
+    : "";
+
+  return `<li class="flujo-firma-item">
+    <div class="flujo-firma-item-fila">
+      <span class="flujo-firma-num">#${intento.numIntento}</span>
+      ${htmlMiniFlujoIntento(intento)}
+      <span class="flujo-firma-ts">${escapeHtmlFlujoFirma(intento.tsSgiTexto)}</span>
+      ${htmlEtiquetaResultadoFlujoFirma(intento.resultado, intento.etiqueta)}${koExtra}
+    </div>
+    ${compacto ? "" : `<span class="flujo-firma-meta">${metaIntentoFlujoFirma(intento)}</span>`}
+  </li>`;
+}
+
+function construirFilasUiFlujoFirma(data) {
+  const map = new Map(data.intentos.map(i => [i.numIntento, i]));
+  return [...data.gruposConsecutivos].reverse().map(g => ({
+    esGrupo: g.cantidad > 1,
+    grupo: g,
+    intentos: Array.from({ length: g.cantidad }, (_, idx) => map.get(g.desde + idx)).filter(Boolean)
+  }));
+}
+
+function renderFlujoFirmaUI(data) {
+  const contenedor = document.getElementById("flujoFirmaDetalle");
+  if (!contenedor) return;
+
+  if (!data.hayFaseFirma) {
+    const msg = data.motivo === "sin_inicio_firma"
+      ? "Sin inicio de firma (TR_SGI) en la traza."
+      : "Sin fase de firma.";
+    contenedor.innerHTML = `
+      <details class="flujo-firma-details">
+        <summary class="flujo-firma-summary">Flujo de Firma <span class="flujo-firma-badge">0 intentos</span></summary>
+        <p class="flujo-firma-nota">${escapeHtmlFlujoFirma(msg)}</p>
+        ${data.notaQaa ? '<p class="flujo-firma-nota-gris">Nota: incidencia QAA detectada en la traza (ver análisis global).</p>' : ""}
+      </details>`;
+    contenedor.style.display = "block";
+    return;
+  }
+
+  const filas = construirFilasUiFlujoFirma(data);
+  let listaHtml = '<ul class="flujo-firma-lista">';
+
+  filas.forEach(fila => {
+    const primero = fila.intentos[0];
+    if (primero && primero.separadorFaseAntes) {
+      listaHtml += '<li class="flujo-firma-separador">✓ Firma OK — nueva fase de firma</li>';
+    }
+
+    if (!fila.esGrupo) {
+      listaHtml += htmlLineaIntentoFlujoFirma(fila.intentos[0]);
+      return;
+    }
+
+    const g = fila.grupo;
+    const rango = g.desde === g.hasta ? `#${g.desde}` : `#${g.desde}–#${g.hasta}`;
+    const inner = [...fila.intentos].reverse()
+      .map(intento => htmlLineaIntentoFlujoFirma(intento, { compacto: true }))
+      .join("");
+
+    listaHtml += `<li class="flujo-firma-grupo">
+      <details class="flujo-firma-grupo-details">
+        <summary class="flujo-firma-grupo-summary">
+          <span class="flujo-firma-grupo-mult">${rango} (${g.cantidad}×)</span>
+          ${htmlMiniFlujoIntento(fila.intentos[fila.intentos.length - 1])}
+          ${htmlEtiquetaResultadoFlujoFirma(g.resultado, g.etiqueta)}
+          <span class="flujo-firma-meta">${metaGrupoFlujoFirma(fila.intentos)}</span>
+        </summary>
+        <ul class="flujo-firma-lista-anidada">${inner}</ul>
+      </details>
+    </li>`;
+  });
+  listaHtml += "</ul>";
+
+  const resumenHtml = data.resumen.length
+    ? `<div class="flujo-firma-resumen"><span class="flujo-firma-resumen-titulo">Resumen:</span>${data.resumen.map(r => {
+        const c = colorResultadoFlujoFirma(r.resultado);
+        const titleSinCierre = r.resultado === "sin_cierre" ? ` title="${TOOLTIP_SIN_CIERRE_FIRMA}"` : "";
+        return `<span class="flujo-firma-resumen-chip${r.resultado === "sin_cierre" ? " flujo-firma-resultado--sin-cierre" : ""}" style="border-left-color:${c}"${titleSinCierre}>${escapeHtmlFlujoFirma(r.etiqueta)} ×${r.count}</span>`;
+      }).join("")}</div>`
+    : "";
+
+  contenedor.innerHTML = `
+    <details class="flujo-firma-details">
+      <summary class="flujo-firma-summary">Flujo de Firma <span class="flujo-firma-badge">${data.totalIntentos} intento${data.totalIntentos !== 1 ? "s" : ""}</span></summary>
+      <p class="flujo-firma-nota-gris">Detalles por cada intento de firma</p>
+      ${listaHtml}
+      ${resumenHtml}
+      ${data.notaQaa ? '<p class="flujo-firma-nota-gris">Nota: QAA detectado en la traza.</p>' : ""}
+    </details>`;
+  contenedor.style.display = "block";
+}
 
 // =====================================
 // 🔹 NUEVO: FUNCIÓN FLUJO VISUAL

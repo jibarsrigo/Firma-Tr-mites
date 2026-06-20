@@ -4,7 +4,7 @@
 
 <script>
   // 🔹 VERSION HTML (editable manual)
-  const VERSION_HTML = "1.3.0";
+  const VERSION_HTML = "1.3.1";
 </script>
 
 <!-- =====================================================
@@ -34,6 +34,10 @@
      - Bloque «Problemas de acceso» (SAML / página en blanco) plegable;
        al cerrar limpia selección y panel de ayuda
      - Etiquetas .opcion__titulo / .opcion__sub en método y sistema
+
+     VERSION 1.3.1
+     - Tarjeta «Flujo del trámite»: subapartado #flujoFirmaDetalle (Flujo de Firma por intento)
+     - Agrupación consecutiva, mini-píldoras SGI→cierre, badge acceso≠firma
 
      VERSION 1.2.5
      - Tarjeta «Flujo del trámite» (#flujoVisualCard): píldoras TR_ + #flujoDiagnostico
@@ -87,6 +91,14 @@
     /* Evita que un literal largo sin espacios desborde el ancho de la tarjeta */
     overflow-wrap: anywhere;
     word-break: break-word;
+  }
+  .literal-cliente-firma,
+  .literal-aviso-cliente-firma {
+    color: #a12c7b;
+    font-weight: 600;
+  }
+  .literal-aviso-cliente-firma {
+    margin-bottom: 4px;
   }
 </style>
   
@@ -235,6 +247,217 @@ body {
   border-top:1px solid rgba(0,0,0,0.06);
   font-size:12px;
   color:#555;
+}
+
+/* Flujo de Firma — detalle por intento (#flujoFirmaDetalle) */
+#flujoFirmaDetalle {
+  display:none;
+  margin-top:8px;
+  padding-top:10px;
+  border-top:1px solid rgba(0,0,0,0.06);
+}
+.flujo-firma-details {
+  font-size:12px;
+  color:#444;
+}
+.flujo-firma-summary {
+  cursor:pointer;
+  font-weight:600;
+  color:#01696f;
+  list-style:none;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  user-select:none;
+}
+.flujo-firma-summary::-webkit-details-marker { display:none; }
+.flujo-firma-badge {
+  font-weight:500;
+  font-size:11px;
+  color:#666;
+  background:#f0f0ee;
+  border-radius:10px;
+  padding:1px 8px;
+}
+.flujo-firma-nota-gris {
+  margin:8px 0 6px;
+  font-size:11px;
+  color:#888;
+  line-height:1.4;
+}
+.flujo-firma-nota {
+  margin:8px 0 0;
+  font-size:12px;
+  color:#666;
+}
+.flujo-firma-lista {
+  list-style:none;
+  margin:8px 0 0;
+  padding:0;
+}
+.flujo-firma-item {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding:5px 0;
+  border-bottom:1px solid rgba(0,0,0,0.04);
+  line-height:1.35;
+}
+.flujo-firma-item-fila {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px 10px;
+  width:100%;
+}
+.flujo-firma-mini {
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  flex-shrink:0;
+}
+.flujo-firma-mini-flecha {
+  font-size:9px;
+  color:#999;
+}
+.flujo-firma-mini-pill {
+  display:inline-block;
+  padding:1px 6px;
+  border-radius:10px;
+  border:1px solid;
+  font-size:9px;
+  font-family:monospace;
+  background:#fff;
+  line-height:1.3;
+  white-space:nowrap;
+}
+.flujo-firma-mini-pill--pendiente {
+  border-style:dashed;
+  font-family:inherit;
+  letter-spacing:1px;
+}
+.flujo-firma-item:last-child { border-bottom:none; }
+.flujo-firma-num {
+  font-family:monospace;
+  font-size:11px;
+  color:#888;
+  min-width:1.8em;
+}
+.flujo-firma-ts {
+  font-size:11px;
+  color:#666;
+  font-family:monospace;
+}
+.flujo-firma-resultado {
+  font-weight:600;
+}
+.flujo-firma-resultado--sin-cierre {
+  cursor: help;
+}
+.flujo-firma-ko-prev {
+  font-size:11px;
+  color:#888;
+  font-weight:400;
+}
+.flujo-firma-meta {
+  font-size:11px;
+  color:#777;
+  padding-left:0;
+  margin-left:2.4em;
+}
+.flujo-firma-separador {
+  list-style:none;
+  margin:6px 0;
+  padding:4px 8px;
+  font-size:11px;
+  color:#2e6e14;
+  background:#f6faf4;
+  border-left:3px solid #2e6e14;
+  border-radius:0 4px 4px 0;
+}
+.flujo-firma-resumen {
+  margin-top:10px;
+  padding-top:8px;
+  border-top:1px dashed rgba(0,0,0,0.08);
+  font-size:11px;
+  color:#555;
+  line-height:1.6;
+}
+.flujo-firma-resumen-titulo {
+  font-weight:600;
+  margin-right:6px;
+}
+.flujo-firma-resumen-chip {
+  display:inline-block;
+  background:#f5f5f3;
+  border-radius:8px;
+  padding:2px 8px;
+  margin:2px 4px 2px 0;
+  border-left:3px solid transparent;
+}
+.flujo-firma-acceso {
+  font-size:10px;
+  color:#555;
+  background:#eef6f6;
+  border-radius:6px;
+  padding:1px 6px;
+  white-space:nowrap;
+}
+.flujo-firma-acceso--revisar {
+  cursor: help;
+}
+.flujo-firma-discrepancia {
+  font-size:10px;
+  color:#a12c7b;
+  background:#fdf5f9;
+  border-radius:6px;
+  padding:1px 6px;
+  white-space:nowrap;
+}
+.flujo-firma-grupo {
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+.flujo-firma-grupo-details {
+  margin:2px 0;
+}
+.flujo-firma-grupo-summary {
+  cursor:pointer;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:6px 10px;
+  padding:5px 0;
+  border-bottom:1px solid rgba(0,0,0,0.04);
+  line-height:1.35;
+  list-style:none;
+}
+.flujo-firma-grupo-summary::-webkit-details-marker { display:none; }
+.flujo-firma-grupo-summary::before {
+  content:"▸";
+  font-size:10px;
+  color:#888;
+  margin-right:2px;
+  transition:transform 0.15s;
+}
+.flujo-firma-grupo-details[open] > .flujo-firma-grupo-summary::before {
+  transform:rotate(90deg);
+}
+.flujo-firma-grupo-mult {
+  font-family:monospace;
+  font-size:11px;
+  color:#555;
+  font-weight:600;
+}
+.flujo-firma-lista-anidada {
+  list-style:none;
+  margin:0 0 4px 14px;
+  padding:0 0 0 8px;
+  border-left:2px solid rgba(0,0,0,0.06);
+}
+.flujo-firma-lista-anidada .flujo-firma-item {
+  padding:4px 0;
 }
 
 /* Ensure label space below every step so vertical alignment is consistent */
@@ -521,11 +744,12 @@ textarea:focus {
 
 <!-- 🔹 NUEVO: flujo visual (formato tarjeta V5) -->
 <!-- Cambio 2026-06-16: tarjeta con cabecera gris + cuerpo blanco; el contenedor solo se muestra tras pulsar Analizar -->
-<div id="flujoVisualCard" class="panel-card" title="Resumen visual y diagnóstico del trámite. La acción operativa está en la tarjeta Acción">
+<div id="flujoVisualCard" class="panel-card">
   <div class="panel-card__head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#01696f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="12" r="2"/><circle cx="20" cy="12" r="2"/><path d="M6 12h4M14 12h4"/><rect x="10" y="9" width="4" height="6" rx="1"/></svg>Flujo del trámite</div>
   <div class="panel-card__body">
     <div id="flujoVisual"></div>
     <div id="flujoDiagnostico"></div>
+    <div id="flujoFirmaDetalle"></div>
   </div>
 </div>
 
