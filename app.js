@@ -1447,9 +1447,7 @@ else if (idReglaDetectada === "error_clave_movil" || idReglaDetectada === "error
     }
     if (hayAccesoClaveMovilEnTraza) {
       frase += " Se detecta acceso con " + literalFlujo("CLAVE_MOVIL") + ".";
-    } else if (!haySGX) {
-      frase += " Posible Cl@ve móvil.";
-    } else if (!haySignaturaCancelada) {
+    } else if (haySGX && !haySignaturaCancelada) {
       frase += " Revisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL.";
     }
     if (esCert && !esClave) {

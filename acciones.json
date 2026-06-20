@@ -59,7 +59,7 @@
 
     {
       "id": "error_clave_movil",
-      "accion": "La firma se inicia pero no se completa (solo aparece Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil.\nPosible Autofirma Android.\nRevisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL.",
+      "accion": "La firma se inicia pero no se completa (solo aparece Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil.\nPosible Autofirma en Android.\nRevisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura Cl@ve móvil o Certificado desde Android-Linux.\n*Linux — Si vemos este SO, se trata de Android con vista de ordenador en navegador.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave_movil_No_Permitido"
     },
 
@@ -83,7 +83,7 @@
 
     {
       "id": "error_autofirma_entorno",
-      "accion": "La firma se inicia pero no se completa (solo Inicio firma, sin Firma KO ni Firma OK).\nPosible bloqueo de invocación FIRE/AutoFirma: proxy, VPN, firewall o navegador.\nProblema habitual Autofirma en Android.\nPosible Autofirma Android.\nRevisar instalación AutoFirma.\nSolicitar prueba de firma local con PDF. Probar otro navegador y red distinta.\n*El mail se orienta según el SO detectado en la traza",
+      "accion": "La firma se inicia pero no se completa (solo Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil o Autofirma en Android. Revisar método usado en (Inicio Trámite / Carga Trámite).\nRevisar instalación AutoFirma.\nSolicitar prueba de firma local con PDF.\nProbar otro navegador y red distinta, por posible bloqueo de invocación FIRE/AutoFirma: proxy, VPN, firewall o navegador.\n*El mail se orienta según el SO detectado en la traza",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
