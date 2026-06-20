@@ -1,0 +1,48 @@
+---
+description: Al pegar trazas CAU en el chat, comparar con trazas_prueba/ y guardar casuísticas nuevas
+alwaysApply: true
+---
+
+# Biblioteca trazas_prueba (CAU)
+
+Cuando el usuario pegue una **traza SistraHelp** (líneas `TR_…`, `ERROR…`, etc.) para revisar, analizar o validar:
+
+## 1. Comprobar si ya existe la casuística
+
+- Leer `trazas_prueba/README.txt` y listar archivos en `trazas_prueba/`.
+- Comparar por **patrón funcional**, no por NIF ni fecha:
+  - Código Cl@ve (8–15, 101, 103, 103-15, 104…)
+  - Resultado Flujo de Firma (sin cierre ×N, SAF_27, Cliente firma móvil - Android, Client de firma - iPhone…)
+  - Regla global esperada (`error_clave_8_15`, `error_autofirma_cliente_android`, etc.)
+  - Mixtos (acceso ≠ firma, reiente + móvil → permanente + KO, etc.)
+
+Si la traza es la **misma casuística** con otro ciudadano/fecha → no duplicar; opcionalmente indicar al usuario qué fixture cubre el caso.
+
+## 2. Si es casuística nueva → guardar
+
+Crear `trazas_prueba/<PREFIJO>-<slug>.txt`:
+
+| Prefijo | Uso |
+|---------|-----|
+| `C-` | Cl@ve (códigos, móvil, permanente, reiente…) |
+| `F-` | Autofirma / FIRE / certificado (SAF_27, Android, iPhone…) |
+| `T-` | Sintéticas o plantillas de prueba UI |
+| `P-` | Portafib / pre_firma / formulario |
+
+**Formato del archivo**
+
+- Líneas `# …` al inicio: contexto CAU, método a marcar, Flujo de Firma esperado, regla global.
+- Luego la traza **tal cual** (orden SistraHelp: lo más reciente arriba).
+- Sin datos inventados.
+
+**Slug**: corto, minúsculas, guiones (`8-15_reiente_maria-soledad`).
+
+## 3. Actualizar README
+
+Añadir entrada en catálogo de `trazas_prueba/README.txt` (archivo, escenario, qué validar).
+
+## 4. Informar al usuario
+
+Decir si era nueva o ya existía, nombre del archivo y qué cubre.
+
+No hace falta commit salvo que el usuario lo pida; sí guardar siempre el fichero en el workspace.
