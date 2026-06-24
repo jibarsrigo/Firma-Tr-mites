@@ -1,6 +1,6 @@
 {
-  "version": "1.2.9",
-  "_changes_today": "2026-06-12: added hidden flow card, compact white frame, step status labels, and show/hide behavior on analyze/clear",
+  "version": "1.3.1",
+  "_changes_today": "2026-06-17: Autofirma cliente — pasos SO sin título; intro común en app.js",
   "acciones": [
 
     {
@@ -89,43 +89,43 @@
 
     {
       "id": "error_autofirma_cliente_windows",
-      "accion": "Error Autofirma.\nCerrar todos los navegadores y reintentar. Reinstalar autofirma.\nVerificar que AutoFirma abre manualmente y firma un PDF local antes de probar el trámite.\nSi fallo con varios navegadores, revisar firewall, VPN y antivirus.",
+      "accion": "Cerrar todos los navegadores y reintentar. Reinstalar Autofirma.\nVerificar que AutoFirma abre manualmente y firma un PDF local antes de probar el trámite.\nSi fallo con varios navegadores, revisar firewall, VPN y antivirus.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
     {
       "id": "error_autofirma_cliente_mac",
-      "accion": "Error Autofirma / FIRE en macOS.\nVerificar que AutoFirma abre desde Aplicaciones y firma un PDF local.\nSi firma local OK pero web KO: Herramientas → Restaurar instalación, probar otro navegador, cerrar navegador por completo.\nRevisar llavero (certificado con clave privada) y VPN.",
+      "accion": "Verificar que AutoFirma abre desde Aplicaciones y firma un PDF local.\nSi firma local OK pero web KO: Herramientas → Restaurar instalación, probar otro navegador, cerrar navegador por completo.\nRevisar llavero (certificado con clave privada) y VPN.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
     {
       "id": "error_autofirma_cliente_linux",
-      "accion": "Error Autofirma / FIRE en Linux.\nSolicitar prueba de firma local con PDF.\nSi firma local OK y web KO: usar Chrome o Firefox del sistema (no Snap/Flatpak) y Herramientas → Restaurar instalación.\nPara DNIe: verificar lector, módulo PKCS#11 y que el certificado aparece en AutoFirma.",
+      "accion": "Solicitar prueba de firma local con PDF.\nSi firma local OK y web KO: usar Chrome o Firefox del sistema (no Snap/Flatpak) y Herramientas → Restaurar instalación.\nPara DNIe: verificar lector, módulo PKCS#11 y que el certificado aparece en AutoFirma.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
     {
       "id": "error_autofirma_cliente_android",
-      "accion": "Error Autofirma App en Android.\nSolicitar prueba de firma local con PDF desde la app.\nSi no firma PDF local → detener diagnóstico (certificado/DNIe).\nCertificado FNMT debe estar importado como .p12/.pfx. Si firma local OK pero el trámite no abre la app, el trámite puede no ser compatible: recomendar ordenador o Cl@ve Permanente.",
+      "accion": "Solicitar prueba de firma local con PDF desde la app AutoFirma.\nSi no firma PDF local → detener diagnóstico (certificado/DNIe).\nCertificado FNMT debe estar importado como .p12/.pfx. Si firma local OK pero el trámite no abre la app, el trámite puede no ser compatible: recomendar ordenador o Cl@ve Permanente.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
     {
       "id": "error_autofirma_cliente_iphone",
-      "accion": "Error Autofirma App en iPhone/iPad.\nSolicitar prueba de firma local con PDF. Usar Safari en vista móvil (no vista de escritorio ni navegación privada).\nSi firma local OK pero web KO: posible incompatibilidad del trámite o fallo de invocación. Recomendar ordenador o método alternativo.",
+      "accion": "Solicitar prueba de firma local con PDF. Usar Safari en vista móvil (no vista de escritorio ni navegación privada).\nSi firma local OK pero web KO: posible incompatibilidad del trámite o fallo de invocación. Recomendar ordenador o método alternativo.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
     {
       "id": "error_autofirma_cliente_movil",
-      "accion": "Error Autofirma / Cliente de Firma Móvil (dispositivo móvil, SO no identificado en traza).\nSolicitar prueba de firma local con PDF desde AutoFirma App.\nSi firma local OK pero el trámite web falla, pedir probar en ordenador.",
+      "accion": "Solicitar prueba de firma local con PDF desde AutoFirma App.\nSi firma local OK pero el trámite web falla, pedir probar en ordenador.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
     {
       "id": "error_autofirma_cliente_generico",
-      "accion": "Error Autofirma / FIRE (entorno local). Acceso marcado como Cl@ve, pero la traza apunta a firma con certificado/AutoFirma.\nEn trazas recientes, SistraHelp muestra «Método de firma» en el Firma KO; en trazas anteriores a ese cambio puede no aparecer al pegar la traza.\nConfirmar método de firma real y SO: revisar literales del KO (timeout, cliente de firma, cancelada), acceso en Inicio trámite o Carga (doble clic), o preguntar al ciudadano.\n*Seleccione Certificado local + Sistema si conoce el SO para obtener la acción y el mail específicos.",
+      "accion": "Acceso marcado como Cl@ve, pero la traza apunta a firma con certificado/AutoFirma.\nEn trazas recientes, SistraHelp muestra «Método de firma» en el Firma KO; en trazas anteriores a ese cambio puede no aparecer al pegar la traza.\n*Seleccione Certificado local + sistema si conoce el SO para obtener los pasos específicos.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 

@@ -162,6 +162,31 @@ VERSION 1.3.34  - Flujo de Firma: tooltip «Sin cierre (Solo Inicio Firma)» en 
 VERSION 1.3.35  - Flujo de Firma: sin «Revisar Acceso» en KO Cl@ve (8–15, 101, 103, 104…); basta Método Cl@veFirm@
 
 VERSION 1.3.36  - Flujo de Firma: nota intro «Detalles por cada intento de firma»
+
+VERSION 1.3.37–1.3.43  - Refactor Autofirma cliente: el literal KO no indica el SO (SistraHelp engañoso)
+                POR QUÉ: mensajes como «Cliente de Firma Móvil» + servidor intermedio o
+                «client de firma» + timeout aparecen también en Windows/Mac; KO→cancel→OK
+                suele ser fallo transitorio del cliente Autofirma, no «es Android/iPhone».
+                SEPARACIÓN DE CAPAS (Flujo ≠ Literales ≠ cartel ≠ Acción/mail):
+                · Flujo de Firma → tipo de fallo técnico neutro (sin SO en la etiqueta)
+                · Literales → aviso/resaltado neutro; confirmar SO en TR_CAR
+                · Cartel → Problema Autofirma (servidor intermedio / timeout / …)
+                · Acción/mail → selector Certificado + Ordenador/móvil y TR_CAR (SO concreto)
+
+VERSION 1.3.43  - Acción: intro «Habitualmente desde Android/iPhone, pero no siempre» según KO
+                (servidor intermedio → Android; timeout+client de firma → iPhone); resto intro + pasos SO
+
+VERSION 1.3.42  - Cartel/frase global neutra: Problema con el cliente de firma Autofirma (tipo de fallo)
+
+VERSION 1.3.41  - Acción error_autofirma_cliente_*: bloque TR_CAR (3 párrafos) + pasos SO sin título «App Android»
+
+VERSION 1.3.40  - resolverReglaAutofirmaCliente: prioridad selector + TR_CAR/INI; literal KO ya no fuerza Android/iPhone
+
+VERSION 1.3.39  - Literales: avisos *Cliente Autofirma / servidor intermedio* o *Timeout* (sin Android/iPhone)
+
+VERSION 1.3.38  - Flujo de Firma: tooltips Servidor intermedio y Timeout firma (confirmar SO en TR_CAR)
+
+VERSION 1.3.37  - Flujo de Firma: etiquetas KO Servidor intermedio / Timeout firma (sustituyen Android/iPhone)
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -173,7 +198,7 @@ VERSION 1.3.36  - Flujo de Firma: nota intro «Detalles por cada intento de firm
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.36";
+const VERSION_JS = "1.3.43";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -189,8 +214,118 @@ const MIN_LITERAL_LENGTH = 20;            // Longitud mínima para considerar un
 const MAIL_AUTOFIRMA_BASE = "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma";
 const COLOR_CLIENTE_FIRMA_MOVIL = "#a12c7b";
 
+const INTRO_ACCION_AUTOFIRMA_CLIENTE_RESTO =
+  "Revisar en SistraHelp la Carga del trámite (TR_CAR) anterior al inicio de firma para confirmar si el acceso fue desde Ordenador (Windows/Mac) o dispositivo móvil (Android/iPhone).\n\n" +
+  "Si ya se conoce el sistema: marcar Certificado local + sistema en el analizador antes de pulsar Analizar.";
+
+const INTRO_ACCION_AUTOFIRMA_KO_SERVIDOR =
+  "Problema con el cliente de firma Autofirma. Habitualmente desde Android, pero no siempre.";
+
+const INTRO_ACCION_AUTOFIRMA_KO_TIMEOUT =
+  "Problema con el cliente de firma Autofirma. Habitualmente desde iPhone, pero no siempre.";
+
+const INTRO_ACCION_AUTOFIRMA_CLIENTE_GENERICO =
+  "Problema con el cliente de firma Autofirma.";
+
+function esReglaAutofirmaClienteConIntro(idRegla) {
+  return !!idRegla && idRegla.indexOf("error_autofirma_cliente_") === 0;
+}
+
+function introAccionAutofirmaCliente(lineas) {
+  const tipo = etiquetaTipoFalloAutofirmaClienteEnTraza(lineas);
+  let primera = INTRO_ACCION_AUTOFIRMA_CLIENTE_GENERICO;
+  if (tipo === "servidor intermedio") primera = INTRO_ACCION_AUTOFIRMA_KO_SERVIDOR;
+  else if (tipo === "timeout") primera = INTRO_ACCION_AUTOFIRMA_KO_TIMEOUT;
+  return primera + "\n\n" + INTRO_ACCION_AUTOFIRMA_CLIENTE_RESTO;
+}
+
+function aplicarIntroAccionAutofirmaCliente(textoAccion, lineas) {
+  const t = String(textoAccion || "");
+  if (/^Problema con el cliente de firma Autofirma/i.test(t)) return textoAccion;
+  return introAccionAutofirmaCliente(lineas) + "\n\n" + t;
+}
+
+function etiquetaTipoFalloDesdeLineaKo(linea) {
+  const s = String(linea || "");
+  if (/SERVIDOR INTERMEDI|NO SE PUDO CONECTAR|NO S['']HA POGUT CONNECTAR.*SERVIDOR INTERMEDI/i.test(s) ||
+      /CLIENT(E)? DE FIRMA M[ÒOÓ]?VIL|ERROR DE AUTOFIRMA O DEL CLIENTE DE FIRMA/i.test(s)) {
+    return "servidor intermedio";
+  }
+  if (/TIEMPO PARA FIRMAR|TEMPS PER A FIRMAR|EL TEMPS PER A FIRMAR/i.test(s) &&
+      /CLIENT(E)? DE FIRMA|client de firma/i.test(s)) {
+    return "timeout";
+  }
+  if (/FITXER SIGNAT.*BUIT|FICHIERO SIGNAT.*VAC|PLUGIN.*AUTOFIRMA|SIGNAT EST[AÁ] BUIT/i.test(s)) {
+    return "fitxer buit";
+  }
+  if (/SIGNATURA CANCEL|FIRMA CANCEL/i.test(s)) return "firma cancelada";
+  if (/MODUL.*FIRMA FINALITZAT|MODULO DE FIRMA FINALIZADO/i.test(s)) return "módulo finalizado";
+  return null;
+}
+
+function etiquetaTipoFalloAutofirmaClienteEnTraza(lineas) {
+  for (const linea of lineas || []) {
+    if (!esLineaFirmaKoHelper(linea)) continue;
+    const tipo = etiquetaTipoFalloDesdeLineaKo(linea);
+    if (tipo) return tipo;
+  }
+  const texto = (lineas || []).join("\n");
+  if (hayLiteralServidorIntermedioAutofirma(texto)) return "servidor intermedio";
+  if (hayLiteralTimeoutFirmaCliente(texto)) return "timeout";
+  if (/FITXER SIGNAT.*BUIT|PLUGIN.*AUTOFIRMA|SIGNAT EST[AÁ] BUIT/i.test(texto)) return "fitxer buit";
+  if (/SIGNATURA CANCEL|FIRMA CANCEL/i.test(texto)) return "firma cancelada";
+  return "cliente local";
+}
+
 function esLineaFirmaKoHelper(linea) {
   return /TR_SGX|FI FIRMA KO|FIN FIRMA KO/i.test(String(linea || ""));
+}
+
+function esLineaIniCarHelper(linea) {
+  return /^TR_INI\s+-/.test(String(linea || "")) || /^TR_CAR\s+-/.test(String(linea || ""));
+}
+
+function textoLineasTrazaSinKo(lineas) {
+  return (lineas || []).filter(l => !esLineaFirmaKoHelper(l)).join("\n");
+}
+
+function textoLineasIniCar(lineas) {
+  return (lineas || []).filter(esLineaIniCarHelper).join("\n");
+}
+
+function detectarSoEnTextoTraza(texto) {
+  const t = String(texto || "").toUpperCase();
+  if (/IPHONE|IPAD\b|\bIOS\b/.test(t)) return "iphone";
+  if (/ANDROID/.test(t)) return "android";
+  if (/LINUX|UBUNTU|DEBIAN|FEDORA/.test(t)) return "linux";
+  if (/MACOS|\bMAC\b|DARWIN|OS X/.test(t)) return "mac";
+  if (/WINDOWS|WIN32/.test(t)) return "windows";
+  return null;
+}
+
+function reglaAutofirmaClientePorSo(so) {
+  switch (so) {
+    case "iphone": return "error_autofirma_cliente_iphone";
+    case "android": return "error_autofirma_cliente_android";
+    case "linux": return "error_autofirma_cliente_linux";
+    case "mac": return "error_autofirma_cliente_mac";
+    case "windows": return "error_autofirma_cliente_windows";
+    default: return null;
+  }
+}
+
+function detectarSoMovilDesdePistas(soIniCar, soSinKo) {
+  if (soIniCar === "iphone" || soIniCar === "android") return soIniCar;
+  if (soSinKo === "iphone" || soSinKo === "android") return soSinKo;
+  // Linux en acceso/traza sin KO suele ser Android con user-agent de escritorio
+  if (soIniCar === "linux" || soSinKo === "linux") return "android";
+  return null;
+}
+
+function detectarSoEscritorioDesdePistas(soIniCar, soSinKo) {
+  const so = soIniCar || soSinKo;
+  if (so === "linux" || so === "mac" || so === "windows") return so;
+  return null;
 }
 
 // 👉 Método de firma en KO (Cl@ve → CL@VEFIRM@ al normalizar mayúsculas)
@@ -336,20 +471,26 @@ function hayLiteralClienteFirmaMovilAndroid(texto) {
   return /CLIENT(E)? DE FIRMA M[ÒOÓ]?VIL|ERROR DE AUTOFIRMA O DEL CLIENTE DE FIRMA M[ÒOÓ]?VIL/i.test(String(texto || ""));
 }
 
-function hayLiteralClientDeFirmaIphone(texto) {
+function hayLiteralServidorIntermedioAutofirma(texto) {
+  return /SERVIDOR INTERMEDIO|CLIENT(E)? DE FIRMA M[ÒOÓ]?VIL|ERROR DE AUTOFIRMA O DEL CLIENTE DE FIRMA M[ÒOÓ]?VIL/i.test(String(texto || ""));
+}
+
+function hayLiteralTimeoutFirmaCliente(texto) {
   const t = String(texto || "");
-  if (hayLiteralClienteFirmaMovilAndroid(t)) return false;
-  return /\bCLIENT DE FIRMA\b/i.test(t);
+  return (
+    (/TIEMPO PARA FIRMAR|TEMPS PER A FIRMAR/i.test(t) && /CLIENT(E)? DE FIRMA|client de firma/i.test(t)) ||
+    (/\bclient de firma\b/i.test(t) && !hayLiteralClienteFirmaMovilAndroid(t))
+  );
 }
 
 function detectarAvisosClienteFirmaLiterales(lineasTraza) {
   const texto = lineasTraza.join("\n");
   const avisos = [];
-  if (hayLiteralClienteFirmaMovilAndroid(texto)) {
-    avisos.push("*Cliente de Firma Móvil: Android");
+  if (hayLiteralServidorIntermedioAutofirma(texto)) {
+    avisos.push("*Cliente Autofirma / servidor intermedio — confirmar SO en TR_CAR");
   }
-  if (hayLiteralClientDeFirmaIphone(texto)) {
-    avisos.push("*Client de firma: iPhone");
+  if (hayLiteralTimeoutFirmaCliente(texto)) {
+    avisos.push("*Timeout firma / cliente Autofirma — confirmar SO en TR_CAR");
   }
   return avisos;
 }
@@ -357,11 +498,19 @@ function detectarAvisosClienteFirmaLiterales(lineasTraza) {
 function resaltarClienteFirmaEnLiteral(html) {
   const cls = "literal-cliente-firma";
   html = html.replace(
-    /(Cliente de Firma M[óoò]vil|CLIENTE DE FIRMA M[ÓOÒ]VIL|Error de Autofirma o del Cliente de Firma M[óoò]vil)/gi,
+    /(Error de Autofirma o del Cliente de Firma M[óoò]vil|Cliente de Firma M[óoò]vil|CLIENTE DE FIRMA M[ÓOÒ]VIL)/gi,
     `<span class="${cls}">$1</span>`
   );
   html = html.replace(
-    /(client de firma)/gi,
+    /(servidor intermedio)/gi,
+    `<span class="${cls}">$1</span>`
+  );
+  html = html.replace(
+    /(El temps per a firmar ha expirat|El tiempo para firmar ha expirado|tiempo para firmar|temps per a firmar)/gi,
+    `<span class="${cls}">$1</span>`
+  );
+  html = html.replace(
+    /(client de firma|cliente de firma)/gi,
     `<span class="${cls}">$1</span>`
   );
   return html;
@@ -543,12 +692,13 @@ btnDetalles.onclick = () => {
   <li>✔ <b>Cl@ve:</b> códigos 8–15, 101, 103, 103-15, 104; Cl@ve móvil; CLAVE_MOVIL no permitida.</li>
   <li>✔ <b>Cl@ve Permanente cancelada</b> (Signatura cancel·lada + Cl@veFirm@ sin código).</li>
   <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → escalado Portafib; prefijo según Cl@veFirm@ o Autofirm@.</li>
-  <li>✔ <b>Autofirma:</b> SAF_27 (cliente local primero), cancelada, entorno FIRE; cliente por SO; Android si Linux + solo TR_SGI.</li>
-  <li>✔ <b>Cl@ve móvil / solo TR_SGI:</b> Posible Cl@ve móvil y Posible Autofirma Android en acción.</li>
+  <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno FIRE; cliente por SO vía selector + TR_CAR.</li>
+  <li>✔ <b>Autofirma cliente (v1.3.37–43):</b> literal KO no deduce SO; Flujo/Literales/cartel neutros; Acción con TR_CAR + pasos; «habitualmente Android/iPhone» solo en intro Acción según tipo KO.</li>
+  <li>✔ <b>Cl@ve móvil / solo TR_SGI:</b> Posible Cl@ve móvil; entorno Autofirma si certificado marcado.</li>
   <li>✔ <b>Método de firma en Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector del técnico.</li>
   <li>✔ Discrepancia: técnico marca Cl@ve pero KO es Autofirm@ (texto en flujo y acción).</li>
-  <li>✔ Cliente de Firma Móvil + servidor intermedio; certificado + Autofirm@ KO sin pedir confirmar acceso Cl@ve.</li>
-  <li>✔ <b>Flujo de Firma:</b> ventana por TR_SGI (timestamps), agrupación consecutiva, badge acceso≠firma, taxonomía v1.</li>
+  <li>✔ Certificado + Autofirm@ en KO → no pedir confirmar acceso Cl@ve en flujo de firma.</li>
+  <li>✔ <b>Flujo de Firma:</b> ventana por TR_SGI, agrupación, Servidor intermedio / Timeout firma + tooltips, Revisar Acceso (TR_CAR).</li>
 
   <br>
 
@@ -606,9 +756,9 @@ btnTabla.onclick = (e) => {
   <li>✔ <b>error_validacion_certificado</b> — InvalidNotSignerCertificate / @firma → Portafib; prefijo por método.</li>
   <li>✔ <b>error_autofirma_servidor</b> — SAF_27: mayoría instalación AutoFirma local; servidor si masivo o persiste.</li>
   <li>✔ <b>error_autofirma_cancelada</b> — Signatura cancelada + Autofirm@ (sin Cl@ve).</li>
-  <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI con certificado; pistas Android en acción.</li>
+  <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI sin cierre (certificado); cartel «sin cierre».</li>
   <li>✔ <b>error_autofirma_cliente_generico</b> — Cl@ve marcado pero traza Autofirma; confirmar SO y método real.</li>
-  <li>✔ <b>error_autofirma_cliente_*</b> — windows, mac, linux, android, iphone, movil (resolverReglaAutofirmaCliente).</li>
+  <li>✔ <b>error_autofirma_cliente_*</b> — windows, mac, linux, android, iphone, movil: SO = selector + TR_CAR (no literal KO).</li>
   <li>⚙ <b>error_fire</b> — Reserva certificado local sin literales Autofirma concluyentes.</li>
   <li>⚙ <b>error_autofirma</b> — Regla legacy de respaldo (no usada en árbol principal).</li>
 
@@ -617,7 +767,7 @@ btnTabla.onclick = (e) => {
   <li><b>Prioridad en fase error_firma:</b></li>
   <li>1. SAF_27 → 2. Validación certificado (@firma) → 3. CLAVE_MOVIL no permitida</li>
   <li>4. Códigos Cl@ve (103 &gt; 8–15 &gt; 101 &gt; 104) → 5. Cancelada Cl@veFirm@ sin código</li>
-  <li>6. Autofirma fuerte (fitxer buit / Método Autofirm@ / timeout+cliente móvil) → resolverReglaAutofirmaCliente</li>
+  <li>6. Autofirma fuerte (fitxer buit / Método Autofirm@ / timeout / servidor intermedio) → resolverReglaAutofirmaCliente (SO: selector + TR_CAR)</li>
   <li>7. Autofirma débil (solo certificado marcado) → 8. Cancelada Autofirma → 9. Cl@ve móvil (KO sin código)</li>
   <li>10. Solo TR_SGI sin cierre → entorno FIRE (certificado) o Cl@ve móvil (Cl@ve) → 11. Cliente Autofirma por SO</li>
 
@@ -628,9 +778,9 @@ btnTabla.onclick = (e) => {
   <li><b>Acceso ≠ firma:</b> Cl@ve en acceso orienta discrepancia; KO elige la acción.</li>
   <li>Sin <b>TR_SGI</b> → pre-firma (Portafib si literal de flujo; si no, formulario).</li>
   <li><b>TR_SGO / TR_FIN</b> → firma correcta (con o sin Portafib previo).</li>
-  <li>Cliente de Firma Móvil + servidor intermedio → Android/iPhone aunque marquen Ordenador.</li>
-  <li>Linux en traza + solo TR_SGI sin KO → orientar Android (mail/acción).</li>
-  <li>Autofirm@ + timeout + client de firma en KO → iPhone si no hay SO escritorio en traza.</li>
+  <li><b>Literal KO Autofirma</b> (Cliente Móvil, client de firma, servidor intermedio, timeout) → describe <b>tipo de fallo</b>, no SO; confirmar dispositivo en TR_CAR o selector.</li>
+  <li><b>Acción/mail Autofirma cliente:</b> selector Certificado + Ordenador/móvil y TR_CAR; intro Acción puede decir «habitualmente Android/iPhone» como pista CAU (v1.3.43).</li>
+  <li>Linux en traza + solo TR_SGI sin KO + móvil → orientar Android en reglas (user-agent mal reportado).</li>
   <li>Certificado marcado + Autofirm@ en KO → no pedir confirmar acceso Cl@ve en flujo.</li>
   <li>Técnico marca Cl@ve + Autofirm@ en KO → discrepancia en flujo/acción (no «acceso fue Cl@ve»).</li>
 
@@ -973,8 +1123,8 @@ const hayTimeoutClienteFirmaEnKo = lineasTraza.some(linea =>
   /CLIENTE DE FIRMA|CLIENT DE FIRMA/i.test(linea)
 );
 
-const hayIndiciosEscritorioEnTraza =
-  /WINDOWS|WIN32|LINUX|UBUNTU|DEBIAN|FEDORA|MACOS|\bMAC\b|DARWIN|OS X/i.test(trazaEstructurada);
+const textoTrazaSinKo = textoLineasTrazaSinKo(lineasTraza);
+const textoTrazaIniCar = textoLineasIniCar(lineasTraza);
 
 const hayAutofirmaExplicitoFuerte = lineasTraza.some(linea =>
   /CLIENT(E)? DE FIRMA M[ÒOÓ]?VIL|FIRMA MOVIL|ERROR DE AUTOFIRMA O DEL CLIENTE DE FIRMA/i.test(linea) ||
@@ -998,9 +1148,6 @@ const hayAutofirmaExplicito = hayAutofirmaExplicitoFuerte || hayAutofirmaExplici
 const hayClienteFirmaMovilEnTraza =
   /CLIENT(E)? DE FIRMA M[ÒOÓ]?VIL|FIRMA MOVIL|ERROR DE AUTOFIRMA O DEL CLIENTE DE FIRMA/i.test(trazaEstructurada);
 
-const hayErrorServidorIntermedioEnTraza =
-  /SERVIDOR INTERMEDI|NO SE PUDO CONECTAR CON EL SERVIDOR INTERMEDIO|NO S['']HA POGUT CONNECTAR.*SERVIDOR INTERMEDI/i.test(trazaEstructurada);
-
 const haySignaturaCancelada = lineasTraza.some(linea =>
   /SIGNATURA CANCEL|FIRMA CANCELADA|FIRMA CANCEL·LADA/i.test(linea)
 );
@@ -1012,49 +1159,35 @@ const hayCanceladaConClave = lineasTraza.some(linea =>
 // hayCanceladaClaveFirmaEnKo se calcula más abajo (tras hayErrorClaveReal)
 
 function resolverReglaAutofirmaCliente() {
-  // 👉 Prioridad 0: literal Cliente de Firma Móvil en la traza (Android/iOS, aunque marquen Ordenador/Linux)
-  if (hayClienteFirmaMovilEnTraza) {
-    if (/IPHONE|IPAD\b|\bIOS\b/.test(trazaEstructurada)) return "error_autofirma_cliente_iphone";
-    return "error_autofirma_cliente_android";
-  }
-  // 👉 Solo Inicio firma sin cierre + Linux en traza: suele ser Android mal reportado
-  if (hayPatronSgiSinCierre && hayLinuxPosibleAndroid) {
-    return "error_autofirma_cliente_android";
-  }
-  // 👉 Prioridad 1: SO marcado por el técnico (certificado local)
+  const soIniCar = detectarSoEnTextoTraza(textoTrazaIniCar);
+  const soSinKo = detectarSoEnTextoTraza(textoTrazaSinKo);
+
+  // 👉 Prioridad 1: selector del técnico + SO en TR_INI / TR_CAR (no en literal KO)
   if (metodoCert.checked && sisMovil && sisMovil.checked) {
-    if (/IPHONE|IPAD\b|\bIOS\b/.test(trazaEstructurada)) return "error_autofirma_cliente_iphone";
-    if (/ANDROID/.test(trazaEstructurada)) return "error_autofirma_cliente_android";
-    if (hayTimeoutClienteFirmaEnKo) return "error_autofirma_cliente_iphone";
+    const soMovil = detectarSoMovilDesdePistas(soIniCar, soSinKo);
+    if (soMovil) return reglaAutofirmaClientePorSo(soMovil);
     return "error_autofirma_cliente_movil";
   }
   if (metodoCert.checked && sisPC && sisPC.checked) {
-    if (/LINUX|UBUNTU|DEBIAN|FEDORA/.test(trazaEstructurada)) return "error_autofirma_cliente_linux";
-    if (/MACOS|\bMAC\b|DARWIN|OS X/.test(trazaEstructurada)) return "error_autofirma_cliente_mac";
-    if (hayTimeoutClienteFirmaEnKo && !hayIndiciosEscritorioEnTraza) {
-      if (/ANDROID/.test(trazaEstructurada)) return "error_autofirma_cliente_android";
-      return "error_autofirma_cliente_iphone";
-    }
+    const soPc = detectarSoEscritorioDesdePistas(soIniCar, soSinKo);
+    if (soPc) return reglaAutofirmaClientePorSo(soPc);
     return "error_autofirma_cliente_windows";
   }
-  // 👉 Acceso Cl@ve marcado: si el KO es Autofirm@ + timeout/cliente firma → acción concreta (p. ej. iPhone)
+
+  // 👉 Acceso Cl@ve marcado: SO desde acceso/traza sin KO; si no, acción genérica
   if (metodoClave.checked && !metodoCert.checked) {
-    if (/IPHONE|IPAD\b|\bIOS\b/.test(trazaEstructurada)) return "error_autofirma_cliente_iphone";
-    if (/ANDROID/.test(trazaEstructurada)) return "error_autofirma_cliente_android";
-    if (hayTimeoutClienteFirmaEnKo && hayMetodoFirmaAutofirmaEnKo && !hayIndiciosEscritorioEnTraza) {
-      return "error_autofirma_cliente_iphone";
-    }
-    if (hayClienteFirmaMovilEnTraza) {
-      if (/IPHONE|IPAD\b|\bIOS\b/.test(trazaEstructurada)) return "error_autofirma_cliente_iphone";
-      return "error_autofirma_cliente_android";
-    }
+    const so = soIniCar || soSinKo;
+    const regla = reglaAutofirmaClientePorSo(so);
+    if (regla) return regla;
     return "error_autofirma_cliente_generico";
   }
-  // 👉 Prioridad 2: pistas en la traza (sin método/SO marcado)
-  if (/IPHONE|IPAD\b|\bIOS\b/.test(trazaEstructurada)) return "error_autofirma_cliente_iphone";
-  if (/ANDROID/.test(trazaEstructurada)) return "error_autofirma_cliente_android";
-  if (/LINUX|UBUNTU|DEBIAN|FEDORA/.test(trazaEstructurada)) return "error_autofirma_cliente_linux";
-  if (/MACOS|\bMAC\b|DARWIN|OS X/.test(trazaEstructurada)) return "error_autofirma_cliente_mac";
+
+  // 👉 Sin selector: TR_CAR/INI, luego traza sin KO; Linux+solo SGI → Android mal reportado
+  const so = soIniCar || soSinKo;
+  if (so) return reglaAutofirmaClientePorSo(so);
+  if (hayPatronSgiSinCierre && hayLinuxPosibleAndroid) {
+    return "error_autofirma_cliente_android";
+  }
   return "error_autofirma_cliente_windows";
 }
 
@@ -1089,9 +1222,9 @@ const hayIntentosPosterioresSinCierre = (() => {
 // 👉 Firma iniciada pero sin Firma KO ni Firma OK ni Fin trámite (patrón típico Cl@ve móvil o FIRE no invoca)
 const hayPatronSgiSinCierre = haySGI && !haySGX && !haySGO && !hayFIN;
 
-// 👉 Linux en traza sin ANDROID explícito: en móvil suele reportarse como Linux (p. ej. detalle Inicio firma)
+// 👉 Linux en traza sin KO ni ANDROID explícito: en móvil suele reportarse como Linux (TR_CAR / Inicio firma)
 const hayLinuxPosibleAndroid =
-  /LINUX|UBUNTU|DEBIAN|FEDORA/.test(trazaEstructurada) && !/ANDROID/.test(trazaEstructurada);
+  /LINUX|UBUNTU|DEBIAN|FEDORA/.test(textoTrazaSinKo) && !/ANDROID/.test(textoTrazaSinKo);
 
 // 👉 Detectamos códigos reales de Cl@ve
 // 🔹 estos SIEMPRE indican proveedor Cl@ve
@@ -1633,67 +1766,31 @@ else if (idReglaDetectada === "error_autofirma_servidor") {
 else if (idReglaDetectada === "error_autofirma_cancelada") {
 
   cartelDiagnostico = cartelAzul("Autofirma");
-  fraseDiagnostico = "Firma cancelada con Autofirm@ sin código Cl@ve. Suele deberse a timeout, SSL o fallo de comunicación con AutoFirma.";
+  fraseDiagnostico = "Problema con el cliente de firma Autofirma (firma cancelada). "
+    + "Suele deberse a timeout, SSL o fallo de comunicación con AutoFirma.";
 
 }
 else if (idReglaDetectada === "error_autofirma_entorno") {
 
   cartelDiagnostico = cartelAzul("Autofirma / FIRE");
   const reintentos = numSGI > 1 ? " (" + numSGI + " intentos)" : "";
-  fraseDiagnostico = "La firma se inicia" + reintentos + " pero no se completa: no hay Firma KO ni Firma OK. Posible bloqueo de invocación FIRE/AutoFirma (proxy, VPN, navegador).";
+  fraseDiagnostico = "Problema con el cliente de firma Autofirma (sin cierre). La firma se inicia"
+    + reintentos + " pero no se completa: no hay Firma KO ni Firma OK. "
+    + "Posible bloqueo de invocación FIRE/AutoFirma (proxy, VPN, navegador).";
 
 }
 else if (idReglaDetectada && idReglaDetectada.indexOf("error_autofirma_cliente") === 0) {
 
   cartelDiagnostico = cartelAzul("Autofirma");
-  let motivo = "Error en el entorno local de firma con certificado (AutoFirma / Cliente de Firma).";
-  if (hayClienteFirmaMovilEnTraza && hayErrorServidorIntermedioEnTraza) {
-    motivo = "Error del Cliente de Firma Móvil: no se pudo conectar con el servidor intermedio de firma.";
-    if (hayMetodoFirmaAutofirmaEnKo) {
-      motivo += " " + literalFlujo("Método de firma: Autofirm@") + " en el Firma KO.";
-    }
-    if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
-      motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
-    }
-  } else if (hayClienteFirmaMovilEnTraza) {
-    motivo = "Error del Cliente de Firma Móvil (componente AutoFirma en dispositivo móvil).";
-    if (hayMetodoFirmaAutofirmaEnKo) {
-      motivo += " " + literalFlujo("Método de firma: Autofirm@") + " en el Firma KO.";
-    }
-    if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
-      motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
-    }
-  } else if (hayTimeoutClienteFirmaEnKo && hayMetodoFirmaAutofirmaEnKo) {
-    motivo = "Tiempo de firma expirado o cliente de firma no invocado/instalado (AutoFirma / FIRE). "
-      + literalFlujo("Método de firma: Autofirm@") + " en el Firma KO.";
-    if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
-      motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
-    }
-    if (metodoCert.checked && sisPC && sisPC.checked && !hayIndiciosEscritorioEnTraza) {
-      motivo += " Sin indicios de SO de escritorio en la traza: confirmar si firmó desde iPhone/móvil antes de pasos Windows.";
-    }
-  } else if (hayMetodoFirmaAutofirmaEnKo && haySignaturaCancelada) {
-    motivo = "Firma cancelada. " + literalFlujo("Método de firma: Autofirm@");
-    if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
-      motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
-    }
-  } else if (hayMetodoFirmaAutofirmaEnKo) {
-    motivo = "Error de firma con Autofirm@ (" + literalFlujo("Método de firma: Autofirm@") + " en el Firma KO).";
-    if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
-      motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
-    }
-  } else if (hayAutofirmaFitxerBuit) {
-    motivo = "El fichero firmado llega vacío (fitxer signat buit / plugin AutoFirma).";
-  } else if (/TIEMPO PARA FIRMAR|TEMPS PER A FIRMAR/i.test(trazaEstructurada)) {
-    motivo = "Tiempo de firma expirado (timeout AutoFirma / Cliente de Firma).";
-  } else if (/CLIENT(E)? DE FIRMA M[ÒOÓ]?VIL|FIRMA MOVIL|ERROR DE AUTOFIRMA O DEL CLIENTE DE FIRMA/i.test(trazaEstructurada)) {
-    motivo = "Error del Cliente de Firma Móvil (componente intermedio AutoFirma).";
-  } else if (/SERVIDOR INTERMEDI|NO SE PUDO CONECTAR|NO S['']HA POGUT CONNECTAR/i.test(trazaEstructurada)) {
-    motivo = "No se pudo conectar con el servidor intermedio de firma (entorno local).";
-  } else if (/MODUL.*FIRMA FINALITZAT|MODULO DE FIRMA FINALIZADO/i.test(trazaEstructurada)) {
-    motivo = "El módulo de firma finalizó inesperadamente.";
+  let motivo = "Problema con el cliente de firma Autofirma ("
+    + etiquetaTipoFalloAutofirmaClienteEnTraza(lineasTraza) + ").";
+  if (hayMetodoFirmaAutofirmaEnKo) {
+    motivo += " " + literalFlujo("Método de firma: Autofirm@") + " en el Firma KO.";
   }
-  if (!hayMetodoFirmaAutofirmaEnKo && haySignaturaCancelada && !/TIEMPO PARA FIRMAR|TEMPS PER A FIRMAR/i.test(trazaEstructurada)) {
+  if (hayDiscrepanciaAccesoClaveFirmaAutofirma) {
+    motivo += textoDiscrepanciaClaveAutofirmaEnFlujo();
+  }
+  if (!hayMetodoFirmaAutofirmaEnKo && haySignaturaCancelada && !/timeout/i.test(motivo)) {
     motivo += " También aparecen firmas canceladas en la traza.";
   } else if (!hayMetodoFirmaAutofirmaEnKo && haySignaturaCancelada) {
     motivo += " También hubo firmas canceladas en otros intentos.";
@@ -1708,8 +1805,6 @@ else if (idReglaDetectada && idReglaDetectada.indexOf("error_autofirma_cliente")
   } else if (ultimoEvento === "TR_SGI" && !haySGO && !hayFIN && numSGI > 1) {
     motivo += " Los últimos intentos quedaron solo en Inicio firma, sin Firma KO ni Firma OK.";
   }
-  const esCertificadoMovilMarcado = esCert && sisMovil && sisMovil.checked;
-  // 👉 Con certificado marcado y Autofirm@ en el KO: no pedir confirmar acceso Cl@ve (firma ya es inequívoca).
   if (
     haySignaturaCancelada &&
     !hayMetodoFirmaAutofirmaEnKo &&
@@ -1727,20 +1822,12 @@ else if (idReglaDetectada && idReglaDetectada.indexOf("error_autofirma_cliente")
     motivo += " Acceso con Cl@ve móvil en Inicio/Carga del trámite; firma con certificado (Autofirm@).";
   }
   if (hayClienteFirmaMovilEnTraza && metodoCert.checked && sisPC && sisPC.checked) {
-    motivo += " Los literales apuntan a Cliente de Firma Móvil (Android), no Autofirma de escritorio.";
+    motivo += " Confirmar SO en TR_CAR (el literal KO puede decir «móvil» aunque firme desde ordenador).";
   }
   if (esClave && !esCert && hayAutofirmaExplicitoFuerte && !hayDiscrepanciaAccesoClaveFirmaAutofirma) {
     motivo += " La traza apunta a certificado/AutoFirma aunque el acceso marcado sea Cl@ve.";
   }
-  const reglasAutofirmaClienteConAccion = [
-    "error_autofirma_cliente_windows", "error_autofirma_cliente_mac",
-    "error_autofirma_cliente_linux", "error_autofirma_cliente_android",
-    "error_autofirma_cliente_iphone", "error_autofirma_cliente_movil"
-  ];
-  fraseDiagnostico = (reglasAutofirmaClienteConAccion.includes(idReglaDetectada) ||
-    (hayDiscrepanciaAccesoClaveFirmaAutofirma && esClave && !esCert))
-    ? motivo
-    : motivo + " Solicitar prueba de firma local con PDF antes de escalar.";
+  fraseDiagnostico = motivo;
 
 }
 else if (idReglaDetectada === "error_fire") {
@@ -1851,11 +1938,11 @@ if (accionData && accionData.accion) {
     idReglaDetectada === "error_autofirma_cliente_iphone" &&
     esClave && !esCert && hayMetodoFirmaAutofirmaEnKo
   ) {
-    textoAccion = "Acceso marcado como Cl@ve; el Firma KO indica certificado local (Autofirm@).\n" + textoAccion;
+    textoAccion = "Acceso marcado como Cl@ve; el Firma KO indica certificado local (Autofirm@).\n\n" + textoAccion;
   } else if (idReglaDetectada === "error_autofirma_cliente_generico" && hayMetodoFirmaAutofirmaEnKo && haySignaturaCancelada) {
     textoAccion = "Firma cancelada (Método de firma Autofirm@).\n"
-      + "El técnico ha marcado Método Cl@ve, pero la firma se intentó con certificado/AutoFirma.\n"
-      + "*Seleccione Certificado local + Sistema si conoce el SO para obtener la acción y el mail específicos.";
+      + "El técnico ha marcado Método Cl@ve, pero la firma se intentó con certificado/AutoFirma.\n\n"
+      + accionData.accion;
   } else if (idReglaDetectada === "error_clave_firma_cancelada") {
     if (esCert && !esClave) {
       textoAccion += "\n*No orientar reinstalar AutoFirma: el KO indica Cl@ve, no certificado local.";
@@ -1874,6 +1961,10 @@ if (accionData && accionData.accion) {
         + "Revisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura CLAVE_MOVIL.\n"
         + "*Si el acceso fue con certificado (AUT), valorar entorno Autofirma/FIRE (wiki Autofirma).";
     }
+  }
+
+  if (esReglaAutofirmaClienteConIntro(idReglaDetectada)) {
+    textoAccion = aplicarIntroAccionAutofirmaCliente(textoAccion, lineasTraza);
   }
 
   const accionHtml = textoAccion.split("\n").map(linea => {
@@ -2295,9 +2386,9 @@ const ETIQUETA_RESULTADO_FIRMA = {
   ko_clave_otro: "Cl@ve (otro código)",
   cancelada_clave: "Cancelada (Cl@ve)",
   ko_clave_sin_codigo: "KO Cl@ve sin código",
-  timeout_firma: "Client de firma - iPhone",
+  timeout_firma: "Timeout firma",
   fitxer_buit: "Fitxer buit",
-  cliente_firma_movil: "Cliente firma móvil - Android",
+  cliente_firma_movil: "Servidor intermedio",
   servidor_intermedio: "Servidor intermedio",
   cancelada_autofirma: "Cancelada (Autofirm@)",
   cancelada_sin_metodo: "Cancelada (sin método)",
@@ -2306,14 +2397,25 @@ const ETIQUETA_RESULTADO_FIRMA = {
   ko_sin_detalle: "KO sin detalle"
 };
 
-const TOOLTIP_SIN_CIERRE_FIRMA = "Sin cierre (Solo Inicio Firma)";
+const TOOLTIP_RESULTADO_FIRMA = {
+  sin_cierre: "Sin cierre (Solo Inicio Firma)",
+  cliente_firma_movil: "Fallo de comunicación con Autofirma (servidor intermedio). No indica Android ni iPhone; revisar TR_CAR anterior al SGI.",
+  servidor_intermedio: "Fallo de comunicación con Autofirma (servidor intermedio). No indica Android ni iPhone; revisar TR_CAR anterior al SGI.",
+  timeout_firma: "Tiempo de firma agotado o Autofirma no invocado o no instalado. No implica solo iPhone; confirmar SO en TR_CAR."
+};
+
+function tooltipResultadoFlujoFirma(resultado) {
+  return TOOLTIP_RESULTADO_FIRMA[resultado] || "";
+}
 
 function htmlEtiquetaResultadoFlujoFirma(resultado, etiqueta) {
   const color = colorResultadoFlujoFirma(resultado);
-  const extra = resultado === "sin_cierre"
-    ? ` class="flujo-firma-resultado flujo-firma-resultado--sin-cierre" title="${TOOLTIP_SIN_CIERRE_FIRMA}"`
+  const tooltip = tooltipResultadoFlujoFirma(resultado);
+  const cls = tooltip
+    ? ` class="flujo-firma-resultado flujo-firma-resultado--con-tooltip"`
     : ` class="flujo-firma-resultado"`;
-  return `<span${extra} style="color:${color}">${escapeHtmlFlujoFirma(etiqueta)}</span>`;
+  const title = tooltip ? ` title="${escapeHtmlFlujoFirma(tooltip)}"` : "";
+  return `<span${cls}${title} style="color:${color}">${escapeHtmlFlujoFirma(etiqueta)}</span>`;
 }
 
 function esLineaInicioFirmaHelper(linea) {
@@ -2690,7 +2792,7 @@ function htmlMiniFlujoIntento(intento) {
     const cKo = colorResultadoFlujoFirma(intento.resultado);
     html += `<span class="flujo-firma-mini-pill" style="border-color:${cKo};color:${cKo}" title="Firma KO">TR_SGX</span>`;
   } else {
-    html += `<span class="flujo-firma-mini-pill flujo-firma-mini-pill--pendiente" style="border-color:#ccc;color:#999" title="${TOOLTIP_SIN_CIERRE_FIRMA}">···</span>`;
+    html += `<span class="flujo-firma-mini-pill flujo-firma-mini-pill--pendiente" style="border-color:#ccc;color:#999" title="${escapeHtmlFlujoFirma(tooltipResultadoFlujoFirma("sin_cierre"))}">···</span>`;
   }
 
   html += "</span>";
@@ -2778,8 +2880,10 @@ function renderFlujoFirmaUI(data) {
   const resumenHtml = data.resumen.length
     ? `<div class="flujo-firma-resumen"><span class="flujo-firma-resumen-titulo">Resumen:</span>${data.resumen.map(r => {
         const c = colorResultadoFlujoFirma(r.resultado);
-        const titleSinCierre = r.resultado === "sin_cierre" ? ` title="${TOOLTIP_SIN_CIERRE_FIRMA}"` : "";
-        return `<span class="flujo-firma-resumen-chip${r.resultado === "sin_cierre" ? " flujo-firma-resultado--sin-cierre" : ""}" style="border-left-color:${c}"${titleSinCierre}>${escapeHtmlFlujoFirma(r.etiqueta)} ×${r.count}</span>`;
+        const tooltip = tooltipResultadoFlujoFirma(r.resultado);
+        const clsTooltip = tooltip ? " flujo-firma-resultado--con-tooltip" : "";
+        const titleAttr = tooltip ? ` title="${escapeHtmlFlujoFirma(tooltip)}"` : "";
+        return `<span class="flujo-firma-resumen-chip${clsTooltip}" style="border-left-color:${c}"${titleAttr}>${escapeHtmlFlujoFirma(r.etiqueta)} ×${r.count}</span>`;
       }).join("")}</div>`
     : "";
 
