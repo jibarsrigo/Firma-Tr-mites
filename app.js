@@ -163,6 +163,8 @@ VERSION 1.3.35  - Flujo de Firma: sin «Revisar Acceso» en KO Cl@ve (8–15, 10
 
 VERSION 1.3.36  - Flujo de Firma: nota intro «Detalles por cada intento de firma»
 
+VERSION 1.3.44  - Info/Reglas actualizados (Autofirma v1.3.37–43); nombre «Analizador de Trazas SISTRA»
+
 VERSION 1.3.37–1.3.43  - Refactor Autofirma cliente: el literal KO no indica el SO (SistraHelp engañoso)
                 POR QUÉ: mensajes como «Cliente de Firma Móvil» + servidor intermedio o
                 «client de firma» + timeout aparecen también en Windows/Mac; KO→cancel→OK
@@ -198,7 +200,7 @@ VERSION 1.3.37  - Flujo de Firma: etiquetas KO Servidor intermedio / Timeout fir
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.43";
+const VERSION_JS = "1.3.44";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -670,44 +672,50 @@ btnDetalles.onclick = () => {
   const vJson = accionesJSON?.version || "—";
   abrirPanelAyuda(TITULO_PANEL_INFO, `
 <ul>
-  <li><b>Analizador de trazas SistraHelp</b> orientado a soporte técnico CAU.</li>
+  <li><b>Analizador de Trazas SISTRA</b> — trazas SistraHelp, orientado a soporte técnico CAU.</li>
   <li>Versión actual: <b>js v ${VERSION_JS}</b> · reglas <b>acciones.json v ${vJson}</b> · interfaz <b>html v ${typeof VERSION_HTML !== "undefined" ? VERSION_HTML : "—"}</b>.</li>
 
   <br>
 
   <li><b>Qué hace al analizar una traza:</b></li>
   <li>Muestra el <b>flujo del trámite</b> (eventos TR_) con píldoras de colores y etiquetas.</li>
-  <li>Subapartado <b>Flujo de Firma</b> (plegable): detalle por intento TR_SGI, acceso, método, mini-píldoras y resumen. No altera cartel ni Acción.</li>
-  <li>Indica el <b>diagnóstico</b> (cartel azul + frase explicativa dentro del flujo, cuando aplica).</li>
+  <li>Subapartado <b>Flujo de Firma</b> (plegable): detalle por intento TR_SGI, acceso, método, mini-píldoras y resumen.</li>
+  <li>Indica el <b>diagnóstico</b> (cartel azul + frase explicativa en la tarjeta de flujo).</li>
   <li>Propone la <b>acción recomendada</b> y el enlace <b>Mail</b> cuando existe.</li>
-  <li>Lista los <b>literales detectados</b> con contador de repeticiones (xN), o avisa si no hay literales.</li>
+  <li>Lista los <b>literales detectados</b> con contador (xN).</li>
   <li>Enlace <b>Reportar análisis incorrecto</b> al final del resultado.</li>
 
   <br>
 
+  <li><b>Refactor Autofirma cliente (v1.3.37–43) — por qué:</b></li>
+  <li>SistraHelp envuelve muchos fallos en textos genéricos («Cliente de Firma Móvil», «client de firma» en catalán) que también salen en <b>Windows/Mac</b>. Inferir Android/iPhone desde el KO desorientaba al técnico.</li>
+  <li>Separación de capas (cada apartado dice una cosa distinta):</li>
+  <li>· <b>Flujo de Firma</b> → tipo de fallo neutro: <i>Servidor intermedio</i>, <i>Timeout firma</i> (+ tooltips TR_CAR).</li>
+  <li>· <b>Literales</b> → avisos/resaltado neutros; confirmar SO en TR_CAR.</li>
+  <li>· <b>Cartel</b> → «Problema con el cliente de firma Autofirma (servidor intermedio / timeout / …)».</li>
+  <li>· <b>Acción/mail</b> → SO concreto: selector Certificado + Ordenador/móvil y TR_CAR; bloque TR_CAR + pasos por SO.</li>
+  <li>· <b>Intro Acción (v1.3.43)</b> → «Habitualmente desde Android/iPhone, pero no siempre» según tipo KO (solo pista CAU, no regla rígida).</li>
+
+  <br>
+
   <li><b>Estado actual (completado y validado):</b></li>
-  <li>✔ Interfaz estilo V5: tarjetas Flujo / Acción / Literales; apartados laterales plegables.</li>
+  <li>✔ Interfaz estilo V5: tarjetas Flujo / Acción / Literales.</li>
   <li>✔ <b>Pre-firma:</b> fallo formulario y fallo Portafib (acción dinámica con {lit}).</li>
-  <li>✔ <b>Firma OK:</b> trámite finalizado; caso especial <b>firma_correcta_portafib</b>.</li>
-  <li>✔ <b>Cl@ve:</b> códigos 8–15, 101, 103, 103-15, 104; Cl@ve móvil; CLAVE_MOVIL no permitida.</li>
-  <li>✔ <b>Cl@ve Permanente cancelada</b> (Signatura cancel·lada + Cl@veFirm@ sin código).</li>
-  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → escalado Portafib; prefijo según Cl@veFirm@ o Autofirm@.</li>
-  <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno FIRE; cliente por SO vía selector + TR_CAR.</li>
-  <li>✔ <b>Autofirma cliente (v1.3.37–43):</b> literal KO no deduce SO; Flujo/Literales/cartel neutros; Acción con TR_CAR + pasos; «habitualmente Android/iPhone» solo en intro Acción según tipo KO.</li>
-  <li>✔ <b>Cl@ve móvil / solo TR_SGI:</b> Posible Cl@ve móvil; entorno Autofirma si certificado marcado.</li>
+  <li>✔ <b>Firma OK:</b> trámite finalizado; <b>firma_correcta_portafib</b>.</li>
+  <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; Cl@ve móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@.</li>
+  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → escalado Portafib.</li>
+  <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno sin cierre, cliente por SO (selector + TR_CAR).</li>
   <li>✔ <b>Método de firma en Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector del técnico.</li>
-  <li>✔ Discrepancia: técnico marca Cl@ve pero KO es Autofirm@ (texto en flujo y acción).</li>
-  <li>✔ Certificado + Autofirm@ en KO → no pedir confirmar acceso Cl@ve en flujo de firma.</li>
-  <li>✔ <b>Flujo de Firma:</b> ventana por TR_SGI, agrupación, Servidor intermedio / Timeout firma + tooltips, Revisar Acceso (TR_CAR).</li>
+  <li>✔ Discrepancia Cl@ve marcado + KO Autofirm@ (flujo y acción).</li>
+  <li>✔ <b>Flujo de Firma:</b> agrupación, Revisar Acceso (TR_CAR), sin chip acceso en KO Cl@ve con código.</li>
+  <li>✔ Fixtures de prueba en <b>trazas_prueba/</b> (F-android, F-iphone, C-8-15, …).</li>
 
   <br>
 
   <li><b>Pendiente de mejora:</b></li>
-  <li>🔧 Limpieza de literales: mensaje útil arriba, traza completa debajo (sin ruido técnico).</li>
-  <li>🔧 Mostrar aviso de Firma KO previo también en tarjeta Acción cuando el trámite acaba OK.</li>
-  <li>🔧 Botón Actualizar solo icono (sin texto «Actualizar»).</li>
-  <li>🔧 Mails Autofirma con anclas específicos por SO (ahora #Autofirma genérico).</li>
-  <li>🔧 Revisar casos Firma Àgil y URL duplicada en reintentos de firma.</li>
+  <li>🔧 Limpieza de literales: mensaje útil arriba, traza completa debajo.</li>
+  <li>🔧 Aviso Firma KO previo en tarjeta Acción cuando el trámite acaba OK.</li>
+  <li>🔧 Mails Autofirma con anclas específicos por SO.</li>
 
   <br>
 
@@ -730,80 +738,70 @@ btnTabla.onclick = (e) => {
   const vJson = accionesJSON?.version || "—";
   abrirPanelAyuda(TITULO_PANEL_REGLAS, `
 <ul>
-  <li><b>Funcionamiento del analizador (js v ${VERSION_JS}):</b></li>
-  <li>Lee la traza de SistraHelp filtrando solo líneas TR_ / ERROR - (ignora notas del agente).</li>
+  <li><b>Analizador de Trazas SISTRA — motor (js v ${VERSION_JS}):</b></li>
+  <li>Lee la traza filtrando solo líneas TR_ / ERROR - (ignora notas del agente).</li>
   <li>Ordena eventos por fecha/hora (SistraHelp pega lo más reciente arriba).</li>
   <li>Reconstruye el flujo: TR_FRI → TR_FRF → TR_SGI → TR_SGX / TR_SGO → TR_REG → TR_FIN.</li>
   <li>Clasifica en fase: <b>pre-firma</b>, <b>error en firma</b> o <b>firma correcta</b>.</li>
-  <li>Prioridad de cierre: <b>TR_FIN / TR_SGO</b> sobre TR_SGX previo (cómo acabó el trámite manda).</li>
-  <li>Aplica la regla de <b>acciones.json v ${vJson}</b> y muestra acción + mail cuando existe.</li>
+  <li>Prioridad de cierre: <b>TR_FIN / TR_SGO</b> sobre TR_SGX previo.</li>
+  <li>Aplica reglas de <b>acciones.json v ${vJson}</b> → acción + mail.</li>
 
   <br>
 
-  <li><b>Reglas activas (estado de presentación):</b></li>
-  <li>✔ <b>fallo_formulario</b> — No llega a firma, sin error de flujo Portafib.</li>
-  <li>✔ <b>fallo_portafib</b> — No llega a firma por error de sesión/flujo; acción dinámica {lit}.</li>
-  <li>✔ <b>firma_correcta</b> — Trámite finalizado correctamente.</li>
-  <li>✔ <b>firma_correcta_portafib</b> — Trámite OK con error Portafib previo en traza.</li>
-  <li>✔ <b>error_clave_8_15</b> — Cl@ve códigos 8–15 (cartel Cl@ve + frase + acción + mail).</li>
-  <li>✔ <b>error_clave_103</b> — Contraseña bloqueada.</li>
-  <li>✔ <b>error_clave_103_15</b> — Certificado bloqueado (103 + tipus 15; también tras 8–15 previo).</li>
-  <li>✔ <b>error_clave_101</b> — Nivel de registro insuficiente.</li>
-  <li>✔ <b>error_clave_104</b> — Registro débil.</li>
-  <li>✔ <b>error_clave_firma_cancelada</b> — Signatura cancel·lada + Cl@veFirm@ sin código 8–15.</li>
-  <li>✔ <b>error_clave_movil</b> — Solo TR_SGI o KO Cl@ve sin código; Posible Autofirma Android.</li>
-  <li>✔ <b>error_clave_movil_no_permitida</b> — Literal CLAVE_MOVIL no permitida.</li>
-  <li>✔ <b>error_validacion_certificado</b> — InvalidNotSignerCertificate / @firma → Portafib; prefijo por método.</li>
-  <li>✔ <b>error_autofirma_servidor</b> — SAF_27: mayoría instalación AutoFirma local; servidor si masivo o persiste.</li>
-  <li>✔ <b>error_autofirma_cancelada</b> — Signatura cancelada + Autofirm@ (sin Cl@ve).</li>
-  <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI sin cierre (certificado); cartel «sin cierre».</li>
-  <li>✔ <b>error_autofirma_cliente_generico</b> — Cl@ve marcado pero traza Autofirma; confirmar SO y método real.</li>
-  <li>✔ <b>error_autofirma_cliente_*</b> — windows, mac, linux, android, iphone, movil: SO = selector + TR_CAR (no literal KO).</li>
-  <li>⚙ <b>error_fire</b> — Reserva certificado local sin literales Autofirma concluyentes.</li>
-  <li>⚙ <b>error_autofirma</b> — Regla legacy de respaldo (no usada en árbol principal).</li>
+  <li><b>Reglas activas:</b></li>
+  <li>✔ <b>fallo_formulario</b> — No llega a firma, sin error Portafib.</li>
+  <li>✔ <b>fallo_portafib</b> — Error sesión/flujo; acción dinámica {lit}.</li>
+  <li>✔ <b>firma_correcta</b> / <b>firma_correcta_portafib</b></li>
+  <li>✔ <b>error_clave_*</b> — 8–15, 101, 103, 103-15, 104; cancelada Cl@veFirm@; Cl@ve móvil; CLAVE_MOVIL no permitida.</li>
+  <li>✔ <b>error_validacion_certificado</b> — InvalidNotSignerCertificate → Portafib.</li>
+  <li>✔ <b>error_autofirma_servidor</b> — SAF_27 (cliente local primero).</li>
+  <li>✔ <b>error_autofirma_cancelada</b> — Signatura cancelada + Autofirm@.</li>
+  <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI sin cierre (certificado).</li>
+  <li>✔ <b>error_autofirma_cliente_generico</b> — Cl@ve marcado pero KO Autofirm@.</li>
+  <li>✔ <b>error_autofirma_cliente_*</b> — windows, mac, linux, android, iphone, movil.</li>
+  <li>⚙ <b>error_fire</b> / <b>error_autofirma</b> — reserva / legacy.</li>
+
+  <br>
+
+  <li><b>Autofirma cliente — criterio v1.3.37–43:</b></li>
+  <li>El <b>literal del Firma KO</b> indica <b>tipo de fallo</b> (servidor intermedio, timeout, fitxer buit…), <b>no el SO</b>.</li>
+  <li><b>SO para acción/mail:</b> selector Certificado + Ordenador/móvil + pistas en TR_CAR/INI (<i>resolverReglaAutofirmaCliente</i>).</li>
+  <li><b>Cartel:</b> «Problema con el cliente de firma Autofirma (tipo de fallo)» — neutro.</li>
+  <li><b>Acción:</b> bloque TR_CAR (revisar Ordenador vs móvil) + pasos por SO; intro «habitualmente Android/iPhone» solo si el KO es servidor intermedio o timeout.</li>
+  <li><b>Flujo de Firma:</b> etiquetas <i>Servidor intermedio</i> / <i>Timeout firma</i> + tooltips; no muestra Android/iPhone en la etiqueta KO.</li>
+  <li><b>Literales:</b> avisos neutros (*Cliente Autofirma / servidor intermedio* o *Timeout*).</li>
 
   <br>
 
   <li><b>Prioridad en fase error_firma:</b></li>
-  <li>1. SAF_27 → 2. Validación certificado (@firma) → 3. CLAVE_MOVIL no permitida</li>
-  <li>4. Códigos Cl@ve (103 &gt; 8–15 &gt; 101 &gt; 104) → 5. Cancelada Cl@veFirm@ sin código</li>
-  <li>6. Autofirma fuerte (fitxer buit / Método Autofirm@ / timeout / servidor intermedio) → resolverReglaAutofirmaCliente (SO: selector + TR_CAR)</li>
-  <li>7. Autofirma débil (solo certificado marcado) → 8. Cancelada Autofirma → 9. Cl@ve móvil (KO sin código)</li>
-  <li>10. Solo TR_SGI sin cierre → entorno FIRE (certificado) o Cl@ve móvil (Cl@ve) → 11. Cliente Autofirma por SO</li>
+  <li>1. SAF_27 → 2. Validación @firma → 3. CLAVE_MOVIL no permitida</li>
+  <li>4. Códigos Cl@ve → 5. Cancelada Cl@veFirm@ sin código</li>
+  <li>6. Autofirma fuerte → <i>resolverReglaAutofirmaCliente</i> (SO: selector + TR_CAR)</li>
+  <li>7. Autofirma débil → 8. Cancelada Autofirma → 9. Cl@ve móvil (KO sin código)</li>
+  <li>10. Solo TR_SGI sin cierre → entorno FIRE o Cl@ve móvil</li>
 
   <br>
 
   <li><b>Criterios clave CAU:</b></li>
-  <li><b>Método de firma del Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector del técnico.</li>
-  <li><b>Acceso ≠ firma:</b> Cl@ve en acceso orienta discrepancia; KO elige la acción.</li>
-  <li>Sin <b>TR_SGI</b> → pre-firma (Portafib si literal de flujo; si no, formulario).</li>
-  <li><b>TR_SGO / TR_FIN</b> → firma correcta (con o sin Portafib previo).</li>
-  <li><b>Literal KO Autofirma</b> (Cliente Móvil, client de firma, servidor intermedio, timeout) → describe <b>tipo de fallo</b>, no SO; confirmar dispositivo en TR_CAR o selector.</li>
-  <li><b>Acción/mail Autofirma cliente:</b> selector Certificado + Ordenador/móvil y TR_CAR; intro Acción puede decir «habitualmente Android/iPhone» como pista CAU (v1.3.43).</li>
-  <li>Linux en traza + solo TR_SGI sin KO + móvil → orientar Android en reglas (user-agent mal reportado).</li>
-  <li>Certificado marcado + Autofirm@ en KO → no pedir confirmar acceso Cl@ve en flujo.</li>
-  <li>Técnico marca Cl@ve + Autofirm@ en KO → discrepancia en flujo/acción (no «acceso fue Cl@ve»).</li>
+  <li><b>Método de firma del Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector.</li>
+  <li><b>Acceso ≠ firma:</b> discrepancia si Cl@ve en acceso y Autofirm@ en KO.</li>
+  <li>Sin TR_SGI → pre-firma. TR_SGO / TR_FIN → firma correcta.</li>
+  <li>Certificado + Autofirm@ en KO → no pedir confirmar Cl@ve en Flujo de Firma.</li>
+  <li>KO Cl@ve con código (8–15, 101, 103, 104) → en Flujo de Firma basta «Método: Cl@veFirm@» (sin Revisar Acceso).</li>
 
   <br>
 
-  <li><b>Flujo de Firma (detalle por intento, tarjeta Flujo del trámite):</b></li>
-  <li>Cada <b>TR_SGI</b> = un intento; ventana hasta el siguiente SGI (orden por timestamp, no por pegado).</li>
-  <li>Campos: acceso (TR_CAR/INI previo), resultado (taxonomía v1), método de firma si hay KO/OK, mini-píldoras SGI→SGX/SGO/···.</li>
-  <li>Intentos iguales consecutivos → <b>#N–#M (k×)</b> expandible. Resumen agregado por frecuencia.</li>
-  <li>Separador <b>✓ Firma OK — nueva fase</b> si hubo SGO y luego más SGI. Badge <b>acceso ≠ firma</b> si acceso Cl@ve y firma Autofirm@ (o viceversa).</li>
-  <li>No modifica <b>idReglaDetectada</b>, cartel global ni Acción/Mail (solo presentación).</li>
-  <li>Fixtures de prueba en carpeta <b>trazas_prueba/</b> del repositorio.</li>
+  <li><b>Flujo de Firma (presentación por intento):</b></li>
+  <li>Cada TR_SGI = intento; ventana por timestamp hasta el siguiente SGI.</li>
+  <li>Acceso (TR_CAR/INI), resultado KO/OK, método firma, mini-píldoras SGI→SGX/SGO/···.</li>
+  <li>Agrupación consecutiva (#N–#M), resumen ×N, badge acceso≠firma.</li>
+  <li>No cambia la regla detectada; complementa cartel y Acción.</li>
+  <li>Fixtures: carpeta <b>trazas_prueba/</b>.</li>
 
   <br>
 
-  <li><b>Pendiente:</b></li>
-  <li>🔧 Limpieza estructural de literales (mensaje útil vs traza completa).</li>
-  <li>🔧 Mails Autofirma con anclas específicos por SO (ahora #Autofirma genérico).</li>
-  <li>🔧 Validar más trazas Cl@ve y FIRE sin Método de firma en KO (trazas antiguas).</li>
-
-  <br>
-
-  <li><b>Nota:</b> ✔ = regla con presentación completa validada. ⚙ = reserva o legacy.</li>
+  <li><b>Pendiente:</b> literales limpios · mails por SO · más trazas Cl@ve/FIRE antiguas.</li>
+  <li><b>Nota:</b> ✔ = validado. ⚙ = reserva.</li>
 </ul>
 `);
 };

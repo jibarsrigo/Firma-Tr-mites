@@ -4,12 +4,21 @@
 
 <script>
   // 🔹 VERSION HTML (editable manual)
-  const VERSION_HTML = "1.3.1";
+  const VERSION_HTML = "1.3.5";
 </script>
 
 <!-- =====================================================
      FUNCIONALIDADES HTML
      =====================================================
+
+     VERSION 1.3.5
+     - Iconos PWA/favicon (192, 512, .ico) con logo S verde; sustituye escudo con visto
+
+     VERSION 1.3.4
+     - Cabecera: «Analizador de Trazas» + bloque marca [S] SISTRA2 (como logo oficial)
+
+     VERSION 1.3.3
+     - Logo SISTRA2 (logo-sistra-s-256.png) en cabecera; título «Analizador de Trazas SISTRA2»
 
      VERSION 1.3.0
      - Tooltips en cabecera; Info y Reglas en teal sin subrayado (solo al pasar el ratón)
@@ -103,14 +112,15 @@
 </style>
   
 <meta charset="UTF-8">
-<title>Analizador de Trazas</title>
+<title>Analizador de Trazas SISTRA2</title>
 
-<!-- Icono / PWA (barra de tareas al abrir con Chrome --app). Cambiar ?v= si no refresca el icono -->
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=1">
-<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=1">
-<link rel="shortcut icon" href="favicon.ico?v=1">
-<link rel="apple-touch-icon" href="icon-192.png?v=1">
-<link rel="manifest" href="manifest.json?v=1">
+<!-- Icono / PWA (barra de tareas al instalar con Chrome). Cambiar ?v= si no refresca el icono -->
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2">
+<link rel="shortcut icon" href="favicon.ico?v=2">
+<link rel="apple-touch-icon" href="icon-192.png?v=2">
+<link rel="manifest" href="manifest.json?v=2">
 <meta name="theme-color" content="#01696f">
 
 <style>
@@ -133,12 +143,34 @@ body {
 
 .header-left { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
-.brand { display:flex; align-items:center; gap:8px; }
-.brand__title {
+.brand { display:flex; align-items:center; gap:10px; }
+.brand__prefix {
   font-family: system-ui;
   font-size:16px;
   font-weight:600;
   color:#1e1c17;
+}
+.brand__mark {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.brand__logo {
+  width:24px;
+  height:24px;
+  display:block;
+  flex-shrink:0;
+}
+.brand__sistra {
+  font-family: system-ui;
+  font-size:16px;
+  font-weight:700;
+  color:#1e1c17;
+  letter-spacing:0.02em;
+}
+.brand__two {
+  font-size:0.72em;
+  font-weight:700;
 }
 
 .badge {
@@ -620,8 +652,11 @@ textarea:focus {
 
   <div class="header-left">
     <div class="brand">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#01696f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <span class="brand__title">Analizador de Trazas</span>
+      <span class="brand__prefix">Analizador de Trazas</span>
+      <span class="brand__mark" aria-label="SISTRA2">
+        <img class="brand__logo" src="logo-sistra-s-256.png" width="24" height="24" alt="" aria-hidden="true">
+        <span class="brand__sistra">SISTRA<span class="brand__two">2</span></span>
+      </span>
     </div>
     <div class="badge" id="versionBadge" title="Versión del motor de análisis (app.js)">v 1.3.13</div>
     <div class="header-panel-link" id="btnDetalles" title="Qué hace el analizador, versiones y funcionalidades implementadas">Info ▾</div>

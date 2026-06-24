@@ -1,6 +1,6 @@
 {
-  "name": "Analizador de Trazas",
-  "short_name": "Analizador",
+  "name": "Analizador de Trazas SISTRA2",
+  "short_name": "Trazas SISTRA2",
   "start_url": "/Firma-Tr-mites/index.html",
   "scope": "/Firma-Tr-mites/",
   "display": "standalone",
