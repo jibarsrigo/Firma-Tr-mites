@@ -175,6 +175,8 @@ VERSION 1.3.37–1.3.43  - Refactor Autofirma cliente: el literal KO no indica e
                 · Cartel → Problema Autofirma (servidor intermedio / timeout / …)
                 · Acción/mail → selector Certificado + Ordenador/móvil y TR_CAR (SO concreto)
 
+VERSION 1.3.45  - Traza mixta Cl@ve + Autofirma: manda el último Firma KO (p. ej. 8–15 y luego cancelada Autofirm@)
+
 VERSION 1.3.43  - Acción: intro «Habitualmente desde Android/iPhone, pero no siempre» según KO
                 (servidor intermedio → Android; timeout+client de firma → iPhone); resto intro + pasos SO
 
@@ -200,7 +202,7 @@ VERSION 1.3.37  - Flujo de Firma: etiquetas KO Servidor intermedio / Timeout fir
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.44";
+const VERSION_JS = "1.3.45";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -281,6 +283,58 @@ function etiquetaTipoFalloAutofirmaClienteEnTraza(lineas) {
 
 function esLineaFirmaKoHelper(linea) {
   return /TR_SGX|FI FIRMA KO|FIN FIRMA KO/i.test(String(linea || ""));
+}
+
+function lineasFirmaKoCronologicas(lineasTraza) {
+  return (lineasTraza || [])
+    .filter(esLineaFirmaKoHelper)
+    .map(linea => ({ linea, ts: extraerTimestampLineaTraza(linea) }))
+    .sort((a, b) => {
+      if (a.ts != null && b.ts != null) return a.ts - b.ts;
+      if (a.ts != null) return -1;
+      if (b.ts != null) return 1;
+      return 0;
+    })
+    .map(entry => entry.linea);
+}
+
+function obtenerUltimaLineaFirmaKoCronologica(lineasTraza) {
+  const kos = lineasFirmaKoCronologicas(lineasTraza);
+  return kos.length ? kos[kos.length - 1] : null;
+}
+
+function inferirReglaDesdeLineaKo(lineaKo) {
+  if (!lineaKo || !esLineaFirmaKoHelper(lineaKo)) return null;
+  if (/SAF_27|SAF27\b/i.test(lineaKo)) return "error_autofirma_servidor";
+  if (esErrorValidacionCertificadoFirmanteHelper(lineaKo)) return "error_validacion_certificado";
+  if (/CLAVE[_\s]?MOVIL.*NO.*PERM[EE]|M[ÈE]TODE.*CLAVE.*MOVIL.*NO/i.test(lineaKo)) {
+    return "error_clave_movil_no_permitida";
+  }
+  if (lineaKo.includes("CLAVEFIRMA") && /ERROR:\s*\d+/.test(lineaKo)) {
+    const matchCodigo = lineaKo.match(/ERROR:\s*(\d+)/);
+    const matchTipus = lineaKo.match(/(?:TIPUS\s+)?RESULTAT\s*:\s*(\d+)/i)
+      || lineaKo.match(/RESULTAD[OA]?\s*:\s*(\d+)/i);
+    const codigo = matchCodigo ? matchCodigo[1] : null;
+    const tipus = matchTipus ? matchTipus[1] : null;
+    if (codigo === "103") return tipus === "15" ? "error_clave_103_15" : "error_clave_103";
+    if (/^(8|9|10|11|12|13|14|15)$/.test(codigo)) return "error_clave_8_15";
+    if (codigo === "101") return "error_clave_101";
+    if (codigo === "104") return "error_clave_104";
+  }
+  if (/SIGNATURA CANCEL|FIRMA CANCEL/i.test(lineaKo)) {
+    if (esMetodoFirmaAutofirmaEnLineaHelper(lineaKo)) return "error_autofirma_cancelada";
+    if (esMetodoFirmaClaveEnLineaHelper(lineaKo)) return "error_clave_firma_cancelada";
+  }
+  return null;
+}
+
+function textoResumenCodigoClaveDetectado(codigo, tipus) {
+  if (codigo === "103" && tipus === "15") return "103-15";
+  if (/^(8|9|10|11|12|13|14|15)$/.test(codigo)) return "8–15";
+  if (codigo === "103") return "103";
+  if (codigo === "101") return "101";
+  if (codigo === "104") return "104";
+  return codigo || "?";
 }
 
 function esLineaIniCarHelper(linea) {
@@ -1421,7 +1475,13 @@ else {
 // 🔹 PRIORIDAD: si aparece SAF_27, SIEMPRE es Autofirma
 // 🔹 aunque el técnico haya marcado Cl@ve
 
-// 👉 PRIORIDAD REAL DE ERRORES (FASE 10)
+  // 👉 PRIORIDAD REAL DE ERRORES (FASE 10)
+  const ultimaLineaKo = obtenerUltimaLineaFirmaKoCronologica(lineasTraza);
+  const reglaUltimoKo = ultimaLineaKo ? inferirReglaDesdeLineaKo(ultimaLineaKo) : null;
+  const koPosteriorDistintoDeClaveCodigo =
+    hayErrorClaveReal &&
+    reglaUltimoKo &&
+    (/^error_autofirma/.test(reglaUltimoKo) || reglaUltimoKo === "error_clave_firma_cancelada");
 
 // 👉 Autofirma servidor (SAF_27) SIEMPRE gana
 if (hayAutofirmaError) {
@@ -1438,6 +1498,12 @@ else if (hayErrorValidacionCertificado) {
 else if (hayClaveMovilNoPermitida) {
 
   idReglaDetectada = "error_clave_movil_no_permitida";
+
+}
+else if (koPosteriorDistintoDeClaveCodigo) {
+
+  // 👉 Tras un error Cl@ve con código, reintento con otro método: manda el último Firma KO
+  idReglaDetectada = reglaUltimoKo;
 
 }
 else if (hayErrorClaveReal) {
@@ -1766,6 +1832,10 @@ else if (idReglaDetectada === "error_autofirma_cancelada") {
   cartelDiagnostico = cartelAzul("Autofirma");
   fraseDiagnostico = "Problema con el cliente de firma Autofirma (firma cancelada). "
     + "Suele deberse a timeout, SSL o fallo de comunicación con AutoFirma.";
+  if (hayErrorClaveReal) {
+    fraseDiagnostico += " En intentos anteriores apareció error Cl@ve (código "
+      + textoResumenCodigoClaveDetectado(codigoClaveDetectado, tipusResultatDetectado) + ").";
+  }
 
 }
 else if (idReglaDetectada === "error_autofirma_entorno") {
@@ -1941,6 +2011,11 @@ if (accionData && accionData.accion) {
     textoAccion = "Firma cancelada (Método de firma Autofirm@).\n"
       + "El técnico ha marcado Método Cl@ve, pero la firma se intentó con certificado/AutoFirma.\n\n"
       + accionData.accion;
+  } else if (idReglaDetectada === "error_autofirma_cancelada" && hayErrorClaveReal) {
+    textoAccion = "En intentos anteriores falló Cl@ve (código "
+      + textoResumenCodigoClaveDetectado(codigoClaveDetectado, tipusResultatDetectado)
+      + "); después el ciudadano intentó con certificado (Autofirm@) y la firma quedó cancelada.\n\n"
+      + textoAccion;
   } else if (idReglaDetectada === "error_clave_firma_cancelada") {
     if (esCert && !esClave) {
       textoAccion += "\n*No orientar reinstalar AutoFirma: el KO indica Cl@ve, no certificado local.";

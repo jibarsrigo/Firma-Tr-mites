@@ -61,6 +61,13 @@ C-8-15_reiente_maria-soledad.txt
   Global: error_clave_8_15
   CAR pegado sin literal CLAVE (Revisar Acceso en sin cierre; no en #8)
 
+C-8-15_luego_autofirma_cancelada.txt
+  Álvaro Pérez González · RESIDUS · Cl@ve 8–15 → cancelada Cl@ve → cancelada Autofirm@ (×2)
+  Reintentos SGI posteriores sin KO
+  Marcar: Certificado local (o Cl@ve: cartel Autofirma + nota Cl@ve anterior)
+  Global: error_autofirma_cancelada (último KO Autofirm@; menciona Cl@ve 8–15 previo)
+  Flujo de Firma: Cl@ve 8–15, cancelada Cl@ve, cancelada Autofirm@
+
 Notas
 -----
 - SistraHelp pega lo más reciente arriba; el motor ordena por timestamp.
