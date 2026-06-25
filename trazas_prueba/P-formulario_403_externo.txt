@@ -1,0 +1,7 @@
+# Mar López Navarro · EBAP · sin TR_FRI → fallo_formulario · 403 enriquece mail
+# Global: fallo_formulario (sin Inicio formulario; «El fluxe no es vàlid» no cambia la regla)
+
+ERROR - Error    23/06/2026 09:52:14    HBFUD2PF-CEL4W8T8-T8DFFPR8    43225458V    MAR LOPEZ NAVARRO    EB0006OPOS-MODBORSI    EBAP    1    6382702    3207192    El fluxe no es vàlid    FlujoInvalidoException 
+ERROR - Error    23/06/2026 09:50:44    HBFUD2PF-CEL4W8T8-T8DFFPR8    43225458V    MAR LOPEZ NAVARRO    EB0006OPOS-MODBORSI    EBAP    1    6382702    3207192    Error no controlat a la capa de servei: 403 Forbidden    ErrorNoControladoException 
+ERROR - Error    23/06/2026 09:50:08    HBFUD2PF-CEL4W8T8-T8DFFPR8    43225458V    MAR LOPEZ NAVARRO    EB0006OPOS-MODBORSI    EBAP    1    6382702    3207192    Error no controlat a la capa de servei: 403 Forbidden    ErrorNoControladoException 
+TR_INI - Inici del tràmit    23/06/2026 09:50:01    HBFUD2PF-CEL4W8T8-T8DFFPR8    43225458V    MAR LOPEZ NAVARRO    EB0006OPOS-MODBORSI    EBAP    1    6382702    3207192     

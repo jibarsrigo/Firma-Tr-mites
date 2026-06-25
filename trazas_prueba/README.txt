@@ -17,6 +17,12 @@ casuística no existe, se añade un .txt aquí y se actualiza este README.
 Archivos
 --------
 
+P-formulario_403_externo.txt
+  Mar López Navarro · EBAP · sin TR_FRI · 403 Forbidden formulario externo
+  ERROR: 403 Forbidden (×2) + El fluxe no es vàlid (ignorado para la regla)
+  Global: fallo_formulario por ausencia de Inicio formulario
+  Acción/mail: texto extra si aparece 403 Forbidden
+
 F-saf27_sintetico.txt
   1 intento · TR_SGI → TR_SGX · SAF_27 · acceso certificado · Autofirm@
   Global: error_autofirma_servidor

@@ -175,6 +175,10 @@ VERSION 1.3.37–1.3.43  - Refactor Autofirma cliente: el literal KO no indica e
                 · Cartel → Problema Autofirma (servidor intermedio / timeout / …)
                 · Acción/mail → selector Certificado + Ordenador/móvil y TR_CAR (SO concreto)
 
+VERSION 1.3.47  - pre_firma: sin TR_FRI → fallo_formulario (ignora «fluxe no vàlid»); 403 solo enriquece acción/mail
+
+VERSION 1.3.46  - Formulario externo 403 Forbidden: fallo_formulario (no Portafib) aunque aparezca «El fluxe no es vàlid»
+
 VERSION 1.3.45  - Traza mixta Cl@ve + Autofirma: manda el último Firma KO (p. ej. 8–15 y luego cancelada Autofirm@)
 
 VERSION 1.3.43  - Acción: intro «Habitualmente desde Android/iPhone, pero no siempre» según KO
@@ -202,7 +206,7 @@ VERSION 1.3.37  - Flujo de Firma: etiquetas KO Servidor intermedio / Timeout fir
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.45";
+const VERSION_JS = "1.3.47";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -803,7 +807,7 @@ btnTabla.onclick = (e) => {
   <br>
 
   <li><b>Reglas activas:</b></li>
-  <li>✔ <b>fallo_formulario</b> — No llega a firma, sin error Portafib.</li>
+  <li>✔ <b>fallo_formulario</b> — Sin TR_FRI (Inicio formulario) y sin firma; 403 Forbidden añade texto al mail.</li>
   <li>✔ <b>fallo_portafib</b> — Error sesión/flujo; acción dinámica {lit}.</li>
   <li>✔ <b>firma_correcta</b> / <b>firma_correcta_portafib</b></li>
   <li>✔ <b>error_clave_*</b> — 8–15, 101, 103, 103-15, 104; cancelada Cl@veFirm@; Cl@ve móvil; CLAVE_MOVIL no permitida.</li>
@@ -1095,7 +1099,8 @@ const esErrorTecnicoHelper = (linea) => {
          linea.includes("ERROR") ||
          linea.includes("CLAVEFIRMA") ||
          linea.includes("CODI ERROR") ||
-         linea.includes("PROVEÏDOR: CLAVEFIRMA");
+         linea.includes("PROVEÏDOR: CLAVEFIRMA") ||
+         /403\s*FORBIDDEN/i.test(linea);
 };
 
 const esPosibleErrorFormularioHelper = (linea) => {
@@ -1345,6 +1350,11 @@ const hayErrorQaaRecarga = lineasTraza.some(linea =>
 );
 
 
+// 👉 403 en formulario externo: no define la regla; solo enriquece acción/mail si hay fallo_formulario
+const hayError403FormularioExterno = lineasTraza.some(linea =>
+  /403\s*FORBIDDEN/i.test(linea)
+);
+
 // 👉 Detectamos errores reales de Portafib / sesión (solo literales acordados, no sesión cliente)
 const hayErrorPortafibReal = erroresUnicos.some(linea =>
   /FLUXE NO ES V[ÀA]LID/i.test(linea) ||
@@ -1439,8 +1449,14 @@ const numFRF = eventos.filter(e => e === "TR_FRF").length;
 
 
 // 👉 Caso: NO llega a firma (pre_firma)
+// 🔹 Sin TR_FRI → formulario (aunque aparezca «El fluxe no es vàlid»); Portafib solo si hubo Inicio formulario
 
-if (!haySGI && hayErrorPortafibReal){
+if (!haySGI && !hayFRI) {
+
+  idReglaDetectada = "fallo_formulario";
+
+}
+else if (!haySGI && hayErrorPortafibReal){
 
   // 👉 Error técnico REAL de sesión/flujo (Portafib)
   // 🔹 hay literales tipo FLUXE, SESSION, 227, timestamp…
@@ -1702,16 +1718,22 @@ function literalFlujo(texto) {
 
 if (!haySGI) {
 
-  // 👉 No llega a firma
-  if (hayErrorPortafibReal) {
+  if (idReglaDetectada === "fallo_portafib") {
 
-    // 👉 Error de sesión / flujo (Portafib)
     cartelDiagnostico = cartelAzul("Fallo Portafib");
     fraseDiagnostico = "La firma no se inicia por un error de flujo.";
 
+  } else if (!hayFRI) {
+
+    cartelDiagnostico = cartelAzul("Fallo Formulario");
+    fraseDiagnostico = "No hay Inicio formulario en la traza: el trámite no llega a abrir el formulario.";
+    if (hayError403FormularioExterno) {
+      fraseDiagnostico += " Error al cargar el formulario externo ("
+        + literalFlujo("403 Forbidden") + ").";
+    }
+
   } else {
 
-    // 👉 Sin errores técnicos → problema de formulario
     cartelDiagnostico = cartelAzul("Fallo Formulario");
     fraseDiagnostico = "La firma no se inicia, y no hay errores de flujo " + literalFlujo("Fluxe no vàlid") + ".";
   }
@@ -1992,6 +2014,10 @@ if (accionData && accionData.accion) {
       lits = literalGris("El fluxe no es vàlid", usarCursiva);
     }
     textoAccion = textoAccion.replace("{lit}", lits);
+  } else if (idReglaDetectada === "fallo_formulario" && hayError403FormularioExterno) {
+    textoAccion = "Remitir al ciudadano a formulario de incidencias / dudas funcionales.\n"
+      + "Indicar en el mail que el formulario de este trámite no se abre (403 Forbidden al cargar el formulario externo a SISTRA2).\n"
+      + "*Si aparecen literales, facilitar el mensaje de error legible (las palabras de la traza que describen el problema) para que el ciudadano lo indique en el formulario de incidencias / dudas funcionales.";
   } else if (idReglaDetectada === "error_clave_103_15") {
     // 🔹 Caso especial: 103-15 precedido por un error 8-15 en la misma traza.
     const hayClave8_15 = lineasTraza.some(l =>
