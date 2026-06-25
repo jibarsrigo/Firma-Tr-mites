@@ -117,84 +117,52 @@ VERSION 1.3.13  - Cl@ve marcado + KO inequívoco Autofirm@/timeout → acción i
                 - Acción iPhone con prefijo discrepancia si acceso Cl@ve y firma certificado en KO
                 - Criterio CAU: Método de firma del KO > selector; acceso ≠ firma; trazas antiguas sin campo KO
 
-VERSION 1.3.14  - SAF_27: flujo y acción alineados con criterio CAU (cliente local primero; servidor si masivo)
+VERSION 1.3.14  - Autofirma CAU y discrepancias acceso/firma (antes 1.3.14–17)
+                - SAF_27: flujo y acción alineados con criterio CAU (cliente local primero; servidor si masivo)
+                - Solo TR_SGI sin KO: Posible Autofirma Android; Linux en traza → acción/mail Android
+                - Flujo Autofirma: no «Confirmar Cl@ve» si certificado + Autofirm@ en Firma KO
+                - Discrepancia Cl@ve marcado + Autofirm@ en KO: texto en flujo/acción; sin PDF duplicado
 
-VERSION 1.3.15  - Solo TR_SGI sin KO: Posible Autofirma Android; Linux en traza → acción/mail Android
+VERSION 1.3.15  - Paneles Info/Reglas y ayuda contextual (antes 1.3.18–21)
+                - Detalles y Reglas alineados con criterio CAU
+                - Ayuda (Detalles/Reglas/SAML/blanco): oculta análisis al abrir; al cerrar re-analiza si hubo resultado
+                - Sin análisis previo: oculta «Pega traza» al abrir ayuda; al cerrar la restaura
+                - Corrección: al cerrar ayuda sin análisis, «Pega traza» visible aunque haya traza pegada
 
-VERSION 1.3.16  - Flujo Autofirma: no pedir confirmar acceso Cl@ve si certificado + Autofirm@ en KO
+VERSION 1.3.16  - Literales con color y validación previa (antes 1.3.22–23)
+                - «Firma OK» verde; «Firma KO», fluxe inválido y códigos Cl@ve 8/101/103/104 en rojo
+                - Validación método/sistema/traza: oculta resultado anterior como la ayuda
 
-VERSION 1.3.17  - Discrepancia Cl@ve marcado + Autofirm@ en KO: texto técnico; sin PDF en flujo
+VERSION 1.3.17  - Flujo de Firma por intento (antes 1.3.24–27, 36)
+                - Subapartado plegable; agrupación consecutiva ×N; mini-píldoras SGI→cierre; badge acceso≠firma
+                - Colores taxonomía; sin log consola; docs panel y carpeta trazas_prueba
+                - Nota intro «Detalles por cada intento de firma»
 
-VERSION 1.3.18  - Paneles Ver detalles y Reglas alineados con criterio CAU v1.3.17
+VERSION 1.3.18  - Pistas SO en flujo y frase Cl@ve (antes 1.3.28–31)
+                - Diagnóstico global Cl@ve con código sin repetir literal CODI ERROR (queda en Literales)
+                - Pistas Posible Cl@ve móvil / Autofirma Android / iPhone por intento
+                - Etiquetas Cliente firma móvil (Android) y Client de firma (iPhone) en KO
+                - Literales: resaltado Cliente de Firma Móvil / client de firma
 
-VERSION 1.3.19  - Ayuda (Detalles/Reglas/SAML/blanco): oculta análisis; al cerrar panel re-analiza traza
+VERSION 1.3.19  - Revisar Acceso en Flujo de Firma (antes 1.3.32–35)
+                - Chip «Revisar Acceso» con tooltip (método acceso y SO/dispositivo en TR_CAR)
+                - Tooltip «Sin cierre (Solo Inicio Firma)» en intentos sin KO/OK
+                - Sin chip acceso en KO Cl@ve con código (8–15, 101, 103, 104…); basta Método Cl@veFirm@
 
-VERSION 1.3.20  - Ayuda sin análisis previo: oculta «Pega traza»; al cerrar la restaura si no hay traza
+VERSION 1.3.20  - Refactor Autofirma cliente: literal KO no indica SO (antes 1.3.37–43)
+                POR QUÉ: «Cliente de Firma Móvil» / «client de firma» también en Windows/Mac; KO→cancel→OK suele ser transitorio
+                · Flujo de Firma → Servidor intermedio / Timeout firma (tooltips TR_CAR); etiquetas neutras
+                · Literales → avisos neutros; cartel → Problema Autofirma (tipo de fallo)
+                · Acción/mail → selector + TR_CAR, bloque TR_CAR + pasos SO; intro «Habitualmente Android/iPhone…» según KO
 
-VERSION 1.3.21  - Al cerrar ayuda sin análisis previo: «Pega traza» aunque haya traza pegada
+VERSION 1.3.21  - Documentación Info/Reglas (antes 1.3.44)
+                - Paneles Detalles y Reglas reescritos con criterio Autofirma v1.3.20
+                - Nombre «Analizador de Trazas SISTRA» en ayuda embebida
 
-VERSION 1.3.22  - Literales: «Firma OK» verde; «Firma KO», fluxe inválido y Error 8/101/103/104 rojo
-
-VERSION 1.3.23  - Validación fallida (método/sistema/traza): oculta análisis previo como la ayuda
-
-VERSION 1.3.24  - Flujo de Firma Fase 1: subapartado plegable en tarjeta flujo (lista + resumen por intento)
-
-VERSION 1.3.25  - Flujo de Firma Fase 2: agrupación consecutiva expandible, colores taxonomía, badge acceso≠firma
-
-VERSION 1.3.26  - Flujo de Firma Fase 3: mini-píldoras TR_SGI→cierre por intento
-
-VERSION 1.3.27  - Flujo de Firma Fase 4: sin log consola; docs panel y trazas_prueba
-
-VERSION 1.3.28  - Frase Cl@ve con código: sin literal CODI ERROR en diagnóstico global (queda en Literales)
-
-VERSION 1.3.29  - Flujo de Firma: pista Posible Cl@ve móvil / Autofirma Android / iPhone por intento
-
-VERSION 1.3.30  - Flujo de Firma: etiquetas Cliente firma móvil - Android / Client de firma - iPhone; sin chips Pista SO
-
-VERSION 1.3.31  - Literales: resaltado y aviso Cliente de Firma Móvil / client de firma (color flujo firma)
-
-VERSION 1.3.32  - Flujo de Firma: «Revisar Acceso» con tooltip; sin title en tarjeta Flujo del trámite
-
-VERSION 1.3.33  - Tooltip Revisar Acceso: método de acceso y SO/dispositivo en TR_CAR
-
-VERSION 1.3.34  - Flujo de Firma: tooltip «Sin cierre (Solo Inicio Firma)» en etiqueta sin cierre
-
-VERSION 1.3.35  - Flujo de Firma: sin «Revisar Acceso» en KO Cl@ve (8–15, 101, 103, 104…); basta Método Cl@veFirm@
-
-VERSION 1.3.36  - Flujo de Firma: nota intro «Detalles por cada intento de firma»
-
-VERSION 1.3.44  - Info/Reglas actualizados (Autofirma v1.3.37–43); nombre «Analizador de Trazas SISTRA»
-
-VERSION 1.3.37–1.3.43  - Refactor Autofirma cliente: el literal KO no indica el SO (SistraHelp engañoso)
-                POR QUÉ: mensajes como «Cliente de Firma Móvil» + servidor intermedio o
-                «client de firma» + timeout aparecen también en Windows/Mac; KO→cancel→OK
-                suele ser fallo transitorio del cliente Autofirma, no «es Android/iPhone».
-                SEPARACIÓN DE CAPAS (Flujo ≠ Literales ≠ cartel ≠ Acción/mail):
-                · Flujo de Firma → tipo de fallo técnico neutro (sin SO en la etiqueta)
-                · Literales → aviso/resaltado neutro; confirmar SO en TR_CAR
-                · Cartel → Problema Autofirma (servidor intermedio / timeout / …)
-                · Acción/mail → selector Certificado + Ordenador/móvil y TR_CAR (SO concreto)
-
-VERSION 1.3.47  - pre_firma: sin TR_FRI → fallo_formulario (ignora «fluxe no vàlid»); 403 solo enriquece acción/mail
-
-VERSION 1.3.46  - Formulario externo 403 Forbidden: fallo_formulario (no Portafib) aunque aparezca «El fluxe no es vàlid»
-
-VERSION 1.3.45  - Traza mixta Cl@ve + Autofirma: manda el último Firma KO (p. ej. 8–15 y luego cancelada Autofirm@)
-
-VERSION 1.3.43  - Acción: intro «Habitualmente desde Android/iPhone, pero no siempre» según KO
-                (servidor intermedio → Android; timeout+client de firma → iPhone); resto intro + pasos SO
-
-VERSION 1.3.42  - Cartel/frase global neutra: Problema con el cliente de firma Autofirma (tipo de fallo)
-
-VERSION 1.3.41  - Acción error_autofirma_cliente_*: bloque TR_CAR (3 párrafos) + pasos SO sin título «App Android»
-
-VERSION 1.3.40  - resolverReglaAutofirmaCliente: prioridad selector + TR_CAR/INI; literal KO ya no fuerza Android/iPhone
-
-VERSION 1.3.39  - Literales: avisos *Cliente Autofirma / servidor intermedio* o *Timeout* (sin Android/iPhone)
-
-VERSION 1.3.38  - Flujo de Firma: tooltips Servidor intermedio y Timeout firma (confirmar SO en TR_CAR)
-
-VERSION 1.3.37  - Flujo de Firma: etiquetas KO Servidor intermedio / Timeout firma (sustituyen Android/iPhone)
+VERSION 1.3.22  - Trazas mixtas y formulario sin Inicio (antes 1.3.45–47)
+                - Traza Cl@ve + Autofirma posterior: manda el último Firma KO (p. ej. 8–15 y luego cancelada Autofirm@)
+                - Sin TR_FRI → fallo_formulario (ignora «El fluxe no es vàlid»); Portafib solo si hubo Inicio formulario
+                - 403 Forbidden en formulario externo: enriquece acción/mail; sin nota de literales al ciudadano en ese caso
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -206,7 +174,7 @@ VERSION 1.3.37  - Flujo de Firma: etiquetas KO Servidor intermedio / Timeout fir
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.47";
+const VERSION_JS = "1.3.22";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -745,20 +713,20 @@ btnDetalles.onclick = () => {
 
   <br>
 
-  <li><b>Refactor Autofirma cliente (v1.3.37–43) — por qué:</b></li>
+  <li><b>Refactor Autofirma cliente (v1.3.20) — por qué:</b></li>
   <li>SistraHelp envuelve muchos fallos en textos genéricos («Cliente de Firma Móvil», «client de firma» en catalán) que también salen en <b>Windows/Mac</b>. Inferir Android/iPhone desde el KO desorientaba al técnico.</li>
   <li>Separación de capas (cada apartado dice una cosa distinta):</li>
   <li>· <b>Flujo de Firma</b> → tipo de fallo neutro: <i>Servidor intermedio</i>, <i>Timeout firma</i> (+ tooltips TR_CAR).</li>
   <li>· <b>Literales</b> → avisos/resaltado neutros; confirmar SO en TR_CAR.</li>
   <li>· <b>Cartel</b> → «Problema con el cliente de firma Autofirma (servidor intermedio / timeout / …)».</li>
   <li>· <b>Acción/mail</b> → SO concreto: selector Certificado + Ordenador/móvil y TR_CAR; bloque TR_CAR + pasos por SO.</li>
-  <li>· <b>Intro Acción (v1.3.43)</b> → «Habitualmente desde Android/iPhone, pero no siempre» según tipo KO (solo pista CAU, no regla rígida).</li>
+  <li>· <b>Intro Acción</b> → «Habitualmente desde Android/iPhone, pero no siempre» según tipo KO (solo pista CAU, no regla rígida).</li>
 
   <br>
 
   <li><b>Estado actual (completado y validado):</b></li>
   <li>✔ Interfaz estilo V5: tarjetas Flujo / Acción / Literales.</li>
-  <li>✔ <b>Pre-firma:</b> fallo formulario y fallo Portafib (acción dinámica con {lit}).</li>
+  <li>✔ <b>Pre-firma:</b> fallo formulario (sin TR_FRI) y fallo Portafib (acción dinámica con {lit}).</li>
   <li>✔ <b>Firma OK:</b> trámite finalizado; <b>firma_correcta_portafib</b>.</li>
   <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; Cl@ve móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@.</li>
   <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → escalado Portafib.</li>
@@ -821,7 +789,7 @@ btnTabla.onclick = (e) => {
 
   <br>
 
-  <li><b>Autofirma cliente — criterio v1.3.37–43:</b></li>
+  <li><b>Autofirma cliente — criterio v1.3.20:</b></li>
   <li>El <b>literal del Firma KO</b> indica <b>tipo de fallo</b> (servidor intermedio, timeout, fitxer buit…), <b>no el SO</b>.</li>
   <li><b>SO para acción/mail:</b> selector Certificado + Ordenador/móvil + pistas en TR_CAR/INI (<i>resolverReglaAutofirmaCliente</i>).</li>
   <li><b>Cartel:</b> «Problema con el cliente de firma Autofirma (tipo de fallo)» — neutro.</li>
@@ -2014,10 +1982,11 @@ if (accionData && accionData.accion) {
       lits = literalGris("El fluxe no es vàlid", usarCursiva);
     }
     textoAccion = textoAccion.replace("{lit}", lits);
-  } else if (idReglaDetectada === "fallo_formulario" && hayError403FormularioExterno) {
-    textoAccion = "Remitir al ciudadano a formulario de incidencias / dudas funcionales.\n"
-      + "Indicar en el mail que el formulario de este trámite no se abre (403 Forbidden al cargar el formulario externo a SISTRA2).\n"
-      + "*Si aparecen literales, facilitar el mensaje de error legible (las palabras de la traza que describen el problema) para que el ciudadano lo indique en el formulario de incidencias / dudas funcionales.";
+  } else if (idReglaDetectada === "fallo_formulario" && !hayFRI) {
+    textoAccion = "Remitir al ciudadano a formulario de incidencias / dudas funcionales.";
+    if (hayError403FormularioExterno) {
+      textoAccion += "\nIndicar en el mail que el formulario de este trámite no se abre (403 Forbidden al cargar el formulario externo a SISTRA2).";
+    }
   } else if (idReglaDetectada === "error_clave_103_15") {
     // 🔹 Caso especial: 103-15 precedido por un error 8-15 en la misma traza.
     const hayClave8_15 = lineasTraza.some(l =>
