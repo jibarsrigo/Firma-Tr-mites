@@ -205,6 +205,8 @@ VERSION 1.3.32  - error_certificado_nif_no_coincide: ajuste de prioridad. Ya NO 
 
 VERSION 1.3.33  - Panel Reglas reescrito: guía CAU (qué lee, qué muestra, catálogo por familia con “se detecta cuando / por qué”, prioridad actualizada).
                 - Pendientes Info/Reglas: CAI-2643553 / Cl@ve 500 marcado como hecho (regla error_firma_fitxers_500 + fixtures).
+
+VERSION 1.3.34  - Acciones cadena/NIF reformateadas (acciones.json v1.3.19): secciones, negritas clave, lenguaje accesible; aviso NIF con negritas.
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -216,7 +218,7 @@ VERSION 1.3.33  - Panel Reglas reescrito: guía CAU (qué lee, qué muestra, cat
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.33";
+const VERSION_JS = "1.3.34";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -2483,8 +2485,9 @@ if (accionData && accionData.accion) {
   //    el problema persistente/actual es la cadena, pero avisamos del certificado equivocado.
   if (idReglaDetectada === "error_cadena_certificacion" && hayErrorNifNoCoincide) {
     const nifTxt = nifsNoCoincide.cert ? " (" + nifsNoCoincide.cert + ")" : "";
-    textoAccion = "Aviso: en uno de los intentos se firmó con un certificado de OTRO NIF" + nifTxt
-      + " — confirmar que el ciudadano usa SU propio certificado. Aun así, el error persistente y más reciente es la cadena de certificación (InvalidCertificateChain):\n\n"
+    textoAccion = "<b>Aviso (otro NIF):</b> en uno de los intentos se firmó con un certificado de <b>otro NIF</b>" + nifTxt
+      + ". Confirmar que usa <b>su propio certificado</b>.\n"
+      + "Aun así, el error persistente y más reciente es la <b>cadena de certificación</b> (InvalidCertificateChain):\n\n"
       + textoAccion;
   }
 
