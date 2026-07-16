@@ -1,14 +1,55 @@
-# CAU: Juan Jose Artigues Mesquida · 00-SOLGEN (INDUSTRIA) · certificado local (Autofirm@) · Windows
+# CAU: Juan Jose Artigues Mesquida (NIF 18233778E) · 00-SOLGEN (INDUSTRIA) · certificado local (Autofirm@) · Windows
 # Metodo a marcar en el analizador: Certificado local + Ordenador
-# Literal KO: "La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida.
-#   (... resultminor: SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@"
 #
-# Global (HOY): error_autofirma_cliente_windows  <-- DESACERTADO.
-#   Motivo: hay "Método de firma: Autofirm@" en el KO -> cae en resolverReglaAutofirmaCliente -> cliente Windows (reinstalar Autofirma).
-#   Reinstalar Autofirma NO arregla una cadena de certificacion no valida.
-# Objetivo: familia validacion de certificado (InvalidCertificateChain), hermana de InvalidNotSignerCertificate.
-#   El helper esErrorValidacionCertificadoFirmanteHelper NO detecta hoy "InvalidCertificateChain" (solo VALIDATION / InvalidNotSignerCertificate).
-# Matiz: InvalidCertificateChain suele apuntar al certificado del ciudadano (CA no reconocida / intermedios ausentes),
-#   mas que al servicio @firma. Decidir: extender error_validacion_certificado o nueva regla error_cadena_certificacion.
+# DOS literales KO en la misma traza (~11 intentos en 1h30, 09:40 -> 11:04, mismo equipo):
+#  (A) MUCHOS: "La cadena de certificación del certificado firmante no es válida"
+#      (resultminor SignerCertificate:InvalidCertificateChain) · Autofirm@
+#  (B) UNO (10:48:03, tras TR_CAR): "S'ha firmat amb un certificat on el nif associat és 43219044C,
+#      però es requeria el nif 18233778E" · Autofirm@   <-- firmo con certificado de OTRA persona.
 #
+# LECTURA CAU:
+#  - NO es transitorio de @firma ni incidencia de servicio: es persistente (1h30) y el validador
+#    funciona (detecta el NIF del certificado). => NO escalar a Portafib.
+#  - Es un problema LOCAL: equipo de trabajo compartido con >=2 certificados (18233778E y 43219044C).
+#    43219044C tiene cadena valida (llega a comprobar NIF -> falla por NIF no coincidente).
+#    El InvalidCertificateChain es de otro certificado (probablemente el suyo) con la cadena rota.
+#  - Accion: (1) elegir SU certificado (18233778E), no el de 43219044C; (2) si aun asi InvalidCertificateChain,
+#    reinstalar su certificado con toda la cadena de la CA / renovar; (3) validar en valide.redsara.es.
+#
+# Global (app.js v1.3.31): error_certificado_nif_no_coincide  (IMPLEMENTADO).
+#   El literal (B) del NIF tiene PRIORIDAD ALTA -> manda aunque haya muchos InvalidCertificateChain (A).
+#   cartel "Certificado de otro NIF"; extrae certificado=43219044C / requerido=18233778E.
+#   Accion: seleccionar el certificado propio; si al hacerlo sale InvalidCertificateChain -> pasa a cadena.
+#   (Sin el literal B, esta misma traza daria error_cadena_certificacion.)
+#
+TR_SGX - Fi firma KO	16/07/2026 11:04:47	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 11:04:19	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 10:50:22	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:50:03	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 10:48:03	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	S´ha firmat amb un certificat on el nif associat és 43219044C, però es requeria el nif 18233778E Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:47:43	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 10:47:34	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 10:42:45	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:42:30	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 10:42:24	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 10:37:58	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:37:39	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 10:24:52	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:24:32	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 10:24:28	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
 TR_SGX - Fi firma KO	16/07/2026 09:57:06	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:56:50	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:55:21	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:55:05	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 09:55:00	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:41:53	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:41:37	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:41:24	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:41:08	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:40:55	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:40:36	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:40:20	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:39:22	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_FRF - Fi formulari	16/07/2026 09:38:38	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_FRI - Inici formulari	16/07/2026 09:34:26	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_INI - Inici del tràmit	16/07/2026 09:33:43	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	

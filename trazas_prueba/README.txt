@@ -116,12 +116,16 @@ T-500_puro.txt
   Valida en pantalla la regla nueva (app.js v1.3.28)
 
 F-artigues_cadena_certificacion.txt
-  Juan Jose Artigues Mesquida · 00-SOLGEN (INDUSTRIA) · certificado local (Autofirm@) · Windows
-  1x TR_SGX "La cadena de certificación del certificado firmante no es válida" (InvalidCertificateChain) · Autofirm@
+  Juan Jose Artigues Mesquida (18233778E) · 00-SOLGEN (INDUSTRIA) · certificado local (Autofirm@) · Windows
+  Traza completa: ~11 TR_SGX en 1h30 (09:40-11:04), MUCHOS "InvalidCertificateChain"
+    + 1 KO distinto (10:48): "nif associat és 43219044C, però es requeria el nif 18233778E" (firma con cert de OTRA persona)
   Marcar: Certificado local + Ordenador
-  Global (HOY): error_autofirma_cliente_windows  <-- DESACERTADO (reinstalar Autofirma no arregla cadena de cert. invalida)
-  Objetivo: familia validacion certificado (hermana de InvalidNotSignerCertificate); helper no detecta InvalidCertificateChain
-  Pendiente de decidir: extender error_validacion_certificado o nueva regla error_cadena_certificacion
+  Global esperado (app.js v1.3.31): error_certificado_nif_no_coincide  (IMPLEMENTADO)
+    cartel "Certificado de otro NIF" · etiqueta flujo "Certificado de otro NIF" · extrae cert=43219044C / requerido=18233778E
+    accion: seleccionar el certificado propio (equipo compartido); si al elegirlo sale InvalidCertificateChain -> pasa a cadena
+  Valida: (1) PRIORIDAD ALTA -> el literal del NIF manda aunque haya muchos InvalidCertificateChain en la misma traza;
+    (2) extraccion de los dos NIF; (3) sin el literal del NIF, esta traza daria error_cadena_certificacion
+  Lectura CAU: persistente + validador detecta NIF => NO Portafib; problema LOCAL en equipo compartido (>=2 certificados)
 
 Notas
 -----

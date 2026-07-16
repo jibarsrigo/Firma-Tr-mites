@@ -185,6 +185,20 @@ VERSION 1.3.27  - Cartel azul ambiguo: «Cl@ve móvil o Autofirma Android» cuan
 VERSION 1.3.28  - Nueva regla error_firma_fitxers_500: KO "Error general durant el procés de firma dels fitxers: 500" (o servei de custòdia) sin VALIDATION ni código Cl@ve
                 - Error puntual del servicio/proveedor de firma (no ciudadano, no Portafib); cartel «Servicio de firma» + acción reintentar
                 - Prioridad: tras VALIDATION y códigos Cl@ve (8-15 manda si aparece), antes del catch-all error_clave_movil
+
+VERSION 1.3.29  - Nueva regla error_cadena_certificacion: KO "La cadena de certificación del certificado firmante no es válida" (resultminor SignerCertificate:InvalidCertificateChain)
+                - Problema del certificado del ciudadano (CA no reconocida / intermedios ausentes / revocación / vigencia), NO de reinstalar Autofirma
+                - Prioridad: tras error_validacion_certificado y ANTES de la rama de cliente Autofirma (aunque el KO diga «Método de firma: Autofirm@»)
+                - Acción con 5 puntos a revisar del certificado en el equipo; cartel «Certificado (cadena)»; etiqueta de flujo «Cadena certificación»
+
+VERSION 1.3.30  - Nota común antivirus/firewall/proxy añadida solo a fallos del CLIENTE de firma: error_autofirma_cliente_* (windows/mac/linux/android/iphone/movil/generico), error_autofirma_cancelada, error_autofirma_entorno, error_autofirma, error_fire
+                - Distingue equipo particular (pausar antivirus/inspección SSL y reintentar) vs equipo de trabajo (firewall/proxy corporativo: lo revisa su informática; indicárselo)
+                - NO se añade a códigos Cl@ve, formulario, Portafib, validación en servidor (500/@firma) ni cierres de trámite
+
+VERSION 1.3.31  - Nueva regla error_certificado_nif_no_coincide: KO "S'ha firmat amb un certificat on el nif associat és X, però es requeria el nif Y" (firma con certificado de otro NIF)
+                - Prioridad ALTA: tras SAF_27 y ANTES de validación/cadena de certificado (manda aunque haya InvalidCertificateChain en la misma traza)
+                - Extrae los dos NIF (certificado vs requerido) para el mensaje; cartel «Certificado de otro NIF»; etiqueta de flujo «Certificado de otro NIF»
+                - Acción: seleccionar el certificado propio (típico en equipos compartidos); no es plataforma ni Portafib
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -196,7 +210,7 @@ VERSION 1.3.28  - Nueva regla error_firma_fitxers_500: KO "Error general durant 
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.28";
+const VERSION_JS = "1.3.31";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -245,6 +259,27 @@ function aplicarIntroAccionAutofirmaCliente(textoAccion, lineas) {
   const t = String(textoAccion || "");
   if (/^Problema con el cliente de firma Autofirma/i.test(t)) return textoAccion;
   return introAccionAutofirmaCliente(lineas) + "\n\n" + t;
+}
+
+// 👉 Nota común: antivirus / firewall / proxy solo tiene sentido en fallos del CLIENTE de firma
+//    (invocación/comunicación de AutoFirma, certificado local, FIRE), NO en códigos Cl@ve,
+//    formulario, Portafib, validación en servidor ni cierres de trámite.
+//    Distingue equipo particular (pausar antivirus) vs equipo de trabajo (lo revisa su informática).
+const NOTA_SEGURIDAD_EQUIPO =
+  "Antivirus / Firewall / Proxy: si el fallo continúa con varios navegadores y tras reinstalar AutoFirma, "
+  + "la seguridad del equipo puede estar bloqueando la invocación o la comunicación de AutoFirma "
+  + "(antivirus con inspección SSL/HTTPS, proxy o firewall).\n"
+  + "- Equipo particular / casa: es poco frecuente; pausar un momento el antivirus (y su inspección SSL/HTTPS) y reintentar.\n"
+  + "- Equipo de trabajo / oficina: el firewall/proxy corporativo lo gestiona su departamento de informática y el usuario no puede desactivarlo; "
+  + "indicarle que lo revise con la informática de su organización (permitir AutoFirma y su comunicación).";
+
+function reglaAplicaNotaSeguridadEquipo(idRegla) {
+  if (!idRegla) return false;
+  if (idRegla.indexOf("error_autofirma_cliente_") === 0) return true;
+  return idRegla === "error_autofirma_cancelada" ||
+    idRegla === "error_autofirma_entorno" ||
+    idRegla === "error_autofirma" ||
+    idRegla === "error_fire";
 }
 
 function etiquetaTipoFalloDesdeLineaKo(linea) {
@@ -360,6 +395,8 @@ function obtenerUltimaLineaFirmaKoCronologica(lineasTraza) {
 function inferirReglaDesdeLineaKo(lineaKo) {
   if (!lineaKo || !esLineaFirmaKoHelper(lineaKo)) return null;
   if (/SAF_27|SAF27\b/i.test(lineaKo)) return "error_autofirma_servidor";
+  if (esErrorNifCertificadoNoCoincideHelper(lineaKo)) return "error_certificado_nif_no_coincide";
+  if (esErrorCadenaCertificacionHelper(lineaKo)) return "error_cadena_certificacion";
   if (esErrorValidacionCertificadoFirmanteHelper(lineaKo)) return "error_validacion_certificado";
   if (/CLAVE[_\s]?MOVIL.*NO.*PERM[EE]|M[ÈE]TODE.*CLAVE.*MOVIL.*NO/i.test(lineaKo)) {
     return "error_clave_movil_no_permitida";
@@ -455,6 +492,38 @@ function esErrorValidacionCertificadoFirmanteHelper(linea) {
       /VALIDACI[OÓN].*CERTIFICADO.*FIRMANTE|VALIDACI[OÓ].*CERTIFICAT.*FIRMANT/i.test(s)) ||
     (/LA FIRMA NO [ÉE]S V[AÀ]LIDA|LA SIGNATURA NO [ÉE]S V[AÀ]LIDA/i.test(s) &&
       /VALIDATION|INVALIDNOTSIGNERCERTIFICATE/i.test(s));
+}
+
+// 👉 Error @firma: la CADENA DE CERTIFICACIÓN del certificado firmante no es válida
+//    (resultminor SignerCertificate:InvalidCertificateChain). A diferencia de InvalidNotSignerCertificate,
+//    apunta al propio certificado del ciudadano (CA no reconocida / intermedios ausentes / revocación),
+//    NO a reinstalar Autofirma. Revisar el certificado en el equipo.
+function esErrorCadenaCertificacionHelper(linea) {
+  const s = String(linea || "");
+  return /INVALIDCERTIFICATECHAIN/i.test(s) ||
+    (/CADENA DE CERTIFICACI[OÓ]|CADENA DE CONFIAN[ZÇ]A/i.test(s) &&
+      /NO [EÉ]S V[AÀÁ]LIDA/i.test(s));
+}
+
+// 👉 KO: se firmó con un certificado de un NIF distinto al requerido por el trámite.
+//    "S'ha firmat amb un certificat on el nif associat és X, però es requeria el nif Y" (o variante ES).
+//    Causa: el ciudadano selecciona otro certificado (equipo compartido / varios certificados en el almacén).
+function esErrorNifCertificadoNoCoincideHelper(linea) {
+  const s = String(linea || "");
+  return /S['´`]?HA FIRMAT AMB UN CERTIFICAT ON EL NIF/i.test(s) ||
+    (/NIF ASSOCIAT/i.test(s) && /REQUERIA EL NIF/i.test(s)) ||
+    (/NIF ASOCIADO/i.test(s) && /REQUER[IÍ]A EL NIF/i.test(s));
+}
+
+// 👉 Extrae {cert, requerido} de la línea del KO de NIF no coincidente (para el mensaje).
+function extraerNifsCertificadoNoCoincide(linea) {
+  const s = String(linea || "");
+  const mCert = s.match(/NIF AS[SO]OCIA[TD][OA]?\s*[ÉE]?S?\s*(\d{7,8}[A-Z])/i);
+  const mReq = s.match(/REQUER[IÍ]?A?\s*EL\s*NIF\s*(\d{7,8}[A-Z])/i);
+  return {
+    cert: mCert ? mCert[1].toUpperCase() : null,
+    requerido: mReq ? mReq[1].toUpperCase() : null
+  };
 }
 
 // 👉 ¿Es una línea informativa de método de firma (no un error)?
@@ -1009,6 +1078,8 @@ btnTabla.onclick = (e) => {
   <li>✔ <b>firma_correcta</b> (solo TR_SGO) / <b>tramite_registrado</b> / <b>tramite_finalizado</b> / <b>tramite_completo</b> / <b>firma_correcta_portafib</b></li>
   <li>✔ <b>error_clave_*</b> — 8–15, 101, 103, 103-15, 104; cancelada Cl@veFirm@; Cl@ve móvil; CLAVE_MOVIL no permitida.</li>
   <li>✔ <b>error_validacion_certificado</b> — InvalidNotSignerCertificate → Portafib.</li>
+  <li>✔ <b>error_cadena_certificacion</b> — InvalidCertificateChain → revisar certificado del ciudadano (cadena CA, vigencia, revocación), no reinstalar Autofirma.</li>
+  <li>✔ <b>error_certificado_nif_no_coincide</b> — firmó con certificado de otro NIF → seleccionar el certificado propio (prioridad alta).</li>
   <li>✔ <b>error_autofirma_servidor</b> — SAF_27 (cliente local primero).</li>
   <li>✔ <b>error_autofirma_cancelada</b> — Signatura cancelada + Autofirm@.</li>
   <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI sin cierre (certificado).</li>
@@ -1373,6 +1444,19 @@ const hayMetodoFirmaClaveEnKo = lineasTraza.some(linea =>
 
 const hayErrorValidacionCertificado = lineasTraza.some(esErrorValidacionCertificadoFirmanteHelper);
 
+// 👉 Cadena de certificación del certificado firmante no válida (InvalidCertificateChain).
+//    Es del certificado del ciudadano (no de reinstalar Autofirma) -> revisar certificado en el equipo.
+const hayErrorCadenaCertificacion = lineasTraza.some(esErrorCadenaCertificacionHelper);
+
+// 👉 Firmó con un certificado de un NIF distinto al requerido (seleccionó otro certificado).
+const hayErrorNifNoCoincide = lineasTraza.some(esErrorNifCertificadoNoCoincideHelper);
+const lineaNifNoCoincide = hayErrorNifNoCoincide
+  ? lineasTraza.find(esErrorNifCertificadoNoCoincideHelper)
+  : null;
+const nifsNoCoincide = lineaNifNoCoincide
+  ? extraerNifsCertificadoNoCoincide(lineaNifNoCoincide)
+  : { cert: null, requerido: null };
+
 // 👉 Error "500 / servei de custodia" del proveedor de firma en un Firma KO (puntual, reintentar)
 const hayFirma500Fitxers = lineasTraza.some(linea =>
   esLineaFirmaKoHelper(linea) && esLinea500FitxersHelper(linea)
@@ -1710,10 +1794,25 @@ if (hayAutofirmaError) {
   idReglaDetectada = "error_autofirma_servidor";
 
 }
+else if (hayErrorNifNoCoincide) {
+
+  // 👉 Firmó con un certificado de OTRO NIF (seleccionó el certificado equivocado).
+  //    Prioridad alta: manda aunque también haya InvalidCertificateChain en la misma traza.
+  idReglaDetectada = "error_certificado_nif_no_coincide";
+
+}
 else if (hayErrorValidacionCertificado) {
 
   // 👉 @firma no validó el certificado (InvalidNotSignerCertificate). Escala Portafib, no entorno local.
   idReglaDetectada = "error_validacion_certificado";
+
+}
+else if (hayErrorCadenaCertificacion) {
+
+  // 👉 Cadena de certificación del certificado firmante no válida (InvalidCertificateChain).
+  //    Va ANTES de la rama de cliente Autofirma: aunque el KO diga "Método de firma: Autofirm@",
+  //    reinstalar Autofirma no lo arregla; el problema es el certificado del ciudadano.
+  idReglaDetectada = "error_cadena_certificacion";
 
 }
 else if (hayClaveMovilNoPermitida) {
@@ -2072,6 +2171,33 @@ else if (idReglaDetectada === "error_validacion_certificado") {
   fraseDiagnostico = motivo;
 
 }
+else if (idReglaDetectada === "error_certificado_nif_no_coincide") {
+
+  cartelDiagnostico = cartelAzul("Certificado de otro NIF");
+  let frase = "Firma KO: se firmó con un certificado de un NIF distinto al requerido por el trámite";
+  if (nifsNoCoincide.cert && nifsNoCoincide.requerido) {
+    frase += " (certificado: " + nifsNoCoincide.cert + " · requerido: " + nifsNoCoincide.requerido + ")";
+  }
+  frase += ". El ciudadano ha seleccionado otro certificado (típico en equipos compartidos o con varios certificados en el almacén). "
+    + "No es un problema de la plataforma ni de Portafib: indicar que elija su propio certificado al firmar.";
+  fraseDiagnostico = frase;
+
+}
+else if (idReglaDetectada === "error_cadena_certificacion") {
+
+  const firmaCertEnKo = hayMetodoFirmaAutofirmaEnKo;
+  cartelDiagnostico = cartelAzul(firmaCertEnKo ? "Certificado (cadena)" : "Certificado (cadena)");
+  let frase = "Firma KO por "
+    + literalFlujo("La cadena de certificación del certificado firmante no es válida")
+    + " (InvalidCertificateChain). El problema está en el certificado del ciudadano, no en Autofirma: "
+    + "revisar el certificado en el equipo (cadena de CA completa, CA reconocida, vigencia, revocación y almacén correcto). "
+    + "No orientar a reinstalar AutoFirma como primera acción.";
+  if (firmaCertEnKo) {
+    frase += " El KO indica " + literalFlujo("Método de firma: Autofirm@") + " (certificado local).";
+  }
+  fraseDiagnostico = frase;
+
+}
 else if (idReglaDetectada === "error_firma_fitxers_500") {
 
   cartelDiagnostico = cartelAzul("Servicio de firma");
@@ -2394,6 +2520,11 @@ if (accionData && accionData.accion) {
 
   if (esReglaAutofirmaClienteConIntro(idReglaDetectada)) {
     textoAccion = aplicarIntroAccionAutofirmaCliente(textoAccion, lineasTraza);
+  }
+
+  // 👉 Nota antivirus/firewall/proxy: solo en fallos del cliente de firma (Autofirma/certificado/FIRE)
+  if (reglaAplicaNotaSeguridadEquipo(idReglaDetectada)) {
+    textoAccion += "\n\n" + NOTA_SEGURIDAD_EQUIPO;
   }
 
   const accionHtml = textoAccion.split("\n").map(linea => {
@@ -2816,6 +2947,8 @@ const ETIQUETA_RESULTADO_FIRMA = {
   sin_cierre: "Sin cierre",
   saf_27: "SAF_27",
   validacion_certificado: "Validación certificado",
+  cadena_certificacion: "Cadena certificación",
+  nif_no_coincide: "Certificado de otro NIF",
   clave_movil_no_permitida: "Cl@ve móvil no permitida",
   ko_clave_8_15: "Cl@ve 8–15",
   ko_clave_103: "Cl@ve 103",
@@ -2840,7 +2973,9 @@ const TOOLTIP_RESULTADO_FIRMA = {
   sin_cierre: "Sin cierre (Solo Inicio Firma)",
   cliente_firma_movil: "Fallo de comunicación con Autofirma (servidor intermedio). No indica Android ni iPhone; revisar TR_CAR anterior al SGI.",
   servidor_intermedio: "Fallo de comunicación con Autofirma (servidor intermedio). No indica Android ni iPhone; revisar TR_CAR anterior al SGI.",
-  timeout_firma: "Tiempo de firma agotado o Autofirma no invocado o no instalado. No implica solo iPhone; confirmar SO en TR_CAR."
+  timeout_firma: "Tiempo de firma agotado o Autofirma no invocado o no instalado. No implica solo iPhone; confirmar SO en TR_CAR.",
+  cadena_certificacion: "Cadena de certificación del certificado del ciudadano no válida (InvalidCertificateChain). Revisar el certificado en el equipo (cadena de CA, CA reconocida, vigencia, revocación, almacén). No es reinstalar Autofirma.",
+  nif_no_coincide: "Se firmó con un certificado de un NIF distinto al requerido. El ciudadano seleccionó otro certificado (equipo compartido / varios certificados). Indicar que elija su propio certificado."
 };
 
 function tooltipResultadoFlujoFirma(resultado) {
@@ -2980,6 +3115,10 @@ function clasificarResultadoVentana(lineasVentana) {
 
   if (/SAF_27|SAF27\b/i.test(textoVentana)) {
     resultado = "saf_27";
+  } else if (lineasVentana.some(esErrorNifCertificadoNoCoincideHelper)) {
+    resultado = "nif_no_coincide";
+  } else if (lineasVentana.some(esErrorCadenaCertificacionHelper)) {
+    resultado = "cadena_certificacion";
   } else if (lineasVentana.some(esErrorValidacionCertificadoFirmanteHelper)) {
     resultado = "validacion_certificado";
   } else if (/CLAVE[_\s]?MOVIL.*NO.*PERM[EE]|M[ÈE]TODE.*CLAVE.*MOVIL.*NO/i.test(textoVentana)) {
@@ -3168,6 +3307,8 @@ function colorResultadoFlujoFirma(resultado) {
   if (/^ko_clave|^clave_movil|cancelada_clave|ko_clave_sin/.test(resultado)) return "#c0392b";
   if (/^cancelada/.test(resultado)) return "#b7770d";
   if (resultado === "validacion_certificado") return "#8e44ad";
+  if (resultado === "cadena_certificacion") return "#7d3c98";
+  if (resultado === "nif_no_coincide") return "#b03a2e";
   if (resultado === "timeout_firma") return "#d35400";
   if (resultado === "cliente_firma_movil") return COLOR_CLIENTE_FIRMA_MOVIL;
   return "#a12c7b";
