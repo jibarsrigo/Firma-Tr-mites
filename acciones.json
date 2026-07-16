@@ -1,6 +1,6 @@
 {
-  "version": "1.3.19",
-  "_changes_today": "2026-07-16: error_cadena_certificacion y error_certificado_nif_no_coincide: accion reformateada (secciones, negritas clave, lenguaje accesible); misma informacion, mas facil de actuar en llamada",
+  "version": "1.3.21",
+  "_changes_today": "2026-07-16: error_clave_8_15: Que pasa/Que hacer; DNI y contraseña; UI apartados Accion (pendiente validar resto de casuisticas)",
   "acciones": [
 
     {
@@ -17,7 +17,7 @@
 
     {
       "id": "error_clave_8_15",
-      "accion": "Cl@ve se abre y acepta las credenciales, pero la firma falla. El proveedor Cl@ve Firma devuelve el código 8–15.\nIndicar renovar/acreditar Cl@ve Permanente.\n<span style='color:#9a9890;font-size:13px;font-style:italic;'>Escalar si aparecen múltiples casos simultáneos (Posible fallo Proveedor Cl@ve Firma).</span>",
+      "accion": "<b>Qué pasa:</b>\nEl ciudadano entra bien en Cl@ve (DNI y contraseña correctos), pero al firmar el trámite falla.\nCl@ve Firma devuelve el código 8-15: suele indicar un problema con el certificado de Cl@ve Permanente (hay que renovarlo o acreditarlo de nuevo).\n\n<b>Qué hacer:</b>\n1. Enviar el mail al ciudadano (explica cómo renovar/acreditar Cl@ve Permanente).\n2. Si el mismo error les pasa a varios ciudadanos a la vez → puede ser un fallo general de Cl@ve; escalar.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave815"
     },
 
@@ -71,7 +71,7 @@
 
     {
       "id": "error_validacion_certificado",
-      "accion": "Escalar a PENDENTS PORTAFIB - 1.- Pendents 012 para que revisen el servicio de validación de firmas (pueden reiniciarlo).\nPuede afectar a firmas con Cl@ve Permanente o a firmas con certificado local. En los casos detectados, suele suceder en uno u otro, es decir: fallo con Cl@ve Permanente o fallo con certificado local. De todos los ciudadanos que usan el método de firma afectado (Cl@ve o certificado), solo algunos ciudadanos presentan problemas para firmar, la mayoría de ciudadanos que usan el mismo método pueden firmar.\nEn ocasiones, en los logs que pueden ver los segundos niveles en el CAI (seguridad, portafib/sistra...), puede aparecer log de certificado revocado, pero no es correcto. El certificado de Cl@ve Permanente no puede comprobarse con VALIDe. El certificado solo se valida en el momento de una firma en un trámite. El fallo suele estar en la validación, no en el certificado del ciudadano.\nSi Portafib confirma que todo está correcto, este error de firma no es revisable por CAIB: indicar esperar y reintentar en otro momento.\nEnviar mail de problema general al ciudadano.",
+      "accion": "<b>Qué es:</b> fallo en la <b>validación del certificado del firmante</b> en el servidor (@firma). En la traza aparece (VALIDATION) con <b>InvalidNotSignerCertificate</b>.\nEn pocas palabras: el ciudadano llega a firmar, pero el servicio que comprueba el certificado en servidor <b>no lo acepta como válido para esa firma</b>. El fallo suele estar en la <b>validación</b>, no en las credenciales del ciudadano ni en “reinstalar AutoFirma”.\n\n<span style='color:#9a9890;font-size:13px;font-style:italic;'>No confundir con InvalidCertificateChain (“cadena de certificación no válida”): eso es otra regla (revisar certificado/cadena / VALIDe). Aquí el literal es InvalidNotSignerCertificate.</span>\n\n<b>Qué no es (habitualmente):</b>\n• No es “contraseña Cl@ve mal puesta”.\n• No es el caso típico de “falta reinstalar AutoFirma”.\n• No se soluciona pidiendo al ciudadano que “revise su certificado” como primera acción (sobre todo con Cl@ve Permanente).\n\n————————————————————\n<b>Cómo actuar</b>\n————————————————————\n1. <b>Escalar</b> a PENDENTS PORTAFIB - 1.- Pendents 012 para que revisen el <b>servicio de validación de firmas</b> (pueden reiniciarlo).\n2. <b>Mail</b> de problema general al ciudadano.\n3. Mientras tanto: indicar <b>esperar y reintentar</b> más tarde (o otro método si el trámite lo permite).\n\n————————————————————\n<b>Patrón que suele verse</b>\n————————————————————\n• Puede afectar a firmas con <b>Cl@ve Permanente</b> o con <b>certificado local</b>.\n• En la práctica, en cada oleada suele fallar <b>uno u otro método</b> (Cl@ve o certificado), no ambos a la vez.\n• De todos los ciudadanos que usan el método afectado, <b>solo algunos</b> fallan; la mayoría con el mismo método pueden firmar.\n\n→ Mirar en el Firma KO el <b>Método de firma</b> (Cl@veFirm@ / Autofirm@) para saber qué método está fallando en ese caso.\n\n————————————————————\n<b>Ojo con los logs de “certificado revocado”</b>\n————————————————————\nEn logs de segundo nivel (CAI: seguridad, Portafib/Sistra…) a veces aparece “certificado revocado”, pero <b>no suele ser correcto</b> como causa.\n• El certificado de <b>Cl@ve Permanente no se puede comprobar con VALIDe</b> como un certificado de fichero.\n• Ese certificado se valida sobre todo en el momento de la firma en el trámite.\n• Conclusión CAU: el fallo suele estar en el <b>servicio de validación</b>, no en el certificado del ciudadano.\n\n————————————————————\n<b>Si Portafib dice que todo está correcto</b>\n————————————————————\nEste error de firma <b>no es revisable por CAIB</b> a nivel de certificado del ciudadano.\n→ Indicar <b>esperar y reintentar</b> en otro momento.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaGeneral"
     },
 

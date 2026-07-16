@@ -207,6 +207,24 @@ VERSION 1.3.33  - Panel Reglas reescrito: guía CAU (qué lee, qué muestra, cat
                 - Pendientes Info/Reglas: CAI-2643553 / Cl@ve 500 marcado como hecho (regla error_firma_fitxers_500 + fixtures).
 
 VERSION 1.3.34  - Acciones cadena/NIF reformateadas (acciones.json v1.3.19): secciones, negritas clave, lenguaje accesible; aviso NIF con negritas.
+
+VERSION 1.3.35  - error_validacion_certificado: acción reformateada (acciones.json v1.3.20); prefijo de método con negritas.
+
+VERSION 1.3.36  - Acción: apartados «Qué pasa» / «Qué hacer» con título teal (#01696f), negrita y más aire entre bloques (estilo UI).
+
+VERSION 1.3.37  - Vista previa de estilos de apartados Acción: Actual (teal) / Cabecera / Borde (selector temporal en tarjeta Acción).
+
+VERSION 1.3.38  - Cabecera aligerada (sin mayúsculas ni barra gris pesada); se quita Borde del selector de vista previa.
+
+VERSION 1.3.39  - Estilo definitivo apartados Acción: cabecera aligerada; títulos Qué pasa/Qué hacer en #6b6960 (como Flujo/Acción), minúsculas; sin selector de vista previa.
+
+VERSION 1.3.40  - Apartados Acción: más padding en el cuerpo y más separación entre Qué pasa / Qué hacer.
+
+VERSION 1.3.41  - Apartados Acción a todo el ancho (sin tarjetas internas): franjas Qué pasa / Qué hacer como divisiones de la tarjeta Acción.
+
+VERSION 1.3.42  - Acción: corrige solape ACCIÓN / Qué pasa (body flush, franjas más claras, sin margin negativo).
+
+VERSION 1.3.43  - Apartados Acción: sin barra gris; título + línea fina a todo el ancho; más aire bajo ACCIÓN.
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -218,7 +236,7 @@ VERSION 1.3.34  - Acciones cadena/NIF reformateadas (acciones.json v1.3.19): sec
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.34";
+const VERSION_JS = "1.3.43";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -2450,7 +2468,7 @@ if (accionData && accionData.accion) {
   // 🔹 Cambios 2026-06-16: la acción usa el mismo formato de tarjeta V5 (cabecera gris + cuerpo blanco).
   salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
   salidaFinal += "<div class=\"panel-card__head\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#01696f\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polyline points=\"13 17 18 12 13 7\"/><polyline points=\"6 17 11 12 6 7\"/></svg>Acción</div>";
-  salidaFinal += "<div class=\"panel-card__body\">";
+  salidaFinal += "<div class=\"panel-card__body panel-card__body--accion\">";
   // Las líneas que empiezan por "*" (notas) se muestran más grises y un poco más pequeñas.
   // 🔹 Casos especiales Portafib → texto dinámico según literales detectados en la traza.
   let textoAccion = accionData.accion;
@@ -2468,17 +2486,17 @@ if (accionData && accionData.accion) {
   if (idReglaDetectada === "error_validacion_certificado") {
     let prefijoValidacion;
     if (hayMetodoFirmaClaveEnKo) {
-      prefijoValidacion = "Se detecta un problema de validación (@firma) al firmar con Cl@ve Permanente.";
+      prefijoValidacion = "<b>Método en este caso:</b> Cl@ve Permanente (Cl@veFirm@ en el Firma KO).";
     } else if (hayMetodoFirmaAutofirmaEnKo) {
-      prefijoValidacion = "Se detecta un problema de validación (@firma) al firmar con certificado local.";
+      prefijoValidacion = "<b>Método en este caso:</b> certificado local (Autofirm@ en el Firma KO).";
     } else if (esClave && !esCert) {
-      prefijoValidacion = "Se detecta un problema de validación (@firma) al firmar con Cl@ve Permanente.";
+      prefijoValidacion = "<b>Método en este caso:</b> Cl@ve Permanente (según selector; confirmar en el Firma KO si no aparece al pegar).";
     } else if (esCert && !esClave) {
-      prefijoValidacion = "Se detecta un problema de validación (@firma) al firmar con certificado local.";
+      prefijoValidacion = "<b>Método en este caso:</b> certificado local (según selector; confirmar en el Firma KO si no aparece al pegar).";
     } else {
-      prefijoValidacion = "Se detecta un problema de validación (@firma). Confirmar método de firma en el Firma KO (doble clic en SistraHelp).";
+      prefijoValidacion = "<b>Método en este caso:</b> confirmar en el Firma KO (doble clic en SistraHelp: Cl@veFirm@ o Autofirm@).";
     }
-    textoAccion = prefijoValidacion + "\n" + textoAccion;
+    textoAccion = prefijoValidacion + "\n\n" + textoAccion;
   }
 
   // 👉 Cadena de certificación pero además, en algún intento, se firmó con un certificado de otro NIF:
@@ -2569,13 +2587,56 @@ if (accionData && accionData.accion) {
     textoAccion += "\n\n" + NOTA_SEGURIDAD_EQUIPO;
   }
 
-  const accionHtml = textoAccion.split("\n").map(linea => {
-    if (linea.trim().startsWith("*")) {
+  // 👉 Apartados «Qué pasa» / «Qué hacer» — cabecera aligerada (color #6b6960 como Flujo/Acción)
+  function lineaAccionAHtml(linea) {
+    const t = String(linea || "").trim();
+    if (t.startsWith("*")) {
       return "<span style=\"color:#9a9890;font-size:12px;\">" + linea + "</span>";
     }
     return linea;
-  }).join("<br>");
-  salidaFinal += "<div style=\"font-size:14px;color:#1e1c17;\">" + accionHtml + "</div>";
+  }
+
+  let accionHtml = "";
+  let introLineas = [];
+  let bloqueActual = null;
+  function flushBloqueAccion() {
+    if (!bloqueActual) return;
+    const body = bloqueActual.lineas.map(lineaAccionAHtml).filter(x => String(x).length).join("<br>");
+    accionHtml += "<div class=\"accion-bloque\">";
+    accionHtml += "<div class=\"accion-apartado\">" + bloqueActual.titulo + "</div>";
+    if (body) accionHtml += "<div class=\"accion-bloque__body\">" + body + "</div>";
+    accionHtml += "</div>";
+    bloqueActual = null;
+  }
+  textoAccion.split("\n").forEach(linea => {
+    const tituloPlano = String(linea || "").trim().replace(/<\/?b>/gi, "").trim();
+    if (/^Qu[eé]\s*pasa\s*:?\s*$/i.test(tituloPlano)) {
+      if (introLineas.length) {
+        accionHtml += "<div class=\"accion-intro\">" + introLineas.map(lineaAccionAHtml).join("<br>") + "</div>";
+        introLineas = [];
+      }
+      flushBloqueAccion();
+      bloqueActual = { titulo: "Qué pasa:", lineas: [] };
+      return;
+    }
+    if (/^Qu[eé]\s*hacer\s*:?\s*$/i.test(tituloPlano)) {
+      if (introLineas.length) {
+        accionHtml += "<div class=\"accion-intro\">" + introLineas.map(lineaAccionAHtml).join("<br>") + "</div>";
+        introLineas = [];
+      }
+      flushBloqueAccion();
+      bloqueActual = { titulo: "Qué hacer:", lineas: [] };
+      return;
+    }
+    if (bloqueActual) bloqueActual.lineas.push(linea);
+    else introLineas.push(linea);
+  });
+  if (introLineas.length && !bloqueActual) {
+    accionHtml += "<div class=\"accion-intro\">" + introLineas.map(lineaAccionAHtml).join("<br>") + "</div>";
+  }
+  flushBloqueAccion();
+
+  salidaFinal += "<div class=\"accion-cuerpo\">" + accionHtml + "</div>";
 
   // 🔹 enlace del mail DENTRO del cuerpo, debajo de la acción
   let mailUrl = accionData.mail;
@@ -2585,7 +2646,7 @@ if (accionData && accionData.accion) {
     if (accionSo && accionSo.mail) mailUrl = accionSo.mail;
   }
   if (mailUrl) {
-    salidaFinal += '<div style="margin-top:10px;"><a href="' + mailUrl + '" target="_blank" rel="noopener" style="color:#1e1c17;text-decoration:underline;">Mail</a></div>';
+    salidaFinal += '<div style="margin-top:4px;padding-top:4px;"><a href="' + mailUrl + '" target="_blank" rel="noopener" style="color:#1e1c17;text-decoration:underline;">Mail</a></div>';
   }
 
   salidaFinal += "</div></div>";

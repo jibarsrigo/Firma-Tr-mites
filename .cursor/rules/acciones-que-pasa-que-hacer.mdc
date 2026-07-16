@@ -1,0 +1,62 @@
+---
+description: Estandarizar campos accion (Qué pasa / Qué hacer) en todas las casuísticas
+globs: acciones.json,app.js,index.html
+alwaysApply: true
+---
+
+# Acciones CAU — estructura homogénea (trabajo en curso)
+
+## Objetivo
+
+Todas las entradas `accion` de `acciones.json` deben seguir la **misma estructura**, ser fáciles de leer con nociones básicas, y **no perder información** respecto al texto actual.
+
+## Estructura obligatoria del texto (`acciones.json`)
+
+```
+Qué pasa:
+… (qué ocurre / qué puede ocurrir; lenguaje sencillo)
+
+Qué hacer:
+1. …
+2. …
+… (todos los pasos y matices que ya existían en esa regla)
+```
+
+- Opcional al final: líneas `*Nota: …` (gris en UI).
+- En el JSON, los títulos pueden ir como `Qué pasa:` / `Qué hacer:` (con o sin `<b>`; el render los normaliza).
+- **No acortar** moviendo contenido “al mail”: el mail complementa; la acción debe conservar la info útil del caso.
+- Negritas en el cuerpo: las mínimas posibles. Los títulos de apartado los estiliza la UI.
+
+## Estilo visual (acordado — js ~v1.3.43)
+
+Tarjeta **Acción**:
+
+- Solo la cabecera **ACCIÓN** lleva barra gris (`panel-card__head`).
+- **Qué pasa:** / **Qué hacer:** → color `#6b6960` o teal `#01696f` (pendiente de cerrar si se aplica teal en títulos), negrita, minúsculas, **sin** barra gris de fondo.
+- Línea fina a todo el ancho bajo cada título.
+- Sin tarjetas internas / encapsulado; `panel-card__body--accion` con padding 0 para franjas a ancho completo.
+- Aire generoso bajo ACCIÓN y entre apartados.
+
+CSS relevante en `index.html`: `.accion-cuerpo`, `.accion-bloque`, `.accion-apartado`, `.accion-bloque__body`.  
+Render en `app.js` (agrupa líneas en bloques al detectar títulos Qué pasa / Qué hacer).
+
+## Estado
+
+| Regla | Estado |
+|---|---|
+| `error_clave_8_15` | Hecho (estructura + lenguaje básico; “DNI y contraseña correctos”) |
+| Resto de `acciones` en `acciones.json` | **Pendiente** aplicar misma estructura + lenguaje accesible sin perder info |
+| Estilo visual títulos | Casi cerrado (línea fina); usuario valoraba añadir teal a títulos — retomar al continuar |
+| Selector vista previa estilos | Eliminado; no reintroducir |
+
+## Cómo continuar
+
+1. Ir **caso a caso** (o por lotes): mostrar “ahora” vs “propuesta” si el usuario quiere validar, o aplicar directamente si pide “adelante”.
+2. Mantener `mail` de cada regla; no inventar mails nuevos salvo que se pida.
+3. Excepción: `error_cadena_certificacion` (sin mail) puede ser más larga, pero con los mismos encabezados Qué pasa / Qué hacer (subapartados numerados dentro si hace falta).
+4. Tras cada lote: bump suave de `acciones.json` `version` / `_changes_today` y, si toca UI, `VERSION_JS` + badge.
+5. No hacer commit/push salvo que el usuario lo pida.
+
+## Ejemplo de referencia (8-15)
+
+Ver `error_clave_8_15` en `acciones.json` — plantilla a clonar en tono y forma para el resto.
