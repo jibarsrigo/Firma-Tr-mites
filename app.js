@@ -202,6 +202,9 @@ VERSION 1.3.31  - Nueva regla error_certificado_nif_no_coincide: KO "S'ha firmat
 
 VERSION 1.3.32  - error_certificado_nif_no_coincide: ajuste de prioridad. Ya NO manda por el mero hecho de aparecer: solo si es el ÚLTIMO Firma KO o si no hay cadena/validación en la traza.
                 - Si el NIF fue un intento puntual y el último KO es de cadena, gana error_cadena_certificacion (problema persistente/actual) y el NIF se muestra como aviso en la acción.
+
+VERSION 1.3.33  - Panel Reglas reescrito: guía CAU (qué lee, qué muestra, catálogo por familia con “se detecta cuando / por qué”, prioridad actualizada).
+                - Pendientes Info/Reglas: CAI-2643553 / Cl@ve 500 marcado como hecho (regla error_firma_fitxers_500 + fixtures).
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -213,7 +216,7 @@ VERSION 1.3.32  - error_certificado_nif_no_coincide: ajuste de prioridad. Ya NO 
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.32";
+const VERSION_JS = "1.3.33";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1024,20 +1027,21 @@ btnDetalles.onclick = () => {
   <li>✔ <b>Cierre trámite:</b> TR_SGO (firma OK) ≠ finalizado; TR_FIN (finalizado), TR_REG (registrado), tramite_completo (ambos).</li>
   <li>✔ <b>firma_correcta_portafib</b> — error Portafib previo en traza con firma/cierre.</li>
   <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; Cl@ve móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@.</li>
+  <li>✔ <b>error_firma_fitxers_500</b> — KO «Error general… fitxers: 500» / custodia (CAI-2643553 y similares).</li>
   <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → escalado Portafib.</li>
-  <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno sin cierre, cliente por SO (selector + TR_CAR).</li>
+  <li>✔ <b>Cadena / NIF certificado:</b> InvalidCertificateChain; NIF distinto (prioridad por último KO).</li>
+  <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno sin cierre, cliente por SO (selector + TR_CAR); nota antivirus/proxy/firewall en fallos de cliente.</li>
   <li>✔ <b>Método de firma en Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector del técnico.</li>
   <li>✔ Discrepancia Cl@ve marcado + KO Autofirm@ (flujo y acción).</li>
   <li>✔ <b>Flujo de Firma:</b> agrupación, Revisar Acceso (TR_CAR), sin chip acceso en KO Cl@ve con código.</li>
-  <li>✔ Fixtures de prueba en <b>trazas_prueba/</b> (F-android, F-iphone, C-8-15, …).</li>
+  <li>✔ Fixtures de prueba en <b>trazas_prueba/</b>.</li>
 
   <br>
 
-  <li><b>Pendiente de mejora:</b></li>
+  <li><b>Pendiente de mejora (UX / mails, no reglas nuevas):</b></li>
   <li>🔧 Limpieza de literales: mensaje útil arriba, traza completa debajo.</li>
   <li>🔧 Aviso Firma KO previo en tarjeta Acción cuando el trámite acaba OK.</li>
   <li>🔧 Mails Autofirma con anclas específicos por SO.</li>
-  <li>🔧 <b>CAI-2643553</b> (Mercedes Suero · Cl@ve Permanente · KO «Error general… fitxers: 500» + Cl@veFirm@): comprobar lunes en SistraHelp si reintentó y firmó; regla analizador <i>error_clave_proveedor_500</i> / KO Cl@ve genérico servidor + fixture <b>C-clave_500_fitxers.txt</b>.</li>
 
   <br>
 
@@ -1064,73 +1068,97 @@ btnTabla.onclick = (e) => {
   const vJson = accionesJSON?.version || "—";
   abrirPanelAyuda(TITULO_PANEL_REGLAS, `
 <ul>
-  <li><b>Analizador de Trazas SISTRA — motor (js v ${VERSION_JS}):</b></li>
-  <li>Lee la traza filtrando solo líneas TR_ / ERROR - (ignora notas del agente).</li>
-  <li>Ordena eventos por fecha/hora (SistraHelp pega lo más reciente arriba).</li>
-  <li>Reconstruye el flujo: TR_FRI → TR_FRF → TR_SGI → TR_SGX / TR_SGO → TR_REG → TR_FIN.</li>
-  <li>Clasifica en fase: <b>pre-firma</b>, <b>error en firma</b> o <b>firma correcta</b>.</li>
-  <li>Prioridad de cierre firma: <b>TR_FIN / TR_SGO / TR_REG</b> sobre TR_SGX previo.</li>
-  <li><b>TR_SGO</b> = Firma OK · <b>TR_FIN</b> = finalizado · <b>TR_REG</b> = registrado · <b>TR_RGI</b> = inicio registro.</li>
-  <li>Aplica reglas de <b>acciones.json v ${vJson}</b> → acción + mail.</li>
+  <li><b>Guía del motor de análisis</b> (js v ${VERSION_JS} · acciones.json v ${vJson})</li>
+  <li>Sirve para que un técnico CAU, al pegar una traza de SistraHelp, sepa <b>dónde falló el trámite</b>, <b>por qué el analizador ha elegido esa regla</b> y <b>qué acción/mail</b> abrir. No sustituye el criterio humano: orienta.</li>
 
   <br>
 
-  <li><b>Reglas activas:</b></li>
-  <li>✔ <b>fallo_formulario</b> — Sin TR_FRI (Inicio formulario) y sin firma; 403 Forbidden añade texto al mail.</li>
-  <li>✔ <b>fallo_portafib</b> — Error sesión/flujo; acción dinámica {lit}.</li>
-  <li>✔ <b>firma_correcta</b> (solo TR_SGO) / <b>tramite_registrado</b> / <b>tramite_finalizado</b> / <b>tramite_completo</b> / <b>firma_correcta_portafib</b></li>
-  <li>✔ <b>error_clave_*</b> — 8–15, 101, 103, 103-15, 104; cancelada Cl@veFirm@; Cl@ve móvil; CLAVE_MOVIL no permitida.</li>
-  <li>✔ <b>error_validacion_certificado</b> — InvalidNotSignerCertificate → Portafib.</li>
-  <li>✔ <b>error_cadena_certificacion</b> — InvalidCertificateChain → revisar certificado del ciudadano (cadena CA, vigencia, revocación), no reinstalar Autofirma.</li>
-  <li>✔ <b>error_certificado_nif_no_coincide</b> — firmó con certificado de otro NIF → seleccionar el certificado propio (prioridad alta).</li>
-  <li>✔ <b>error_autofirma_servidor</b> — SAF_27 (cliente local primero).</li>
-  <li>✔ <b>error_autofirma_cancelada</b> — Signatura cancelada + Autofirm@.</li>
-  <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI sin cierre (certificado).</li>
-  <li>✔ <b>error_autofirma_cliente_generico</b> — Cl@ve marcado pero KO Autofirm@.</li>
-  <li>✔ <b>error_autofirma_cliente_*</b> — windows, mac, linux, android, iphone, movil.</li>
+  <li><b>1. Cómo lee la traza</b></li>
+  <li>Usa líneas <b>TR_…</b> y <b>ERROR -</b> (ignora notas del agente u otras columnas pegadas).</li>
+  <li>SistraHelp pega lo <b>más reciente arriba</b>; el motor ordena por fecha/hora para reconstruir el flujo real.</li>
+  <li>Eventos clave: <b>TR_INI</b> inicio trámite · <b>TR_CAR</b> carga (acceso/SO) · <b>TR_FRI/FRF</b> formulario · <b>TR_SGI</b> inicio firma · <b>TR_SGX</b> Firma KO · <b>TR_SGO</b> Firma OK · <b>TR_RGI/REG</b> registro · <b>TR_FIN</b> fin trámite.</li>
+  <li>Clasifica en fase: <b>pre-firma</b> (aún no hay inicio de firma), <b>error en firma</b>, o <b>firma/cierre OK</b>.</li>
+  <li>Si hay <b>TR_SGO / TR_REG / TR_FIN</b> posteriores, el cierre manda sobre KO antiguos (el ciudadano pudo recuperar).</li>
+
+  <br>
+
+  <li><b>2. Qué verás tras Analizar</b></li>
+  <li><b>Flujo del trámite</b> — píldoras de eventos; cartel azul con el diagnóstico corto.</li>
+  <li><b>Flujo de Firma</b> — cada intento (TR_SGI→SGX/SGO); método del KO; acceso; no decide la regla, la explica.</li>
+  <li><b>Acción</b> — texto de <b>acciones.json</b> (pasos CAU) + enlace <b>Mail</b> si existe.</li>
+  <li><b>Literales</b> — fragmentos de error de la traza (con ×N si se repiten).</li>
+
+  <br>
+
+  <li><b>3. Catálogo: qué se detecta y por qué</b></li>
+
+  <li style="margin-top:8px"><b>A) Antes de firmar (pre-firma)</b></li>
+  <li>✔ <b>fallo_formulario</b> — No llega a firma y no hay (o falla) el formulario (sin TR_FRI, reintentos FRI/FRF, 403…). <i>Por qué:</i> el problema es del formulario / datos, no del proveedor de firma.</li>
+  <li>✔ <b>fallo_portafib</b> — Hay Inicio formulario y literales de sesión/flujo («El fluxe no es vàlid», sesión firma, Timestamp…). <i>Por qué:</i> fallo técnico de Portafib/plataforma, no del ciudadano.</li>
+
+  <br>
+
+  <li><b>B) Cl@ve Firma (códigos y móvil)</b></li>
+  <li>✔ <b>error_clave_8_15</b> — Código Error 8 + Tipo Resultado 15 (pasarela externa). Renovar/acreditar Cl@ve Permanente; escalar si hay muchos casos a la vez.</li>
+  <li>✔ <b>error_clave_101</b> — Nivel de registro insuficiente.</li>
+  <li>✔ <b>error_clave_103</b> — Contraseña bloqueada.</li>
+  <li>✔ <b>error_clave_103_15</b> — Certificados del usuario bloqueados (103 + Tipo 15).</li>
+  <li>✔ <b>error_clave_104</b> — Registro débil.</li>
+  <li>✔ <b>error_clave_firma_cancelada</b> — «Signatura cancel·lada» + Cl@veFirm@ (sin código). Suele ser ventana/emisión; probar desde ordenador.</li>
+  <li>✔ <b>error_clave_movil</b> — Solo inicios de firma sin cierre, o KO sin código Cl@ve, con contexto Cl@ve. Cartel puede ser «Cl@ve móvil o Autofirma Android» si la traza no aclara el método.</li>
+  <li>✔ <b>error_clave_movil_no_permitida</b> — ERROR «CLAVE_MOVIL no està permés al tràmit». Debe acceder con Cl@ve Permanente o certificado, no con móvil.</li>
+  <li>✔ <b>error_firma_fitxers_500</b> — «Error general durant el proces de firma dels fitxers: 500» (o custodia) sin VALIDATION ni código Cl@ve. <i>Por qué:</i> fallo transitorio del servicio de firma; pedir reintento (no es el certificado del ciudadano).</li>
+
+  <br>
+
+  <li><b>C) Certificado local / Autofirma / @firma</b></li>
+  <li>✔ <b>error_autofirma_servidor</b> — SAF_27. Fallo del servidor Autofirma (prioridad máxima en firma).</li>
+  <li>✔ <b>error_certificado_nif_no_coincide</b> — «nif associat és X, però es requeria el nif Y». Eligió otro certificado (equipo compartido). <i>Prioridad:</i> solo si es el <b>último</b> Firma KO o no hay cadena/validación en la traza.</li>
+  <li>✔ <b>error_validacion_certificado</b> — (VALIDATION) InvalidNotSignerCertificate. Validador @firma; suele escalarse a Portafib (no es “reinstalar Autofirma”).</li>
+  <li>✔ <b>error_cadena_certificacion</b> — InvalidCertificateChain («cadena de certificación no válida»). Revisar certificado/cadena CA / VALIDe; si el NIF aparece en un intento puntual, gana la cadena y se avisa del NIF. Casuística rara: llamar y probar (sin mail dedicado).</li>
+  <li>✔ <b>error_autofirma_cancelada</b> — Firma cancelada con Autofirm@ (timeout/SSL/comunicación).</li>
+  <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI sin KO/OK y el técnico marcó certificado. No se invocó bien el cliente (FIRE/Autofirma).</li>
+  <li>✔ <b>error_autofirma_cliente_*</b> (windows / mac / linux / android / iphone / movil / generico) — KO de cliente Autofirma (servidor intermedio, timeout, fitxer buit…). El <b>literal</b> dice el <b>tipo de fallo</b>; el <b>SO</b> para mail/acción sale del selector Ordenador/móvil + TR_CAR. Incluyen nota antivirus/proxy/firewall.</li>
   <li>⚙ <b>error_fire</b> / <b>error_autofirma</b> — reserva / legacy.</li>
 
   <br>
 
-  <li><b>Autofirma cliente — criterio v1.3.20:</b></li>
-  <li>El <b>literal del Firma KO</b> indica <b>tipo de fallo</b> (servidor intermedio, timeout, fitxer buit…), <b>no el SO</b>.</li>
-  <li><b>SO para acción/mail:</b> selector Certificado + Ordenador/móvil + pistas en TR_CAR/INI (<i>resolverReglaAutofirmaCliente</i>).</li>
-  <li><b>Cartel:</b> «Problema con el cliente de firma Autofirma (tipo de fallo)» — neutro.</li>
-  <li><b>Acción:</b> bloque TR_CAR (revisar Ordenador vs móvil) + pasos por SO; intro «habitualmente Android/iPhone» solo si el KO es servidor intermedio o timeout.</li>
-  <li><b>Flujo de Firma:</b> etiquetas <i>Servidor intermedio</i> / <i>Timeout firma</i> + tooltips; no muestra Android/iPhone en la etiqueta KO.</li>
-  <li><b>Literales:</b> avisos neutros (*Cliente Autofirma / servidor intermedio* o *Timeout*).</li>
+  <li><b>D) Cierre correcto</b></li>
+  <li>✔ <b>firma_correcta</b> — hay TR_SGO (firmó OK).</li>
+  <li>✔ <b>tramite_registrado</b> / <b>tramite_finalizado</b> / <b>tramite_completo</b> — TR_REG y/o TR_FIN.</li>
+  <li>✔ <b>firma_correcta_portafib</b> — firmó/cerró pero en la traza hubo error Portafib previo (útil para no reabrir incidencia de firma).</li>
 
   <br>
 
-  <li><b>Prioridad en fase error_firma:</b></li>
-  <li>1. SAF_27 → 2. Validación @firma → 3. CLAVE_MOVIL no permitida</li>
-  <li>4. Códigos Cl@ve → 5. Cancelada Cl@veFirm@ sin código</li>
-  <li>6. Autofirma fuerte → <i>resolverReglaAutofirmaCliente</i> (SO: selector + TR_CAR)</li>
-  <li>7. Autofirma débil → 8. Cancelada Autofirma → 9. Cl@ve móvil (KO sin código)</li>
-  <li>10. Solo TR_SGI sin cierre → entorno FIRE o Cl@ve móvil</li>
+  <li><b>4. Prioridad en fase «error en firma» (por qué gana una regla y no otra)</b></li>
+  <li>1. SAF_27 · 2. NIF de otro certificado <i>(solo si es el último KO)</i> · 3. VALIDATION InvalidNotSigner · 4. Cadena InvalidCertificateChain</li>
+  <li>5. CLAVE_MOVIL no permitida · 6. Último KO tipado (si reintento cambió de método) · 7. Códigos Cl@ve (8–15, 101, 103, 103-15, 104)</li>
+  <li>8. Cancelada Cl@veFirm@ · 9. Error 500 de firma/custodia · 10. Autofirma cliente (literal fuerte / método Autofirm@)</li>
+  <li>11. Cancelada Autofirma · 12. Cl@ve móvil (KO sin código) · 13. Solo TR_SGI sin cierre → entorno certificado o Cl@ve móvil (desempate por selector)</li>
+  <li><i>Idea clave:</i> si la traza mezcla varios KO, manda el <b>problema persistente / último intento relevante</b>, no un error puntual aislado.</li>
 
   <br>
 
-  <li><b>Criterios clave CAU:</b></li>
-  <li><b>Método de firma del Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector.</li>
-  <li><b>Acceso ≠ firma:</b> discrepancia si Cl@ve en acceso y Autofirm@ en KO.</li>
-  <li>Sin TR_SGI → pre-firma. TR_SGO → firma OK; TR_FIN → finalizado; TR_REG → registrado; TR_FIN + TR_REG → completo.</li>
-  <li>Certificado + Autofirm@ en KO → no pedir confirmar Cl@ve en Flujo de Firma.</li>
-  <li>KO Cl@ve con código (8–15, 101, 103, 104) → en Flujo de Firma basta «Método: Cl@veFirm@» (sin Revisar Acceso).</li>
+  <li><b>5. Método Cl@ve / Certificado y Ordenador / móvil</b></li>
+  <li>Si el Firma KO trae <b>Método de firma: Autofirm@ o Cl@veFirm@</b>, ese dato <b>manda</b> sobre lo marcado en la UI.</li>
+  <li>El selector sirve sobre todo de <b>desempate</b> (SGI sin cierre, SO para mail Autofirma) y para detectar <b>acceso ≠ firma</b>.</li>
+  <li>Con certificado local, Ordenador/móvil afina la acción (Windows vs Android/iPhone). El KO «Cliente de Firma Móvil» <b>no implica</b> siempre móvil.</li>
 
   <br>
 
-  <li><b>Flujo de Firma (presentación por intento):</b></li>
-  <li>Cada TR_SGI = intento; ventana por timestamp hasta el siguiente SGI.</li>
-  <li>Acceso (TR_CAR/INI), resultado KO/OK, método firma, mini-píldoras SGI→SGX/SGO/···.</li>
-  <li>Agrupación consecutiva (#N–#M), resumen ×N, badge acceso≠firma.</li>
-  <li>No cambia la regla detectada; complementa cartel y Acción.</li>
-  <li>Fixtures: carpeta <b>trazas_prueba/</b>.</li>
+  <li><b>6. Autofirma cliente — capas (para no liar SO y fallo)</b></li>
+  <li><b>Flujo de Firma / cartel:</b> tipo de fallo neutro (servidor intermedio, timeout…).</li>
+  <li><b>Acción / mail:</b> SO concreto (selector + TR_CAR).</li>
 
   <br>
 
-  <li><b>Pendiente:</b> literales limpios · mails por SO · más trazas Cl@ve/FIRE antiguas · <b>CAI-2643553</b> Cl@ve 500 (seguimiento lunes + regla analizador).</li>
-  <li><b>Nota:</b> ✔ = validado. ⚙ = reserva.</li>
+  <li><b>7. Pruebas</b></li>
+  <li>Casuísticas reales y sintéticas en carpeta <b>trazas_prueba/</b> (ver README.txt).</li>
+
+  <br>
+
+  <li><b>Pendiente (mejora UX, no reglas):</b> literales más limpios · mails Autofirma con ancla por SO · aviso de KO previos cuando el trámite acaba OK.</li>
+  <li><b>Nota:</b> ✔ = regla activa y usada en CAU. ⚙ = reserva / legacy.</li>
 </ul>
 `);
 };
@@ -1659,17 +1687,12 @@ const hayErrorPortafibReal = erroresUnicos.some(linea =>
   
 
  
-// 👉 Cl@ve no se detecta por texto (por ahora)
-// 👉 Se identifica por el método seleccionado por el usuario
-// const hayClaveError = ... → pendiente definir con ejemplos reales
-  
-
 // =====================================
-// 🔴 MÉTODO UTILIZADO
+// 🔴 MÉTODO UTILIZADO (selector UI)
 // =====================================
-// 👉 Método seleccionado manualmente por el técnico
-// 👉 Tiene prioridad sobre cualquier dato que pudiera inferirse de la traza
-// 👉 En el futuro se podrá leer automáticamente desde el formulario pegado
+// 👉 Desempate y SO para mails Autofirma. Si el Firma KO trae
+//    «Método de firma: Autofirm@ / Cl@veFirm@», ese literal manda sobre el selector.
+// 👉 Los códigos Cl@ve (8-15, 101, 103…) se detectan por literales del KO, no por este selector.
 
 const esClave = metodoClave.checked;
 const esCert = metodoCert.checked;
