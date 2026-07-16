@@ -1,27 +1,30 @@
 # CAU: Juan Jose Artigues Mesquida (NIF 18233778E) · 00-SOLGEN (INDUSTRIA) · certificado local (Autofirm@) · Windows
 # Metodo a marcar en el analizador: Certificado local + Ordenador
 #
-# DOS literales KO en la misma traza (~11 intentos en 1h30, 09:40 -> 11:04, mismo equipo):
-#  (A) MUCHOS: "La cadena de certificación del certificado firmante no es válida"
+# DOS literales KO en la misma traza (muchos intentos 09:39 -> 12:06, mismo equipo):
+#  (A) MAYORIA + el ULTIMO (12:06): "La cadena de certificación del certificado firmante no es válida"
 #      (resultminor SignerCertificate:InvalidCertificateChain) · Autofirm@
-#  (B) UNO (10:48:03, tras TR_CAR): "S'ha firmat amb un certificat on el nif associat és 43219044C,
-#      però es requeria el nif 18233778E" · Autofirm@   <-- firmo con certificado de OTRA persona.
+#  (B) UNO (10:48, tras TR_CAR): "S'ha firmat amb un certificat on el nif associat és 43219044C,
+#      però es requeria el nif 18233778E" · Autofirm@   <-- intento puntual con certificado de OTRA persona.
 #
-# LECTURA CAU:
-#  - NO es transitorio de @firma ni incidencia de servicio: es persistente (1h30) y el validador
-#    funciona (detecta el NIF del certificado). => NO escalar a Portafib.
-#  - Es un problema LOCAL: equipo de trabajo compartido con >=2 certificados (18233778E y 43219044C).
-#    43219044C tiene cadena valida (llega a comprobar NIF -> falla por NIF no coincidente).
-#    El InvalidCertificateChain es de otro certificado (probablemente el suyo) con la cadena rota.
-#  - Accion: (1) elegir SU certificado (18233778E), no el de 43219044C; (2) si aun asi InvalidCertificateChain,
-#    reinstalar su certificado con toda la cadena de la CA / renovar; (3) validar en valide.redsara.es.
+# Global esperado (app.js v1.3.32): error_cadena_certificacion  (NO error_certificado_nif_no_coincide).
+#   Motivo: el NIF (B) es un intento PUNTUAL; el ULTIMO Firma KO (12:06) y la mayoria son de cadena (A).
+#   La regla del NIF solo manda si es el ULTIMO KO o si no hay cadena/validacion en la traza.
+#   La accion de cadena muestra ademas un AVISO: "en uno de los intentos se firmo con un certificado de otro NIF (43219044C)".
+#   cartel "Certificado (cadena)".
 #
-# Global (app.js v1.3.31): error_certificado_nif_no_coincide  (IMPLEMENTADO).
-#   El literal (B) del NIF tiene PRIORIDAD ALTA -> manda aunque haya muchos InvalidCertificateChain (A).
-#   cartel "Certificado de otro NIF"; extrae certificado=43219044C / requerido=18233778E.
-#   Accion: seleccionar el certificado propio; si al hacerlo sale InvalidCertificateChain -> pasa a cadena.
-#   (Sin el literal B, esta misma traza daria error_cadena_certificacion.)
+# LECTURA CAU: certificado ACCV valido en VALIDe (+ firma prueba OK) y AutoFirma local OK, falla en varios equipos
+#   => servicio de validacion (@firma/FIRE) -> escalar a Portafib. El NIF fue solo un intento con otro certificado.
 #
+TR_SGX - Fi firma KO	16/07/2026 12:06:23	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 12:06:05	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 12:06:01	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 12:03:48	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 12:03:33	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 12:03:28	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_SGX - Fi firma KO	16/07/2026 11:59:14	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 11:58:48	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 11:58:42	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
 TR_SGX - Fi firma KO	16/07/2026 11:04:47	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
 TR_SGI - Inici firma	16/07/2026 11:04:19	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		
 TR_SGX - Fi firma KO	16/07/2026 10:50:22	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	

@@ -120,12 +120,17 @@ F-artigues_cadena_certificacion.txt
   Traza completa: ~11 TR_SGX en 1h30 (09:40-11:04), MUCHOS "InvalidCertificateChain"
     + 1 KO distinto (10:48): "nif associat és 43219044C, però es requeria el nif 18233778E" (firma con cert de OTRA persona)
   Marcar: Certificado local + Ordenador
-  Global esperado (app.js v1.3.31): error_certificado_nif_no_coincide  (IMPLEMENTADO)
-    cartel "Certificado de otro NIF" · etiqueta flujo "Certificado de otro NIF" · extrae cert=43219044C / requerido=18233778E
-    accion: seleccionar el certificado propio (equipo compartido); si al elegirlo sale InvalidCertificateChain -> pasa a cadena
-  Valida: (1) PRIORIDAD ALTA -> el literal del NIF manda aunque haya muchos InvalidCertificateChain en la misma traza;
-    (2) extraccion de los dos NIF; (3) sin el literal del NIF, esta traza daria error_cadena_certificacion
-  Lectura CAU: persistente + validador detecta NIF => NO Portafib; problema LOCAL en equipo compartido (>=2 certificados)
+  Global esperado (app.js v1.3.32): error_cadena_certificacion  (NO error_certificado_nif_no_coincide)
+    El NIF (10:48) es un intento PUNTUAL; el ULTIMO KO (12:06) y la mayoria son de cadena -> gana cadena.
+    La accion de cadena muestra ademas un AVISO: "en uno de los intentos se firmo con un certificado de otro NIF (43219044C)".
+  Valida: la regla del NIF NO manda por el mero hecho de aparecer; solo si es el ULTIMO KO o si no hay cadena/validacion.
+  Lectura CAU: ACCV valido en VALIDe (+ firma prueba) y AutoFirma local OK, falla en varios equipos => servicio @firma/FIRE -> Portafib.
+
+T-nif_no_coincide.txt
+  Sintetica (datos ficticios) · NIF no coincidente como UNICO/ULTIMO Firma KO
+  Marcar: Certificado local + Ordenador
+  Global esperado (app.js v1.3.32): error_certificado_nif_no_coincide · cartel "Certificado de otro NIF" · extrae cert=43219044C / requerido=18233778E
+  Valida: que el NIF SI manda cuando es el ultimo KO (o no hay cadena/validacion). Complementa a F-artigues (donde el NIF es puntual y gana cadena).
 
 F-accv_cadena_servicio_validacion.txt
   Caso documentado por telefono (anonimizado) · certificado ACCV · Autofirm@ · Windows

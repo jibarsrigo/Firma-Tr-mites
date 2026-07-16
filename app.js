@@ -199,6 +199,9 @@ VERSION 1.3.31  - Nueva regla error_certificado_nif_no_coincide: KO "S'ha firmat
                 - Prioridad ALTA: tras SAF_27 y ANTES de validación/cadena de certificado (manda aunque haya InvalidCertificateChain en la misma traza)
                 - Extrae los dos NIF (certificado vs requerido) para el mensaje; cartel «Certificado de otro NIF»; etiqueta de flujo «Certificado de otro NIF»
                 - Acción: seleccionar el certificado propio (típico en equipos compartidos); no es plataforma ni Portafib
+
+VERSION 1.3.32  - error_certificado_nif_no_coincide: ajuste de prioridad. Ya NO manda por el mero hecho de aparecer: solo si es el ÚLTIMO Firma KO o si no hay cadena/validación en la traza.
+                - Si el NIF fue un intento puntual y el último KO es de cadena, gana error_cadena_certificacion (problema persistente/actual) y el NIF se muestra como aviso en la acción.
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -210,7 +213,7 @@ VERSION 1.3.31  - Nueva regla error_certificado_nif_no_coincide: KO "S'ha firmat
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.31";
+const VERSION_JS = "1.3.32";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1794,10 +1797,14 @@ if (hayAutofirmaError) {
   idReglaDetectada = "error_autofirma_servidor";
 
 }
-else if (hayErrorNifNoCoincide) {
+else if (hayErrorNifNoCoincide &&
+         (reglaUltimoKo === "error_certificado_nif_no_coincide" ||
+          (!hayErrorCadenaCertificacion && !hayErrorValidacionCertificado))) {
 
   // 👉 Firmó con un certificado de OTRO NIF (seleccionó el certificado equivocado).
-  //    Prioridad alta: manda aunque también haya InvalidCertificateChain en la misma traza.
+  //    Solo manda si es el ÚLTIMO Firma KO, o si no hay cadena/validación en la traza.
+  //    Si el NIF fue un intento puntual y el último KO es de cadena/validación, gana ese
+  //    (problema persistente/actual); el NIF se refleja como nota en la acción de cadena.
   idReglaDetectada = "error_certificado_nif_no_coincide";
 
 }
@@ -2447,6 +2454,15 @@ if (accionData && accionData.accion) {
       prefijoValidacion = "Se detecta un problema de validación (@firma). Confirmar método de firma en el Firma KO (doble clic en SistraHelp).";
     }
     textoAccion = prefijoValidacion + "\n" + textoAccion;
+  }
+
+  // 👉 Cadena de certificación pero además, en algún intento, se firmó con un certificado de otro NIF:
+  //    el problema persistente/actual es la cadena, pero avisamos del certificado equivocado.
+  if (idReglaDetectada === "error_cadena_certificacion" && hayErrorNifNoCoincide) {
+    const nifTxt = nifsNoCoincide.cert ? " (" + nifsNoCoincide.cert + ")" : "";
+    textoAccion = "Aviso: en uno de los intentos se firmó con un certificado de OTRO NIF" + nifTxt
+      + " — confirmar que el ciudadano usa SU propio certificado. Aun así, el error persistente y más reciente es la cadena de certificación (InvalidCertificateChain):\n\n"
+      + textoAccion;
   }
 
   // 🔹 Portafib: el texto base se edita en acciones.json. Aquí solo sustituimos el

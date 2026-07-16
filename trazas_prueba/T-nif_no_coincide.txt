@@ -1,0 +1,11 @@
+# Sintetica (T-): NIF no coincidente como UNICO/ULTIMO Firma KO (datos ficticios).
+# Valida que error_certificado_nif_no_coincide SI manda cuando es el ultimo KO (o no hay cadena/validacion).
+# Metodo a marcar: Certificado local + Ordenador
+# Global esperado (app.js v1.3.32): error_certificado_nif_no_coincide
+#   cartel "Certificado de otro NIF" · extrae cert=43219044C / requerido=18233778E
+#
+TR_SGX - Fi firma KO	16/07/2026 10:48:03	TEST0000-TEST0000-TEST0000	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100001	200001	S´ha firmat amb un certificat on el nif associat és 43219044C, però es requeria el nif 18233778E Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:47:43	TEST0000-TEST0000-TEST0000	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100001	200001		
+TR_CAR - Càrrega del tràmit	16/07/2026 10:47:34	TEST0000-TEST0000-TEST0000	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100001	200001		
+TR_FRF - Fi formulari	16/07/2026 10:46:00	TEST0000-TEST0000-TEST0000	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100001	200001		
+TR_FRI - Inici formulari	16/07/2026 10:44:00	TEST0000-TEST0000-TEST0000	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100001	200001	
