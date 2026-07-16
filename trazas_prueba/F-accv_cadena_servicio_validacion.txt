@@ -1,0 +1,30 @@
+# CAU (caso documentado por telefono; anonimizado): certificado ACCV · Autofirm@ · Windows
+# NOTA: no se dispuso de la traza SistraHelp completa; se conserva 1 linea REPRESENTATIVA del KO
+#       (identificadores sinteticos) + el detalle de la llamada. Sirve para validar que la regla
+#       error_cadena_certificacion dispara y que su accion ya incluye el criterio "servicio -> Portafib".
+#
+# Metodo a marcar en el analizador: Certificado local + Ordenador
+# Literal KO: "La cadena de certificación del certificado firmante no es válida" (InvalidCertificateChain) · Autofirm@
+#
+# LO QUE SE COMPROBO EN LA LLAMADA:
+#  - Certificado ACCV.
+#  - VALIDe (valide.redsara.es): validacion del certificado OK + FIRMA DE PRUEBA OK.
+#  - AutoFirma en local: firma de PDF OK.
+#  - Le pasa tambien a una companera en OTRO ordenador con certificado (mismo error) -> no es el equipo.
+#  - Instalar raices ACCV, desmarcar JMulticard, Edge/Chrome normal e incognito -> mismo problema.
+#  - Ayer firmo 3 tramites con ese certificado.
+#
+# VEREDICTO: NO es el certificado ni el equipo. Es el SERVICIO DE VALIDACION del tramite (@firma/Portafib):
+#   su almacen de confianza no valida la cadena ACCV (posible falta de raiz/intermedios ACCV o cambio de CA).
+#   VALIDe y el tramite usan almacenes distintos; el del tramite esta desactualizado para ACCV.
+# ACCION: escalar a PENDENTS PORTAFIB - 1.- Pendents 012 (revisar/actualizar cadena ACCV en @firma).
+#         Workaround para el ciudadano: firmar con Cl@ve.
+#
+# Global (app.js v1.3.31): error_cadena_certificacion (cartel "Certificado (cadena)").
+#   La accion ya contiene el criterio: VALIDe OK (validacion+firma prueba) + AutoFirma local OK + varios equipos = servicio @firma -> Portafib (indicar CA emisora, p.ej. ACCV).
+#
+TR_SGX - Fi firma KO	16/07/2026 10:00:00	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:59:40	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 09:59:30	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_FRF - Fi formulari	16/07/2026 09:58:00	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	1571585	208364		
+TR_FRI - Inici formulari	16/07/2026 09:55:00	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	1571585	208364	

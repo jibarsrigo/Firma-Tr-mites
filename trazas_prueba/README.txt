@@ -127,6 +127,16 @@ F-artigues_cadena_certificacion.txt
     (2) extraccion de los dos NIF; (3) sin el literal del NIF, esta traza daria error_cadena_certificacion
   Lectura CAU: persistente + validador detecta NIF => NO Portafib; problema LOCAL en equipo compartido (>=2 certificados)
 
+F-accv_cadena_servicio_validacion.txt
+  Caso documentado por telefono (anonimizado) · certificado ACCV · Autofirm@ · Windows
+  1x TR_SGX representativo "InvalidCertificateChain" (identificadores sinteticos; no hubo traza SistraHelp real)
+  Marcar: Certificado local + Ordenador
+  Global esperado (app.js v1.3.31): error_cadena_certificacion · cartel "Certificado (cadena)"
+  ESCENARIO CLAVE (contrario a F-artigues): aqui el certificado esta BIEN pero falla el SERVICIO de validacion
+    Comprobado: VALIDe validacion OK + firma prueba OK · AutoFirma local OK · falla en 2 equipos/2 personas · ayer firmaba
+    => NO es el ciudadano: es @firma/Portafib (cadena ACCV no confiada) -> escalar a PENDENTS PORTAFIB - 1.- Pendents 012
+  Valida: que la accion de error_cadena_certificacion incluye el criterio "VALIDe OK + local OK + varios equipos = servicio -> Portafib (CA ACCV)"
+
 Notas
 -----
 - SistraHelp pega lo más reciente arriba; el motor ordena por timestamp.
