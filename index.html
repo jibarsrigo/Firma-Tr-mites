@@ -4,12 +4,15 @@
 
 <script>
   // 🔹 VERSION HTML (editable manual)
-  const VERSION_HTML = "1.3.6";
+  const VERSION_HTML = "1.3.7";
 </script>
 
 <!-- =====================================================
      FUNCIONALIDADES HTML
      =====================================================
+
+     VERSION 1.3.7
+     - Panel Info/Reglas: max-height + scroll; separadores válidos dentro del <ul>
 
      VERSION 1.3.6
      - Tarjeta Acción: estilos apartados «Qué pasa» / «Qué hacer» (título + línea fina;
@@ -674,6 +677,30 @@ textarea:focus {
 .panel-body {
   padding:12px 14px;
   font-size:13px;
+  /* Info/Reglas pueden ser largos: scroll visible en el panel */
+  max-height: min(70vh, 640px);
+  overflow-y: auto;
+  line-height: 1.45;
+}
+.panel-body ul {
+  margin: 0;
+  padding-left: 1.15em;
+}
+.panel-body li {
+  margin: 0.2em 0;
+}
+.panel-body li.reglas-sep {
+  list-style: none;
+  margin-left: -1.15em;
+  height: 0.55em;
+  padding: 0;
+}
+/* Títulos de apartado (1., 2., A)…): sin viñeta */
+.panel-body li.reglas-titulo {
+  list-style: none;
+  margin-left: -1.15em;
+  margin-top: 0.55em;
+  font-weight: 600;
 }
 
 .btn-close {
@@ -717,7 +744,7 @@ textarea:focus {
         <span class="brand__sistra">SISTRA<span class="brand__two">2</span></span>
       </span>
     </div>
-    <div class="badge" id="versionBadge" title="Versión del motor de análisis (app.js)">v 1.3.69</div>
+    <div class="badge" id="versionBadge" title="Versión del motor de análisis (app.js)">v 1.3.70</div>
     <div class="header-panel-link" id="btnDetalles" title="Qué hace el analizador, versiones y funcionalidades implementadas">Info ▾</div>
   </div>
 

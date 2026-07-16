@@ -60,17 +60,31 @@ Render en `app.js` (agrupa líneas en bloques al detectar títulos Qué pasa / Q
 | `error_autofirma_cliente_generico` | Hecho (+ override cancelada Cl@ve↔Autofirm@ en Qué pasa) |
 | `error_autofirma_cliente_mac` | Hecho |
 | `tramite_completo` | Hecho (+ nota Autofirma/Portafib previos si aplica) |
-| Resto de `acciones` en `acciones.json` | **Pendiente** aplicar misma estructura + lenguaje accesible sin perder info |
 | Estilo visual títulos | Casi cerrado (línea fina); usuario valoraba añadir teal a títulos — retomar al continuar |
 | Selector vista previa estilos | Eliminado; no reintroducir |
 
+## Pendientes — continuar en otro momento
+
+Pausa 16/07/2026: no seguir ahora; retomar el formato Qué pasa / Qué hacer en estas reglas (sin perder info):
+
+**Cl@ve:** `error_clave_101`, `error_clave_104`, `error_clave_movil`, `error_clave_movil_no_permitida`
+
+**Certificado / @firma:** `error_certificado_nif_no_coincide`, `error_cadena_certificacion` (hoy «Qué es / Cómo actuar»)
+
+**Autofirma:** `error_autofirma_servidor` (SAF_27), `error_autofirma_entorno`, `error_autofirma_cliente_linux`, `error_autofirma_cliente_android`, `error_autofirma_cliente_iphone`, `error_autofirma` / `error_fire` (legacy)
+
+**Cierre:** `firma_correcta`, `tramite_registrado`, `tramite_finalizado`, `firma_correcta_portafib`
+
+**Matiz:** `error_autofirma_cancelada` — meter antivirus/firewall/proxy en Qué pasa (hoy solo nota al final)
+
 ## Cómo continuar
 
-1. Ir **caso a caso** (o por lotes): mostrar “ahora” vs “propuesta” si el usuario quiere validar, o aplicar directamente si pide “adelante”.
-2. Mantener `mail` de cada regla; no inventar mails nuevos salvo que se pida.
-3. Excepción: `error_cadena_certificacion` (sin mail) puede ser más larga, pero con los mismos encabezados Qué pasa / Qué hacer (subapartados numerados dentro si hace falta).
-4. Tras cada lote: bump suave de `acciones.json` `version` / `_changes_today` y, si toca UI, `VERSION_JS` + badge.
-5. No hacer commit/push salvo que el usuario lo pida.
+1. Retomar por **lotes** cuando el usuario diga (p. ej. Cl@ve 101/104/móvil, o cierre firma_correcta / TR_REG / TR_FIN).
+2. Ir **caso a caso**: mostrar “ahora” vs “propuesta” si quiere validar, o aplicar si pide “adelante”.
+3. Mantener `mail` de cada regla; no inventar mails nuevos salvo que se pida.
+4. Excepción: `error_cadena_certificacion` (sin mail) puede ser más larga, pero con los mismos encabezados Qué pasa / Qué hacer.
+5. Tras cada lote: bump suave de `acciones.json` `version` / `_changes_today` y, si toca UI, `VERSION_JS` + badge.
+6. No hacer commit/push salvo que el usuario lo pida.
 
 ## Ejemplo de referencia (8-15)
 
