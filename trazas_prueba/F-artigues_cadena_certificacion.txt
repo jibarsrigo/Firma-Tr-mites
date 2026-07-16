@@ -1,0 +1,14 @@
+# CAU: Juan Jose Artigues Mesquida · 00-SOLGEN (INDUSTRIA) · certificado local (Autofirm@) · Windows
+# Metodo a marcar en el analizador: Certificado local + Ordenador
+# Literal KO: "La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida.
+#   (... resultminor: SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@"
+#
+# Global (HOY): error_autofirma_cliente_windows  <-- DESACERTADO.
+#   Motivo: hay "Método de firma: Autofirm@" en el KO -> cae en resolverReglaAutofirmaCliente -> cliente Windows (reinstalar Autofirma).
+#   Reinstalar Autofirma NO arregla una cadena de certificacion no valida.
+# Objetivo: familia validacion de certificado (InvalidCertificateChain), hermana de InvalidNotSignerCertificate.
+#   El helper esErrorValidacionCertificadoFirmanteHelper NO detecta hoy "InvalidCertificateChain" (solo VALIDATION / InvalidNotSignerCertificate).
+# Matiz: InvalidCertificateChain suele apuntar al certificado del ciudadano (CA no reconocida / intermedios ausentes),
+#   mas que al servicio @firma. Decidir: extender error_validacion_certificado o nueva regla error_cadena_certificacion.
+#
+TR_SGX - Fi firma KO	16/07/2026 09:57:06	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	

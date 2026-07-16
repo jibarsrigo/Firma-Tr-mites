@@ -181,6 +181,10 @@ VERSION 1.3.26  - Literales detectados: Autofirm@ y Cl@veFirm@ (ClaveFirma@) en 
 
 VERSION 1.3.27  - Cartel azul ambiguo: «Cl@ve móvil o Autofirma Android» cuando solo hay TR_SGI sin cierre y sin método de acceso en la traza (antes fijaba «Cl@ve móvil»)
                 - Nota «error de portafib previo» también en tramite_finalizado y tramite_registrado (antes solo en tramite_completo)
+
+VERSION 1.3.28  - Nueva regla error_firma_fitxers_500: KO "Error general durant el procés de firma dels fitxers: 500" (o servei de custòdia) sin VALIDATION ni código Cl@ve
+                - Error puntual del servicio/proveedor de firma (no ciudadano, no Portafib); cartel «Servicio de firma» + acción reintentar
+                - Prioridad: tras VALIDATION y códigos Cl@ve (8-15 manda si aparece), antes del catch-all error_clave_movil
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -192,7 +196,7 @@ VERSION 1.3.27  - Cartel azul ambiguo: «Cl@ve móvil o Autofirma Android» cuan
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.27";
+const VERSION_JS = "1.3.28";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -456,6 +460,15 @@ function esErrorValidacionCertificadoFirmanteHelper(linea) {
 // 👉 ¿Es una línea informativa de método de firma (no un error)?
 function esLineaMetodoFirma(texto) {
   return /^M[EÈ]TODE DE FIRMA:/i.test(String(texto || "").trim());
+}
+
+// 👉 Error puntual del servicio/proveedor de firma en el TR_SGX:
+//    "Error general durant el proces de firma dels fitxers: 500" (o variante "servei de custodia ... error").
+//    No es del ciudadano ni de Portafib; suele ser transitorio (reintentar).
+function esLinea500FitxersHelper(linea) {
+  const s = String(linea || "");
+  return /ERROR GENERAL.*PROC[EÉ]S DE FIRMA DELS FITXERS/i.test(s) ||
+    /SERVEI DE CUST[OÒ]DIA|SERVICIO DE CUSTODIA|CUSTODIA DEVOLVI[OÓ] UN ERROR/i.test(s);
 }
 
 // 👉 Línea con formato SistraHelp (evento TR_ o ERROR estructurado), no notas del agente
@@ -1360,6 +1373,11 @@ const hayMetodoFirmaClaveEnKo = lineasTraza.some(linea =>
 
 const hayErrorValidacionCertificado = lineasTraza.some(esErrorValidacionCertificadoFirmanteHelper);
 
+// 👉 Error "500 / servei de custodia" del proveedor de firma en un Firma KO (puntual, reintentar)
+const hayFirma500Fitxers = lineasTraza.some(linea =>
+  esLineaFirmaKoHelper(linea) && esLinea500FitxersHelper(linea)
+);
+
 // 👉 KO: timeout + cliente de firma no invocado (Autofirm@; frecuente iPhone/Safari)
 const hayTimeoutClienteFirmaEnKo = lineasTraza.some(linea =>
   esLineaFirmaKoHelper(linea) &&
@@ -1753,6 +1771,13 @@ else if (hayCanceladaClaveFirmaEnKo) {
   idReglaDetectada = "error_clave_firma_cancelada";
 
 }
+else if (hayFirma500Fitxers) {
+
+  // 👉 Solo "500 / servei de custodia" (VALIDATION y codigos Cl@ve ya se resolvieron antes):
+  //    error puntual del servicio de firma. No es del ciudadano ni Portafib -> reintentar.
+  idReglaDetectada = "error_firma_fitxers_500";
+
+}
 else if (hayAutofirmaFitxerBuit) {
 
   idReglaDetectada = resolverReglaAutofirmaCliente();
@@ -2045,6 +2070,19 @@ else if (idReglaDetectada === "error_validacion_certificado") {
     motivo += "Confirmar método de firma en el detalle del Firma KO (doble clic en SistraHelp).";
   }
   fraseDiagnostico = motivo;
+
+}
+else if (idReglaDetectada === "error_firma_fitxers_500") {
+
+  cartelDiagnostico = cartelAzul("Servicio de firma");
+  let frase = "Firma KO con "
+    + literalFlujo("Error general durant el procés de firma dels fitxers: 500")
+    + ": error puntual del servicio / proveedor de firma. No es de las credenciales del ciudadano ni de Portafib.";
+  if (numSGX > 1) {
+    frase += " Se repite en " + numSGX + " intentos de firma.";
+  }
+  frase += " Indicar al ciudadano que reintente pasados unos minutos (o más tarde con Cl@ve Permanente).";
+  fraseDiagnostico = frase;
 
 }
 else if (idReglaDetectada === "error_autofirma_servidor") {

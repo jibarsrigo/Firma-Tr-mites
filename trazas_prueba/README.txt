@@ -74,16 +74,84 @@ C-8-15_luego_autofirma_cancelada.txt
   Global: error_autofirma_cancelada (último KO Autofirm@; menciona Cl@ve 8–15 previo)
   Flujo de Firma: Cl@ve 8–15, cancelada Cl@ve, cancelada Autofirm@
 
+F-marianela_fitxer_buit_windows.txt
+  Marianela Ramirez · CAI 2641203 · Windows · sin TR_CAR antes del 1.er KO
+  1× servidor intermedio + 5× fitxer buit + 2× cancelada (Autofirm@)
+  Marcar: Certificado local + Ordenador
+  Global: error_autofirma_cliente_windows
+  Cartel v1.3.25: tipo predominante fitxer buit + recuento multi-KO (no el primer KO pegado)
+
+C-consuelo_500_custodia_recupera.txt
+  Consuelo Esmeralda Martin Navarro · EB0006OPOS (EBAP) · Cl@ve Permanente (Cl@veFirm@)
+  2× TR_SGX "Error general durant el proces de firma dels fitxers: 500" (Cl@veFirm@, sin codigo Cl@ve)
+    + errores Portafib sesion (SesionFirmaClienteException / El fluxe no es valid) + QAA; reintento tarde OK
+  Marcar: Cl@ve
+  Global (HOY): tramite_completo (TR_REG + TR_FIN) + nota "error de portafib previo"
+  Valida: el 500 / servei de custodia es TRANSITORIO (mismo ciudadano firma horas despues)
+  Relacion: variante que RECUPERA del 500 (contraparte de C-mercedes_500_luego_8-15.txt)
+
+C-mercedes_500_luego_8-15.txt
+  Mercedes Suero Garcia · IG_SOL_CERTIF_PROF (IGOIB) · CAI-2643553 · Cl@ve Permanente (Cl@veFirm@)
+  03/07: 2× TR_SGX "500" + 1× KO solo metodo · 06/07: 4× ERROR CLAVE_MOVIL no permès (acceso) · 07/07: TR_SGX 8-15
+  Ultimo KO cronologico: 8-15 (Codigo Error 8 / Tipo Resultado 15)
+  Marcar: Cl@ve
+  Global (HOY): error_clave_movil_no_permitida  <-- DESACERTADA (los ERROR CLAVE_MOVIL de acceso tapan el ultimo KO)
+  Objetivo: que mande el ultimo KO de firma -> error_clave_8_15
+  Valida: (1) el 500 precede al 8-15 dias despues; (2) acceso CLAVE_MOVIL no permès no debe secuestrar el veredicto
+    del ultimo TR_SGX; (3) error_clave_proveedor_500 solo si el ULTIMO KO es el 500
+
+C-javier_500_validation_completo.txt
+  Javier Saenz de Tejada · IG_DGDEPEN_RECO (IGOIB) · Cl@ve Permanente (Cl@veFirm@)
+  13-19/05: decenas de TR_SGX (Proveedor clavefirma): VALIDATION (InvalidNotSignerCertificate) mayoritario,
+    500 (x2), 8-15, 101, 103-15, 1x cancelada · 19/05 TR_SGO (firma OK) · 21/05 CLAVE_MOVIL no permès · 23/05 TR_RGI+TR_REG+TR_FIN
+  Marcar: Cl@ve
+  Global (HOY): tramite_completo (TR_SGO + TR_REG + TR_FIN) — CORRECTO (acabo bien)
+  Valida: (1) el 500 aparece JUNTO a VALIDATION y a 8-15/101/103-15, todos "Proveedor: clavefirma" + Cl@veFirm@
+    -> misma familia proveedor Cl@ve Firma; (2) todos transitorios (recupera); (3) con cierre, tramite_completo prima sobre el ruido de KO
+
+T-500_puro.txt
+  Sintetica (datos ficticios) · 1x TR_SGX "500" (Cl@veFirm@) sin VALIDATION ni codigo Cl@ve ni cierre
+  Marcar: Cl@ve
+  Global esperado: error_firma_fitxers_500 · cartel "Servicio de firma" · accion reintentar
+  Valida en pantalla la regla nueva (app.js v1.3.28)
+
+F-artigues_cadena_certificacion.txt
+  Juan Jose Artigues Mesquida · 00-SOLGEN (INDUSTRIA) · certificado local (Autofirm@) · Windows
+  1x TR_SGX "La cadena de certificación del certificado firmante no es válida" (InvalidCertificateChain) · Autofirm@
+  Marcar: Certificado local + Ordenador
+  Global (HOY): error_autofirma_cliente_windows  <-- DESACERTADO (reinstalar Autofirma no arregla cadena de cert. invalida)
+  Objetivo: familia validacion certificado (hermana de InvalidNotSignerCertificate); helper no detecta InvalidCertificateChain
+  Pendiente de decidir: extender error_validacion_certificado o nueva regla error_cadena_certificacion
+
 Notas
 -----
 - SistraHelp pega lo más reciente arriba; el motor ordena por timestamp.
 - SAF_27 real: sustituir F-saf27_sintetico cuando se tenga traza CAU completa.
 - Acceso sin literal en traza: chip «Revisar Acceso» (tooltip TR_CAR: acceso + SO/dispositivo). No se muestra en KO Cl@ve con código (8–15, 101, 103, 104…): basta «Método: Cl@veFirm@».
 - Acción Autofirma cliente: intro según KO — servidor intermedio → «Habitualmente desde Android…»; timeout/client de firma → «Habitualmente desde iPhone…»; + TR_CAR + pasos SO.
-- Cartel Autofirma cliente: frase «Problema con el cliente de firma Autofirma (tipo de fallo)» — sin inferir Android/iPhone.
+- Cartel Autofirma cliente: frase «Problema con el cliente de firma Autofirma (tipo de fallo)» — sin inferir Android/iPhone; tipo = el más frecuente entre Firma KO cronológicos (v1.3.25); si hay varios tipos, recuento en la frase.
 - Literales: aviso y resaltado rosa neutros (*Cliente Autofirma / servidor intermedio* o *Timeout firma / cliente Autofirma*); confirmar SO en TR_CAR.
 
 Pendiente de fixture (mencionados en CAU, sin traza guardada aún)
 ------------------------------------------------------------------
   Cl@ve 101 · Cl@ve 104 · 103-15 tras 8-15 · Francisca 15× SGI · Benito 101/104 · Vanesa 8-15
+
+Implementado (app.js v1.3.28 / acciones.json v1.3.4)
+----------------------------------------------------
+  Regla error_firma_fitxers_500: KO "Error general durant el proces de firma dels fitxers: 500" (o "servei de custodia ... error")
+    SIN VALIDATION ni codigo Cl@ve en el desempate. Error puntual del servicio/proveedor de firma (no ciudadano, no Portafib) -> reintentar.
+  Prioridad: tras VALIDATION (error_validacion_certificado) y codigos Cl@ve (8-15/101/103/104 mandan si aparecen),
+    antes del catch-all error_clave_movil. Cartel azul "Servicio de firma".
+  Casos ya correctos sin regla nueva:
+    - 500 + VALIDATION -> error_validacion_certificado (dice: problema de servicio, reintentar mas tarde).
+    - 500 antes de 8-15 (8-15 es el KO que manda) -> error_clave_8_15.
+    - 500 con cierre posterior (TR_REG/TR_FIN o TR_SGO) -> tramite_completo / firma_correcta.
+  Trazas relacionadas: C-consuelo_500_custodia_recupera.txt, C-javier_500_validation_completo.txt (ambas -> tramite_completo),
+    C-mercedes_500_luego_8-15.txt (acaba en 8-15).
+
+Pendiente (gap detectado, sin implementar)
+------------------------------------------
+  Prioridad CLAVE_MOVIL no permès (Mercedes / CAI-2643553): un ERROR de acceso "CLAVE_MOVIL no permès" (de otro dia)
+    secuestra el veredicto y tapa el ultimo TR_SGX de firma (hoy -> error_clave_movil_no_permitida en vez del ultimo KO real, p. ej. 8-15).
+  Objetivo: que el ultimo KO de firma mande sobre errores de acceso previos.
 

@@ -1,6 +1,6 @@
 {
-  "version": "1.3.3",
-  "_changes_today": "2026-07-03: Nota carpeta ciudadana + Cl@ve móvil sin selector de método (SGI sin cierre)",
+  "version": "1.3.4",
+  "_changes_today": "2026-07-16: Nueva regla error_firma_fitxers_500 (error 500 / servei de custòdia del proveedor de firma; puntual, reintentar)",
   "acciones": [
 
     {
@@ -61,6 +61,12 @@
       "id": "error_clave_movil",
       "accion": "La firma se inicia pero no se completa (solo aparece Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil.\nPosible Autofirma en Android.\nRevisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura Cl@ve móvil o Certificado desde Android-Linux.\nSi se accede desde carpeta ciudadana con Cl@ve móvil, puede que al firmar no salga el selector de método (Autofirma/Cl@ve) y dé error. Probar acceder de nuevo con certificado o Cl@ve Permanente, no con Cl@ve móvil.\n*Linux — Si vemos este SO, se trata de Android con vista de ordenador en navegador.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave_movil_No_Permitido"
+    },
+
+    {
+      "id": "error_firma_fitxers_500",
+      "accion": "Error puntual del servicio de firma (Error general durant el procés de firma dels fitxers: 500).\nNo es un problema de las credenciales del ciudadano ni de Portafib, sino una respuesta puntual del proveedor / servicio de firma.\nIndicar al ciudadano que reintente pasados unos minutos; si sigue fallando, reintentar más tarde o con Cl@ve Permanente.\nSi el error se repite de forma persistente o afecta a varios ciudadanos en la misma franja horaria, escalar como posible incidencia del proveedor de firma.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaGeneral"
     },
 
     {

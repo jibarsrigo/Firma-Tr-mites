@@ -1,0 +1,38 @@
+# CAU: Mercedes Suero Garcia · IG_SOL_CERTIF_PROF (IGOIB) · CAI-2643553 · Cl@ve Permanente (Cl@veFirm@)
+# Metodo a marcar en el analizador: Cl@ve
+# Cronologia:
+#   03/07 noche -> 3x intentos firma: 2x TR_SGX "Error general durant el proces de firma dels fitxers: 500" + 1x TR_SGX solo metodo (Cl@veFirm@); sin cierre.
+#   06/07 -> 4x ERROR "Mètode de autenticació CLAVE_MOVIL no està permés al tràmit" (MetodoAutenticacionException) = acceso con Cl@ve movil no permitido.
+#   07/07 -> QAA superior + TR_SGI + TR_SGX 8-15 (Codigo Error: 8 - Proveedor: clavefirma - Tipo Resultado: 15) · Cl@veFirm@.
+# Ultimo KO cronologico: 8-15 (07/07 10:36).
+#
+# Regla global esperada (HOY): error_clave_movil_no_permitida  <-- DESACERTADA.
+#   Motivo: hayClaveMovilNoPermitida se evalua antes que los codigos Cl@ve; los ERROR CLAVE_MOVIL (acceso, 06/07)
+#   secuestran el veredicto y tapan el ultimo KO real de firma (8-15).
+# Objetivo: que mande el ULTIMO KO de firma -> error_clave_8_15 (renovar/acreditar Cl@ve Permanente).
+#
+# Que valida:
+#   1) El "500" puede PRECEDER a un 8-15 dias despues (500 = KO servidor/custodia transitorio; 8-15 = bloqueo final).
+#   2) Un ERROR de acceso CLAVE_MOVIL no permès NO debe mandar sobre el ultimo TR_SGX de firma.
+#   3) Futura regla error_clave_proveedor_500: solo cuando el ULTIMO KO sea el 500 (no si hay 8-15/OK posterior).
+# Complementa a C-consuelo_500_custodia_recupera.txt (variante que RECUPERA del 500 -> tramite_completo).
+#
+TR_SGX - Fi firma KO	07/07/2026 10:36:36	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Error detectado despues de llamar a la pasarela externa(Código Error: 8 - Proveedor: clavefirma - Tipo Resultado: 15) Método de firma: Cl@veFirm@	
+TR_SGI - Inici firma	07/07/2026 10:32:55	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		
+TR_CAR - Càrrega del tràmit	07/07/2026 10:32:34	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		
+ERROR - Error	07/07/2026 10:31:03	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException
+ERROR - Error	06/07/2026 11:53:58	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Mètode de autenticació CLAVE_MOVIL no està permés al tràmit	MetodoAutenticacionException
+ERROR - Error	06/07/2026 11:53:11	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Mètode de autenticació CLAVE_MOVIL no està permés al tràmit	MetodoAutenticacionException
+ERROR - Error	06/07/2026 11:49:58	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Mètode de autenticació CLAVE_MOVIL no està permés al tràmit	MetodoAutenticacionException
+ERROR - Error	06/07/2026 11:49:39	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Mètode de autenticació CLAVE_MOVIL no està permés al tràmit	MetodoAutenticacionException
+TR_SGI - Inici firma	03/07/2026 20:26:58	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		
+TR_SGX - Fi firma KO	03/07/2026 20:25:47	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Error general durant el proces de firma dels fitxers: 500 Método de firma: Cl@veFirm@	
+TR_SGI - Inici firma	03/07/2026 20:24:22	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		
+TR_SGX - Fi firma KO	03/07/2026 20:24:08	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Método de firma: Cl@veFirm@	
+TR_SGI - Inici firma	03/07/2026 20:23:23	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		
+TR_SGX - Fi firma KO	03/07/2026 20:22:33	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Error general durant el proces de firma dels fitxers: 500 Método de firma: Cl@veFirm@	
+TR_SGI - Inici firma	03/07/2026 20:18:09	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		
+TR_FRF - Fi formulari	03/07/2026 20:09:58	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		
+TR_FRI - Inici formulari	03/07/2026 20:07:54	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		
+TR_FRF - Fi formulari	03/07/2026 20:07:01	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		
+TR_FRI - Inici formulari	03/07/2026 20:03:20	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	

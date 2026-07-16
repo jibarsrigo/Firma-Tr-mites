@@ -1,0 +1,24 @@
+# Marianela Ramirez · CAI 2641203 · Windows · sin TR_CAR antes del 1.er KO
+# Patrón: 1× servidor intermedio (Cliente Firma Móvil) → 5× fitxer buit → 2× cancelada
+# Marcar: Certificado local + Ordenador (Windows)
+# Global: error_autofirma_cliente_windows (fitxer buit gana en árbol)
+# Cartel v1.3.25: «Problema… (fitxer buit). Varios tipos… 5× fitxer buit, 2× firma cancelada, 1× servidor intermedio…»
+
+TR_SGI - Inici firma	23/06/2026 12:55:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001		
+TR_SGX - Fi firma KO	23/06/2026 12:50:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001	Signatura cancel·lada Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 12:48:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001		
+TR_SGX - Fi firma KO	23/06/2026 12:47:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001	Signatura cancel·lada Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 12:45:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001		
+TR_SGX - Fi firma KO	23/06/2026 12:40:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001	El plugin amb ID null ha retornat un status OK però el fitxer Signat està buit: /tmp/PluginAutofirmaBatch.bin Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 12:38:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001		
+TR_SGX - Fi firma KO	23/06/2026 12:35:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001	El plugin amb ID null ha retornat un status OK però el fitxer Signat està buit: /tmp/PluginAutofirmaBatch.bin Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 12:33:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001		
+TR_SGX - Fi firma KO	23/06/2026 12:30:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001	El plugin amb ID null ha retornat un status OK però el fitxer Signat està buit: /tmp/PluginAutofirmaBatch.bin Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 12:28:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001		
+TR_SGX - Fi firma KO	23/06/2026 12:25:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001	El plugin amb ID null ha retornat un status OK però el fitxer Signat està buit: /tmp/PluginAutofirmaBatch.bin Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 12:22:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001		
+TR_SGX - Fi firma KO	23/06/2026 12:20:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001	El plugin amb ID null ha retornat un status OK però el fitxer Signat està buit: /tmp/PluginAutofirmaBatch.bin Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 11:50:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001		
+TR_SGX - Fi firma KO	23/06/2026 11:48:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: No se pudo conectar con el servidor intermedio para la recuperacion del resultado de la operacion Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 11:10:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001		
+TR_INI - Inici del tràmit	23/06/2026 11:05:00	EXP-MARIANELA-2641203	DNI	MARIANELA RAMIREZ	CAI	ORG	1	2641203	100001	 
