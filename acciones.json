@@ -1,6 +1,6 @@
 {
-  "version": "1.3.1",
-  "_changes_today": "2026-06-17: Autofirma cliente — pasos SO sin título; intro común en app.js",
+  "version": "1.3.3",
+  "_changes_today": "2026-07-03: Nota carpeta ciudadana + Cl@ve móvil sin selector de método (SGI sin cierre)",
   "acciones": [
 
     {
@@ -59,7 +59,7 @@
 
     {
       "id": "error_clave_movil",
-      "accion": "La firma se inicia pero no se completa (solo aparece Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil.\nPosible Autofirma en Android.\nRevisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura Cl@ve móvil o Certificado desde Android-Linux.\n*Linux — Si vemos este SO, se trata de Android con vista de ordenador en navegador.",
+      "accion": "La firma se inicia pero no se completa (solo aparece Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil.\nPosible Autofirma en Android.\nRevisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura Cl@ve móvil o Certificado desde Android-Linux.\nSi se accede desde carpeta ciudadana con Cl@ve móvil, puede que al firmar no salga el selector de método (Autofirma/Cl@ve) y dé error. Probar acceder de nuevo con certificado o Cl@ve Permanente, no con Cl@ve móvil.\n*Linux — Si vemos este SO, se trata de Android con vista de ordenador en navegador.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave_movil_No_Permitido"
     },
 
@@ -83,7 +83,7 @@
 
     {
       "id": "error_autofirma_entorno",
-      "accion": "La firma se inicia pero no se completa (solo Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil o Autofirma en Android. Revisar método usado en (Inicio Trámite / Carga Trámite).\nRevisar instalación AutoFirma.\nSolicitar prueba de firma local con PDF.\nProbar otro navegador y red distinta, por posible bloqueo de invocación FIRE/AutoFirma: proxy, VPN, firewall o navegador.\n*El mail se orienta según el SO detectado en la traza",
+      "accion": "La firma se inicia pero no se completa (solo Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil o Autofirma en Android. Revisar método usado en (Inicio Trámite / Carga Trámite).\nSi se accede desde carpeta ciudadana con Cl@ve móvil, puede que al firmar no salga el selector de método (Autofirma/Cl@ve) y dé error. Probar acceder de nuevo con certificado o Cl@ve Permanente, no con Cl@ve móvil.\nRevisar instalación AutoFirma.\nSolicitar prueba de firma local con PDF.\nProbar otro navegador y red distinta, por posible bloqueo de invocación FIRE/AutoFirma: proxy, VPN, firewall o navegador.\n*El mail se orienta según el SO detectado en la traza",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
@@ -143,12 +143,27 @@
 
     {
       "id": "firma_correcta",
-      "accion": "El trámite ha finalizado correctamente."
+      "accion": "Firma correcta (Firma OK en la traza).\nNo consta fin de trámite (TR_FIN) ni registro (TR_REG): el trámite no aparece cerrado administrativamente.\nComprobar en SistraHelp si falta un paso posterior (registro / fin de trámite)."
+    },
+
+    {
+      "id": "tramite_registrado",
+      "accion": "El trámite consta registrado (TR_REG — Registre tràmit).\nNo aparece TR_FIN (Fi de tràmit) en la traza: no consta como finalizado."
+    },
+
+    {
+      "id": "tramite_finalizado",
+      "accion": "El trámite consta finalizado (TR_FIN — Fi de tràmit).\nNo aparece TR_REG (Registre tràmit) en la traza: no consta como registrado."
+    },
+
+    {
+      "id": "tramite_completo",
+      "accion": "Trámite registrado (TR_REG) y finalizado (TR_FIN) en la traza."
     },
 
     {
       "id": "firma_correcta_portafib",
-      "accion": "Se detecta error de portafib en la traza {lit}\nEl trámite está finalizado correctamente."
+      "accion": "Se detecta error de portafib en la traza {lit}\nLa firma o el cierre del trámite pueden haber continuado; revisar TR_SGO / TR_FIN / TR_REG en la traza."
     }
 
   ]

@@ -2,12 +2,12 @@
            FUNCIONALIDADES IMPLEMENTADAS
    =====================================================
 
-VERSION 1.0     - Se valida que la traza y el método de firma sean correctos antes de analizar
-                - Se muestran paneles informativos para errores de acceso (SAML y página en blanco)
-                - Se normaliza la traza a mayúsculas para evitar problemas en la detección
-                - Se detectan los eventos TR_ principales dentro de la traza
-                - Se genera un diagnóstico técnico dinámico en función de los TR_ detectados
-                - Se genera diagnóstico + acción basada en flujo TR_
+VERSION 1.0     - Se valida que la traza y el método de firma sean correctos antes de analizar 
+                - Se muestran paneles informativos para errores de acceso (SAML y página en blanco) 
+                - Se normaliza la traza a mayúsculas para evitar problemas en la detección 
+                - Se detectan los eventos TR_ principales dentro de la traza 
+                - Se genera un diagnóstico técnico dinámico en función de los TR_ detectados 
+                - Se genera diagnóstico + acción basada en flujo TR_ 
 
 VERSION 1.1     - Se muestra lectura html, json y js en panel superior (editable desde código)
 
@@ -16,22 +16,22 @@ VERSION 1.1.1   - Se añade DETECCIÓN DE REGLAS (PATRONES) con la primera regla
 VERSION 1.1.2   - MOTOR BASE DE ANÁLISIS TR_ → detección → ID regla → control → salida personalizada
 
 VERSION 1.2.0   - Introducción de contexto de flujo estructurado (objeto contexto)
-                - Modelización de estados: pre_firma / error_firma / firma_ok
-                - Simplificación del árbol de decisión basado en fase del flujo
-                - Mejora de robustez ante trazas incompletas o con orden irregular
+                    - Modelización de estados: pre_firma / error_firma / firma_ok
+                    - Simplificación del árbol de decisión basado en fase del flujo
+                    - Mejora de robustez ante trazas incompletas o con orden irregular
 
 VERSION 1.2.1   - Detección avanzada de errores técnicos: FLUXE, SESSION, EXCEPTION, SAF_
-                - Detección específica de Autofirma (SAF_27)
-                - Detección básica de Cl@ve por patrón "CODI ERROR"
-                - Separación proveedor firma: Cl@ve / Autofirma / FIRE
+                    - Detección específica de Autofirma (SAF_27)
+                    - Detección básica de Cl@ve por patrón "CODI ERROR"
+                    - Separación proveedor firma: Cl@ve / Autofirma / FIRE                
 
 VERSION 1.2.2   - Mejora del análisis en pre_firma: fallo formulario vs Portafib
                 - Lógica de reintentos (contadores TR_FRI / TR_FRF)
-                - Detección de errores reales de sesión (Portafib/Soffid)
+                    - Detección de errores reales de sesión (Portafib/Soffid)
                 - Primer separación conceptual CAU: error ciudadano vs error plataforma
 
 VERSION 1.2.3   - Limpieza avanzada de literales de error (cabeceras, excepciones, ruido técnico)
-                - Extracción del literal funcional real del formulario
+                    - Extracción del literal funcional real del formulario
                 - Patrones de corte contextual (DOMINI, LES, EL, LA, ES)
 
 VERSION 1.2.4   - Separación definitiva Portafib vs formulario; prioridad absoluta del error de sesión
@@ -163,6 +163,24 @@ VERSION 1.3.22  - Trazas mixtas y formulario sin Inicio (antes 1.3.45–47)
                 - Traza Cl@ve + Autofirma posterior: manda el último Firma KO (p. ej. 8–15 y luego cancelada Autofirm@)
                 - Sin TR_FRI → fallo_formulario (ignora «El fluxe no es vàlid»); Portafib solo si hubo Inicio formulario
                 - 403 Forbidden en formulario externo: enriquece acción/mail; sin nota de literales al ciudadano en ese caso
+
+VERSION 1.3.23  - Cierre administrativo del trámite (TR_FIN / TR_REG)
+                - TR_SGO (Firma OK) ya no implica «trámite finalizado»; hace falta TR_FIN y/o TR_REG según el caso
+                - tramite_completo (TR_FIN + TR_REG), tramite_finalizado, tramite_registrado, firma_correcta (solo Firma OK)
+                - TR_RGI en flujo visual; fase firma_ok también si hay TR_REG sin TR_FIN ni TR_SGO
+
+VERSION 1.3.24  - Aviso traza mixta (búsqueda por DNI)
+                - Detecta TR_INI en fechas/horas distintas (duplicados mismo momento no cuentan) o IDs expediente distintos
+                - Recomienda pegar traza filtrada por ID de trámite en SistraHelp
+                - Nota carpeta ciudadana + Cl@ve móvil: SGI sin cierre puede ocultar selector de método (Autofirma/Cl@ve)
+
+VERSION 1.3.25  - Cartel Autofirma cliente: tipo de fallo KO más frecuente (cronológico), no el primero pegado
+                - Si hay varios tipos de Firma KO, frase con recuento (p. ej. fitxer buit + cancelada + servidor intermedio)
+
+VERSION 1.3.26  - Literales detectados: Autofirm@ y Cl@veFirm@ (ClaveFirma@) en rojo, mismo estilo que Firma KO
+
+VERSION 1.3.27  - Cartel azul ambiguo: «Cl@ve móvil o Autofirma Android» cuando solo hay TR_SGI sin cierre y sin método de acceso en la traza (antes fijaba «Cl@ve móvil»)
+                - Nota «error de portafib previo» también en tramite_finalizado y tramite_registrado (antes solo en tramite_completo)
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -174,7 +192,7 @@ VERSION 1.3.22  - Trazas mixtas y formulario sin Inicio (antes 1.3.45–47)
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.22";
+const VERSION_JS = "1.3.27";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -202,6 +220,10 @@ const INTRO_ACCION_AUTOFIRMA_KO_TIMEOUT =
 
 const INTRO_ACCION_AUTOFIRMA_CLIENTE_GENERICO =
   "Problema con el cliente de firma Autofirma.";
+
+const NOTA_CARPETA_CLAVE_MOVIL_SIN_SELECTOR =
+  "Si se accede desde carpeta ciudadana con Cl@ve móvil, puede que al firmar no salga el selector de método (Autofirma/Cl@ve) y dé error. "
+  + "Probar acceder de nuevo con certificado o Cl@ve Permanente, no con Cl@ve móvil.";
 
 function esReglaAutofirmaClienteConIntro(idRegla) {
   return !!idRegla && idRegla.indexOf("error_autofirma_cliente_") === 0;
@@ -239,18 +261,74 @@ function etiquetaTipoFalloDesdeLineaKo(linea) {
   return null;
 }
 
-function etiquetaTipoFalloAutofirmaClienteEnTraza(lineas) {
-  for (const linea of lineas || []) {
-    if (!esLineaFirmaKoHelper(linea)) continue;
+function analizarTiposFalloKoAutofirma(lineas) {
+  const counts = {};
+  const kos = lineasFirmaKoCronologicas(lineas);
+  let ultimoTipo = null;
+
+  for (const linea of kos) {
     const tipo = etiquetaTipoFalloDesdeLineaKo(linea);
-    if (tipo) return tipo;
+    if (!tipo) continue;
+    counts[tipo] = (counts[tipo] || 0) + 1;
+    ultimoTipo = tipo;
   }
-  const texto = (lineas || []).join("\n");
-  if (hayLiteralServidorIntermedioAutofirma(texto)) return "servidor intermedio";
-  if (hayLiteralTimeoutFirmaCliente(texto)) return "timeout";
-  if (/FITXER SIGNAT.*BUIT|PLUGIN.*AUTOFIRMA|SIGNAT EST[AÁ] BUIT/i.test(texto)) return "fitxer buit";
-  if (/SIGNATURA CANCEL|FIRMA CANCEL/i.test(texto)) return "firma cancelada";
-  return "cliente local";
+
+  if (!kos.length) {
+    const texto = (lineas || []).join("\n");
+    if (hayLiteralServidorIntermedioAutofirma(texto)) {
+      return { etiqueta: "servidor intermedio", counts: { "servidor intermedio": 1 }, ultimoTipo: "servidor intermedio", totalKo: 0 };
+    }
+    if (hayLiteralTimeoutFirmaCliente(texto)) {
+      return { etiqueta: "timeout", counts: { timeout: 1 }, ultimoTipo: "timeout", totalKo: 0 };
+    }
+    if (/FITXER SIGNAT.*BUIT|PLUGIN.*AUTOFIRMA|SIGNAT EST[AÁ] BUIT/i.test(texto)) {
+      return { etiqueta: "fitxer buit", counts: { "fitxer buit": 1 }, ultimoTipo: "fitxer buit", totalKo: 0 };
+    }
+    if (/SIGNATURA CANCEL|FIRMA CANCEL/i.test(texto)) {
+      return { etiqueta: "firma cancelada", counts: { "firma cancelada": 1 }, ultimoTipo: "firma cancelada", totalKo: 0 };
+    }
+    return { etiqueta: "cliente local", counts: {}, ultimoTipo: null, totalKo: 0 };
+  }
+
+  let maxCount = 0;
+  let predominante = ultimoTipo;
+  for (const [tipo, n] of Object.entries(counts)) {
+    if (n > maxCount) {
+      maxCount = n;
+      predominante = tipo;
+    }
+  }
+  const empatados = Object.keys(counts).filter(t => counts[t] === maxCount);
+  if (empatados.length > 1 && ultimoTipo && empatados.includes(ultimoTipo)) {
+    predominante = ultimoTipo;
+  }
+
+  return {
+    etiqueta: predominante || ultimoTipo || "cliente local",
+    counts,
+    ultimoTipo,
+    totalKo: kos.length
+  };
+}
+
+function etiquetaTipoFalloAutofirmaClienteEnTraza(lineas) {
+  return analizarTiposFalloKoAutofirma(lineas).etiqueta;
+}
+
+function textoResumenTiposFalloKoAutofirma(counts) {
+  const orden = ["fitxer buit", "firma cancelada", "servidor intermedio", "timeout", "módulo finalizado", "cliente local"];
+  const partes = [];
+  const vistos = new Set();
+  for (const tipo of orden) {
+    if (counts[tipo]) {
+      partes.push(counts[tipo] + "× " + tipo);
+      vistos.add(tipo);
+    }
+  }
+  for (const [tipo, n] of Object.entries(counts)) {
+    if (!vistos.has(tipo)) partes.push(n + "× " + tipo);
+  }
+  return partes.join(", ");
 }
 
 function esLineaFirmaKoHelper(linea) {
@@ -394,6 +472,137 @@ function extraerTimestampLineaTraza(linea) {
   return new Date(`${yyyy}-${mm}-${dd}T${hora}`).getTime();
 }
 
+// 👉 Campos tabulados SistraHelp tras el literal del evento (fecha, sesión, NIF, IDs…)
+function parseCamposEventoTraza(linea) {
+  const s = String(linea || "");
+  const tabIdx = s.indexOf("\t");
+  if (tabIdx === -1) return null;
+  const campos = s.slice(tabIdx + 1).split("\t");
+  if (campos.length < 2) return null;
+  return {
+    fechaHora: campos[0]?.trim() || null,
+    sesion: campos[1]?.trim() || null,
+    nif: campos[2]?.trim() || null,
+    idExpediente: campos[7]?.trim() || null,
+    idSecundario: campos[8]?.trim() || null,
+    ts: extraerTimestampLineaTraza(linea)
+  };
+}
+
+function claveInstanciaTramite(campos) {
+  if (!campos) return null;
+  if (campos.idExpediente && campos.idSecundario) {
+    return campos.idExpediente + " / " + campos.idSecundario;
+  }
+  if (campos.sesion) return campos.sesion;
+  return null;
+}
+
+// 👉 Búsqueda por DNI en SistraHelp puede mezclar varios trámites.
+// Varios TR_INI con la misma fecha/hora no son error (duplicado al pegar); sí lo son en momentos distintos.
+function detectarTrazaMultiTramite(lineasTraza) {
+  const lineasIni = (lineasTraza || []).filter(l => /^TR_INI\s+-/.test(l));
+  const instanciasIni = lineasIni.map(linea => {
+    const c = parseCamposEventoTraza(linea);
+    const fechaHora = c?.fechaHora || linea.match(/\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}:\d{2}/)?.[0] || null;
+    return {
+      fechaHora,
+      sesion: c?.sesion || null,
+      clave: claveInstanciaTramite(c),
+      ts: c?.ts ?? extraerTimestampLineaTraza(linea)
+    };
+  });
+
+  const iniPorMomento = new Map();
+  instanciasIni.forEach(ini => {
+    const key = ini.fechaHora || (ini.ts != null ? "ts:" + ini.ts : null);
+    if (!key) return;
+    if (!iniPorMomento.has(key)) iniPorMomento.set(key, ini);
+  });
+
+  const iniMomentosDistintos = [...iniPorMomento.values()].sort((a, b) => {
+    if (a.ts != null && b.ts != null) return a.ts - b.ts;
+    if (a.ts != null) return -1;
+    if (b.ts != null) return 1;
+    return 0;
+  });
+
+  const clavesExpediente = new Set();
+  for (const linea of lineasTraza || []) {
+    if (!/^TR_[A-Z]+\s+-/.test(linea)) continue;
+    const c = parseCamposEventoTraza(linea);
+    const clave = claveInstanciaTramite(c);
+    if (clave && c?.idExpediente) clavesExpediente.add(clave);
+  }
+
+  const clavesIniDistintas = [...new Set(iniMomentosDistintos.map(i => i.clave).filter(Boolean))];
+  const motivos = [];
+
+  if (iniMomentosDistintos.length > 1) {
+    motivos.push(
+      iniMomentosDistintos.length + " × TR_INI (Inici del tràmit) en fechas u horas distintas: "
+      + "solo debe haber un inicio por trámite (varios momentos → trazas mezcladas)."
+    );
+  }
+  if (iniMomentosDistintos.length > 1 && clavesIniDistintas.length > 1) {
+    motivos.push(clavesIniDistintas.length + " identificadores de expediente distintos en esos TR_INI.");
+  } else if (clavesExpediente.size > 1) {
+    motivos.push(clavesExpediente.size + " identificadores de expediente distintos en la traza.");
+  }
+
+  return {
+    esMulti: motivos.length > 0,
+    motivos,
+    numIni: lineasIni.length,
+    numIniMomentosDistintos: iniMomentosDistintos.length,
+    instanciasIni: iniMomentosDistintos,
+    clavesExpediente: [...clavesExpediente]
+  };
+}
+
+function escHtmlAviso(texto) {
+  return String(texto ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function htmlListaInstanciasIni(instanciasIni) {
+  if (!instanciasIni.length) return "";
+  const items = instanciasIni.map(ini => {
+    const det = [
+      ini.fechaHora ? escHtmlAviso(ini.fechaHora) : null,
+      ini.clave ? "ID " + escHtmlAviso(ini.clave) : null,
+      ini.sesion ? "sesión " + escHtmlAviso(ini.sesion) : null
+    ].filter(Boolean).join(" · ");
+    return "<li>" + (det || "TR_INI") + "</li>";
+  }).join("");
+  return "<ul style=\"margin:8px 0 0 18px;padding:0;font-size:13px;line-height:1.45;\">" + items + "</ul>";
+}
+
+function htmlAvisoTrazaMultiTramite(info) {
+  if (!info?.esMulti) return "";
+  const motivos = info.motivos.map(m => "<li>" + escHtmlAviso(m) + "</li>").join("");
+  return "<div class=\"panel-card\" style=\"margin-top:22px;border:2px solid #c0392b;\">"
+    + "<div class=\"panel-card__head\" style=\"text-transform:none;background:#fdecea;color:#922b21;\">⚠ Traza mixta — varios trámites</div>"
+    + "<div class=\"panel-card__body\" style=\"font-size:14px;color:#1e1c17;\">"
+    + "<p style=\"margin:0 0 8px;\"><b>La traza pegada parece mezclar más de un trámite</b> (habitual si en SistraHelp se busca por DNI en lugar de por ID de trámite). "
+    + "El análisis siguiente puede ser <b>incorrecto</b>.</p>"
+    + "<p style=\"margin:0 0 6px;\"><b>Indicios detectados:</b></p>"
+    + "<ul style=\"margin:0 0 8px 18px;padding:0;font-size:13px;\">" + motivos + "</ul>"
+    + (info.instanciasIni.length ? "<p style=\"margin:0 0 4px;\"><b>TR_INI en momentos distintos (orden cronológico):</b></p>" + htmlListaInstanciasIni(info.instanciasIni) : "")
+    + "<p style=\"margin:12px 0 0;font-size:13px;color:#666;\">Acción recomendada: en SistraHelp, localizar el trámite concreto y volver a pegar <b>solo</b> la traza de ese ID (doble clic en Inicio trámite → copiar eventos).</p>"
+    + "</div></div>";
+}
+
+function htmlAvisoTrazaMultiTramiteCompacto(info) {
+  if (!info?.esMulti) return "";
+  return "<div style=\"margin-bottom:12px;padding:10px 12px;background:#fdecea;border:1px solid #c0392b;border-radius:8px;font-size:13px;color:#922b21;\">"
+    + "<b>⚠ Traza mixta:</b> " + escHtmlAviso(info.motivos[0] || "Varios trámites en la traza")
+    + " — el veredicto puede ser incorrecto. Pegar solo la traza del ID de trámite objetivo."
+    + "</div>";
+}
+
 function ordenarEventosTrazaCronologicamente(lineasTraza) {
   return lineasTraza
     .map(linea => ({
@@ -469,27 +678,27 @@ function claveLiteralParaAgrupacion(linea) {
 }
 
 function htmlLiteralDetectado(texto) {
+  const spanOk = '<span style="color:#2e6e14;font-weight:600">';
+  const spanKo = '<span style="color:#c0392b;font-weight:600">';
   let html = String(texto ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
-  html = html.replace(
-    /\b(Firma\s+OK)\b/gi,
-    '<span style="color:#2e6e14;font-weight:600">$1</span>'
-  );
-  html = html.replace(
-    /\b(Firma\s+KO)\b/gi,
-    '<span style="color:#c0392b;font-weight:600">$1</span>'
-  );
+  html = html.replace(/\b(Firma\s+OK)\b/gi, spanOk + "$1</span>");
+  html = html.replace(/\b(Firma\s+KO)\b/gi, spanKo + "$1</span>");
   html = html.replace(
     /(El\s+fluxe\s+no\s+(?:es|és)\s+v(?:à|a|á)?lid)/gi,
-    '<span style="color:#c0392b;font-weight:600">$1</span>'
+    spanKo + "$1</span>"
   );
   html = html.replace(
     /(Error:\s*(?:103|101|104|8)(?!\d))/gi,
-    '<span style="color:#c0392b;font-weight:600">$1</span>'
+    spanKo + "$1</span>"
+  );
+  html = html.replace(
+    /(Autofirm@|Cl@veFirm@|ClaveFirma@)/gi,
+    spanKo + "$1</span>"
   );
   html = resaltarClienteFirmaEnLiteral(html);
   return html;
@@ -727,7 +936,8 @@ btnDetalles.onclick = () => {
   <li><b>Estado actual (completado y validado):</b></li>
   <li>✔ Interfaz estilo V5: tarjetas Flujo / Acción / Literales.</li>
   <li>✔ <b>Pre-firma:</b> fallo formulario (sin TR_FRI) y fallo Portafib (acción dinámica con {lit}).</li>
-  <li>✔ <b>Firma OK:</b> trámite finalizado; <b>firma_correcta_portafib</b>.</li>
+  <li>✔ <b>Cierre trámite:</b> TR_SGO (firma OK) ≠ finalizado; TR_FIN (finalizado), TR_REG (registrado), tramite_completo (ambos).</li>
+  <li>✔ <b>firma_correcta_portafib</b> — error Portafib previo en traza con firma/cierre.</li>
   <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; Cl@ve móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@.</li>
   <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → escalado Portafib.</li>
   <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno sin cierre, cliente por SO (selector + TR_CAR).</li>
@@ -742,6 +952,11 @@ btnDetalles.onclick = () => {
   <li>🔧 Limpieza de literales: mensaje útil arriba, traza completa debajo.</li>
   <li>🔧 Aviso Firma KO previo en tarjeta Acción cuando el trámite acaba OK.</li>
   <li>🔧 Mails Autofirma con anclas específicos por SO.</li>
+  <li>🔧 <b>CAI-2643553</b> (Mercedes Suero · Cl@ve Permanente · KO «Error general… fitxers: 500» + Cl@veFirm@): comprobar lunes en SistraHelp si reintentó y firmó; regla analizador <i>error_clave_proveedor_500</i> / KO Cl@ve genérico servidor + fixture <b>C-clave_500_fitxers.txt</b>.</li>
+
+  <br>
+
+  <li><b>Traza mixta:</b> TR_INI en fechas/horas distintas o IDs expediente distintos (búsqueda por DNI). Duplicados TR_INI mismo momento no avisan.</li>
 
   <br>
 
@@ -769,7 +984,8 @@ btnTabla.onclick = (e) => {
   <li>Ordena eventos por fecha/hora (SistraHelp pega lo más reciente arriba).</li>
   <li>Reconstruye el flujo: TR_FRI → TR_FRF → TR_SGI → TR_SGX / TR_SGO → TR_REG → TR_FIN.</li>
   <li>Clasifica en fase: <b>pre-firma</b>, <b>error en firma</b> o <b>firma correcta</b>.</li>
-  <li>Prioridad de cierre: <b>TR_FIN / TR_SGO</b> sobre TR_SGX previo.</li>
+  <li>Prioridad de cierre firma: <b>TR_FIN / TR_SGO / TR_REG</b> sobre TR_SGX previo.</li>
+  <li><b>TR_SGO</b> = Firma OK · <b>TR_FIN</b> = finalizado · <b>TR_REG</b> = registrado · <b>TR_RGI</b> = inicio registro.</li>
   <li>Aplica reglas de <b>acciones.json v ${vJson}</b> → acción + mail.</li>
 
   <br>
@@ -777,7 +993,7 @@ btnTabla.onclick = (e) => {
   <li><b>Reglas activas:</b></li>
   <li>✔ <b>fallo_formulario</b> — Sin TR_FRI (Inicio formulario) y sin firma; 403 Forbidden añade texto al mail.</li>
   <li>✔ <b>fallo_portafib</b> — Error sesión/flujo; acción dinámica {lit}.</li>
-  <li>✔ <b>firma_correcta</b> / <b>firma_correcta_portafib</b></li>
+  <li>✔ <b>firma_correcta</b> (solo TR_SGO) / <b>tramite_registrado</b> / <b>tramite_finalizado</b> / <b>tramite_completo</b> / <b>firma_correcta_portafib</b></li>
   <li>✔ <b>error_clave_*</b> — 8–15, 101, 103, 103-15, 104; cancelada Cl@veFirm@; Cl@ve móvil; CLAVE_MOVIL no permitida.</li>
   <li>✔ <b>error_validacion_certificado</b> — InvalidNotSignerCertificate → Portafib.</li>
   <li>✔ <b>error_autofirma_servidor</b> — SAF_27 (cliente local primero).</li>
@@ -811,7 +1027,7 @@ btnTabla.onclick = (e) => {
   <li><b>Criterios clave CAU:</b></li>
   <li><b>Método de firma del Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector.</li>
   <li><b>Acceso ≠ firma:</b> discrepancia si Cl@ve en acceso y Autofirm@ en KO.</li>
-  <li>Sin TR_SGI → pre-firma. TR_SGO / TR_FIN → firma correcta.</li>
+  <li>Sin TR_SGI → pre-firma. TR_SGO → firma OK; TR_FIN → finalizado; TR_REG → registrado; TR_FIN + TR_REG → completo.</li>
   <li>Certificado + Autofirm@ en KO → no pedir confirmar Cl@ve en Flujo de Firma.</li>
   <li>KO Cl@ve con código (8–15, 101, 103, 104) → en Flujo de Firma basta «Método: Cl@veFirm@» (sin Revisar Acceso).</li>
 
@@ -826,7 +1042,7 @@ btnTabla.onclick = (e) => {
 
   <br>
 
-  <li><b>Pendiente:</b> literales limpios · mails por SO · más trazas Cl@ve/FIRE antiguas.</li>
+  <li><b>Pendiente:</b> literales limpios · mails por SO · más trazas Cl@ve/FIRE antiguas · <b>CAI-2643553</b> Cl@ve 500 (seguimiento lunes + regla analizador).</li>
   <li><b>Nota:</b> ✔ = validado. ⚙ = reserva.</li>
 </ul>
 `);
@@ -921,7 +1137,7 @@ btnAnalizar.onclick = () => {      // 👉 Inicia el análisis completo de la tr
 
   // ✅ 3. VALIDACIÓN TRAZA
   // 👉 IMPORTANTE: Guardar líneas originales ANTES de convertir a mayúsculas.
-  // Esto preserva el formato original (tabuladores, espacios, caracteres especiales)
+  // Esto preserva el formato original (tabuladores, espacios, caracteres especiales) 
   // para mostrar los literales de error exactamente como el usuario los pegó.
 const lineasOriginales = texto.split(/\r?\n/);
 
@@ -952,6 +1168,7 @@ const lineas = traza.split(/\r?\n/);
 // 👉 Solo líneas SistraHelp: ignora notas del agente pegadas encima o entre eventos
 const lineasTraza = lineas.filter(esLineaFormatoTrazaSistraHelp);
 const trazaEstructurada = lineasTraza.join("\n");
+const avisoMultiTramite = detectarTrazaMultiTramite(lineasTraza);
 
 // 👉 Eventos TR_ ordenados cronológicamente (SistraHelp muestra lo más reciente primero)
 const eventosCronologicos = ordenarEventosTrazaCronologicamente(lineasTraza);
@@ -969,8 +1186,9 @@ const hayFRF = eventos.includes("TR_FRF");
 const haySGI = eventos.includes("TR_SGI");
 const haySGX = eventos.includes("TR_SGX");
 const haySGO = eventos.includes("TR_SGO");
-const hayREG = eventos.includes("TR_REG"); // 🔹 registro del trámite
-const hayFIN = eventos.includes("TR_FIN"); // 🔹 fin de trámite (finalizado)
+const hayREG = eventos.includes("TR_REG"); // 🔹 Registre tràmit (registrado)
+const hayRGI = eventos.includes("TR_RGI"); // 🔹 Inici registre tràmit
+const hayFIN = eventos.includes("TR_FIN"); // 🔹 Fi de tràmit (finalizado)
 
 // 🔹 NUEVO: eventos para flujo visual
 const eventosFlujo = {
@@ -979,6 +1197,7 @@ const eventosFlujo = {
   TR_SGI: haySGI,
   TR_SGX: haySGX,
   TR_SGO: haySGO,
+  TR_RGI: hayRGI,
   TR_REG: hayREG,
   TR_FIN: hayFIN
 };
@@ -1007,10 +1226,10 @@ const contexto = {
 
 // 👉 Fase basada en último evento (seguro)
 
-// 🔹 PRIORIDAD: cómo ACABÓ el trámite manda sobre intentos previos.
-//    Si el trámite se finalizó (TR_FIN) o la firma acabó OK (TR_SGO),
-//    eso gana aunque antes hubiera un TR_SGX (firma cancelada/KO en un reintento).
-if (hayFIN || haySGO) {
+// 🔹 PRIORIDAD: cómo ACABÓ el trámite manda sobre intentos previos de firma.
+//    TR_SGO = firma OK (no implica trámite finalizado).
+//    TR_FIN = fi de tràmit; TR_REG = registre tràmit (registrado).
+if (hayFIN || haySGO || hayREG) {
   contexto.fase = "firma_ok";
 }
 else if (!ultimoEvento) {
@@ -1459,7 +1678,7 @@ else {
 // 🔹 PRIORIDAD: si aparece SAF_27, SIEMPRE es Autofirma
 // 🔹 aunque el técnico haya marcado Cl@ve
 
-  // 👉 PRIORIDAD REAL DE ERRORES (FASE 10)
+// 👉 PRIORIDAD REAL DE ERRORES (FASE 10)
   const ultimaLineaKo = obtenerUltimaLineaFirmaKoCronologica(lineasTraza);
   const reglaUltimoKo = ultimaLineaKo ? inferirReglaDesdeLineaKo(ultimaLineaKo) : null;
   const koPosteriorDistintoDeClaveCodigo =
@@ -1594,15 +1813,20 @@ else if (contexto.fase === "desconocida" && hayPatronSgiSinCierre) {
 else if (contexto.fase === "firma_ok") {
 
   // ======================================================
-  // FASE: FIRMA_OK (firma completada correctamente)
+  // FASE: FIRMA_OK / CIERRE (firma OK y/o registro y/o fin trámite)
   // ======================================================
-  // Detecta: firma exitosa (posibles errores posteriores: registro, archivo, etc.)
-  // Nota: firma OK no garantiza que el trámite se haya completado correctamente.
+  // TR_SGO → firma correcta; TR_REG → registrado; TR_FIN → finalizado; ambos → completo
 
-  // 🔹 Cambios 2026-06-16: si el trámite finaliza OK pero por el camino hubo
-  // un error de Portafib ("El fluxe no es vàlid"), lo indicamos aparte.
-  if (hayErrorPortafibReal) {
+  if (hayFIN && hayREG) {
+    idReglaDetectada = "tramite_completo";
+  } else if (hayFIN) {
+    idReglaDetectada = "tramite_finalizado";
+  } else if (hayREG) {
+    idReglaDetectada = "tramite_registrado";
+  } else if (hayErrorPortafibReal) {
     idReglaDetectada = "firma_correcta_portafib";
+  } else if (haySGO) {
+    idReglaDetectada = "firma_correcta";
   } else {
     idReglaDetectada = "firma_correcta";
   }
@@ -1709,7 +1933,18 @@ if (!haySGI) {
 }
 else if (idReglaDetectada === "error_clave_movil" || idReglaDetectada === "error_clave_movil_no_permitida") {
 
-  cartelDiagnostico = cartelAzul(idReglaDetectada === "error_clave_movil" && haySGX ? "Cl@ve" : "Cl@ve móvil");
+  if (idReglaDetectada === "error_clave_movil" && haySGX) {
+    cartelDiagnostico = cartelAzul("Cl@ve");
+  } else if (
+    idReglaDetectada === "error_clave_movil" &&
+    hayPatronSgiSinCierre &&
+    !hayAccesoClaveMovilEnTraza
+  ) {
+    // Patrón SGI sin cierre sin método en la traza: ambiguo Cl@ve móvil / Autofirma Android
+    cartelDiagnostico = cartelAzul("Cl@ve móvil o Autofirma Android");
+  } else {
+    cartelDiagnostico = cartelAzul("Cl@ve móvil");
+  }
 
   if (idReglaDetectada === "error_clave_movil_no_permitida") {
     fraseDiagnostico = "Cl@ve Móvil no está permitida para firmar en este trámite.";
@@ -1734,6 +1969,9 @@ else if (idReglaDetectada === "error_clave_movil" || idReglaDetectada === "error
     }
     if (ultimoEvento === "TR_SGI" && !haySGO && !hayFIN && haySGX) {
       frase += " Los últimos intentos quedaron solo en Inicio firma.";
+    }
+    if (hayPatronSgiSinCierre && !haySGX) {
+      frase += " " + NOTA_CARPETA_CLAVE_MOVIL_SIN_SELECTOR;
     }
     fraseDiagnostico = frase;
   }
@@ -1835,13 +2073,26 @@ else if (idReglaDetectada === "error_autofirma_entorno") {
   fraseDiagnostico = "Problema con el cliente de firma Autofirma (sin cierre). La firma se inicia"
     + reintentos + " pero no se completa: no hay Firma KO ni Firma OK. "
     + "Posible bloqueo de invocación FIRE/AutoFirma (proxy, VPN, navegador).";
+  if (hayPatronSgiSinCierre) {
+    fraseDiagnostico += " " + NOTA_CARPETA_CLAVE_MOVIL_SIN_SELECTOR;
+  }
 
 }
 else if (idReglaDetectada && idReglaDetectada.indexOf("error_autofirma_cliente") === 0) {
 
   cartelDiagnostico = cartelAzul("Autofirma");
+  const analisisKoAutofirma = analizarTiposFalloKoAutofirma(lineasTraza);
   let motivo = "Problema con el cliente de firma Autofirma ("
-    + etiquetaTipoFalloAutofirmaClienteEnTraza(lineasTraza) + ").";
+    + analisisKoAutofirma.etiqueta + ").";
+  const numTiposDistintos = Object.keys(analisisKoAutofirma.counts).length;
+  if (numTiposDistintos > 1) {
+    motivo += " Varios tipos de Firma KO en la traza ("
+      + textoResumenTiposFalloKoAutofirma(analisisKoAutofirma.counts)
+      + "): se indica el más frecuente.";
+    if (analisisKoAutofirma.ultimoTipo && analisisKoAutofirma.ultimoTipo !== analisisKoAutofirma.etiqueta) {
+      motivo += " El último Firma KO cronológico es " + analisisKoAutofirma.ultimoTipo + ".";
+    }
+  }
   if (hayMetodoFirmaAutofirmaEnKo) {
     motivo += " " + literalFlujo("Método de firma: Autofirm@") + " en el Firma KO.";
   }
@@ -1894,6 +2145,66 @@ else if (idReglaDetectada === "error_fire") {
   fraseDiagnostico = "La firma se inicia pero falla con certificado local (FIRE), sin literales de Cl@ve ni Autofirma.";
 
 }
+else if (idReglaDetectada === "tramite_completo") {
+
+  cartelDiagnostico = cartelAzul("Trámite completo");
+  fraseDiagnostico = "Consta registro ("
+    + literalFlujo("TR_REG — Registre tràmit") + ") y fin de trámite ("
+    + literalFlujo("TR_FIN — Fi de tràmit") + ") en la traza.";
+  if (haySGO) {
+    fraseDiagnostico += " También aparece Firma OK (TR_SGO).";
+  }
+  if (hayRGI) {
+    fraseDiagnostico += " Inicio de registro (TR_RGI) presente.";
+  }
+
+}
+else if (idReglaDetectada === "tramite_finalizado") {
+
+  cartelDiagnostico = cartelAzul("Fin trámite");
+  fraseDiagnostico = "Aparece "
+    + literalFlujo("TR_FIN — Fi de tràmit") + " en la traza.";
+  if (!hayREG) {
+    fraseDiagnostico += " No consta "
+      + literalFlujo("TR_REG — Registre tràmit") + " (registro).";
+  }
+  if (haySGO) {
+    fraseDiagnostico += " Firma OK (TR_SGO) presente.";
+  }
+
+}
+else if (idReglaDetectada === "tramite_registrado") {
+
+  cartelDiagnostico = cartelAzul("Registro OK");
+  fraseDiagnostico = "Aparece "
+    + literalFlujo("TR_REG — Registre tràmit") + " en la traza.";
+  if (!hayFIN) {
+    fraseDiagnostico += " No consta "
+      + literalFlujo("TR_FIN — Fi de tràmit") + " (finalizado).";
+  }
+  if (haySGO) {
+    fraseDiagnostico += " Firma OK (TR_SGO) presente.";
+  }
+
+}
+else if (idReglaDetectada === "firma_correcta") {
+
+  cartelDiagnostico = cartelAzul("Firma OK");
+  fraseDiagnostico = "Aparece Firma OK (TR_SGO) en la traza.";
+  if (!hayFIN && !hayREG) {
+    fraseDiagnostico += " No consta fin de trámite (TR_FIN) ni registro (TR_REG): el trámite no aparece cerrado administrativamente.";
+  }
+
+}
+else if (idReglaDetectada === "firma_correcta_portafib") {
+
+  cartelDiagnostico = cartelAzul("Firma OK / Portafib");
+  fraseDiagnostico = "Aparece Firma OK (TR_SGO) en la traza, con error de Portafib previo.";
+  if (!hayFIN && !hayREG) {
+    fraseDiagnostico += " No consta TR_FIN ni TR_REG en la traza.";
+  }
+
+}
 else if (haySGX && !haySGO && !hayFIN && !cartelDiagnostico) {
 
   // 👉 Error proveedor genérico (solo si no hay cartel ya asignado, p. ej. Cl@ve)
@@ -1902,10 +2213,10 @@ else if (haySGX && !haySGO && !hayFIN && !cartelDiagnostico) {
   diagnosticoTexto += "- La firma se inicia pero falla en el sistema de firma.\n";
 
 }
-else if (haySGO) {
+else if (haySGO && !cartelDiagnostico) {
 
-  // 👉 Firma correcta: el mensaje se muestra en la tarjeta de Acción (ver acciones.json),
-  // ya no como texto suelto fuera de las tarjetas.
+  cartelDiagnostico = cartelAzul("Firma OK");
+  fraseDiagnostico = "Aparece Firma OK (TR_SGO) en la traza.";
 
 }
  
@@ -1947,6 +2258,11 @@ if (accionData && accionData.accion) {
   // Las líneas que empiezan por "*" (notas) se muestran más grises y un poco más pequeñas.
   // 🔹 Casos especiales Portafib → texto dinámico según literales detectados en la traza.
   let textoAccion = accionData.accion;
+  if (avisoMultiTramite.esMulti) {
+    textoAccion = "⚠ TRAZA MIXTA: la traza pegada mezcla varios trámites (p. ej. búsqueda por DNI en SistraHelp). "
+      + "El análisis siguiente puede ser incorrecto — pegar solo la traza del ID de trámite objetivo.\n\n"
+      + textoAccion;
+  }
   const trazaCompleta = lineas.join("\n");
   const hayFluxe = /fluxe no es v[àa]lid/i.test(trazaCompleta);
   const hayExcepcioSessio = /excepci[oó]\s+al\s+generar\s+sessi[oó]\s+firma/i.test(trazaCompleta);
@@ -1982,6 +2298,13 @@ if (accionData && accionData.accion) {
       lits = literalGris("El fluxe no es vàlid", usarCursiva);
     }
     textoAccion = textoAccion.replace("{lit}", lits);
+  } else if (
+    (idReglaDetectada === "tramite_completo" ||
+     idReglaDetectada === "tramite_finalizado" ||
+     idReglaDetectada === "tramite_registrado") &&
+    hayErrorPortafibReal
+  ) {
+    textoAccion = "Se detecta error de portafib previo en la traza.\n\n" + textoAccion;
   } else if (idReglaDetectada === "fallo_formulario" && !hayFRI) {
     textoAccion = "Remitir al ciudadano a formulario de incidencias / dudas funcionales.";
     if (hayError403FormularioExterno) {
@@ -2226,6 +2549,10 @@ salidaFinal += "<div style=\"margin-top:18px;text-align:center;\">"
 
   
 
+if (avisoMultiTramite.esMulti) {
+  salidaFinal = htmlAvisoTrazaMultiTramite(avisoMultiTramite) + salidaFinal;
+}
+
 // 🔹 NUEVO: pintar flujo visual encima
 renderFlujoVisual(eventosFlujo);
 
@@ -2245,8 +2572,12 @@ document.getElementById("flujoVisual").style.display = "flex";
 // de la frase explicativa (⚠ ...).
 const flujoDiag = document.getElementById("flujoDiagnostico");
 if (flujoDiag) {
+  let contenidoDiag = "";
+  if (avisoMultiTramite.esMulti) {
+    contenidoDiag += htmlAvisoTrazaMultiTramiteCompacto(avisoMultiTramite);
+  }
   if (cartelDiagnostico || fraseDiagnostico) {
-    let contenidoDiag = "<div style=\"display:flex;align-items:center;gap:10px;flex-wrap:wrap;\">";
+    contenidoDiag += "<div style=\"display:flex;align-items:center;gap:10px;flex-wrap:wrap;\">";
     if (cartelDiagnostico) {
       contenidoDiag += cartelDiagnostico;
     }
@@ -2254,6 +2585,8 @@ if (flujoDiag) {
       contenidoDiag += "<span>⚠ " + fraseDiagnostico + "</span>";
     }
     contenidoDiag += "</div>";
+  }
+  if (contenidoDiag) {
     flujoDiag.innerHTML = contenidoDiag;
     flujoDiag.style.display = "block";
   } else {
@@ -2331,7 +2664,7 @@ btnLimpiar.onclick = () => {
   checkBlanco.checked = false;
 
   document.getElementById("inputTraza").value = "";
-
+ 
   metodoClave.checked = true;
   metodoCert.checked = false;
 
@@ -2343,7 +2676,7 @@ btnLimpiar.onclick = () => {
   cerrarPanelFunc();
 
   ocultarResultadosAnalisis();
-  placeholder.style.display = "";
+placeholder.style.display = "";
 
   console.log("Sistema reiniciado (limpiar)");
 
@@ -2976,7 +3309,7 @@ function renderFlujoVisual(eventos) {
   const contenedor = document.getElementById("flujoVisual");
   if (!contenedor) return;
 
-  const pasos = ["TR_FRI","TR_FRF","TR_SGI","TR_SGX","TR_SGO","TR_REG","TR_FIN"];
+  const pasos = ["TR_FRI","TR_FRF","TR_SGI","TR_SGX","TR_SGO","TR_RGI","TR_FIN","TR_REG"];
 
   let html = "<div style='display:flex;gap:6px;margin-bottom:2px;flex-wrap:wrap;align-items:center;'>";
 
@@ -2997,7 +3330,7 @@ function renderFlujoVisual(eventos) {
       </div>`;
 
     // Mostramos SIEMPRE la etiqueta; en gris cuando el evento no aparece en la traza.
-    const nombrePaso = p === 'TR_FRI' ? 'Inicio formulario' : p === 'TR_FRF' ? 'Fin formulario' : p === 'TR_SGI' ? 'Inicio firma' : p === 'TR_SGX' ? 'Firma KO' : p === 'TR_SGO' ? 'Firma OK' : p === 'TR_REG' ? 'Registro' : 'Fin trámite';
+    const nombrePaso = p === 'TR_FRI' ? 'Inicio formulario' : p === 'TR_FRF' ? 'Fin formulario' : p === 'TR_SGI' ? 'Inicio firma' : p === 'TR_SGX' ? 'Firma KO' : p === 'TR_SGO' ? 'Firma OK' : p === 'TR_RGI' ? 'Inicio registro' : p === 'TR_REG' ? 'Registro trámite' : 'Fin trámite';
     const labelText = `(${nombrePaso})`;
     const labelColor = eventos[p] ? color : '#ccc';
     html += `<div style="font-size:9px;color:${labelColor};line-height:1.2;">${labelText}</div>`;
