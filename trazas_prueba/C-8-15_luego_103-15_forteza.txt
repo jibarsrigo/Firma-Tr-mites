@@ -1,0 +1,16 @@
+# Maria Victoria Forteza Ferrer — IG_DGDEPEN_RECO · Cl@veFirm@ · 8-15 → 103-15
+# Contexto CAU: un solo TR_SGI; varios TR_SGX el mismo segundo (2× 8-15 + 2× 103-15)
+# Marcar: Cl@ve
+# Global: error_clave_103_15 (con override Acción 8-15 + 103-15)
+# Flujo de Firma (js v1.3.48): 1 intento · Cl@ve 103-15 (también 8-15 ×2)
+# Acción: Qué pasa/Qué hacer del caso mixto 8-15 + 103-15 (mail 103-15)
+
+TR_SGX - Fi firma KO	06/05/2026 10:04:19	NIB6BDKR-FT08BRT8-T804A3Z8	18224731Z	MARIA VICTORIA FORTEZA FERRER	IG_DGDEPEN_RECO	IGOIB	1	4711860	2411062	Error detectat després de trucar a la passarel·la externa(Codi Error: 103 - Proveïdor: clavefirma - Tipus Resultat: 15) Método de firma: Cl@veFirm@	 
+TR_SGX - Fi firma KO	06/05/2026 10:04:19	NIB6BDKR-FT08BRT8-T804A3Z8	18224731Z	MARIA VICTORIA FORTEZA FERRER	IG_DGDEPEN_RECO	IGOIB	1	4711860	2411062	Error detectat després de trucar a la passarel·la externa(Codi Error: 103 - Proveïdor: clavefirma - Tipus Resultat: 15) Método de firma: Cl@veFirm@	 
+TR_SGX - Fi firma KO	06/05/2026 10:04:19	NIB6BDKR-FT08BRT8-T804A3Z8	18224731Z	MARIA VICTORIA FORTEZA FERRER	IG_DGDEPEN_RECO	IGOIB	1	4711860	2411062	Error detectat després de trucar a la passarel·la externa(Codi Error: 8 - Proveïdor: clavefirma - Tipus Resultat: 15) Método de firma: Cl@veFirm@	 
+TR_SGX - Fi firma KO	06/05/2026 10:04:19	NIB6BDKR-FT08BRT8-T804A3Z8	18224731Z	MARIA VICTORIA FORTEZA FERRER	IG_DGDEPEN_RECO	IGOIB	1	4711860	2411062	Error detectat després de trucar a la passarel·la externa(Codi Error: 8 - Proveïdor: clavefirma - Tipus Resultat: 15) Método de firma: Cl@veFirm@	 
+TR_SGI - Inici firma	06/05/2026 10:02:12	NIB6BDKR-FT08BRT8-T804A3Z8	18224731Z	MARIA VICTORIA FORTEZA FERRER	IG_DGDEPEN_RECO	IGOIB	1	4711860	2411062		 
+TR_CAR - Càrrega del tràmit	06/05/2026 10:01:41	NIB6BDKR-FT08BRT8-T804A3Z8	18224731Z	MARIA VICTORIA FORTEZA FERRER	IG_DGDEPEN_RECO	IGOIB	1	4711860	2411062		 
+TR_FRF - Fi formulari	06/05/2026 09:59:33	NIB6BDKR-FT08BRT8-T804A3Z8	18224731Z	MARIA VICTORIA FORTEZA FERRER	IG_DGDEPEN_RECO	IGOIB	1	4711860	2411062		 
+TR_FRI - Inici formulari	06/05/2026 09:44:33	NIB6BDKR-FT08BRT8-T804A3Z8	18224731Z	MARIA VICTORIA FORTEZA FERRER	IG_DGDEPEN_RECO	IGOIB	1	4711860	2411062		 
+TR_INI - Inici del tràmit	06/05/2026 09:42:54	NIB6BDKR-FT08BRT8-T804A3Z8	18224731Z	MARIA VICTORIA FORTEZA FERRER	IG_DGDEPEN_RECO	IGOIB	1	4711860	2411062	 

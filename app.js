@@ -225,6 +225,61 @@ VERSION 1.3.41  - Apartados Acción a todo el ancho (sin tarjetas internas): fra
 VERSION 1.3.42  - Acción: corrige solape ACCIÓN / Qué pasa (body flush, franjas más claras, sin margin negativo).
 
 VERSION 1.3.43  - Apartados Acción: sin barra gris; título + línea fina a todo el ancho; más aire bajo ACCIÓN.
+
+VERSION 1.3.44  - Fix: si acciones.json no estaba cargado al pulsar Analizar, no se mostraba la tarjeta Acción; espera carga / avisa. Formateo Qué pasa/Qué hacer más robusto + fallback.
+
+VERSION 1.3.45  - Apartados Acción: título más cerca de la línea; línea inferior más oscura.
+
+VERSION 1.3.46  - Flujo de Firma: en Sin cierre, pista «Posible Cl@ve móvil o Autofirma Android» junto a Revisar Acceso (+ tooltip).
+                - Acción: si hay intentos SGI sin cierre y la regla global es otra (p.ej. 8-15), se añade en Qué pasa esa misma lectura.
+
+VERSION 1.3.47  - Caso 8-15 + 103-15: Acción en formato Qué pasa / Qué hacer (override dinámico).
+
+VERSION 1.3.48  - Flujo de Firma: si un intento tiene KO de varios tipos, muestra «(también 8-15 ×2)» en vez de solo «(+N KO)».
+
+VERSION 1.3.49  - error_autofirma_cancelada: Acción Qué pasa/Qué hacer; prefijo Cl@ve previo se inserta en Qué pasa.
+
+VERSION 1.3.50  - fallo_formulario sin TR_FRI: Acción en Qué pasa/Qué hacer (403 sigue como paso extra en Qué hacer).
+
+VERSION 1.3.51  - error_autofirma_cliente_windows: Qué pasa/Qué hacer; intro Autofirma no duplica si ya hay formato; matiz «firma cancelada».
+
+VERSION 1.3.52  - error_autofirma_cliente_movil y generico: Qué pasa/Qué hacer; override Cl@ve+cancelada en Qué pasa.
+
+VERSION 1.3.53  - Cl@ve+cancelada Autofirm@: quita frase duplicada «El técnico ha marcado Método Cl@ve…».
+
+VERSION 1.3.54  - Nota seguridad móvil (red/VPN/restricciones) en cliente Autofirma movil/android/iphone; PC sigue con antivirus.
+
+VERSION 1.3.55  - Nota móvil: si sigue fallando → solo «probar desde ordenador» (sin Cl@ve Permanente).
+
+VERSION 1.3.56  - Qué pasa Autofirma: matiz Android/iPhone/cancelada va DESPUÉS de «Problema con el cliente…».
+
+VERSION 1.3.57  - Sin cierre en Acción: si ya es Autofirma Android/móvil, nota breve sin «Además» ni repetir Cl@ve móvil.
+
+VERSION 1.3.58  - tramite_completo: nota Autofirma previos si hubo KO; Mac Qué pasa/Qué hacer; servidor intermedio en PC/Mac no dice Android.
+
+VERSION 1.3.59  - Mac + servidor intermedio: aviso opcional Mac≈iPhone/iPad vista escritorio (paralelo Linux→Android); no reasignar regla.
+
+VERSION 1.3.60  - Nota SO SistraHelp (Linux≈Android / Mac≈posible iOS) en tramite_completo con Autofirma previo y en servidor intermedio (cualquier método).
+
+VERSION 1.3.61  - Autofirma: si hay servidor intermedio + cancelada, mostrar ambos y nota SO/Mac aunque mande el último KO.
+
+VERSION 1.3.62  - Fitxer buit: matiz en Qué pasa (instalación corrupta → limpia); Acción Windows pide instalación limpia + nota wiki.
+
+VERSION 1.3.63  - Autofirma: pista iPhone/Android unificada (sin contradecir); sin cierre no dice solo Android si ya hay pista iPhone.
+
+VERSION 1.3.64  - 8-15+103-15 tras 500/transacción caducada: Qué pasa aclara que no es Portafib ni @firma; manda 103-15.
+
+VERSION 1.3.65  - Firma KO posterior al último TR_SGO: fase error_firma (manda el último KO; no firma_correcta).
+
+VERSION 1.3.66  - Portafib: {lit} incluye 502 Proxy/ConnectException; ConnectException dispara hayErrorPortafibReal.
+
+VERSION 1.3.67  - error_registro_presentador: Firma OK + TR_RGI sin TR_REG («registrat pel presentador») → incidencias.
+
+VERSION 1.3.68  - error_clave_firma_cancelada: Acción Qué pasa/Qué hacer; nota QAA en Qué pasa si aplica.
+
+VERSION 1.3.69  - error_validacion_certificado: Acción Qué pasa/Qué hacer; método del KO dentro de Qué pasa.
+                - Info/Reglas actualizados (sesión 2026-07-16: KO tras SGO, Portafib 502, registro presentador,
+                  cancelada Cl@ve, validación @firma, Acción Qué pasa/Qué hacer).
 */
   
 // CÓMO AÑADIR REGLAS:
@@ -236,7 +291,7 @@ VERSION 1.3.43  - Apartados Acción: sin barra gris; título + línea fina a tod
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.43";
+const VERSION_JS = "1.3.69";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -281,16 +336,109 @@ function introAccionAutofirmaCliente(lineas) {
   return primera + "\n\n" + INTRO_ACCION_AUTOFIRMA_CLIENTE_RESTO;
 }
 
-function aplicarIntroAccionAutofirmaCliente(textoAccion, lineas) {
-  const t = String(textoAccion || "");
-  if (/^Problema con el cliente de firma Autofirma/i.test(t)) return textoAccion;
-  return introAccionAutofirmaCliente(lineas) + "\n\n" + t;
+// 👉 SO engañoso en SistraHelp (no suele venir al pegar la traza): Linux≈Android; Mac≈posible iOS vista escritorio.
+const NOTA_SO_SISTRAHELP =
+  "*SO en SistraHelp (doble clic Inicio trámite / Carga): Linux suele ser Android; Mac puede ser Mac real o iPhone/iPad en vista escritorio. Confirmar antes de orientar el mail.";
+
+function hayServidorIntermedioEnLineasFirma(lineas) {
+  return (lineas || []).some(l =>
+    /SERVIDOR INTERMEDI|CLIENTE DE FIRMA M[ÒOÓ]?VIL|NO SE PUDO CONECTAR CON EL SERVIDOR INTERMEDIO/i.test(String(l || ""))
+  );
 }
 
-// 👉 Nota común: antivirus / firewall / proxy solo tiene sentido en fallos del CLIENTE de firma
-//    (invocación/comunicación de AutoFirma, certificado local, FIRE), NO en códigos Cl@ve,
-//    formulario, Portafib, validación en servidor ni cierres de trámite.
-//    Distingue equipo particular (pausar antivirus) vs equipo de trabajo (lo revisa su informática).
+function insertarBloqueEnQuePasaAccion(textoAccion, bloque) {
+  const t = String(textoAccion || "");
+  const b = String(bloque || "").trim();
+  if (!b) return t;
+  if (t.indexOf(b) !== -1) return t;
+  if (/Problema con el cliente de firma Autofirma/i.test(t)) {
+    return t.replace(
+      /(Problema con el cliente de firma Autofirma[^\n]*)/i,
+      "$1\n" + b
+    );
+  }
+  if (/Qu[eé]\s*hacer\s*:/i.test(t)) {
+    return t.replace(/((?:<b>)?Qu[eé]\s*hacer\s*:)/i, b + "\n\n$1");
+  }
+  if (/Qu[eé]\s*pasa\s*:/i.test(t)) {
+    return t.replace(/((?:<b>)?Qu[eé]\s*pasa\s*:)\s*/i, "$1\n" + b + "\n");
+  }
+  return t + "\n\n" + b;
+}
+
+function aplicarIntroAccionAutofirmaCliente(textoAccion, lineas, idRegla) {
+  let t = String(textoAccion || "");
+  if (/^Problema con el cliente de firma Autofirma/i.test(t) && !/Qu[eé]\s*pasa/i.test(t)) {
+    return textoAccion;
+  }
+
+  const analisis = analizarTiposFalloKoAutofirma(lineas);
+  const counts = analisis.counts || {};
+  const esEscritorio = idRegla === "error_autofirma_cliente_mac" ||
+    idRegla === "error_autofirma_cliente_windows" ||
+    idRegla === "error_autofirma_cliente_linux";
+  const hayServInter = !!counts["servidor intermedio"] || hayServidorIntermedioEnLineasFirma(lineas);
+  const hayTimeout = !!counts.timeout;
+  const partes = [];
+
+  // Varios tipos de KO en la misma traza (p. ej. Victum: servidor intermedio + cancelada):
+  // no quedarse solo con el último/predominante.
+  if (counts["fitxer buit"] && !/fitxer buit|fitxer Signat està buit|fichero firmado está vacío/i.test(t)) {
+    partes.push(
+      "En la traza AutoFirma devuelve OK pero el fichero firmado está vacío (fitxer buit). "
+      + "Suele apuntar a una instalación de Autofirma corrupta o incompleta → conviene instalación limpia."
+    );
+  }
+  if (counts["firma cancelada"] && !/Firma cancelada|Signatura cancel/i.test(t)) {
+    partes.push("En la traza aparece firma cancelada (Signatura cancel·lada).");
+  }
+  // Escritorio: literales técnicos. Móvil/Cl@ve: UNA pista de dispositivo (iPhone y/o Android), sin contradicciones.
+  if (esEscritorio) {
+    if (hayServInter && !/servidor intermedio/i.test(t)) {
+      partes.push(
+        "En la traza aparece fallo de servidor intermedio (el literal «Cliente de Firma Móvil» puede salir también en ordenador)."
+      );
+    }
+    if (hayTimeout && !/timeout|tiempo de firma/i.test(t)) {
+      partes.push("En la traza aparece timeout / tiempo de firma agotado.");
+    }
+  } else if ((hayTimeout || hayServInter) && !/Pista de dispositivo/i.test(t)) {
+    if (hayTimeout && hayServInter) {
+      partes.push(
+        "Pista de dispositivo (no confirmada): hay timeout/cliente de firma (habitual en iPhone) "
+        + "y servidor intermedio (habitual en Android). Puede ser uno u otro: confirmar SO en SistraHelp (doble clic Inicio/Carga)."
+      );
+    } else if (hayTimeout) {
+      partes.push(
+        "Pista de dispositivo (no confirmada): el timeout/cliente de firma suele verse en iPhone, pero no siempre. "
+        + "También puede ser Android u otro entorno: confirmar SO en SistraHelp (doble clic Inicio/Carga)."
+      );
+    } else {
+      partes.push(
+        "Pista de dispositivo (no confirmada): el servidor intermedio suele verse en Android, pero no siempre. "
+        + "También puede ser iPhone u otro entorno: confirmar SO en SistraHelp (doble clic Inicio/Carga)."
+      );
+    }
+  }
+
+  if (partes.length && /Qu[eé]\s*pasa\s*:/i.test(t)) {
+    t = insertarBloqueEnQuePasaAccion(t, partes.join("\n"));
+  } else if (partes.length) {
+    t = introAccionAutofirmaCliente(lineas) + "\n\n" + t;
+  } else if (!/Qu[eé]\s*pasa\s*:/i.test(t)) {
+    t = introAccionAutofirmaCliente(lineas) + "\n\n" + t;
+  }
+
+  // Nota Mac/Linux siempre que haya servidor intermedio / Cliente de Firma Móvil (cualquier selector).
+  if (hayServInter && !/SO en SistraHelp/i.test(t)) {
+    t = insertarBloqueEnQuePasaAccion(t, NOTA_SO_SISTRAHELP);
+  }
+
+  return t;
+}
+
+// 👉 Nota común PC: antivirus / firewall / proxy en fallos del CLIENTE de firma (escritorio).
+//    NO en códigos Cl@ve, formulario, Portafib, validación en servidor ni cierres de trámite.
 const NOTA_SEGURIDAD_EQUIPO =
   "Antivirus / Firewall / Proxy: si el fallo continúa con varios navegadores y tras reinstalar AutoFirma, "
   + "la seguridad del equipo puede estar bloqueando la invocación o la comunicación de AutoFirma "
@@ -299,8 +447,22 @@ const NOTA_SEGURIDAD_EQUIPO =
   + "- Equipo de trabajo / oficina: el firewall/proxy corporativo lo gestiona su departamento de informática y el usuario no puede desactivarlo; "
   + "indicarle que lo revise con la informática de su organización (permitir AutoFirma y su comunicación).";
 
+// 👉 Nota móvil: no hablar de antivirus de PC / «varios navegadores»; orientar a red, VPN y alternativas.
+const NOTA_SEGURIDAD_MOVIL =
+  "Red / VPN / restricciones del móvil: en el teléfono el fallo suele deberse a la app AutoFirma, al certificado en el dispositivo "
+  + "o a que el trámite no abre bien la firma — no al antivirus de un ordenador.\n"
+  + "- Probar sin VPN o con datos móviles (fuera de la WiFi de trabajo) y reintentar.\n"
+  + "- Móvil de trabajo / perfil gestionado: puede haber restricciones de la organización; indicar que lo revise con su informática.\n"
+  + "- Si sigue fallando: probar el trámite desde ordenador.";
+
+function esReglaAutofirmaClienteMovil(idRegla) {
+  return idRegla === "error_autofirma_cliente_movil" ||
+    idRegla === "error_autofirma_cliente_android" ||
+    idRegla === "error_autofirma_cliente_iphone";
+}
+
 function reglaAplicaNotaSeguridadEquipo(idRegla) {
-  if (!idRegla) return false;
+  if (!idRegla || esReglaAutofirmaClienteMovil(idRegla)) return false;
   if (idRegla.indexOf("error_autofirma_cliente_") === 0) return true;
   return idRegla === "error_autofirma_cancelada" ||
     idRegla === "error_autofirma_entorno" ||
@@ -416,6 +578,45 @@ function lineasFirmaKoCronologicas(lineasTraza) {
 function obtenerUltimaLineaFirmaKoCronologica(lineasTraza) {
   const kos = lineasFirmaKoCronologicas(lineasTraza);
   return kos.length ? kos[kos.length - 1] : null;
+}
+
+/** True si hay Firma KO cronológicamente posterior al último TR_SGO (reintento fallido tras Firma OK). */
+/** Literal «El tràmit ha de ser registrat pel presentador (NIF)» si aparece en la traza. */
+function extraerLiteralRegistroPresentador(lineasTraza) {
+  for (const linea of lineasTraza || []) {
+    const m = String(linea).match(
+      /El\s+tr[àaá]mit\s+ha\s+de\s+ser\s+registrat\s+pel\s+presentador(?:\s*\([^)]+\))?/i
+    );
+    if (m) return m[0].replace(/\s+/g, " ").trim();
+  }
+  return null;
+}
+
+function hayErrorRegistroPresentador(lineasTraza) {
+  return !!extraerLiteralRegistroPresentador(lineasTraza);
+}
+
+function hayFirmaKoPosteriorAUltimaFirmaOk(lineasTraza) {
+  const eventos = [];
+  for (const linea of lineasTraza || []) {
+    const ts = extraerTimestampLineaTraza(linea);
+    if (/^TR_SGO\s+-/.test(linea)) eventos.push({ tipo: "ok", ts });
+    else if (esLineaFirmaKoHelper(linea)) eventos.push({ tipo: "ko", ts });
+  }
+  if (!eventos.some(e => e.tipo === "ok") || !eventos.some(e => e.tipo === "ko")) return false;
+  eventos.sort((a, b) => {
+    if (a.ts != null && b.ts != null) return a.ts - b.ts;
+    if (a.ts != null) return -1;
+    if (b.ts != null) return 1;
+    return 0;
+  });
+  let lastOk = -1;
+  let lastKo = -1;
+  eventos.forEach((e, i) => {
+    if (e.tipo === "ok") lastOk = i;
+    if (e.tipo === "ko") lastKo = i;
+  });
+  return lastKo > lastOk;
 }
 
 function inferirReglaDesdeLineaKo(lineaKo) {
@@ -1024,9 +1225,21 @@ btnDetalles.onclick = () => {
   <li>Muestra el <b>flujo del trámite</b> (eventos TR_) con píldoras de colores y etiquetas.</li>
   <li>Subapartado <b>Flujo de Firma</b> (plegable): detalle por intento TR_SGI, acceso, método, mini-píldoras y resumen.</li>
   <li>Indica el <b>diagnóstico</b> (cartel azul + frase explicativa en la tarjeta de flujo).</li>
-  <li>Propone la <b>acción recomendada</b> y el enlace <b>Mail</b> cuando existe.</li>
+  <li>Propone la <b>acción recomendada</b> (formato <b>Qué pasa / Qué hacer</b> en las reglas ya migradas) y el enlace <b>Mail</b> cuando existe.</li>
   <li>Lista los <b>literales detectados</b> con contador (xN).</li>
   <li>Enlace <b>Reportar análisis incorrecto</b> al final del resultado.</li>
+
+  <br>
+
+  <li><b>Cambios 16/07/2026</b> (js 1.3.64→${VERSION_JS} · acciones → v ${vJson} · html v1.3.6):</li>
+  <li>· <b>KO tras Firma OK:</b> si hay Firma KO después del último TR_SGO, manda ese KO (no firma_correcta).</li>
+  <li>· <b>8-15 + 103-15</b> tras 500/transacción caducada: manda 103-15; Qué pasa aclara que no es Portafib ni @firma.</li>
+  <li>· <b>Portafib:</b> Acción Qué pasa/Qué hacer; {lit} con fluxe, sesión y/o 502 Proxy / ConnectException.</li>
+  <li>· <b>error_registro_presentador:</b> Firma OK + «registrat pel presentador» sin TR_REG → incidencias (no reabrir firma).</li>
+  <li>· <b>error_clave_firma_cancelada:</b> Acción Qué pasa/Qué hacer (emisión mismo día + móvil; probar ordenador; nota QAA/sin cierre si aplica).</li>
+  <li>· <b>error_validacion_certificado:</b> Acción Qué pasa/Qué hacer; método del KO (Cl@veFirm@ / Autofirm@) dentro de Qué pasa.</li>
+  <li>· Fixtures nuevas en <b>trazas_prueba/</b> (Sastre, Tabasco, Distribuidora, Estrada, Varela, etc.).</li>
+  <li>· Comentarios de versión: bloque VERSION en app.js, cabecera HTML, <b>_changelog</b> en acciones.json.</li>
 
   <br>
 
@@ -1042,26 +1255,29 @@ btnDetalles.onclick = () => {
   <br>
 
   <li><b>Estado actual (completado y validado):</b></li>
-  <li>✔ Interfaz estilo V5: tarjetas Flujo / Acción / Literales.</li>
-  <li>✔ <b>Pre-firma:</b> fallo formulario (sin TR_FRI) y fallo Portafib (acción dinámica con {lit}).</li>
-  <li>✔ <b>Cierre trámite:</b> TR_SGO (firma OK) ≠ finalizado; TR_FIN (finalizado), TR_REG (registrado), tramite_completo (ambos).</li>
+  <li>✔ Interfaz estilo V5: tarjetas Flujo / Acción / Literales; Acción con apartados Qué pasa/Qué hacer.</li>
+  <li>✔ <b>Pre-firma:</b> fallo formulario (sin TR_FRI) y fallo Portafib ({lit}: fluxe / sesión / 502).</li>
+  <li>✔ <b>Cierre trámite:</b> TR_SGO ≠ finalizado; TR_FIN / TR_REG / tramite_completo; KO posterior a SGO manda.</li>
+  <li>✔ <b>error_registro_presentador</b> — Firma OK + registro presentador sin TR_REG → incidencias.</li>
   <li>✔ <b>firma_correcta_portafib</b> — error Portafib previo en traza con firma/cierre.</li>
-  <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; Cl@ve móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@.</li>
-  <li>✔ <b>error_firma_fitxers_500</b> — KO «Error general… fitxers: 500» / custodia (CAI-2643553 y similares).</li>
-  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → escalado Portafib.</li>
+  <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@ (Qué pasa/Qué hacer).</li>
+  <li>✔ <b>error_firma_fitxers_500</b> — KO fitxers 500 / custodia / transacción caducada (servicio Cl@ve Firma).</li>
+  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → Qué pasa/Qué hacer + escalado Portafib.</li>
   <li>✔ <b>Cadena / NIF certificado:</b> InvalidCertificateChain; NIF distinto (prioridad por último KO).</li>
-  <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno sin cierre, cliente por SO (selector + TR_CAR); nota antivirus/proxy/firewall en fallos de cliente.</li>
+  <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno sin cierre, cliente por SO; notas antivirus/red; SO SistraHelp (Linux≈Android / Mac≈posible iOS).</li>
   <li>✔ <b>Método de firma en Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector del técnico.</li>
   <li>✔ Discrepancia Cl@ve marcado + KO Autofirm@ (flujo y acción).</li>
-  <li>✔ <b>Flujo de Firma:</b> agrupación, Revisar Acceso (TR_CAR), sin chip acceso en KO Cl@ve con código.</li>
-  <li>✔ Fixtures de prueba en <b>trazas_prueba/</b>.</li>
+  <li>✔ <b>Flujo de Firma:</b> agrupación, Revisar Acceso (TR_CAR), desglose 8-15/103-15, sin chip acceso en KO Cl@ve con código.</li>
+  <li>✔ Fixtures de prueba en <b>trazas_prueba/</b> (ver README.txt).</li>
 
   <br>
 
-  <li><b>Pendiente de mejora (UX / mails, no reglas nuevas):</b></li>
+  <li><b>Pendiente de mejora (UX / mails / resto de acciones):</b></li>
+  <li>🔧 Migrar a Qué pasa/Qué hacer las reglas que aún no lo tienen (101, 104, móvil, SAF_27, cadena, NIF, firma_correcta…).</li>
   <li>🔧 Limpieza de literales: mensaje útil arriba, traza completa debajo.</li>
   <li>🔧 Aviso Firma KO previo en tarjeta Acción cuando el trámite acaba OK.</li>
-  <li>🔧 Mails Autofirma con anclas específicos por SO.</li>
+  <li>🔧 Mails Autofirma con anclas específicos por SO; wiki instalación limpia Autofirma.</li>
+  <li>🔧 Matiz antivirus dentro de Qué pasa en cancelada Autofirma (hoy nota al final).</li>
 
   <br>
 
@@ -1069,7 +1285,7 @@ btnDetalles.onclick = () => {
 
   <br>
 
-  <li><b>Nota:</b> La herramienta evoluciona por fases. Cada cambio se prueba antes de pasar al siguiente.</li>
+  <li><b>Nota:</b> La herramienta evoluciona por fases. Historial de versiones: comentarios VERSION en app.js / index.html y <b>_changelog</b> en acciones.json.</li>
 </ul>
 `);
 };
@@ -1098,14 +1314,14 @@ btnTabla.onclick = (e) => {
   <li>SistraHelp pega lo <b>más reciente arriba</b>; el motor ordena por fecha/hora para reconstruir el flujo real.</li>
   <li>Eventos clave: <b>TR_INI</b> inicio trámite · <b>TR_CAR</b> carga (acceso/SO) · <b>TR_FRI/FRF</b> formulario · <b>TR_SGI</b> inicio firma · <b>TR_SGX</b> Firma KO · <b>TR_SGO</b> Firma OK · <b>TR_RGI/REG</b> registro · <b>TR_FIN</b> fin trámite.</li>
   <li>Clasifica en fase: <b>pre-firma</b> (aún no hay inicio de firma), <b>error en firma</b>, o <b>firma/cierre OK</b>.</li>
-  <li>Si hay <b>TR_SGO / TR_REG / TR_FIN</b> posteriores, el cierre manda sobre KO antiguos (el ciudadano pudo recuperar).</li>
+  <li>Si hay <b>TR_REG / TR_FIN</b> (o <b>TR_SGO</b> sin KO posterior), el cierre/OK manda sobre KO antiguos (el ciudadano pudo recuperar). Si hay <b>Firma KO después del último TR_SGO</b>, manda ese KO (reintento fallido) — no «Firma correcta».</li>
 
   <br>
 
   <li><b>2. Qué verás tras Analizar</b></li>
   <li><b>Flujo del trámite</b> — píldoras de eventos; cartel azul con el diagnóstico corto.</li>
   <li><b>Flujo de Firma</b> — cada intento (TR_SGI→SGX/SGO); método del KO; acceso; no decide la regla, la explica.</li>
-  <li><b>Acción</b> — texto de <b>acciones.json</b> (pasos CAU) + enlace <b>Mail</b> si existe.</li>
+  <li><b>Acción</b> — texto de <b>acciones.json</b>. Formato objetivo: <b>Qué pasa</b> + <b>Qué hacer</b> (pasos numerados) + notas <i>*…</i> si aplica. Enlace <b>Mail</b> cuando existe.</li>
   <li><b>Literales</b> — fragmentos de error de la traza (con ×N si se repiten).</li>
 
   <br>
@@ -1113,40 +1329,41 @@ btnTabla.onclick = (e) => {
   <li><b>3. Catálogo: qué se detecta y por qué</b></li>
 
   <li style="margin-top:8px"><b>A) Antes de firmar (pre-firma)</b></li>
-  <li>✔ <b>fallo_formulario</b> — No llega a firma y no hay (o falla) el formulario (sin TR_FRI, reintentos FRI/FRF, 403…). <i>Por qué:</i> el problema es del formulario / datos, no del proveedor de firma.</li>
-  <li>✔ <b>fallo_portafib</b> — Hay Inicio formulario y literales de sesión/flujo («El fluxe no es vàlid», sesión firma, Timestamp…). <i>Por qué:</i> fallo técnico de Portafib/plataforma, no del ciudadano.</li>
+  <li>✔ <b>fallo_formulario</b> — No llega a firma y no hay (o falla) el formulario (sin TR_FRI, reintentos FRI/FRF, 403…). <i>Por qué:</i> formulario / datos, no el proveedor de firma. Acción Qué pasa/Qué hacer.</li>
+  <li>✔ <b>fallo_portafib</b> — Hay Inicio formulario y literales de sesión/flujo («El fluxe no es vàlid», sesión firma, <b>502 Proxy / SesionFirmaClienteConnectException</b>, Timestamp…). <i>Por qué:</i> Portafib/plataforma. Acción Qué pasa/Qué hacer; {lit} dinámico. CAI → Aplicacions31 Pendents Sistra2.</li>
 
   <br>
 
   <li><b>B) Cl@ve Firma (códigos y móvil)</b></li>
-  <li>✔ <b>error_clave_8_15</b> — Código Error 8 + Tipo Resultado 15 (pasarela externa). Renovar/acreditar Cl@ve Permanente; escalar si hay muchos casos a la vez.</li>
+  <li>✔ <b>error_clave_8_15</b> — Código 8 + Tipo 15. Renovar/acreditar Cl@ve Permanente. Acción Qué pasa/Qué hacer.</li>
   <li>✔ <b>error_clave_101</b> — Nivel de registro insuficiente.</li>
-  <li>✔ <b>error_clave_103</b> — Contraseña bloqueada.</li>
-  <li>✔ <b>error_clave_103_15</b> — Certificados del usuario bloqueados (103 + Tipo 15).</li>
+  <li>✔ <b>error_clave_103</b> — Contraseña bloqueada. Acción Qué pasa/Qué hacer.</li>
+  <li>✔ <b>error_clave_103_15</b> — Certificados bloqueados (103 + Tipo 15). Si en la misma traza hay 8-15 previos → override mixto; si hubo 500/caducada antes → manda 103-15 (servicio Cl@ve Firma, no Portafib/@firma).</li>
   <li>✔ <b>error_clave_104</b> — Registro débil.</li>
-  <li>✔ <b>error_clave_firma_cancelada</b> — «Signatura cancel·lada» + Cl@veFirm@ (sin código). Suele ser ventana/emisión; probar desde ordenador.</li>
+  <li>✔ <b>error_clave_firma_cancelada</b> — «Signatura cancel·lada» + Cl@veFirm@ (sin código). Emisión/renovación mismo día + móvil → ventana emisión; probar ordenador. Acción Qué pasa/Qué hacer (+ QAA / sin cierre si aparecen).</li>
   <li>✔ <b>error_clave_movil</b> — Solo inicios de firma sin cierre, o KO sin código Cl@ve, con contexto Cl@ve. Cartel puede ser «Cl@ve móvil o Autofirma Android» si la traza no aclara el método.</li>
-  <li>✔ <b>error_clave_movil_no_permitida</b> — ERROR «CLAVE_MOVIL no està permés al tràmit». Debe acceder con Cl@ve Permanente o certificado, no con móvil.</li>
-  <li>✔ <b>error_firma_fitxers_500</b> — «Error general durant el proces de firma dels fitxers: 500» (o custodia) sin VALIDATION ni código Cl@ve. <i>Por qué:</i> fallo transitorio del servicio de firma; pedir reintento (no es el certificado del ciudadano).</li>
+  <li>✔ <b>error_clave_movil_no_permitida</b> — ERROR «CLAVE_MOVIL no està permés al tràmit». Debe acceder con Cl@ve Permanente o certificado.</li>
+  <li>✔ <b>error_firma_fitxers_500</b> — «Error general… fitxers: 500» / custodia / transacción caducada sin VALIDATION ni código Cl@ve. Servicio de firma (no Portafib). Acción Qué pasa/Qué hacer.</li>
 
   <br>
 
   <li><b>C) Certificado local / Autofirma / @firma</b></li>
   <li>✔ <b>error_autofirma_servidor</b> — SAF_27. Fallo del servidor Autofirma (prioridad máxima en firma).</li>
-  <li>✔ <b>error_certificado_nif_no_coincide</b> — «nif associat és X, però es requeria el nif Y». Eligió otro certificado (equipo compartido). <i>Prioridad:</i> solo si es el <b>último</b> Firma KO o no hay cadena/validación en la traza.</li>
-  <li>✔ <b>error_validacion_certificado</b> — (VALIDATION) InvalidNotSignerCertificate. Validador @firma; suele escalarse a Portafib (no es “reinstalar Autofirma”).</li>
-  <li>✔ <b>error_cadena_certificacion</b> — InvalidCertificateChain («cadena de certificación no válida»). Revisar certificado/cadena CA / VALIDe; si el NIF aparece en un intento puntual, gana la cadena y se avisa del NIF. Casuística rara: llamar y probar (sin mail dedicado).</li>
-  <li>✔ <b>error_autofirma_cancelada</b> — Firma cancelada con Autofirm@ (timeout/SSL/comunicación).</li>
-  <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI sin KO/OK y el técnico marcó certificado. No se invocó bien el cliente (FIRE/Autofirma).</li>
-  <li>✔ <b>error_autofirma_cliente_*</b> (windows / mac / linux / android / iphone / movil / generico) — KO de cliente Autofirma (servidor intermedio, timeout, fitxer buit…). El <b>literal</b> dice el <b>tipo de fallo</b>; el <b>SO</b> para mail/acción sale del selector Ordenador/móvil + TR_CAR. Incluyen nota antivirus/proxy/firewall.</li>
+  <li>✔ <b>error_certificado_nif_no_coincide</b> — nif X ≠ nif Y. Solo si es el <b>último</b> Firma KO o no hay cadena/validación.</li>
+  <li>✔ <b>error_validacion_certificado</b> — (VALIDATION) InvalidNotSignerCertificate. Validador @firma → escalar Pendents 012. Acción Qué pasa/Qué hacer; método del KO en Qué pasa.</li>
+  <li>✔ <b>error_cadena_certificacion</b> — InvalidCertificateChain. Revisar certificado/cadena / VALIDe; casuística rara (llamar). Sin mail dedicado.</li>
+  <li>✔ <b>error_autofirma_cancelada</b> — Firma cancelada con Autofirm@. Acción Qué pasa/Qué hacer (+ Cl@ve previo / sin cierre / nota antivirus si aplica).</li>
+  <li>✔ <b>error_autofirma_entorno</b> — Solo TR_SGI sin KO/OK y certificado marcado.</li>
+  <li>✔ <b>error_autofirma_cliente_*</b> (windows / mac / linux / android / iphone / movil / generico) — servidor intermedio, timeout, fitxer buit…. Literal = tipo de fallo; SO = selector + TR_CAR. Varias ya en Qué pasa/Qué hacer.</li>
   <li>⚙ <b>error_fire</b> / <b>error_autofirma</b> — reserva / legacy.</li>
 
   <br>
 
-  <li><b>D) Cierre correcto</b></li>
-  <li>✔ <b>firma_correcta</b> — hay TR_SGO (firmó OK).</li>
-  <li>✔ <b>tramite_registrado</b> / <b>tramite_finalizado</b> / <b>tramite_completo</b> — TR_REG y/o TR_FIN.</li>
-  <li>✔ <b>firma_correcta_portafib</b> — firmó/cerró pero en la traza hubo error Portafib previo (útil para no reabrir incidencia de firma).</li>
+  <li><b>D) Cierre / registro</b></li>
+  <li>✔ <b>error_registro_presentador</b> — Firma OK + ERROR «El tràmit ha de ser registrat pel presentador (…)» (sin TR_REG). Incidencias con el literal; no es fallo de firma. Acción Qué pasa/Qué hacer.</li>
+  <li>✔ <b>firma_correcta</b> — TR_SGO sin KO posterior ni error de registro presentador.</li>
+  <li>✔ <b>tramite_registrado</b> / <b>tramite_finalizado</b> / <b>tramite_completo</b> — TR_REG y/o TR_FIN (pueden anotar Portafib/Autofirma previos).</li>
+  <li>✔ <b>firma_correcta_portafib</b> — firmó/cerró con error Portafib previo en traza.</li>
 
   <br>
 
@@ -1155,7 +1372,7 @@ btnTabla.onclick = (e) => {
   <li>5. CLAVE_MOVIL no permitida · 6. Último KO tipado (si reintento cambió de método) · 7. Códigos Cl@ve (8–15, 101, 103, 103-15, 104)</li>
   <li>8. Cancelada Cl@veFirm@ · 9. Error 500 de firma/custodia · 10. Autofirma cliente (literal fuerte / método Autofirm@)</li>
   <li>11. Cancelada Autofirma · 12. Cl@ve móvil (KO sin código) · 13. Solo TR_SGI sin cierre → entorno certificado o Cl@ve móvil (desempate por selector)</li>
-  <li><i>Idea clave:</i> si la traza mezcla varios KO, manda el <b>problema persistente / último intento relevante</b>, no un error puntual aislado.</li>
+  <li><i>Idea clave:</i> manda el <b>último KO relevante / problema persistente</b>. Tras un TR_SGO, un KO nuevo vuelve a fase error_firma.</li>
 
   <br>
 
@@ -1168,16 +1385,16 @@ btnTabla.onclick = (e) => {
 
   <li><b>6. Autofirma cliente — capas (para no liar SO y fallo)</b></li>
   <li><b>Flujo de Firma / cartel:</b> tipo de fallo neutro (servidor intermedio, timeout…).</li>
-  <li><b>Acción / mail:</b> SO concreto (selector + TR_CAR).</li>
+  <li><b>Acción / mail:</b> SO concreto (selector + TR_CAR). Notas: antivirus/proxy en PC; red/VPN en móvil; Linux≈Android / Mac≈posible iOS en SistraHelp.</li>
 
   <br>
 
-  <li><b>7. Pruebas</b></li>
-  <li>Casuísticas reales y sintéticas en carpeta <b>trazas_prueba/</b> (ver README.txt).</li>
+  <li><b>7. Pruebas y versiones</b></li>
+  <li>Casuísticas en <b>trazas_prueba/</b> (README.txt). Historial: comentarios <b>VERSION</b> en app.js e index.html; <b>_changelog</b> / <b>_changes_today</b> en acciones.json.</li>
 
   <br>
 
-  <li><b>Pendiente (mejora UX, no reglas):</b> literales más limpios · mails Autofirma con ancla por SO · aviso de KO previos cuando el trámite acaba OK.</li>
+  <li><b>Pendiente:</b> migrar a Qué pasa/Qué hacer el resto de acciones · literales más limpios · mails Autofirma por SO · aviso KO previos si el trámite acaba OK.</li>
   <li><b>Nota:</b> ✔ = regla activa y usada en CAU. ⚙ = reserva / legacy.</li>
 </ul>
 `);
@@ -1249,10 +1466,21 @@ if (cardAcceso) {
 // 🔴 BOTÓN ANALIZAR 
 // =====================================
 
-btnAnalizar.onclick = () => {      // 👉 Inicia el análisis completo de la traza y genera resultados
+btnAnalizar.onclick = async () => {      // 👉 Inicia el análisis completo de la traza y genera resultados
 
   // Oculta resultados anteriores
 
+  // ✅ 0. acciones.json debe estar cargado (si no, la tarjeta Acción no aparece)
+  if (!accionesJSON) {
+    await cargarAcciones();
+  }
+  if (!accionesJSON || !accionesJSON.acciones) {
+    abrirPanelValidacion(
+      "No se ha podido cargar acciones.json (necesario para mostrar Acción y mails). "
+      + "Recarga la página o ábrela con un servidor local (no como archivo file://)."
+    );
+    return;
+  }
 
   // ✅ 1. VALIDACIÓN MÉTODO
   if (!metodoClave.checked && !metodoCert.checked) {
@@ -1362,9 +1590,14 @@ const contexto = {
 // 👉 Fase basada en último evento (seguro)
 
 // 🔹 PRIORIDAD: cómo ACABÓ el trámite manda sobre intentos previos de firma.
-//    TR_SGO = firma OK (no implica trámite finalizado).
-//    TR_FIN = fi de tràmit; TR_REG = registre tràmit (registrado).
-if (hayFIN || haySGO || hayREG) {
+//    TR_FIN / TR_REG = cierre administrativo.
+//    TR_SGO = firma OK solo si no hay Firma KO posterior (reintento fallido tras OK).
+//    KO cronológicamente después del último SGO → error_firma (manda el último KO).
+const hayKoTrasUltimaFirmaOk = hayFirmaKoPosteriorAUltimaFirmaOk(lineasTraza);
+
+if (hayFIN || hayREG) {
+  contexto.fase = "firma_ok";
+} else if (haySGO && !hayKoTrasUltimaFirmaOk) {
   contexto.fase = "firma_ok";
 }
 else if (!ultimoEvento) {
@@ -1375,7 +1608,7 @@ else if (!ultimoEvento) {
 else if (ultimoEvento === "TR_FRF") {
   contexto.fase = "pre_firma";
 }
-else if (ultimoEvento === "TR_SGX") {
+else if (ultimoEvento === "TR_SGX" || hayKoTrasUltimaFirmaOk) {
   contexto.fase = "error_firma";
 }
 else if (ultimoEvento === "TR_SGI" && !haySGO && !hayFIN) {
@@ -1696,12 +1929,23 @@ const hayError403FormularioExterno = lineasTraza.some(linea =>
 );
 
 // 👉 Detectamos errores reales de Portafib / sesión (solo literales acordados, no sesión cliente)
+//    SesionFirmaClienteException (sin Connect) no dispara Portafib (falso positivo cliente).
+//    SesionFirmaClienteConnectException / 502 Proxy = fallo de conexión al plugin (plataforma).
 const hayErrorPortafibReal = erroresUnicos.some(linea =>
   /FLUXE NO ES V[ÀA]LID/i.test(linea) ||
   /EXCEPCI[ÓO].*GENERAR SESSI[ÓO].*FIRMA/i.test(linea) ||
   /EXCEPCI[ÓO]\s+SESSI[ÓO]\s+FIRMA/i.test(linea) ||
+  /SESIONFIRMACLIENTECONNECTEXCEPTION/i.test(linea) ||
+  /502\s*PROXY\s*ERROR/i.test(linea) ||
   linea.includes("TIMESTAMPINVALIDEXCEPTION") ||
   linea.includes("TRASLLAT NO")
+);
+
+// 👉 Firma KO de Autofirma previos a un cierre OK (útil en tramite_completo / firma_correcta)
+const hayAutofirmaKoPrevio = lineasTraza.some(linea =>
+  /^TR_SGX\s+-/i.test(linea) &&
+  (/AUTOFIRM@/i.test(linea) ||
+   /SERVIDOR INTERMEDI|CLIENTE DE FIRMA M[ÒOÓ]?VIL|SIGNATURA CANCEL|FIRMA CANCEL/i.test(linea))
 );
 
   
@@ -1997,6 +2241,9 @@ else if (contexto.fase === "firma_ok") {
     idReglaDetectada = "tramite_finalizado";
   } else if (hayREG) {
     idReglaDetectada = "tramite_registrado";
+  } else if (!hayREG && hayErrorRegistroPresentador(lineasTraza)) {
+    // Firma OK / inicio registro, pero ERROR: debe registrarlo el presentador
+    idReglaDetectada = "error_registro_presentador";
   } else if (hayErrorPortafibReal) {
     idReglaDetectada = "firma_correcta_portafib";
   } else if (haySGO) {
@@ -2087,7 +2334,7 @@ if (!haySGI) {
   if (idReglaDetectada === "fallo_portafib") {
 
     cartelDiagnostico = cartelAzul("Fallo Portafib");
-    fraseDiagnostico = "La firma no se inicia por un error de flujo.";
+    fraseDiagnostico = "La firma no se inicia por un error de Portafib (flujo o sesión).";
 
   } else if (!hayFRI) {
 
@@ -2401,6 +2648,15 @@ else if (idReglaDetectada === "tramite_registrado") {
   }
 
 }
+else if (idReglaDetectada === "error_registro_presentador") {
+
+  cartelDiagnostico = cartelAzul("Fallo registro");
+  fraseDiagnostico = "Firma OK (TR_SGO), pero el registro falla: el trámite debe ser registrado por el presentador.";
+  if (hayRGI) {
+    fraseDiagnostico += " Consta Inicio registro (TR_RGI) sin TR_REG.";
+  }
+
+}
 else if (idReglaDetectada === "firma_correcta") {
 
   cartelDiagnostico = cartelAzul("Firma OK");
@@ -2480,23 +2736,26 @@ if (accionData && accionData.accion) {
   const trazaCompleta = lineas.join("\n");
   const hayFluxe = /fluxe no es v[àa]lid/i.test(trazaCompleta);
   const hayExcepcioSessio = /excepci[oó]\s+al\s+generar\s+sessi[oó]\s+firma/i.test(trazaCompleta);
+  const hay502ProxyPortafib =
+    /502\s*PROXY\s*ERROR/i.test(trazaCompleta) ||
+    /SESIONFIRMACLIENTECONNECTEXCEPTION/i.test(trazaCompleta);
   const literalGris = (texto, cursiva) =>
     "<span style=\"color:#9a9890;font-size:12px" + (cursiva ? ";font-style:italic" : "") + "\">\"" + texto + "\"</span>";
 
   if (idReglaDetectada === "error_validacion_certificado") {
     let prefijoValidacion;
     if (hayMetodoFirmaClaveEnKo) {
-      prefijoValidacion = "<b>Método en este caso:</b> Cl@ve Permanente (Cl@veFirm@ en el Firma KO).";
+      prefijoValidacion = "Método en este caso: Cl@ve Permanente (Cl@veFirm@ en el Firma KO).";
     } else if (hayMetodoFirmaAutofirmaEnKo) {
-      prefijoValidacion = "<b>Método en este caso:</b> certificado local (Autofirm@ en el Firma KO).";
+      prefijoValidacion = "Método en este caso: certificado local (Autofirm@ en el Firma KO).";
     } else if (esClave && !esCert) {
-      prefijoValidacion = "<b>Método en este caso:</b> Cl@ve Permanente (según selector; confirmar en el Firma KO si no aparece al pegar).";
+      prefijoValidacion = "Método en este caso: Cl@ve Permanente (según selector; confirmar en el Firma KO si no aparece al pegar).";
     } else if (esCert && !esClave) {
-      prefijoValidacion = "<b>Método en este caso:</b> certificado local (según selector; confirmar en el Firma KO si no aparece al pegar).";
+      prefijoValidacion = "Método en este caso: certificado local (según selector; confirmar en el Firma KO si no aparece al pegar).";
     } else {
-      prefijoValidacion = "<b>Método en este caso:</b> confirmar en el Firma KO (doble clic en SistraHelp: Cl@veFirm@ o Autofirm@).";
+      prefijoValidacion = "Método en este caso: confirmar en el Firma KO (doble clic en SistraHelp: Cl@veFirm@ o Autofirm@).";
     }
-    textoAccion = prefijoValidacion + "\n\n" + textoAccion;
+    textoAccion = insertarBloqueEnQuePasaAccion(textoAccion, prefijoValidacion);
   }
 
   // 👉 Cadena de certificación pero además, en algún intento, se firmó con un certificado de otro NIF:
@@ -2509,30 +2768,62 @@ if (accionData && accionData.accion) {
       + textoAccion;
   }
 
-  // 🔹 Portafib: el texto base se edita en acciones.json. Aquí solo sustituimos el
-  // marcador {lit} por los literales detectados en la traza (en gris pequeño).
+  // 🔹 {lit}: Portafib o registro presentador. Texto base en acciones.json.
   // En "firma_correcta_portafib" los literales van sin cursiva; en el resto, en cursiva.
   if (textoAccion.indexOf("{lit}") !== -1) {
-    const usarCursiva = (idReglaDetectada !== "firma_correcta_portafib");
-    let lits;
-    if (hayFluxe && hayExcepcioSessio) {
-      lits = literalGris("El fluxe no es vàlid", usarCursiva) + " / "
-           + literalGris("Excepció al generar sessió firma", usarCursiva);
+    if (idReglaDetectada === "error_registro_presentador") {
+      const litReg =
+        extraerLiteralRegistroPresentador(lineasTraza) ||
+        "El tràmit ha de ser registrat pel presentador";
+      textoAccion = textoAccion.replace("{lit}", literalGris(litReg, true));
     } else {
-      lits = literalGris("El fluxe no es vàlid", usarCursiva);
+      const usarCursiva = (idReglaDetectada !== "firma_correcta_portafib");
+      const partesLit = [];
+      if (hayFluxe) partesLit.push(literalGris("El fluxe no es vàlid", usarCursiva));
+      if (hayExcepcioSessio) partesLit.push(literalGris("Excepció al generar sessió firma", usarCursiva));
+      if (hay502ProxyPortafib) {
+        partesLit.push(literalGris("502 Proxy Error / SesionFirmaClienteConnectException", usarCursiva));
+      }
+      const lits = partesLit.length
+        ? partesLit.join(" / ")
+        : literalGris("El fluxe no es vàlid", usarCursiva);
+      textoAccion = textoAccion.replace("{lit}", lits);
     }
-    textoAccion = textoAccion.replace("{lit}", lits);
   } else if (
     (idReglaDetectada === "tramite_completo" ||
      idReglaDetectada === "tramite_finalizado" ||
-     idReglaDetectada === "tramite_registrado") &&
-    hayErrorPortafibReal
+     idReglaDetectada === "tramite_registrado" ||
+     idReglaDetectada === "firma_correcta") &&
+    (hayErrorPortafibReal || hayAutofirmaKoPrevio)
   ) {
-    textoAccion = "Se detecta error de portafib previo en la traza.\n\n" + textoAccion;
+    const notasPrevias = [];
+    if (hayErrorPortafibReal) {
+      notasPrevias.push("Se detecta error de portafib previo en la traza.");
+    }
+    if (hayAutofirmaKoPrevio) {
+      notasPrevias.push(
+        "Se detectan errores de Autofirma previos en la traza (el ciudadano recuperó y completó el trámite)."
+      );
+      // El pegado no trae Mac/Linux; SistraHelp sí. Útil con cualquier método marcado (manda el cierre).
+      notasPrevias.push(NOTA_SO_SISTRAHELP);
+    }
+    const bloquePrevios = notasPrevias.join("\n");
+    if (/Qu[eé]\s*pasa\s*:/i.test(textoAccion)) {
+      textoAccion = textoAccion.replace(
+        /((?:<b>)?Qu[eé]\s*pasa\s*:)\s*/i,
+        "$1\n" + bloquePrevios + "\n"
+      );
+    } else {
+      textoAccion = bloquePrevios + "\n\n" + textoAccion;
+    }
   } else if (idReglaDetectada === "fallo_formulario" && !hayFRI) {
-    textoAccion = "Remitir al ciudadano a formulario de incidencias / dudas funcionales.";
+    textoAccion = "Qué pasa:\n"
+      + "No hay Inicio formulario en la traza: el trámite no llega a abrir el formulario.\n\n"
+      + "Qué hacer:\n"
+      + "1. Remitir al ciudadano al formulario de incidencias / dudas funcionales por problemas con el formulario.\n"
+      + "2. Enviar el mail al ciudadano.";
     if (hayError403FormularioExterno) {
-      textoAccion += "\nIndicar en el mail que el formulario de este trámite no se abre (403 Forbidden al cargar el formulario externo a SISTRA2).";
+      textoAccion += "\n3. Indicar en el mail que el formulario de este trámite no se abre (403 Forbidden al cargar el formulario externo a SISTRA2).";
     }
   } else if (idReglaDetectada === "error_clave_103_15") {
     // 🔹 Caso especial: 103-15 precedido por un error 8-15 en la misma traza.
@@ -2542,7 +2833,27 @@ if (accionData && accionData.accion) {
       /RESULTA[TD][OA]?\s*:\s*15\b/.test(l)
     );
     if (hayClave8_15) {
-      textoAccion = "Se detecta uno o varios Error Cl@ve (código 8-15) y posteriormente uno o varios Errores Cl@ve (código 103-15).\nCertificado bloqueado. Indicar revocación y emisión de nuevo certificado en Cl@ve.";
+      let quePasa103 =
+        "En la traza aparecen errores Cl@ve 8-15 y, después, errores 103-15 (certificados bloqueados).\n"
+        + "El 8-15 suele indicar un problema con el certificado de Cl@ve Permanente; el 103-15 indica que los certificados del usuario están bloqueados. Lo que manda para actuar es el 103-15: hay que revocar y emitir de nuevo el certificado en Cl@ve.";
+      // 500 / «transacción caducada» en fitxers = servicio Cl@ve Firma, no Portafib ni @firma
+      if (hayFirma500Fitxers) {
+        quePasa103 =
+          "Antes hubo fallos del servicio de firma Cl@ve (p. ej. «Error general… fitxers: 500» o «La transacción no es válida o ha caducado»). "
+          + "No son Portafib ni el servidor de validación @firma: son la pasarela / custodia de Cl@ve Firma (suelen ser puntuales; reintentar).\n"
+          + (haySGO
+            ? "Hubo incluso una Firma OK intermedia con Cl@veFirm@.\n"
+            : "")
+          + "Después aparecen errores Cl@ve 8-15 y, a continuación, 103-15 (certificados bloqueados).\n"
+          + "El 8-15 suele indicar un problema con el certificado de Cl@ve Permanente; el 103-15 indica que los certificados del usuario están bloqueados. Lo que manda para actuar es el 103-15: hay que revocar y emitir de nuevo el certificado en Cl@ve.";
+      }
+      textoAccion = "Qué pasa:\n"
+        + quePasa103
+        + "\n\nQué hacer:\n"
+        + "1. Enviar el mail al ciudadano (explica cómo revocar y emitir de nuevo el certificado en Cl@ve).\n"
+        + (hayFirma500Fitxers
+          ? "2. Si pregunta por el 500 / transacción caducada: indicar que fue un fallo puntual del servicio de firma; lo que bloquea ahora es el 103-15."
+          : "");
     }
   } else if (
     idReglaDetectada === "error_autofirma_cliente_iphone" &&
@@ -2550,15 +2861,42 @@ if (accionData && accionData.accion) {
   ) {
     textoAccion = "Acceso marcado como Cl@ve; el Firma KO indica certificado local (Autofirm@).\n\n" + textoAccion;
   } else if (idReglaDetectada === "error_autofirma_cliente_generico" && hayMetodoFirmaAutofirmaEnKo && haySignaturaCancelada) {
-    textoAccion = "Firma cancelada (Método de firma Autofirm@).\n"
-      + "El técnico ha marcado Método Cl@ve, pero la firma se intentó con certificado/AutoFirma.\n\n"
-      + accionData.accion;
+    // Solo el matiz «firma cancelada»; la discrepancia Cl@ve↔Autofirm@ ya va en la acción genérica.
+    const prefijoCanceladaClave = "Firma cancelada (Método de firma Autofirm@).";
+    if (/Qu[eé]\s*pasa\s*:/i.test(textoAccion)) {
+      textoAccion = textoAccion.replace(
+        /((?:<b>)?Qu[eé]\s*pasa\s*:)\s*/i,
+        "$1\n" + prefijoCanceladaClave + "\n"
+      );
+    } else {
+      textoAccion = prefijoCanceladaClave + "\n\n" + textoAccion;
+    }
   } else if (idReglaDetectada === "error_autofirma_cancelada" && hayErrorClaveReal) {
-    textoAccion = "En intentos anteriores falló Cl@ve (código "
+    const prefijoClaveCancelada =
+      "En intentos anteriores falló Cl@ve (código "
       + textoResumenCodigoClaveDetectado(codigoClaveDetectado, tipusResultatDetectado)
-      + "); después el ciudadano intentó con certificado (Autofirm@) y la firma quedó cancelada.\n\n"
-      + textoAccion;
+      + "); después el ciudadano intentó con certificado (Autofirm@) y la firma quedó cancelada.";
+    if (/Qu[eé]\s*pasa\s*:/i.test(textoAccion)) {
+      textoAccion = textoAccion.replace(
+        /((?:<b>)?Qu[eé]\s*pasa\s*:)\s*/i,
+        "$1\n" + prefijoClaveCancelada + "\n"
+      );
+    } else {
+      textoAccion = prefijoClaveCancelada + "\n\n" + textoAccion;
+    }
   } else if (idReglaDetectada === "error_clave_firma_cancelada") {
+    if (hayErrorQaaRecarga) {
+      const notaQaa =
+        "También aparece error de nivel QAA: el trámite exige un nivel superior al del usuario autenticado.";
+      if (/Qu[eé]\s*pasa\s*:/i.test(textoAccion)) {
+        textoAccion = textoAccion.replace(
+          /((?:<b>)?Qu[eé]\s*hacer\s*:)/i,
+          notaQaa + "\n\n$1"
+        );
+      } else {
+        textoAccion = textoAccion + "\n\n" + notaQaa;
+      }
+    }
     if (esCert && !esClave) {
       textoAccion += "\n*No orientar reinstalar AutoFirma: el KO indica Cl@ve, no certificado local.";
     }
@@ -2579,51 +2917,112 @@ if (accionData && accionData.accion) {
   }
 
   if (esReglaAutofirmaClienteConIntro(idReglaDetectada)) {
-    textoAccion = aplicarIntroAccionAutofirmaCliente(textoAccion, lineasTraza);
+    textoAccion = aplicarIntroAccionAutofirmaCliente(textoAccion, lineasTraza, idReglaDetectada);
+    // Red de seguridad: si hay servidor intermedio en KO, la nota SO (Mac/Linux) debe verse siempre.
+    if (
+      hayServidorIntermedioEnLineasFirma(lineasTraza) &&
+      !/SO en SistraHelp/i.test(textoAccion)
+    ) {
+      textoAccion = insertarBloqueEnQuePasaAccion(textoAccion, NOTA_SO_SISTRAHELP);
+    }
   }
 
-  // 👉 Nota antivirus/firewall/proxy: solo en fallos del cliente de firma (Autofirma/certificado/FIRE)
-  if (reglaAplicaNotaSeguridadEquipo(idReglaDetectada)) {
+  // 👉 Intentos solo Inicio firma (sin KO/OK) en la misma traza que otro error (p.ej. 8-15):
+  //    reflejar en «Qué pasa» la misma lectura que error_clave_movil (Cl@ve móvil / Autofirma Android).
+  if (
+    idReglaDetectada &&
+    idReglaDetectada !== "error_clave_movil" &&
+    idReglaDetectada !== "error_clave_movil_no_permitida"
+  ) {
+    const numSinCierreAccion = (typeof analizarFlujoFirma === "function")
+      ? ((analizarFlujoFirma(lineasTraza).intentos || []).filter(i => i.resultado === "sin_cierre").length)
+      : 0;
+    if (numSinCierreAccion > 0) {
+      const nTxt = numSinCierreAccion === 1
+        ? "1 intento de firma"
+        : (numSinCierreAccion + " intentos de firma");
+      // No contradecir una pista iPhone/Android ya dicha: el sin cierre va junto y sin «solo Android».
+      const yaPistaDispositivo = /Pista de dispositivo|Habitualmente desde (iPhone|Android)/i.test(textoAccion);
+      const yaAutofirmaMovil = esReglaAutofirmaClienteMovil(idReglaDetectada) || yaPistaDispositivo;
+      const esEscritorioRegla =
+        idReglaDetectada === "error_autofirma_cliente_windows" ||
+        idReglaDetectada === "error_autofirma_cliente_mac" ||
+        idReglaDetectada === "error_autofirma_cliente_linux";
+      let notaSinCierre;
+      if (yaAutofirmaMovil || yaPistaDispositivo) {
+        notaSinCierre =
+          "Hay " + nTxt
+          + " que solo llegan a Inicio firma (sin Firma KO ni Firma OK); es habitual en Autofirma móvil (Android o iPhone) cuando no cierra el flujo. "
+          + "Confirmar el SO en SistraHelp (misma revisión de Inicio/Carga).";
+      } else if (esEscritorioRegla) {
+        notaSinCierre =
+          "También hay " + nTxt
+          + " que solo llegan a Inicio firma (sin Firma KO ni Firma OK). "
+          + "Puede ser acceso móvil aunque se haya marcado Ordenador: revisar en SistraHelp Inicio/Carga.";
+      } else {
+        notaSinCierre =
+          "También hay " + nTxt
+          + " que solo llegan a Inicio firma (sin Firma KO ni Firma OK). "
+          + "Posible Cl@ve móvil o Autofirma en móvil (Android o iPhone). "
+          + "Revisar en SistraHelp el acceso (doble clic en Inicio trámite o Carga).";
+      }
+      if (/Qu[eé]\s*hacer\s*:/i.test(textoAccion)) {
+        textoAccion = textoAccion.replace(
+          /((?:<b>)?Qu[eé]\s*hacer\s*:)/i,
+          "\n" + notaSinCierre + "\n\n$1"
+        );
+      } else {
+        textoAccion = textoAccion + "\n\n" + notaSinCierre;
+      }
+    }
+  }
+
+  // 👉 Nota seguridad: PC (antivirus/firewall) vs móvil (red/VPN/restricciones)
+  if (esReglaAutofirmaClienteMovil(idReglaDetectada)) {
+    textoAccion += "\n\n" + NOTA_SEGURIDAD_MOVIL;
+  } else if (reglaAplicaNotaSeguridadEquipo(idReglaDetectada)) {
     textoAccion += "\n\n" + NOTA_SEGURIDAD_EQUIPO;
   }
 
-  // 👉 Apartados «Qué pasa» / «Qué hacer» — cabecera aligerada (color #6b6960 como Flujo/Acción)
-  function lineaAccionAHtml(linea) {
+  // 👉 Apartados «Qué pasa» / «Qué hacer» (título + línea fina en CSS)
+  const lineaAccionAHtml = (linea) => {
     const t = String(linea || "").trim();
     if (t.startsWith("*")) {
       return "<span style=\"color:#9a9890;font-size:12px;\">" + linea + "</span>";
     }
     return linea;
-  }
+  };
+  const esTituloQuePasa = (s) => /^qu[eé]\s*pasa\s*:?\s*$/i.test(String(s || "").normalize("NFC"));
+  const esTituloQueHacer = (s) => /^qu[eé]\s*hacer\s*:?\s*$/i.test(String(s || "").normalize("NFC"));
 
   let accionHtml = "";
   let introLineas = [];
   let bloqueActual = null;
-  function flushBloqueAccion() {
+  const flushBloqueAccion = () => {
     if (!bloqueActual) return;
-    const body = bloqueActual.lineas.map(lineaAccionAHtml).filter(x => String(x).length).join("<br>");
+    const body = bloqueActual.lineas.map(lineaAccionAHtml).filter(x => String(x).trim().length).join("<br>");
     accionHtml += "<div class=\"accion-bloque\">";
     accionHtml += "<div class=\"accion-apartado\">" + bloqueActual.titulo + "</div>";
     if (body) accionHtml += "<div class=\"accion-bloque__body\">" + body + "</div>";
     accionHtml += "</div>";
     bloqueActual = null;
-  }
-  textoAccion.split("\n").forEach(linea => {
-    const tituloPlano = String(linea || "").trim().replace(/<\/?b>/gi, "").trim();
-    if (/^Qu[eé]\s*pasa\s*:?\s*$/i.test(tituloPlano)) {
-      if (introLineas.length) {
-        accionHtml += "<div class=\"accion-intro\">" + introLineas.map(lineaAccionAHtml).join("<br>") + "</div>";
-        introLineas = [];
-      }
+  };
+  const volcarIntroAccion = () => {
+    if (!introLineas.length) return;
+    accionHtml += "<div class=\"accion-intro\">" + introLineas.map(lineaAccionAHtml).join("<br>") + "</div>";
+    introLineas = [];
+  };
+
+  String(textoAccion || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n").forEach(linea => {
+    const tituloPlano = String(linea || "").trim().replace(/<\/?b>/gi, "").trim().normalize("NFC");
+    if (esTituloQuePasa(tituloPlano)) {
+      volcarIntroAccion();
       flushBloqueAccion();
       bloqueActual = { titulo: "Qué pasa:", lineas: [] };
       return;
     }
-    if (/^Qu[eé]\s*hacer\s*:?\s*$/i.test(tituloPlano)) {
-      if (introLineas.length) {
-        accionHtml += "<div class=\"accion-intro\">" + introLineas.map(lineaAccionAHtml).join("<br>") + "</div>";
-        introLineas = [];
-      }
+    if (esTituloQueHacer(tituloPlano)) {
+      volcarIntroAccion();
       flushBloqueAccion();
       bloqueActual = { titulo: "Qué hacer:", lineas: [] };
       return;
@@ -2631,10 +3030,14 @@ if (accionData && accionData.accion) {
     if (bloqueActual) bloqueActual.lineas.push(linea);
     else introLineas.push(linea);
   });
-  if (introLineas.length && !bloqueActual) {
-    accionHtml += "<div class=\"accion-intro\">" + introLineas.map(lineaAccionAHtml).join("<br>") + "</div>";
-  }
+  if (introLineas.length && !bloqueActual) volcarIntroAccion();
   flushBloqueAccion();
+
+  // Fallback: si el formateo no produjo HTML, mostrar el texto tal cual (nunca dejar Acción vacía)
+  if (!accionHtml.trim()) {
+    accionHtml = String(textoAccion || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n")
+      .map(lineaAccionAHtml).join("<br>");
+  }
 
   salidaFinal += "<div class=\"accion-cuerpo\">" + accionHtml + "</div>";
 
@@ -3170,19 +3573,109 @@ function detectarMetodoFirmaEnLineas(lineas) {
   return null;
 }
 
+function extraerCodigoClaveDeLinea(linea) {
+  const l = String(linea || "");
+  if (!/CLAVEFIRMA/i.test(l) || !/ERROR:\s*\d+/.test(l)) return null;
+  const matchCodigo = l.match(/ERROR:\s*(\d+)/);
+  const matchTipus = l.match(/(?:TIPUS\s+)?RESULTAT\s*:\s*(\d+)/i)
+    || l.match(/RESULTAD[OA]?\s*:\s*(\d+)/i);
+  return {
+    codigo: matchCodigo ? matchCodigo[1] : null,
+    tipus: matchTipus ? matchTipus[1] : null
+  };
+}
+
+function resultadoDesdeCodigoClave(clave) {
+  if (!clave || !clave.codigo) return null;
+  if (clave.codigo === "103") return clave.tipus === "15" ? "ko_clave_103_15" : "ko_clave_103";
+  if (/^(8|9|10|11|12|13|14|15)$/.test(clave.codigo)) return "ko_clave_8_15";
+  if (clave.codigo === "101") return "ko_clave_101";
+  if (clave.codigo === "104") return "ko_clave_104";
+  return "ko_clave_otro";
+}
+
 function extraerCodigoClaveEnLineas(lineas) {
   for (const linea of lineas) {
-    if (linea.includes("CLAVEFIRMA") && /ERROR:\s*\d+/.test(linea)) {
-      const matchCodigo = linea.match(/ERROR:\s*(\d+)/);
-      const matchTipus = linea.match(/(?:TIPUS\s+)?RESULTAT\s*:\s*(\d+)/i)
-        || linea.match(/RESULTAD[OA]?\s*:\s*(\d+)/i);
-      return {
-        codigo: matchCodigo ? matchCodigo[1] : null,
-        tipus: matchTipus ? matchTipus[1] : null
-      };
-    }
+    const clave = extraerCodigoClaveDeLinea(linea);
+    if (clave && clave.codigo) return clave;
   }
   return null;
+}
+
+function clasificarTipoKoLinea(linea) {
+  const l = String(linea || "");
+  if (!esLineaFirmaKoHelper(l)) return null;
+  if (/SAF_27|SAF27\b/i.test(l)) return "saf_27";
+  if (esErrorNifCertificadoNoCoincideHelper(l)) return "nif_no_coincide";
+  if (esErrorCadenaCertificacionHelper(l)) return "cadena_certificacion";
+  if (esErrorValidacionCertificadoFirmanteHelper(l)) return "validacion_certificado";
+  if (/CLAVE[_\s]?MOVIL.*NO.*PERM[EE]|M[ÈE]TODE.*CLAVE.*MOVIL.*NO/i.test(l)) {
+    return "clave_movil_no_permitida";
+  }
+  const clave = extraerCodigoClaveDeLinea(l);
+  const desdeClave = resultadoDesdeCodigoClave(clave);
+  if (desdeClave) return desdeClave;
+  if (/SIGNATURA CANCEL|FIRMA CANCEL/i.test(l)) {
+    if (esMetodoFirmaClaveEnLineaHelper(l)) return "cancelada_clave";
+    if (esMetodoFirmaAutofirmaEnLineaHelper(l)) return "cancelada_autofirma";
+    return "cancelada_sin_metodo";
+  }
+  if (/TIEMPO PARA FIRMAR|TEMPS PER A FIRMAR|EL TEMPS PER A FIRMAR/i.test(l)) return "timeout_firma";
+  if (/FITXER SIGNAT.*BUIT|FICHIERO SIGNAT.*VAC|SIGNAT EST[AÁ] BUIT/i.test(l)) return "fitxer_buit";
+  if (/CLIENT(E)? DE FIRMA M[ÒOÓ]?VIL|FIRMA MOVIL|ERROR DE AUTOFIRMA O DEL CLIENTE DE FIRMA/i.test(l)) {
+    return "cliente_firma_movil";
+  }
+  if (/SERVIDOR INTERMEDI|NO SE PUDO CONECTAR CON EL SERVIDOR INTERMEDIO|NO S['']HA POGUT CONNECTAR.*SERVIDOR INTERMEDI/i.test(l)) {
+    return "servidor_intermedio";
+  }
+  if (/ERROR DE AUTOFIRMA|ERROR D['']AUTOFIRMA|AUTOFIRMA|PLUGIN.*AUTOFIRMA|AI500001/i.test(l)
+    || esMetodoFirmaAutofirmaEnLineaHelper(l)) {
+    return "ko_autofirma_otro";
+  }
+  if (esMetodoFirmaClaveEnLineaHelper(l)) return "ko_clave_sin_codigo";
+  return "ko_generico";
+}
+
+const ETIQUETA_CORTA_KO_TAMBIEN = {
+  ko_clave_8_15: "8-15",
+  ko_clave_103: "103",
+  ko_clave_103_15: "103-15",
+  ko_clave_101: "101",
+  ko_clave_104: "104",
+  ko_clave_otro: "Cl@ve (otro)",
+  ko_clave_sin_codigo: "Cl@ve sin código",
+  cancelada_clave: "cancelada Cl@ve",
+  cancelada_autofirma: "cancelada Autofirm@",
+  cancelada_sin_metodo: "cancelada",
+  saf_27: "SAF_27",
+  validacion_certificado: "validación",
+  cadena_certificacion: "cadena certificación",
+  nif_no_coincide: "otro NIF",
+  timeout_firma: "timeout",
+  fitxer_buit: "fitxer buit",
+  cliente_firma_movil: "servidor intermedio",
+  servidor_intermedio: "servidor intermedio",
+  ko_autofirma_otro: "Autofirma",
+  ko_generico: "KO",
+  ko_sin_detalle: "KO"
+};
+
+function textoKoOtrosEnVentana(kos, resultadoPrincipal) {
+  const counts = {};
+  kos.forEach(linea => {
+    const tipo = clasificarTipoKoLinea(linea);
+    if (!tipo || tipo === resultadoPrincipal) return;
+    counts[tipo] = (counts[tipo] || 0) + 1;
+  });
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .map(([tipo, n]) => {
+      const et = ETIQUETA_CORTA_KO_TAMBIEN[tipo]
+        || ETIQUETA_RESULTADO_FIRMA[tipo]
+        || tipo;
+      return n > 1 ? et + " ×" + n : et;
+    })
+    .join(", ");
 }
 
 function lineasKoOrdenadasCronologicamente(lineas) {
@@ -3205,13 +3698,14 @@ function clasificarResultadoVentana(lineasVentana) {
   const koAnteriores = kos.length > 1 ? kos.length - 1 : 0;
   const ultimoKo = kos[kos.length - 1] || null;
   const metodoFirma = detectarMetodoFirmaEnLineas(lineasVentana);
+  const vacioExtras = { koAnteriores: 0, koOtrosTexto: "", mensajeKo: null };
 
   if (haySgo && kos.length === 0) {
-    return { resultado: "firma_ok", metodoFirma, koAnteriores: 0, mensajeKo: null };
+    return { resultado: "firma_ok", metodoFirma, ...vacioExtras };
   }
 
   if (!haySgo && kos.length === 0) {
-    return { resultado: "sin_cierre", metodoFirma, koAnteriores: 0, mensajeKo: null };
+    return { resultado: "sin_cierre", metodoFirma, ...vacioExtras };
   }
 
   let resultado = "ko_sin_detalle";
@@ -3228,16 +3722,9 @@ function clasificarResultadoVentana(lineasVentana) {
     resultado = "clave_movil_no_permitida";
   } else {
     const clave = extraerCodigoClaveEnLineas(lineasVentana);
-    if (clave && clave.codigo === "103") {
-      resultado = clave.tipus === "15" ? "ko_clave_103_15" : "ko_clave_103";
-    } else if (clave && /^(8|9|10|11|12|13|14|15)$/.test(clave.codigo)) {
-      resultado = "ko_clave_8_15";
-    } else if (clave && clave.codigo === "101") {
-      resultado = "ko_clave_101";
-    } else if (clave && clave.codigo === "104") {
-      resultado = "ko_clave_104";
-    } else if (clave && clave.codigo) {
-      resultado = "ko_clave_otro";
+    const desdeClave = resultadoDesdeCodigoClave(clave);
+    if (desdeClave) {
+      resultado = desdeClave;
     } else if (/SIGNATURA CANCEL|FIRMA CANCEL/i.test(textoVentana)) {
       if (metodoFirma === "clave" || lineasVentana.some(l => /SIGNATURA CANCEL|FIRMA CANCEL/i.test(l) && esMetodoFirmaClaveEnLineaHelper(l))) {
         resultado = "cancelada_clave";
@@ -3264,7 +3751,8 @@ function clasificarResultadoVentana(lineasVentana) {
   }
 
   const mensajeKo = ultimoKo ? (extraerMensajeEventoTraza(ultimoKo) || ultimoKo.slice(0, 120)) : null;
-  return { resultado, metodoFirma, koAnteriores, mensajeKo };
+  const koOtrosTexto = textoKoOtrosEnVentana(kos, resultado);
+  return { resultado, metodoFirma, koAnteriores, koOtrosTexto, mensajeKo };
 }
 
 function segmentarIntentosFirma(lineasTraza) {
@@ -3381,11 +3869,33 @@ function etiquetaAccesoFlujoFirma(acceso) {
   return acceso ? (map[acceso] || acceso) : "—";
 }
 
-function htmlAccesoFlujoFirma(acceso) {
+const TEXTO_PISTA_SGI_SIN_CIERRE = "Posible Cl@ve móvil o Autofirma Android";
+const TOOLTIP_REVISAR_ACCESO_BASE =
+  "Revisar TR_CAR (Carga del trámite) anterior al inicio de firma — ahí suele constar el método de acceso (Cl@ve, Certificado) y el SO/dispositivo (Windows, Mac, Android, iPhone).";
+const TOOLTIP_PISTA_SGI_SIN_CIERRE =
+  TOOLTIP_REVISAR_ACCESO_BASE
+  + " Solo Inicio firma sin Firma KO ni Firma OK: típico de Cl@ve móvil o Autofirma en Android.";
+
+function htmlAccesoFlujoFirma(acceso, opts) {
+  const pistaSinCierre = opts && opts.pistaSinCierre === true;
   if (acceso === "desconocido") {
-    return '<span class="flujo-firma-acceso flujo-firma-acceso--revisar" title="Revisar TR_CAR (Carga del trámite) anterior al inicio de firma — ahí suele constar el método de acceso (Cl@ve, Certificado) y el SO/dispositivo (Windows, Mac, Android, iPhone).">Revisar Acceso</span>';
+    const title = pistaSinCierre ? TOOLTIP_PISTA_SGI_SIN_CIERRE : TOOLTIP_REVISAR_ACCESO_BASE;
+    let html = '<span class="flujo-firma-acceso flujo-firma-acceso--revisar" title="'
+      + escapeHtmlFlujoFirma(title) + '">Revisar Acceso</span>';
+    if (pistaSinCierre) {
+      html += ' <span class="flujo-firma-pista-sin-cierre" title="'
+        + escapeHtmlFlujoFirma(TOOLTIP_PISTA_SGI_SIN_CIERRE) + '">'
+        + escapeHtmlFlujoFirma(TEXTO_PISTA_SGI_SIN_CIERRE) + "</span>";
+    }
+    return html;
   }
-  return `<span class="flujo-firma-acceso">${escapeHtmlFlujoFirma(etiquetaAccesoFlujoFirma(acceso))}</span>`;
+  let html = `<span class="flujo-firma-acceso">${escapeHtmlFlujoFirma(etiquetaAccesoFlujoFirma(acceso))}</span>`;
+  if (pistaSinCierre) {
+    html += ' <span class="flujo-firma-pista-sin-cierre" title="'
+      + escapeHtmlFlujoFirma(TOOLTIP_PISTA_SGI_SIN_CIERRE) + '">'
+      + escapeHtmlFlujoFirma(TEXTO_PISTA_SGI_SIN_CIERRE) + "</span>";
+  }
+  return html;
 }
 
 function accesoDesconocidoOmitidoPorKoClave(intento) {
@@ -3427,8 +3937,15 @@ function hayDiscrepanciaAccesoFirmaIntento(intento) {
 
 function metaIntentoFlujoFirma(intento) {
   const partes = [];
+  const pistaSinCierre = intento.resultado === "sin_cierre";
   if (debeMostrarAccesoFlujoFirma(intento)) {
-    partes.push(htmlAccesoFlujoFirma(intento.acceso));
+    partes.push(htmlAccesoFlujoFirma(intento.acceso, { pistaSinCierre }));
+  } else if (pistaSinCierre) {
+    partes.push(
+      '<span class="flujo-firma-pista-sin-cierre" title="'
+      + escapeHtmlFlujoFirma(TOOLTIP_PISTA_SGI_SIN_CIERRE) + '">'
+      + escapeHtmlFlujoFirma(TEXTO_PISTA_SGI_SIN_CIERRE) + "</span>"
+    );
   }
   const metodoTxt = etiquetaMetodoFlujoFirma(intento.metodoFirma);
   if (metodoTxt) partes.push(`Método: ${escapeHtmlFlujoFirma(metodoTxt)}`);
@@ -3439,15 +3956,29 @@ function metaIntentoFlujoFirma(intento) {
 }
 
 function metaGrupoFlujoFirma(intentos) {
+  const todosSinCierre = intentos.length > 0 && intentos.every(i => i.resultado === "sin_cierre");
   const accesos = [...new Set(
     intentos.filter(debeMostrarAccesoFlujoFirma).map(i => i.acceso).filter(Boolean)
   )];
   const metodos = [...new Set(intentos.map(i => i.metodoFirma).filter(Boolean))];
   const partes = [];
   if (accesos.length === 1) {
-    partes.push(htmlAccesoFlujoFirma(accesos[0]));
+    partes.push(htmlAccesoFlujoFirma(accesos[0], { pistaSinCierre: todosSinCierre }));
   } else if (accesos.length > 1) {
     partes.push("Acceso: varios");
+    if (todosSinCierre) {
+      partes.push(
+        '<span class="flujo-firma-pista-sin-cierre" title="'
+        + escapeHtmlFlujoFirma(TOOLTIP_PISTA_SGI_SIN_CIERRE) + '">'
+        + escapeHtmlFlujoFirma(TEXTO_PISTA_SGI_SIN_CIERRE) + "</span>"
+      );
+    }
+  } else if (todosSinCierre) {
+    partes.push(
+      '<span class="flujo-firma-pista-sin-cierre" title="'
+      + escapeHtmlFlujoFirma(TOOLTIP_PISTA_SGI_SIN_CIERRE) + '">'
+      + escapeHtmlFlujoFirma(TEXTO_PISTA_SGI_SIN_CIERRE) + "</span>"
+    );
   }
   if (metodos.length === 1) {
     partes.push(`Método: ${escapeHtmlFlujoFirma(etiquetaMetodoFlujoFirma(metodos[0]))}`);
@@ -3482,18 +4013,25 @@ function htmlMiniFlujoIntento(intento) {
   return html;
 }
 
+function htmlKoExtraFlujoFirma(intento) {
+  if (intento.koOtrosTexto) {
+    return ` <span class="flujo-firma-ko-prev">(también ${escapeHtmlFlujoFirma(intento.koOtrosTexto)})</span>`;
+  }
+  if (intento.koAnteriores) {
+    return ` <span class="flujo-firma-ko-prev">(+${intento.koAnteriores} KO anterior/es)</span>`;
+  }
+  return "";
+}
+
 function htmlLineaIntentoFlujoFirma(intento, opts = {}) {
   const compacto = opts.compacto === true;
-  const koExtra = intento.koAnteriores
-    ? ` <span class="flujo-firma-ko-prev">(+${intento.koAnteriores} KO anterior/es)</span>`
-    : "";
 
   return `<li class="flujo-firma-item">
     <div class="flujo-firma-item-fila">
       <span class="flujo-firma-num">#${intento.numIntento}</span>
       ${htmlMiniFlujoIntento(intento)}
       <span class="flujo-firma-ts">${escapeHtmlFlujoFirma(intento.tsSgiTexto)}</span>
-      ${htmlEtiquetaResultadoFlujoFirma(intento.resultado, intento.etiqueta)}${koExtra}
+      ${htmlEtiquetaResultadoFlujoFirma(intento.resultado, intento.etiqueta)}${htmlKoExtraFlujoFirma(intento)}
     </div>
     ${compacto ? "" : `<span class="flujo-firma-meta">${metaIntentoFlujoFirma(intento)}</span>`}
   </li>`;

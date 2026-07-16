@@ -1,0 +1,27 @@
+# Victum Sports SL · INS_ALE_PART (OAE) · Autofirma KO → Firma OK → TR_REG + TR_FIN
+# Cronología: servidor intermedio + cancelada Autofirm@ → luego SGO Autofirm@ + registro/fin
+# SO en SistraHelp (TR_INI): Mac — con matices CAU:
+#   Como Linux suele ser Android con UA de escritorio, Mac en SistraHelp PUEDE ser Mac real
+#   o iPhone/iPad en vista escritorio. No reasignamos Mac→iPhone solo (Mac real es frecuente).
+#   KO «Cliente de Firma Móvil» + servidor intermedio refuerza la duda móvil.
+#   Al pegar NO viene el literal Mac; hay que mirar SistraHelp / marcar según criterio.
+# Marcar: cualquier método (manda tramite_completo)
+# Global (js v1.3.60): tramite_completo + Autofirma previos + *SO SistraHelp (Linux≈Android / Mac≈iOS)
+# Sin SGO/FIN/REG: error_autofirma_cliente_mac (o iphone si se confirma iOS)
+# Flujo de Firma: servidor intermedio, cancelada Autofirm@, Firma OK
+
+TR_FIN - Fi de tràmit	23/06/2026 14:24:11	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_REG - Registre tràmit	23/06/2026 14:24:11	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_RGI - Inici registre tràmit	23/06/2026 14:24:09	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_SGO - Fi firma OK	23/06/2026 14:23:55	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817	Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 14:22:55	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_SGX - Fi firma KO	23/06/2026 13:53:04	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817	Signatura cancel·lada Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 13:52:39	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_SGX - Fi firma KO	23/06/2026 13:50:12	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: No se pudo conectar con el servidor intermedio para la recuperacion del resultado de la operacion Método de firma: Autofirm@	 
+TR_SGI - Inici firma	23/06/2026 13:49:43	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_FRF - Fi formulari	23/06/2026 13:47:41	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_FRI - Inici formulari	23/06/2026 13:36:53	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_FRI - Inici formulari	23/06/2026 13:35:33	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_FRI - Inici formulari	23/06/2026 13:34:56	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_FRI - Inici formulari	23/06/2026 13:33:56	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817		 
+TR_INI - Inici del tràmit	23/06/2026 13:33:34	HBFUD2OQ-03CDGDT8-T8CBX6RT	B02936128	VICTUM SPORTS SL 	INS_ALE_PART	OAE	1	5836985	207817	 

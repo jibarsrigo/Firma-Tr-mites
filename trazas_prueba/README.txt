@@ -21,7 +21,26 @@ P-formulario_403_externo.txt
   Mar López Navarro · EBAP · sin TR_FRI · 403 Forbidden formulario externo
   ERROR: 403 Forbidden (×2) + El fluxe no es vàlid (ignorado para la regla)
   Global: fallo_formulario por ausencia de Inicio formulario
-  Acción/mail: texto extra si aparece 403 Forbidden
+  Acción (js v1.3.50): Qué pasa/Qué hacer + paso 403 en el mail
+
+P-formulario_dominio_remoto_marc.txt
+  Marc Ramirez Marquez · OPOS_SECTORES (IBSALUT) · DominioErrorException REMOTE.CONNECT (SC_FC_PES)
+  Hay TR_FRI (formulario arranca pero falla el dominio) + QAA
+  Global: fallo_formulario
+  Acción (json v1.3.26): Qué pasa / Qué hacer — incidencias + literal legible
+
+P-tabasco_502_proxy_fluxe.txt
+  Carmen Tabasco Hidalgo · IG_SUBVEN_COTAUT · pre-firma (FRI/FRF, sin SGI)
+  502 Proxy + SesionFirmaClienteConnectException (×N) + El fluxe no es vàlid
+  Global: fallo_portafib
+  Acción (json v1.3.32 / js v1.3.66): Qué pasa/Qué hacer; {lit} muestra fluxe + 502 Proxy
+
+P-registro_presentador_distribuidora.txt
+  Distribuidora Alimentaria Mallorquina SA · DGFPEAS_DEP_AJEDUAL
+  Firma OK (Autofirm@) → TR_RGI → ERROR «El tràmit ha de ser registrat pel presentador (43059175R)»
+  Sin TR_REG / TR_FIN
+  Global: error_registro_presentador (no firma_correcta)
+  Acción (json v1.3.33 / js v1.3.67): Qué pasa/Qué hacer → incidencias con literal
 
 F-saf27_sintetico.txt
   1 intento · TR_SGI → TR_SGX · SAF_27 · acceso certificado · Autofirm@
@@ -41,6 +60,19 @@ T2-B_mixta_discrepancia.txt
 
 T0-A_francisca_15_sgi_minimo.txt
   Plantilla 3× sin cierre · sustituir por traza real de 15 SGI si se dispone.
+
+F-carreras_cancelada_autofirma.txt
+  Francisco de Asis Carreras Costa · INS_ALE_PART · 4× Signatura cancel·lada Autofirm@
+  Marcar: Certificado + Ordenador → windows · Certificado + móvil → movil · Cl@ve → generico
+  Acción (json v1.3.29 / js v1.3.52): Qué pasa/Qué hacer en las tres variantes
+  Nota: Método Autofirm@ en KO → rama cliente (no error_autofirma_cancelada)
+
+F-victum_autofirma_luego_ok.txt
+  Victum Sports SL · INS_ALE_PART · servidor intermedio + cancelada → SGO Autofirm@ → TR_REG+TR_FIN
+  SistraHelp TR_INI: Mac — pero CAU: Mac puede ser iPhone/iPad vista escritorio (paralelo Linux→Android).
+    No reasignar automático a iPhone (Mac real es habitual). Pegado sin literal Mac.
+  Valida (js v1.3.60): tramite_completo + Autofirma previos + *SO SistraHelp (Linux≈Android / Mac≈posible iOS)
+    aunque el método marcado sea Cl@ve u otro (el pegado no trae Mac)
 
 F-android_cliente_movil.txt
   Maria Jesús Martínez · certificado móvil / Autofirm@
@@ -62,17 +94,59 @@ F-iphone_timeout.txt
 
 C-8-15_reiente_maria-soledad.txt
   Maria Soledad Gonzalez · trámite REIENTE · Cl@ve móvil (sin KO) → Cl@ve permanente 8-15
+  Valida (js v1.3.46): Flujo de Firma grupo Sin cierre + «Posible Cl@ve móvil o Autofirma Android» junto a Revisar Acceso;
+    Acción 8-15 Qué pasa menciona también esos intentos sin cierre.
   8 intentos: #1–#7 (7×) Sin cierre + Revisar Acceso · #8 Cl@ve 8–15 + Cl@veFirm@
   Marcar: Cl@ve
   Global: error_clave_8_15
   CAR pegado sin literal CLAVE (Revisar Acceso en sin cierre; no en #8)
 
+C-estrada_cancelada_clave_qaa.txt
+  Joan Estrada Marin · IG_DGTMA_DRE_XAR · CAI-2638138
+  Signatura cancel·lada + Cl@veFirm@ (sin 8-15) · SGI sin cierre ×2 · QAA posterior
+  CAU: Permanente emitido/renovado mismo día + móvil → ventana emisión; probar ordenador
+  Marcar: Cl@ve
+  Global: error_clave_firma_cancelada
+  Acción (json v1.3.34 / js v1.3.68): Qué pasa/Qué hacer + nota QAA + sin cierre
+
+C-varela_validation_clave.txt
+  Luis Giovanni Varela Benvenuto · IG_SUBVEN_EN_DESB25
+  1 KO: VALIDATION InvalidNotSignerCertificate + Cl@veFirm@ (caso limpio)
+  Marcar: Cl@ve
+  Global: error_validacion_certificado
+  Acción (json v1.3.35 / js v1.3.69): Qué pasa/Qué hacer; método Cl@ve inyectado en Qué pasa
+
+C-8-15_luego_103-15_forteza.txt
+  Maria Victoria Forteza Ferrer · IG_DGDEPEN_RECO · Cl@veFirm@ · 8-15 + 103-15 (mismo segundo)
+  1 intento: 1× TR_SGI + 4× TR_SGX (2× 8-15 + 2× 103-15)
+  Marcar: Cl@ve
+  Global: error_clave_103_15 + Acción override mixto 8-15 → 103-15 (Qué pasa/Qué hacer)
+  Flujo de Firma (js v1.3.48): «Cl@ve 103-15 (también 8-15 ×2)» — desglosa tipos distintos; si todos son iguales sigue «(+N KO)»
+
+C-sastre_500_transaccion_ok_8-15_103-15.txt
+  Bartomeu Sastre Vidal · IG_AJD_AUDM · Cl@veFirm@
+  Cronología: fitxers 500 + transacción caducada → Firma OK → 8-15 → 103-15
+  CAU: 500/caducada = servicio Cl@ve Firma (NO Portafib, NO @firma); manda 103-15
+  Global (js v1.3.65): error_clave_103_15 (KO tras SGO; no firma_correcta) + override 8-15; Acción explica servicio previo
+
 C-8-15_luego_autofirma_cancelada.txt
   Álvaro Pérez González · RESIDUS · Cl@ve 8–15 → cancelada Cl@ve → cancelada Autofirm@ (×2)
-  Reintentos SGI posteriores sin KO
+  Reintentos SGI posteriores sin KO (varios Sin cierre)
   Marcar: Certificado local (o Cl@ve: cartel Autofirma + nota Cl@ve anterior)
   Global: error_autofirma_cancelada (último KO Autofirm@; menciona Cl@ve 8–15 previo)
-  Flujo de Firma: Cl@ve 8–15, cancelada Cl@ve, cancelada Autofirm@
+  Acción (json v1.3.24 / js v1.3.49): Qué pasa (Cl@ve previo + cancelada Autofirm@ + nota sin cierre) / Qué hacer (+ antivirus)
+  Flujo de Firma: Cl@ve 8–15, cancelada Cl@ve, cancelada Autofirm@, Sin cierre
+
+F-lelek_timeout_cancelada_sin_cierre.txt
+  Kamila Lelek · IG_SUBVEN_COTAUT · timeout/cliente de firma + cancelada ×N + SGI sin cierre
+  Sin «Método de firma» al pegar; SesionFirmaClienteException
+  Valida (js v1.3.63): pista iPhone/Android unificada; sin cierre no contradice con «solo Android»
+
+F-palou_fitxer_buit.txt
+  Miguel Palou Bosch · INSTANCIA_GENERICA_SR · solo fitxer buit (PluginAutofirmaBatch vacío) ×6
+  Marcar: Certificado + Ordenador → error_autofirma_cliente_windows
+  Acción (json v1.3.31): instalación limpia Autofirma + nota wiki; Qué pasa matiz fitxer buit (js v1.3.62)
+  CAU: suele ser instalación corrupta/incompleta (no solo «reinstalar encima»)
 
 F-marianela_fitxer_buit_windows.txt
   Marianela Ramirez · CAI 2641203 · Windows · sin TR_CAR antes del 1.er KO
@@ -112,8 +186,8 @@ C-javier_500_validation_completo.txt
 T-500_puro.txt
   Sintetica (datos ficticios) · 1x TR_SGX "500" (Cl@veFirm@) sin VALIDATION ni codigo Cl@ve ni cierre
   Marcar: Cl@ve
-  Global esperado: error_firma_fitxers_500 · cartel "Servicio de firma" · accion reintentar
-  Valida en pantalla la regla nueva (app.js v1.3.28)
+  Global esperado: error_firma_fitxers_500 · cartel "Servicio de firma"
+  Acción (json v1.3.25): Qué pasa / Qué hacer (reintentar; escalar si persiste o es masivo)
 
 F-artigues_cadena_certificacion.txt
   Juan Jose Artigues Mesquida (18233778E) · 00-SOLGEN (INDUSTRIA) · certificado local (Autofirm@) · Windows
@@ -153,7 +227,8 @@ Notas
 
 Pendiente de fixture (mencionados en CAU, sin traza guardada aún)
 ------------------------------------------------------------------
-  Cl@ve 101 · Cl@ve 104 · 103-15 tras 8-15 · Francisca 15× SGI · Benito 101/104 · Vanesa 8-15
+  Cl@ve 101 · Cl@ve 104 · Francisca 15× SGI · Benito 101/104 · Vanesa 8-15
+  (103-15 tras 8-15: Forteza + Sastre)
 
 Implementado (app.js v1.3.28 / acciones.json v1.3.4)
 ----------------------------------------------------
@@ -173,4 +248,15 @@ Pendiente (gap detectado, sin implementar)
   Prioridad CLAVE_MOVIL no permès (Mercedes / CAI-2643553): un ERROR de acceso "CLAVE_MOVIL no permès" (de otro dia)
     secuestra el veredicto y tapa el ultimo TR_SGX de firma (hoy -> error_clave_movil_no_permitida en vez del ultimo KO real, p. ej. 8-15).
   Objetivo: que el ultimo KO de firma mande sobre errores de acceso previos.
+
+  SO en SistraHelp engañoso (documentado, sin auto-remap agresivo):
+    Linux → suele ser Android (el motor YA reasigna a Android en selector móvil).
+    Mac → puede ser Mac real o iPhone/iPad vista escritorio; solo aviso en Acción (Victum), no remap a iPhone.
+
+  Enlace wiki «instalación limpia Autofirma»: ahora nota en Acción Windows; sustituir por URL del artículo cuando exista.
+
+  Revisar Acción error_autofirma_cancelada (Álvaro / C-8-15_luego_autofirma_cancelada.txt):
+    asegurar que en «Qué pasa» quede explícito que la firma cancelada con Autofirm@ también puede deberse
+    a antivirus / firewall / proxy (hoy la nota NOTA_SEGURIDAD_EQUIPO se añade al final; valorar si basta
+    o hay que mencionarlo también en Qué pasa junto a timeout/SSL/comunicación).
 

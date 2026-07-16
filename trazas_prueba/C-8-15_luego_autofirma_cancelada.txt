@@ -1,6 +1,8 @@
 # Álvaro Pérez González · RESIDUS · Cl@ve 8-15 → cancelada Cl@ve → cancelada Autofirm@ (reintentos SGI)
-# Global (Certificado marcado): error_autofirma_cancelada + mención Cl@ve 8-15 anterior
-# Flujo de Firma: debe listar Cl@ve 8–15, cancelada Cl@ve y cancelada Autofirm@
+# Marcar: Certificado local (regla error_autofirma_cancelada)
+# Global: error_autofirma_cancelada + mención Cl@ve 8-15 anterior + nota Sin cierre + antivirus
+# Acción (json v1.3.24): Qué pasa / Qué hacer
+# Flujo de Firma: Cl@ve 8–15, cancelada Cl@ve, cancelada Autofirm@, Sin cierre
 
 TR_SGI - Inici firma	24/06/2026 22:39:55	QMFUD2N6-YXIWR8T8-T8LKGKKQ	47205226A	ALVARO PEREZ GONZALEZ	COM_PRODUCTOR	RESIDUS	2	468754	207846		
 TR_CAR - Càrrega del tràmit	24/06/2026 22:39:51	QMFUD2N6-YXIWR8T8-T8LKGKKQ	47205226A	ALVARO PEREZ GONZALEZ	COM_PRODUCTOR	RESIDUS	2	468754	207846		

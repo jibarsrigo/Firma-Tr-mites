@@ -4,12 +4,17 @@
 
 <script>
   // 🔹 VERSION HTML (editable manual)
-  const VERSION_HTML = "1.3.5";
+  const VERSION_HTML = "1.3.6";
 </script>
 
 <!-- =====================================================
      FUNCIONALIDADES HTML
      =====================================================
+
+     VERSION 1.3.6
+     - Tarjeta Acción: estilos apartados «Qué pasa» / «Qué hacer» (título + línea fina;
+       solo la cabecera ACCIÓN lleva barra gris)
+     - Badge versión js alineado con motor (sesión 2026-07-16 → js v1.3.69)
 
      VERSION 1.3.5
      - Iconos PWA/favicon (192, 512, .ico) con logo S verde; sustituye escudo con visto
@@ -76,7 +81,8 @@
      - Estructura base: entrada de traza y botón de análisis
 
      Nota: desde app.js v1.3.0 los cambios de reglas, flujo y acciones CAU
-     están en app.js y acciones.json; el HTML no cambia de estructura.
+     están en app.js y acciones.json. El HTML solo cambia UI/estilos (p. ej. Acción
+     Qué pasa/Qué hacer en v1.3.6). Ver también _changelog en acciones.json.
 -->
 
 <style>
@@ -438,6 +444,15 @@ body {
 .flujo-firma-acceso--revisar {
   cursor: help;
 }
+.flujo-firma-pista-sin-cierre {
+  font-size:10px;
+  color:#6b6960;
+  font-style:italic;
+  white-space:normal;
+  max-width:280px;
+  line-height:1.25;
+  cursor:help;
+}
 .flujo-firma-discrepancia {
   font-size:10px;
   color:#a12c7b;
@@ -556,14 +571,14 @@ body {
 }
 .accion-apartado {
   background:transparent;
-  padding:12px 12px 8px;
+  padding:12px 12px 3px; /* título más cerca de la línea inferior */
   font-size:13px;
   font-weight:600;
   letter-spacing:0;
   text-transform:none;
   color:#6b6960;
   border:none;
-  border-bottom:1px solid rgba(0,0,0,0.12); /* línea a todo el ancho */
+  border-bottom:1px solid rgba(0,0,0,0.28); /* línea más visible */
 }
 .accion-bloque:first-child .accion-apartado {
   padding-top:14px; /* aire bajo ACCIÓN */
@@ -702,7 +717,7 @@ textarea:focus {
         <span class="brand__sistra">SISTRA<span class="brand__two">2</span></span>
       </span>
     </div>
-    <div class="badge" id="versionBadge" title="Versión del motor de análisis (app.js)">v 1.3.43</div>
+    <div class="badge" id="versionBadge" title="Versión del motor de análisis (app.js)">v 1.3.69</div>
     <div class="header-panel-link" id="btnDetalles" title="Qué hace el analizador, versiones y funcionalidades implementadas">Info ▾</div>
   </div>
 

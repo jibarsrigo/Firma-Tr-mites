@@ -45,6 +45,21 @@ Render en `app.js` (agrupa líneas en bloques al detectar títulos Qué pasa / Q
 | Regla | Estado |
 |---|---|
 | `error_clave_8_15` | Hecho (estructura + lenguaje básico; “DNI y contraseña correctos”) |
+| `error_clave_103` | Hecho |
+| `error_clave_103_15` | Hecho (+ override 8-15+103-15) |
+| `error_autofirma_cancelada` | Hecho (+ prefijo Cl@ve previo en Qué pasa; sin cierre y nota antivirus se inyectan) |
+| `error_autofirma_cancelada` — matiz antivirus | **Pendiente revisar**: que «Qué pasa» deje claro que cancelada Autofirm@ también puede ser por antivirus/firewall/proxy (hoy solo nota al final) |
+| `error_firma_fitxers_500` | Hecho |
+| `fallo_formulario` | Hecho (+ override sin TR_FRI / 403 en Qué hacer) |
+| `fallo_portafib` | Hecho (+ {lit} dinámico: fluxe / sesión / 502 Proxy) |
+| `error_registro_presentador` | Hecho (Firma OK + registro presentador → incidencias) |
+| `error_clave_firma_cancelada` | Hecho (+ nota QAA y sin cierre en Qué pasa si aplican) |
+| `error_validacion_certificado` | Hecho (InvalidNotSigner; método del KO en Qué pasa) |
+| `error_autofirma_cliente_windows` | Hecho (+ matiz «firma cancelada» en Qué pasa si aplica) |
+| `error_autofirma_cliente_movil` | Hecho |
+| `error_autofirma_cliente_generico` | Hecho (+ override cancelada Cl@ve↔Autofirm@ en Qué pasa) |
+| `error_autofirma_cliente_mac` | Hecho |
+| `tramite_completo` | Hecho (+ nota Autofirma/Portafib previos si aplica) |
 | Resto de `acciones` en `acciones.json` | **Pendiente** aplicar misma estructura + lenguaje accesible sin perder info |
 | Estilo visual títulos | Casi cerrado (línea fina); usuario valoraba añadir teal a títulos — retomar al continuar |
 | Selector vista previa estilos | Eliminado; no reintroducir |
