@@ -17,6 +17,21 @@ casuística no existe, se añade un .txt aquí y se actualiza este README.
 Archivos
 --------
 
+C-linares_8-15_sgi_autofirma_completo.txt
+  Marta Linares Oliver · EB0006OPOS · SGI sin cierre + QAA + 8-15 Cl@veFirm@ → SGO Autofirm@ → TR_REG+TR_FIN
+  Global: tramite_completo (cierre manda; no error_clave_8_15)
+  Acción (js v1.3.73): Qué pasa con Cl@ve 8-15 previos + Firma OK Autofirm@ + QAA + nota SGI sin cierre
+
+C-rasero_8-15_portafib_autofirma_completo.txt
+  Catalina Rasero Genovart · AJUDA_ESTUDIS · CLAVE_MOVIL no permès + 8-15/cancelada Cl@veFirm@ + Portafib 502 → SGO Autofirm@ → TR_REG+TR_FIN
+  Global: tramite_completo
+  Acción (js v1.3.74): Portafib + Cl@ve 8-15 + Autofirm@ OK + CLAVE_MOVIL + QAA; NO «Autofirma previos» (canceladas son Cl@veFirm@)
+
+F-crespi_nif_es_tras_firma_ok.txt
+  Juan Crespi Aguilo · IG_SUBVEN_EN_CERTEN · pago → Firma OK Autofirm@ → KO NIF ES («nif associado» + NIE X…)
+  Global (js v1.3.76): error_certificado_nif_no_coincide (NO firma_correcta ni Autofirma cliente)
+  Valida: literal ES/associado; KO tras SGO manda; extracción cert 78202240D / requerido X2007278E
+
 P-formulario_403_externo.txt
   Mar López Navarro · EBAP · sin TR_FRI · 403 Forbidden formulario externo
   ERROR: 403 Forbidden (×2) + El fluxe no es vàlid (ignorado para la regla)
@@ -42,15 +57,27 @@ P-registro_presentador_distribuidora.txt
   Global: error_registro_presentador (no firma_correcta)
   Acción (json v1.3.33 / js v1.3.67): Qué pasa/Qué hacer → incidencias con literal
 
-F-saf27_sintetico.txt
-  1 intento · TR_SGI → TR_SGX · SAF_27 · acceso certificado · Autofirm@
-  Global: error_autofirma_servidor
+F-luengo_saf27_solo_ko.txt
+  (Sustituye F-saf27_sintetico.txt) Fernando Luengo · IG_SUBVEN_TRANS_VEHIC · solo KO
+  Qué pasó: selector AutoFirma con muchos certificados inválidos → SAF_27×N + cancelada;
+    cerró navegador, eligió el certificado correcto → firmó (cierre en F-luengo_…_luego_ok)
+  Global: error_autofirma_servidor (SAF_27)
+  Cl@ve marcado: aviso «no es Cl@ve» (js ≥1.3.82). Acción: selector antes de reinstalar
+
+F-luengo_saf27_cancelada_luego_ok.txt
+  Misma llamada, traza completa: SAF_27 + cancelada → SGO Autofirm@ → REG+FIN
+  Global: tramite_completo (+ Autofirma previos)
+
+F-entorno_sgi_sin_cierre.txt
+  Sintética · 3× TR_SGI sin KO/OK/FIN · TR_CAR con CERTIFICADO
+  Global (js ≥1.3.80): error_autofirma_entorno por TR_CAR (no hace falta cambiar el selector)
+  Acción: Qué pasa/Qué hacer FIRE; sin pistas Cl@ve móvil contradiciendo el CAR
 
 T2-A_grupo_4_sin_cierre.txt
   4 intentos · sin cierre · CLAVE_PERMANENTE en cada CAR
   UI: #1–#4 (4×) expandible · mini SGI → ···
   Global con Cl@ve marcado: error_clave_movil
-  Global con Certificado marcado: error_autofirma_entorno
+  Global con Certificado marcado: error_autofirma_entorno (mejor usar F-entorno_sgi_sin_cierre.txt)
   Cartel/frase: «Problema con el cliente de firma Autofirma (sin cierre)…»
 
 T2-B_mixta_discrepancia.txt
@@ -169,10 +196,21 @@ C-mercedes_500_luego_8-15.txt
   03/07: 2× TR_SGX "500" + 1× KO solo metodo · 06/07: 4× ERROR CLAVE_MOVIL no permès (acceso) · 07/07: TR_SGX 8-15
   Ultimo KO cronologico: 8-15 (Codigo Error 8 / Tipo Resultado 15)
   Marcar: Cl@ve
-  Global (HOY): error_clave_movil_no_permitida  <-- DESACERTADA (los ERROR CLAVE_MOVIL de acceso tapan el ultimo KO)
-  Objetivo: que mande el ultimo KO de firma -> error_clave_8_15
-  Valida: (1) el 500 precede al 8-15 dias despues; (2) acceso CLAVE_MOVIL no permès no debe secuestrar el veredicto
-    del ultimo TR_SGX; (3) error_clave_proveedor_500 solo si el ULTIMO KO es el 500
+  Global (js v1.3.72): error_clave_8_15 (CLAVE_MOVIL acceso ya no tapa el Firma KO) + nota en Qué pasa
+  Valida: (1) el 500 precede al 8-15; (2) acceso CLAVE_MOVIL no permès no secuestra el veredicto
+
+C-perez_8-15_luego_clave_movil_no_permitida.txt
+  Alejandro Jose Perez Santiago · INS_ALE_PART · 8-15 → SGI sin cierre → ERROR CLAVE_MOVIL no permès
+  Marcar: Cl@ve
+  Global (js v1.3.72): error_clave_8_15; Qué pasa menciona Cl@ve Móvil posterior (carpeta ciudadana)
+  Contraste limpio: C-clave_movil_no_permitida.txt (sin SGX → sí manda móvil no permitida)
+
+C-clave_movil_no_permitida.txt
+  Mercedes (recorte) · IG_SOL_CERTIF_PROF · solo literal CLAVE_MOVIL no permès + TR_SGI (sin SGX/SGO/FIN)
+  Marcar: Cl@ve
+  Global: error_clave_movil_no_permitida
+  Acción (json v1.3.39): Qué pasa/Qué hacer
+  Para probar Acción limpia; no usar Mercedes/Javier/Pérez completas (mixtas)
 
 C-javier_500_validation_completo.txt
   Javier Saenz de Tejada · IG_DGDEPEN_RECO (IGOIB) · Cl@ve Permanente (Cl@veFirm@)
@@ -210,16 +248,14 @@ F-accv_cadena_servicio_validacion.txt
   Caso documentado por telefono (anonimizado) · certificado ACCV · Autofirm@ · Windows
   1x TR_SGX representativo "InvalidCertificateChain" (identificadores sinteticos; no hubo traza SistraHelp real)
   Marcar: Certificado local + Ordenador
-  Global esperado (app.js v1.3.31): error_cadena_certificacion · cartel "Certificado (cadena)"
-  ESCENARIO CLAVE (contrario a F-artigues): aqui el certificado esta BIEN pero falla el SERVICIO de validacion
-    Comprobado: VALIDe validacion OK + firma prueba OK · AutoFirma local OK · falla en 2 equipos/2 personas · ayer firmaba
-    => NO es el ciudadano: es @firma/Portafib (cadena ACCV no confiada) -> escalar a PENDENTS PORTAFIB - 1.- Pendents 012
-  Valida: que la accion de error_cadena_certificacion incluye el criterio "VALIDe OK + local OK + varios equipos = servicio -> Portafib (CA ACCV)"
+  Global esperado: error_cadena_certificacion · cartel "Certificado (cadena)"
+  ESCENARIO CLAVE: certificado BIEN (VALIDe + local OK + varios equipos) → SERVICIO @firma
+  Confirmado CAI-2646080 (ejemplo): ACCV fallaba en el servicio de validación; tras pruebas → escalar Portafib; workaround Cl@ve.
 
 Notas
 -----
 - SistraHelp pega lo más reciente arriba; el motor ordena por timestamp.
-- SAF_27 real: sustituir F-saf27_sintetico cuando se tenga traza CAU completa.
+- SAF_27: F-luengo_saf27_solo_ko.txt (KO) y F-luengo_saf27_cancelada_luego_ok.txt (cierre). Sin sintético.
 - Acceso sin literal en traza: chip «Revisar Acceso» (tooltip TR_CAR: acceso + SO/dispositivo). No se muestra en KO Cl@ve con código (8–15, 101, 103, 104…): basta «Método: Cl@veFirm@».
 - Acción Autofirma cliente: intro según KO — servidor intermedio → «Habitualmente desde Android…»; timeout/client de firma → «Habitualmente desde iPhone…»; + TR_CAR + pasos SO.
 - Cartel Autofirma cliente: frase «Problema con el cliente de firma Autofirma (tipo de fallo)» — sin inferir Android/iPhone; tipo = el más frecuente entre Firma KO cronológicos (v1.3.25); si hay varios tipos, recuento en la frase.
@@ -239,18 +275,21 @@ Implementado (app.js v1.3.28 / acciones.json v1.3.4)
   Casos ya correctos sin regla nueva:
     - 500 + VALIDATION -> error_validacion_certificado (dice: problema de servicio, reintentar mas tarde).
     - 500 antes de 8-15 (8-15 es el KO que manda) -> error_clave_8_15.
-    - 500 con cierre posterior (TR_REG/TR_FIN o TR_SGO) -> tramite_completo / firma_correcta.
+    - 500 con cierre posterior (TR_RGI/TR_REG/TR_FIN, sin KO tras el último SGO) -> tramite_completo.
+    - 500 + SGO sin TR_RGI -> firma_correcta (fase de firma abierta; no dar por cerrado).
+    - 500 + SGO + KO posterior (multi-firma) -> manda el último KO (no firma_correcta).
   Trazas relacionadas: C-consuelo_500_custodia_recupera.txt, C-javier_500_validation_completo.txt (ambas -> tramite_completo),
-    C-mercedes_500_luego_8-15.txt (acaba en 8-15).
+    C-mercedes_500_luego_8-15.txt (acaba en 8-15), C-sastre_… / F-crespi_… (KO tras SGO).
 
 Pendiente (gap detectado, sin implementar)
 ------------------------------------------
-  Prioridad CLAVE_MOVIL no permès (Mercedes / CAI-2643553): un ERROR de acceso "CLAVE_MOVIL no permès" (de otro dia)
-    secuestra el veredicto y tapa el ultimo TR_SGX de firma (hoy -> error_clave_movil_no_permitida en vez del ultimo KO real, p. ej. 8-15).
+  Prioridad CLAVE_MOVIL no permès (Mercedes / Pérez · js v1.3.72): si hay Firma KO (TR_SGX), manda el KO
+    (p. ej. 8-15); el ERROR de acceso CLAVE_MOVIL se anota en Qué pasa y no secuestra el veredicto.
+    Sin SGX → sí error_clave_movil_no_permitida (fixture C-clave_movil_no_permitida.txt).
   Objetivo: que el ultimo KO de firma mande sobre errores de acceso previos.
 
   SO en SistraHelp engañoso (documentado, sin auto-remap agresivo):
-    Linux → suele ser Android (el motor YA reasigna a Android en selector móvil).
+    Linux → siempre Android (js ≥1.3.81; ya no existe regla cliente_linux).
     Mac → puede ser Mac real o iPhone/iPad vista escritorio; solo aviso en Acción (Victum), no remap a iPhone.
 
   Enlace wiki «instalación limpia Autofirma»: ahora nota en Acción Windows; sustituir por URL del artículo cuando exista.

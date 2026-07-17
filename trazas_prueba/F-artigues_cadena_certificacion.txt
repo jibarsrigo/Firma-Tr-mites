@@ -14,7 +14,10 @@
 #   cartel "Certificado (cadena)".
 #
 # LECTURA CAU: certificado ACCV valido en VALIDe (+ firma prueba OK) y AutoFirma local OK, falla en varios equipos
-#   => servicio de validacion (@firma/FIRE) -> escalar a Portafib. El NIF fue solo un intento con otro certificado.
+#   => servicio @firma/FIRE -> escalar a Portafib. El NIF fue solo un intento con otro certificado.
+# Ejemplo CAI-2646080: ACCV fallaba en el servicio (no en el PC). Workaround: Cl@ve.
+# CONFIRMADO CAI-2646080: ACCV RSA1 PROFESIONALES (ROOT RSA EIDAS 2023) → COD_050 «No se confia en el responder» (OCSP).
+#   Workaround: Cl@ve. No es AutoFirma ni cadena del PC del ciudadano.
 #
 TR_SGX - Fi firma KO	16/07/2026 12:06:23	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
 TR_SGI - Inici firma	16/07/2026 12:06:05	ZDP5D2P2-CY2MWNT8-T80NMEDJ	18233778E	JUAN JOSE ARTIGUES MESQUIDA	00-SOLGEN	INDUSTRIA	1	1571585	208364		

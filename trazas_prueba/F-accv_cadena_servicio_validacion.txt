@@ -14,11 +14,11 @@
 #  - Instalar raices ACCV, desmarcar JMulticard, Edge/Chrome normal e incognito -> mismo problema.
 #  - Ayer firmo 3 tramites con ese certificado.
 #
-# VEREDICTO: NO es el certificado ni el equipo. Es el SERVICIO DE VALIDACION del tramite (@firma/Portafib):
-#   su almacen de confianza no valida la cadena ACCV (posible falta de raiz/intermedios ACCV o cambio de CA).
-#   VALIDe y el tramite usan almacenes distintos; el del tramite esta desactualizado para ACCV.
-# ACCION: escalar a PENDENTS PORTAFIB - 1.- Pendents 012 (revisar/actualizar cadena ACCV en @firma).
-#         Workaround para el ciudadano: firmar con Cl@ve.
+# VEREDICTO: NO es el certificado ni el equipo. Es el SERVICIO DE VALIDACION (@firma/Portafib).
+# Ejemplo real CAI-2646080: fallaban certificados ACCV a la vez; tras VALIDe OK / varios equipos → escalar Portafib.
+# Workaround ciudadano: firmar con Cl@ve. No insistir en AutoFirma ni en la cadena del PC.
+# (Detalle técnico interno, no para Acción CAU: COD_050 / no se confía en el responder OCSP.)
+# ACCION: escalar a PENDENTS PORTAFIB - 1.- Pendents 012.
 #
 # Global (app.js v1.3.31): error_cadena_certificacion (cartel "Certificado (cadena)").
 #   La accion ya contiene el criterio: VALIDe OK (validacion+firma prueba) + AutoFirma local OK + varios equipos = servicio @firma -> Portafib (indicar CA emisora, p.ej. ACCV).

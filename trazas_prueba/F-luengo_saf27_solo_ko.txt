@@ -1,0 +1,36 @@
+# Fernando Luis Luengo Rayo · IG_SUBVEN_TRANS_VEHIC (IGOIB) · 17/07/2026
+# Sustituye al antiguo F-saf27_sintetico.txt (traza real CAU).
+#
+# Qué pasó (llamada CAU):
+#   Al firmar, AutoFirma mostraba muchos certificados y ninguno parecía válido.
+#   Tras varios SAF_27 (y alguna Signatura cancel·lada Autofirm@), cerró el navegador,
+#   volvió a firmar, eligió el certificado correcto → Firma OK y cierre del trámite
+#   (ver F-luengo_saf27_cancelada_luego_ok.txt con REG+FIN).
+#   En esta fixture solo están los KO (sin SGO/REG/FIN) para probar error_autofirma_servidor.
+#
+# Global: error_autofirma_servidor (SAF_27)
+# Con método Cl@ve marcado (js ≥1.3.82): aviso «no es Cl@ve; es certificado/Autofirm@»
+# Acción: selector de certificado correcto ANTES de reinstalar AutoFirma
+TR_SGX - Fi firma KO	17/07/2026 13:07:35	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 13:06:43	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_SGX - Fi firma KO	17/07/2026 13:05:02	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 13:04:56	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_SGX - Fi firma KO	17/07/2026 13:04:48	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 13:04:33	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_SGX - Fi firma KO	17/07/2026 13:04:25	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 13:03:54	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_SGX - Fi firma KO	17/07/2026 13:03:42	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 13:02:25	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_SGX - Fi firma KO	17/07/2026 13:00:35	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 12:58:49	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_SGX - Fi firma KO	17/07/2026 12:57:23	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750	Signatura cancel·lada Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 12:54:20	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_SGX - Fi firma KO	17/07/2026 12:53:46	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 12:53:30	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_SGX - Fi firma KO	17/07/2026 12:53:11	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 12:52:30	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_SGX - Fi firma KO	17/07/2026 12:52:18	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750	Signatura cancel·lada Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 12:51:28	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_FRF - Fi formulari	17/07/2026 12:49:40	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_FRI - Inici formulari	17/07/2026 12:43:04	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		
+TR_INI - Inici del tràmit	17/07/2026 12:42:49	QZP5D2FY-V2NBCET8-T8U2XQJK	43019857J	FERNANDO LUIS LUENGO RAYO	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	6511006	3267750		

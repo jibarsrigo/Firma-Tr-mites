@@ -47,8 +47,12 @@ Render en `app.js` (agrupa líneas en bloques al detectar títulos Qué pasa / Q
 | `error_clave_8_15` | Hecho (estructura + lenguaje básico; “DNI y contraseña correctos”) |
 | `error_clave_103` | Hecho |
 | `error_clave_103_15` | Hecho (+ override 8-15+103-15) |
+| `error_clave_101` | Hecho |
+| `error_clave_104` | Hecho |
+| `error_clave_movil` | Hecho (+ overrides KO cancelada / sin código en Qué pasa/Qué hacer) |
+| `error_clave_movil_no_permitida` | Hecho |
 | `error_autofirma_cancelada` | Hecho (+ prefijo Cl@ve previo en Qué pasa; sin cierre y nota antivirus se inyectan) |
-| `error_autofirma_cancelada` — matiz antivirus | **Pendiente revisar**: que «Qué pasa» deje claro que cancelada Autofirm@ también puede ser por antivirus/firewall/proxy (hoy solo nota al final) |
+| `error_autofirma_cancelada` — matiz antivirus | Hecho (mencionado en Qué pasa; detalle antivirus sigue en nota js) |
 | `error_firma_fitxers_500` | Hecho |
 | `fallo_formulario` | Hecho (+ override sin TR_FRI / 403 en Qué hacer) |
 | `fallo_portafib` | Hecho (+ {lit} dinámico: fluxe / sesión / 502 Proxy) |
@@ -59,32 +63,35 @@ Render en `app.js` (agrupa líneas en bloques al detectar títulos Qué pasa / Q
 | `error_autofirma_cliente_movil` | Hecho |
 | `error_autofirma_cliente_generico` | Hecho (+ override cancelada Cl@ve↔Autofirm@ en Qué pasa) |
 | `error_autofirma_cliente_mac` | Hecho |
+| `error_certificado_nif_no_coincide` | Hecho (Qué pasa/Qué hacer; sin matiz cadena especulativo; nota cadena solo si literal en traza) |
+| `error_cadena_certificacion` | Hecho (VALIDe primero; si falla → paso 3 PC; sin «guiado, sin jerga»; v1.3.49) |
+| `error_autofirma_servidor` | Hecho (SAF_27 Que pasa/Que hacer; link Instalacion limpia; v1.3.52) |
+| `error_autofirma_entorno` | Hecho (FIRE/sin cierre; desempate TR_CAR; v1.3.56 / js 1.3.80) |
+| `firma_correcta_portafib` | Hecho ({lit}) |
+| `tramite_finalizado` | Hecho |
+| `tramite_registrado` | Hecho |
+| `error_fire` | Hecho (legacy) |
+| `error_autofirma` | Hecho (legacy) |
+| `error_autofirma_cliente_iphone` | Hecho |
+| `error_autofirma_cliente_android` | Hecho |
+| `error_autofirma_cliente_linux` | **Retirada** (js 1.3.81): Linux → `error_autofirma_cliente_android` |
 | `tramite_completo` | Hecho (+ nota Autofirma/Portafib previos si aplica) |
 | Estilo visual títulos | Casi cerrado (línea fina); usuario valoraba añadir teal a títulos — retomar al continuar |
 | Selector vista previa estilos | Eliminado; no reintroducir |
 
 ## Pendientes — continuar en otro momento
 
-Pausa 16/07/2026: no seguir ahora; retomar el formato Qué pasa / Qué hacer en estas reglas (sin perder info):
+Lote Qué pasa/Qué hacer **cerrado** (acciones v1.3.57): todas las reglas de `acciones.json` usan Qué pasa / Qué hacer.
 
-**Cl@ve:** `error_clave_101`, `error_clave_104`, `error_clave_movil`, `error_clave_movil_no_permitida`
-
-**Certificado / @firma:** `error_certificado_nif_no_coincide`, `error_cadena_certificacion` (hoy «Qué es / Cómo actuar»)
-
-**Autofirma:** `error_autofirma_servidor` (SAF_27), `error_autofirma_entorno`, `error_autofirma_cliente_linux`, `error_autofirma_cliente_android`, `error_autofirma_cliente_iphone`, `error_autofirma` / `error_fire` (legacy)
-
-**Cierre:** `firma_correcta`, `tramite_registrado`, `tramite_finalizado`, `firma_correcta_portafib`
-
-**Matiz:** `error_autofirma_cancelada` — meter antivirus/firewall/proxy en Qué pasa (hoy solo nota al final)
+Pendiente menor (estilo UI): valorar teal en títulos Qué pasa / Qué hacer.
 
 ## Cómo continuar
 
-1. Retomar por **lotes** cuando el usuario diga (p. ej. Cl@ve 101/104/móvil, o cierre firma_correcta / TR_REG / TR_FIN).
-2. Ir **caso a caso**: mostrar “ahora” vs “propuesta” si quiere validar, o aplicar si pide “adelante”.
-3. Mantener `mail` de cada regla; no inventar mails nuevos salvo que se pida.
-4. Excepción: `error_cadena_certificacion` (sin mail) puede ser más larga, pero con los mismos encabezados Qué pasa / Qué hacer.
-5. Tras cada lote: bump suave de `acciones.json` `version` / `_changes_today` y, si toca UI, `VERSION_JS` + badge.
-6. No hacer commit/push salvo que el usuario lo pida.
+1. Si surge casuística nueva: misma estructura Qué pasa / Qué hacer (sin perder info).
+2. Mantener `mail` de cada regla; no inventar mails nuevos salvo que se pida.
+3. Excepción: `error_cadena_certificacion` (sin mail) puede ser más larga.
+4. Tras cambios: bump suave de `acciones.json` `version` / `_changes_today` y, si toca UI, `VERSION_JS` + badge.
+5. No hacer commit/push salvo que el usuario lo pida.
 
 ## Ejemplo de referencia (8-15)
 

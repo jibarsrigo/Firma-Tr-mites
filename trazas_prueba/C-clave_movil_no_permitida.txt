@@ -1,0 +1,14 @@
+# Fixture limpia — CLAVE_MOVIL no permitida (sin KO/cierre que robe el veredicto)
+# Literal: Mètode de autenticació CLAVE_MOVIL no està permés al tràmit
+# Incluye TR_SGI para entrar en fase error_firma (la regla se evalúa ahí, antes que Cl@ve móvil genérica)
+# Marcar: Cl@ve
+# Global: error_clave_movil_no_permitida
+# Acción (json v1.3.39): Qué pasa/Qué hacer
+# Relacionadas (mixtas): C-mercedes_500_luego_8-15.txt, C-javier_500_validation_completo.txt
+
+ERROR - Error	06/07/2026 11:53:58	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Mètode de autenticació CLAVE_MOVIL no està permés al tràmit	MetodoAutenticacionException 
+ERROR - Error	06/07/2026 11:53:11	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	Mètode de autenticació CLAVE_MOVIL no està permés al tràmit	MetodoAutenticacionException 
+TR_SGI - Inici firma	06/07/2026 11:52:55	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		 
+TR_CAR - Càrrega del tràmit	06/07/2026 11:52:50	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		 
+TR_FRI - Inici formulari	06/07/2026 11:50:10	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035		 
+TR_INI - Inici del tràmit	06/07/2026 11:49:55	HIP5D2Z5-MUQIWNT8-T8CBNDWU	52313302D	MERCEDES SUERO GARCIA	IG_SOL_CERTIF_PROF	IGOIB	1	6302468	3156035	 
