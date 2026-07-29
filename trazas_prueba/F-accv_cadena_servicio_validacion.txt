@@ -23,8 +23,8 @@
 # Global (app.js v1.3.31): error_cadena_certificacion (cartel "Certificado (cadena)").
 #   La accion ya contiene el criterio: VALIDe OK (validacion+firma prueba) + AutoFirma local OK + varios equipos = servicio @firma -> Portafib (indicar CA emisora, p.ej. ACCV).
 #
-TR_SGX - Fi firma KO	16/07/2026 10:00:00	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	1571585	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
-TR_SGI - Inici firma	16/07/2026 09:59:40	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	1571585	208364		
-TR_CAR - Càrrega del tràmit	16/07/2026 09:59:30	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	1571585	208364		
-TR_FRF - Fi formulari	16/07/2026 09:58:00	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	1571585	208364		
-TR_FRI - Inici formulari	16/07/2026 09:55:00	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	1571585	208364	
+TR_SGX - Fi firma KO	16/07/2026 10:00:00	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:59:40	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 09:59:30	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_FRF - Fi formulari	16/07/2026 09:58:00	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_FRI - Inici formulari	16/07/2026 09:55:00	ACCV0000-TEST0000-T80NMEDJ	NIF0000000A	CIUTADANA (cas ACCV)	00-SOLGEN	INDUSTRIA	1	9442528	208364	

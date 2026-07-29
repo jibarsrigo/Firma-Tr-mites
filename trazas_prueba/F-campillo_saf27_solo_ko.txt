@@ -1,0 +1,36 @@
+# Rodrigo Manuel Campillo Soria · IG_SUBVEN_TRANS_VEHIC (IGOIB) · 17/07/2026
+# Sustituye al antiguo F-saf27_sintetico.txt (traza real CAU).
+#
+# Qué pasó (llamada CAU):
+#   Al firmar, AutoFirma mostraba muchos certificados y ninguno parecía válido.
+#   Tras varios SAF_27 (y alguna Signatura cancel·lada Autofirm@), cerró el navegador,
+#   volvió a firmar, eligió el certificado correcto → Firma OK y cierre del trámite
+#   (ver F-campillo_saf27_cancelada_luego_ok.txt con REG+FIN).
+#   En esta fixture solo están los KO (sin SGO/REG/FIN) para probar error_autofirma_servidor.
+#
+# Global: error_autofirma_servidor (SAF_27)
+# Con método Cl@ve marcado (js ≥1.3.82): aviso «no es Cl@ve; es certificado/Autofirm@»
+# Acción: selector de certificado correcto ANTES de reinstalar AutoFirma
+TR_SGX - Fi firma KO	17/07/2026 13:07:35	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 13:06:43	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_SGX - Fi firma KO	17/07/2026 13:05:02	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 13:04:56	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_SGX - Fi firma KO	17/07/2026 13:04:48	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 13:04:33	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_SGX - Fi firma KO	17/07/2026 13:04:25	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 13:03:54	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_SGX - Fi firma KO	17/07/2026 13:03:42	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 13:02:25	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_SGX - Fi firma KO	17/07/2026 13:00:35	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 12:58:49	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_SGX - Fi firma KO	17/07/2026 12:57:23	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409	Signatura cancel·lada Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 12:54:20	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_SGX - Fi firma KO	17/07/2026 12:53:46	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 12:53:30	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_SGX - Fi firma KO	17/07/2026 12:53:11	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409	Se ha recibido un error de Autofirma o del Cliente de Firma Móvil con el siguiente mensaje: Type: java.lang.ExceptionMessage: SAF_27: El servicio informó de un error durante la firma del lote.\n Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 12:52:30	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_SGX - Fi firma KO	17/07/2026 12:52:18	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409	Signatura cancel·lada Método de firma: Autofirm@	
+TR_SGI - Inici firma	17/07/2026 12:51:28	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_FRF - Fi formulari	17/07/2026 12:49:40	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_FRI - Inici formulari	17/07/2026 12:43:04	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		
+TR_INI - Inici del tràmit	17/07/2026 12:42:49	262YUL6S-YUQJUJE0-Q28Y2LGN	90000003Z	RODRIGO MANUEL CAMPILLO SORIA	IG_SUBVEN_TRANS_VEHIC	IGOIB	1	9474840	8015409		

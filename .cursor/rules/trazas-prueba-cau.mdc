@@ -29,13 +29,29 @@ Crear `trazas_prueba/<PREFIJO>-<slug>.txt`:
 | `T-` | Sintéticas o plantillas de prueba UI |
 | `P-` | Portafib / pre_firma / formulario |
 
+**Anonimizar SIEMPRE antes de guardar** (el repositorio es público):
+
+| Dato | Sustituir por |
+|---|---|
+| Nombre y apellidos | nombre inventado, mismo número de apellidos |
+| DNI | `90000001`…`90000099` + letra de control correcta (rango no emitido) |
+| NIE | serie `Z` + `9000001`… + letra correcta |
+| CIF | `A99xxxxx` / `B99xxxxx` con dígito de control correcto |
+| Sesión | token del mismo formato `XXXXXXXX-XXXXXXXX-XXXXXXXX` |
+| ID de expediente | otro número de 7 cifras |
+
+El mismo valor real → siempre el mismo valor ficticio, **también dentro de los literales**
+(«nif associat és X, però es requeria el nif Y»); si no, la traza deja de reproducir el caso.
+Se conservan fechas, horas, códigos de trámite/organismo, eventos TR_, literales y CAI.
+Tras anonimizar, comprobar que el analizador sigue dando la misma regla global.
+
 **Formato del archivo**
 
 - Líneas `# …` al inicio: contexto CAU, método a marcar, Flujo de Firma esperado, regla global.
-- Luego la traza **tal cual** (orden SistraHelp: lo más reciente arriba).
-- Sin datos inventados.
+- Luego la traza **tal cual** (orden SistraHelp: lo más reciente arriba), ya anonimizada.
+- Sin datos inventados en la parte técnica (eventos, literales, tiempos).
 
-**Slug**: corto, minúsculas, guiones (`8-15_reiente_maria-soledad`).
+**Slug**: corto, minúsculas, guiones (`8-15_reiente_sofia-aurora`).
 
 ## 3. Actualizar README
 

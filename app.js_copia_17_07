@@ -383,7 +383,7 @@ function aplicarIntroAccionAutofirmaCliente(textoAccion, lineas, idRegla) {
   const hayTimeout = !!counts.timeout;
   const partes = [];
 
-  // Varios tipos de KO en la misma traza (p. ej. Victum: servidor intermedio + cancelada):
+  // Varios tipos de KO en la misma traza (p. ej. Llevant: servidor intermedio + cancelada):
   // no quedarse solo con el último/predominante.
   if (counts["fitxer buit"] && !/fitxer buit|fitxer Signat està buit|fichero firmado está vacío/i.test(t)) {
     partes.push(
@@ -1240,7 +1240,7 @@ btnDetalles.onclick = () => {
   <li>· <b>error_registro_presentador:</b> Firma OK + «registrat pel presentador» sin TR_REG → incidencias (no reabrir firma).</li>
   <li>· <b>error_clave_firma_cancelada:</b> Acción Qué pasa/Qué hacer (emisión mismo día + móvil; probar ordenador; nota QAA/sin cierre si aplica).</li>
   <li>· <b>error_validacion_certificado:</b> Acción Qué pasa/Qué hacer; método del KO (Cl@veFirm@ / Autofirm@) dentro de Qué pasa.</li>
-  <li>· Fixtures nuevas en <b>trazas_prueba/</b> (Sastre, Tabasco, Distribuidora, Estrada, Varela, etc.).</li>
+  <li>· Fixtures nuevas en <b>trazas_prueba/</b> (Morey, Olmedo, Insulars, Segui, Salvati, etc.).</li>
   <li>· Comentarios de versión: bloque VERSION en app.js, cabecera HTML, <b>_changelog</b> en acciones.json.</li>
 
   <br>

@@ -287,13 +287,13 @@ VERSION 1.3.71  - error_clave_movil: Acción Qué pasa/Qué hacer también en ov
 
 VERSION 1.3.72  - CLAVE_MOVIL no permès no tapa Firma KO (8-15/códigos); nota en Qué pasa si ambos.
 
-VERSION 1.3.73  - tramite_completo / cierre OK: notas Cl@ve KO previos + SGO Autofirm@ + QAA (Marta Linares).
+VERSION 1.3.73  - tramite_completo / cierre OK: notas Cl@ve KO previos + SGO Autofirm@ + QAA (Laura Vilanova).
 
-VERSION 1.3.74  - hayAutofirmaKoPrevio: no contar cancelada Cl@veFirm@; tramite_completo nota CLAVE_MOVIL (Rasero).
+VERSION 1.3.74  - hayAutofirmaKoPrevio: no contar cancelada Cl@veFirm@; tramite_completo nota CLAVE_MOVIL (Quetglas).
 
 VERSION 1.3.75  - Nota QAA enriquecida y siempre en Acción si hay QaaRecarga en la traza.
 
-VERSION 1.3.76  - NIF ES/«associado» + NIE; KO tras Firma OK manda (Crespi multi-firma).
+VERSION 1.3.76  - NIF ES/«associado» + NIE; KO tras Firma OK manda (Canaves multi-firma).
 
 VERSION 1.3.77  - NIF Acción: cadena solo si hay literal en traza (no especulativo).
 
@@ -447,7 +447,7 @@ function aplicarIntroAccionAutofirmaCliente(textoAccion, lineas, idRegla) {
   const hayTimeout = !!counts.timeout;
   const partes = [];
 
-  // Varios tipos de KO en la misma traza (p. ej. Victum: servidor intermedio + cancelada):
+  // Varios tipos de KO en la misma traza (p. ej. Llevant: servidor intermedio + cancelada):
   // no quedarse solo con el último/predominante.
   if (counts["fitxer buit"] && !/fitxer buit|fitxer Signat està buit|fichero firmado está vacío/i.test(t)) {
     partes.push(
@@ -818,7 +818,7 @@ function esErrorNifCertificadoNoCoincideHelper(linea) {
 }
 
 // 👉 Extrae {cert, requerido} de la línea del KO de NIF no coincidente (para el mensaje).
-//    Acepta NIF (12345678A) y NIE (X2007278E / Y… / Z…).
+//    Acepta NIF (12345678A) y NIE (X1234567L / Y… / Z…).
 function extraerNifsCertificadoNoCoincide(linea) {
   const s = String(linea || "");
   const idDoc = "([XYZ]\\d{7,8}[A-Z]|\\d{7,8}[A-Z])";
@@ -1319,7 +1319,7 @@ btnDetalles.onclick = () => {
   <li>· <b>error_registro_presentador:</b> Firma OK + «registrat pel presentador» sin TR_REG → incidencias (no reabrir firma).</li>
   <li>· <b>error_clave_firma_cancelada:</b> Acción Qué pasa/Qué hacer (emisión mismo día + móvil; probar ordenador; nota QAA/sin cierre si aplica).</li>
   <li>· <b>error_validacion_certificado:</b> Acción Qué pasa/Qué hacer; método del KO (Cl@veFirm@ / Autofirm@) dentro de Qué pasa.</li>
-  <li>· Fixtures nuevas en <b>trazas_prueba/</b> (Sastre, Tabasco, Distribuidora, Estrada, Varela, etc.).</li>
+  <li>· Fixtures nuevas en <b>trazas_prueba/</b> (Morey, Olmedo, Insulars, Segui, Salvati, etc.).</li>
   <li>· Comentarios de versión: bloque VERSION en app.js, cabecera HTML, <b>_changelog</b> en acciones.json.</li>
 
   <br>
@@ -2240,7 +2240,7 @@ else if (hayErrorCadenaCertificacion) {
 else if (hayClaveMovilNoPermitida && !haySGX) {
 
   // 👉 Solo si NO hay Firma KO: un ERROR de acceso CLAVE_MOVIL no debe tapar
-  //    el último TR_SGX (8-15, 500, cancelada…). Casos Mercedes / Pérez Santiago.
+  //    el último TR_SGX (8-15, 500, cancelada…). Casos Paloma / Roman Vega.
   idReglaDetectada = "error_clave_movil_no_permitida";
 
 }
