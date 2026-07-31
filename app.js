@@ -329,6 +329,8 @@ VERSION 1.3.92  - Flujo de Firma: PLUGIN Autofirma = fitxer buit (alineado con c
 VERSION 1.3.93  - Arranque: VERSION_HTML con typeof (no tumba botones si falta la constante).
 
 VERSION 1.3.94  - TR_BOR (Esborrat): regla tramite_borrado manda sobre KO/QAA previos.
+
+VERSION 1.3.95  - tramite_borrado: Acción/frase buscan por DNI en SistraHelp otro trámite.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -340,7 +342,7 @@ VERSION 1.3.94  - TR_BOR (Esborrat): regla tramite_borrado manda sobre KO/QAA pr
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.94";
+const VERSION_JS = "1.3.95";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -2826,7 +2828,7 @@ else if (idReglaDetectada === "tramite_borrado") {
   cartelDiagnostico = cartelAzul("Trámite borrado");
   fraseDiagnostico = "Consta borrado del trámite ("
     + literalFlujo("TR_BOR — Esborrat del tràmit")
-    + "). El expediente ya no está activo; no seguir diagnosticando firma sobre este trámite.";
+    + "). El expediente ya no está activo. Conviene buscar en SistraHelp por DNI por si ha iniciado otro trámite.";
   if (hayErrorClaveReal || hayErrorQaaRecarga) {
     fraseDiagnostico += " Los errores previos (p. ej. Cl@ve / QAA) quedan como contexto histórico.";
   }

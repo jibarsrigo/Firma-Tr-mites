@@ -1,7 +1,8 @@
 {
-  "version": "1.3.64",
-  "_changes_today": "2026-07-31: tramite_borrado (TR_BOR Esborrat) Qué pasa/Qué hacer (v1.3.64)",
+  "version": "1.3.65",
+  "_changes_today": "2026-07-31: tramite_borrado: buscar en SistraHelp por DNI otro trámite (v1.3.65)",
   "_changelog": [
+    "1.3.65 - tramite_borrado: Qué hacer buscar por DNI en SistraHelp si ha iniciado otro trámite",
     "1.3.64 - tramite_borrado: TR_BOR manda; no diagnosticar firma sobre trámite borrado",
     "1.3.63 - windows/mac/movil: sin paso «marcar Certificado+sistema» (ya elegido)",
     "1.3.62 - generico: aviso Clave/Autofirma lo pone js como 1.a linea Que pasa",
@@ -220,7 +221,7 @@
 
     {
       "id": "tramite_borrado",
-      "accion": "Qué pasa:\nEn la traza aparece TR_BOR (Esborrat del tràmit): el trámite fue borrado. Ya no está activo.\nNo tiene sentido seguir con diagnóstico de firma (Cl@ve, Autofirma, etc.) sobre este expediente.\n\nQué hacer:\n1. Informar al ciudadano de que ese trámite consta borrado.\n2. Si debe continuar, indicar que inicie un trámite nuevo (Carpeta Ciudadana / el mismo procedimiento).\n3. No reabrir ni tratar como incidencia de firma activa sobre el expediente borrado.\n*Si en la traza hay Firma KO o QAA previos, son historial; lo que manda es el borrado."
+      "accion": "Qué pasa:\nEn la traza aparece TR_BOR (Esborrat del tràmit): el trámite fue borrado. Ya no está activo.\n\nQué hacer:\n1. Informar al ciudadano de que ese trámite consta borrado.\n2. Buscar en SistraHelp por DNI por si ha iniciado otro trámite (mismo o parecido) y analizar esa traza si existe.\n3. Si debe continuar y no hay otro trámite, indicar que inicie uno nuevo (Carpeta Ciudadana / el mismo procedimiento).\n4. No reabrir ni tratar como incidencia de firma activa sobre el expediente borrado.\n*Si en la traza hay Firma KO o QAA previos, son historial; lo que manda es el borrado."
     },
 
     {
