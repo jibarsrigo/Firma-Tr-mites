@@ -1,0 +1,1484 @@
+﻿/* =====================================================
+           FUNCIONALIDADES IMPLEMENTADAS
+   =====================================================
+
+VERSION 1.0     - Se valida que la traza y el m├®todo de firma sean correctos antes de analizar 
+                - Se muestran paneles informativos para errores de acceso (SAML y p├ígina en blanco) 
+                - Se normaliza la traza a may├║sculas para evitar problemas en la detecci├│n 
+                - Se detectan los eventos TR_ principales dentro de la traza 
+                - Se genera un diagn├│stico t├®cnico din├ímico en funci├│n de los TR_ detectados 
+                - Se genera diagn├│stico + acci├│n basada en flujo TR_ 
+ VERSION 1.1    - Se muestra lectura html json y js panel superior html y editable desde codigo 
+ VERSION 1.1.1  - Se A├▒ade ­ƒö┤ DETECCI├ôN DE REGLAS (PATRONES) con la primera regla par el Formulario
+ VERSION 1.1.2  - MOTOR BASE DE AN├üLISIS TR_ ÔåÆ detecci├│n ÔåÆ ID regla ÔåÆ control ÔåÆ salida personalizada ÔåÆ stop 
+ VERSION 1.2.0  - Introducci├│n de contexto de flujo estructurado (objeto contexto)
+                    - Modelizaci├│n de estados: pre_firma / error_firma / firma_ok
+                    - Simplificaci├│n del ├írbol de decisi├│n basado en fase del flujo
+                    - Mejora de robustez ante trazas incompletas o con orden irregular
+ VERSION 1.2.1  - Detecci├│n avanzada de errores t├®cnicos:
+                         FLUXE, SESSION, EXCEPTION, SAF_
+                    - Detecci├│n espec├¡fica de Autofirma (SAF_27)
+                    - Detecci├│n b├ísica de Cl@ve por patr├│n "CODI ERROR"
+                    - Separaci├│n proveedor firma: Cl@ve / Autofirma / FIRE                
+ VERSION 1.2.2  - Mejora del an├ílisis en pre_firma:
+                        diferenciaci├│n entre fallo formulario vs Portafib
+                    - Introducci├│n de l├│gica de reintentos (contadores TR_FRI / TR_FRF)
+                    - Detecci├│n de errores reales de sesi├│n (Portafib/Soffid)
+                    - Primer separaci├│n conceptual CAU:error ciudadano vs error plataforma
+ VERSION 1.2.3  - Limpieza avanzada de literales de error:
+                        eliminaci├│n de cabeceras "ERROR"
+                        eliminaci├│n de trazas t├®cnicas (Exception, Script, Unknown sourceÔÇª)
+                    - Eliminaci├│n de ruido inicial (fechas, IDs, NIF, etc.)
+                    - Extracci├│n del literal funcional real del formulario
+                    - Introducci├│n de patrones de corte (DOMINI, LES, EL, LA, ES)
+
+ VERSION 1.2.4  - Separaci├│n definitiva de tipos de error: Ô£ö Error de sesi├│n / flujo (Portafib) y Ô£ö Error de formulario (usuario)
+                    - Prioridad absoluta del error de sesi├│n sobre el resto
+                    - Implementaci├│n FASE 2:
+                        detecci├│n de errores SIN "ERROR"
+                        (mensajes funcionales tipo "Debe ser...", "Campo obligatorioÔÇª")
+                    - Limpieza contextual inteligente:
+                        solo se aplica recorte si la l├¡nea contiene "ERROR"
+                    - Integraci├│n final:
+                        detecci├│n + clasificaci├│n + limpieza coherente seg├║n tipo de error
+                    - Motor alineado con diagn├│stico real CAU:
+                        flujo + proveedor + literal interpretado correctamente
+*/
+  
+// C├ôMO A├æADIR REGLAS:
+// 1. A├▒adir condici├│n en ÔÇ£DETECCI├ôN DE REGLASÔÇØ ÔåÆ idReglaDetectada = "nombre_regla"
+// 2. A├▒adir la acci├│n en acciones.json con el mismo id
+// 3. La regla tiene prioridad y sustituye la l├│gica est├índar
+
+
+
+// ­ƒö╣ VERSION JS (editable manual) 
+// Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
+const VERSION_JS = "1.3.0";
+
+// Variable global donde se guarda el contenido de acciones.json
+let accionesJSON = null;
+
+// =====================================
+// ­ƒö╣ CONSTANTES CENTRALIZADAS
+// =====================================
+// Valores importantes que se usan en varias partes del c├│digo
+
+const LITERAL_FIELD_INDEX = 10;           // Estructura de traza: la primera informaci├│n funcional empieza en el campo 10
+                                           // (despu├®s de fecha, hora, ID y 7 campos t├®cnicos iniciales)
+const MIN_LITERAL_LENGTH = 20;            // Longitud m├¡nima para considerar una l├¡nea como posible error (evitar ruido)
+const RE_FECHA_CABECERA = /^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+\s+[^\s]+\s+/; // Patr├│n: elimina cabecera de fecha/hora
+
+
+// Espera a que el HTML est├® completamente cargado antes de ejecutar
+document.addEventListener("DOMContentLoaded", () => {
+
+console.log("HTML v" + VERSION_HTML);
+console.log("JS v" + VERSION_JS);
+
+  
+document.getElementById("versionHTML").innerText =
+  "html " + VERSION_HTML;
+
+document.getElementById("versionJS").innerText =
+  "js " + VERSION_JS;
+
+
+
+
+// =====================================
+// REFERENCIAS A ELEMENTOS HTML
+// =====================================
+// Guardamos todos los elementos que se van a usar
+
+const btnDetalles = document.getElementById("btnDetalles");
+const btnTabla = document.getElementById("btnTabla");
+const checkSaml = document.getElementById("checkSaml");
+const checkBlanco = document.getElementById("checkBlanco");
+const btnAnalizar = document.getElementById("btnAnalizar");
+const btnLimpiar = document.getElementById("btnLimpiar");
+const btnActualizar = document.getElementById("btnActualizar");
+const placeholder = document.getElementById("placeholder");
+const metodoClave = document.getElementById("metodoClave");
+const metodoCert = document.getElementById("metodoCert");
+const bloqueSistema = document.getElementById("bloqueSistema");
+const sisPC = document.getElementById("sisPC");
+const sisMovil = document.getElementById("sisMovil");
+
+
+// =====================================
+// PANEL POPUP (mensajes informativos)
+// =====================================
+
+const panel = document.getElementById("panel");
+const panelTitulo = document.getElementById("panelTitulo");
+const panelContenido = document.getElementById("panelContenido");
+
+function abrirPanel(titulo, contenido) {      // Abre un panel con t├¡tulo + contenido. ­ƒæë Muestra panel con informaci├│n
+  panel.classList.remove("hidden");
+  panelTitulo.innerText = titulo;
+  panelContenido.innerHTML = contenido;
+}
+
+function cerrarPanelFunc() {      // ­ƒæë Oculta panel
+  panel.classList.add("hidden");
+}
+
+// Bot├│n cerrar panel
+document.getElementById("btnCerrarPanel").onclick = cerrarPanelFunc;
+
+// =====================================
+// ­ƒö┤ BOT├ôN DETALLES - Muestra informaci├│n de la versi├│n
+// =====================================
+
+btnDetalles.onclick = () => {
+  abrirPanel("Detalles del analizador", `
+<ul>
+  <li><b>Analizador de trazas SistraHelp</b> orientado a soporte t├®cnico CAU.</li>
+  <li>Versi├│n actual: <b>v 1.2.9</b> (interfaz <b>index.html</b>).</li>
+
+  <br>
+
+  <li><b>Qu├® hace al analizar una traza:</b></li>
+  <li>Muestra el <b>flujo del tr├ímite</b> (eventos TR_) con p├¡ldoras de colores y etiquetas.</li>
+  <li>Indica el <b>diagn├│stico</b> (cartel + frase explicativa dentro del flujo, cuando aplica).</li>
+  <li>Propone la <b>acci├│n recomendada</b> y el enlace <b>Mail</b> cuando existe.</li>
+  <li>Lista los <b>literales detectados</b> con contador de repeticiones (xN), o avisa si no hay literales.</li>
+
+  <br>
+
+  <li><b>Estado actual (completado y validado):</b></li>
+  <li>Ô£ö Interfaz estilo V5: tarjetas con cabecera gris (Flujo del tr├ímite, Acci├│n, Literales detectados).</li>
+  <li>Ô£ö Apartados laterales plegables (Problemas de acceso, Traza SistraHelp, M├®todo).</li>
+  <li>Ô£ö <b>Fallo formulario</b>: presentaci├│n completa (flujo + acci├│n + literales + mail).</li>
+  <li>Ô£ö <b>Fallo Portafib</b>: presentaci├│n completa, con acci├│n din├ímica seg├║n literales
+      (<i>El fluxe no es v├álid</i> y/o <i>Excepci├│ al generar sessi├│ firma</i>).</li>
+  <li>Ô£ö <b>Tr├ímite finalizado OK</b> sin incidencias.</li>
+  <li>Ô£ö <b>Tr├ímite finalizado OK con incidencia Portafib</b> en la traza (caso especial).</li>
+
+  <br>
+
+  <li><b>Pendiente de mejora:</b></li>
+  <li>­ƒöº Misma presentaci├│n visual del flujo (cartel + frase) para Autofirma, Cl@ve y FIRE.</li>
+  <li>­ƒöº Limpieza de literales: mostrar solo el mensaje ├║til, sin ruido t├®cnico (fechas, IDs, excepciones).</li>
+  <li>­ƒöº Ajustes menores en casos de firma (Cl@ve, Autofirma, certificado local).</li>
+
+  <br>
+
+  <li><b>Nota:</b> La herramienta evoluciona por fases. Cada cambio se prueba antes de pasar al siguiente.</li>
+</ul>
+`);
+};
+
+
+// =====================================
+// ­ƒö┤ BOT├ôN TABLA - De momento informativo
+// =====================================
+
+btnTabla.onclick = (e) => {
+  e.preventDefault();
+  abrirPanel("Motor de an├ílisis (reglas)", `
+<ul>
+  <li><b>Funcionamiento del analizador:</b></li>
+  <li>Lee la traza completa de SistraHelp respetando el orden real de ejecuci├│n.</li>
+  <li>Reconstruye el flujo con eventos TR_: TR_FRI ÔåÆ TR_FRF ÔåÆ TR_SGI ÔåÆ TR_SGX / TR_SGO ÔåÆ TR_REG ÔåÆ TR_FIN.</li>
+  <li>Clasifica el caso en una de tres fases: <b>pre-firma</b>, <b>error en firma</b> o <b>firma correcta</b>.</li>
+  <li>Aplica la regla correspondiente de <b>acciones.json</b> (v 1.1.6) y muestra acci├│n + mail cuando existe.</li>
+
+  <br>
+
+  <li><b>Reglas activas y estado de presentaci├│n:</b></li>
+  <li>Ô£ö <b>fallo_formulario</b> ÔÇö No llega a firma, sin error de flujo Portafib. Presentaci├│n completa.</li>
+  <li>Ô£ö <b>fallo_portafib</b> ÔÇö No llega a firma por error de flujo/sesi├│n. Presentaci├│n completa; acci├│n din├ímica si aparecen
+      <i>El fluxe no es v├álid</i> y/o <i>Excepci├│ al generar sessi├│ firma</i>.</li>
+  <li>Ô£ö <b>firma_correcta</b> ÔÇö Tr├ímite finalizado correctamente, sin incidencias Portafib.</li>
+  <li>Ô£ö <b>firma_correcta_portafib</b> ÔÇö Tr├ímite OK pero con error Portafib en la traza. Acci├│n din├ímica seg├║n literales.</li>
+  <li>ÔÜÖ <b>error_clave_8_15</b> ÔÇö Cl@ve c├│digos 8ÔÇô15. L├│gica activa; presentaci├│n visual del flujo pendiente.</li>
+  <li>ÔÜÖ <b>error_clave_103</b> ÔÇö Cl@ve contrase├▒a bloqueada. L├│gica activa; presentaci├│n visual pendiente.</li>
+  <li>ÔÜÖ <b>error_clave_103_15</b> ÔÇö Cl@ve certificado bloqueado. L├│gica activa; presentaci├│n visual pendiente.</li>
+  <li>ÔÜÖ <b>error_clave_101</b> ÔÇö Cl@ve nivel de registro insuficiente. L├│gica activa; presentaci├│n visual pendiente.</li>
+  <li>ÔÜÖ <b>error_clave_104</b> ÔÇö Cl@ve registro d├®bil. L├│gica activa; presentaci├│n visual pendiente.</li>
+  <li>ÔÜÖ <b>error_autofirma</b> ÔÇö Error SAF_27 (Autofirma). L├│gica activa; presentaci├│n visual pendiente.</li>
+  <li>ÔÜÖ <b>error_fire</b> ÔÇö Certificado local (FIRE). L├│gica activa; presentaci├│n visual pendiente.</li>
+
+  <br>
+
+  <li><b>Criterios clave de decisi├│n:</b></li>
+  <li>Si hay <b>TR_FRF</b> pero no <b>TR_SGI</b> ÔåÆ no llega a firma (formulario o Portafib).</li>
+  <li>Si aparece literal de flujo (<i>El fluxe no es v├álid</i>, sesi├│n firma, etc.) ÔåÆ Portafib.</li>
+  <li>Si no hay error de flujo ÔåÆ formulario.</li>
+  <li>Si hay <b>TR_SGO</b> ÔåÆ firma correcta (con o sin incidencia Portafib previa).</li>
+  <li>En fase de firma: prioridad Autofirma (SAF_27) ÔåÆ Cl@ve ÔåÆ FIRE.</li>
+
+  <br>
+
+  <li><b>Pendiente:</b></li>
+  <li>­ƒöº Cartel + frase en el flujo para casos de firma (Cl@ve, Autofirma, FIRE).</li>
+  <li>­ƒöº Limpieza estructural de literales (mostrar mensaje ├║til sin ruido t├®cnico).</li>
+
+  <br>
+
+  <li><b>Nota:</b> Ô£ö = regla con presentaci├│n completa validada. ÔÜÖ = regla detectada, presentaci├│n visual en progreso.</li>
+</ul>
+`);
+};
+
+
+
+// =====================================
+// CHECK SAML - Muestra ayuda sobre error SAM
+// =====================================
+
+checkSaml.onchange = () => {
+  if (checkSaml.checked) {
+    checkBlanco.checked = false;
+    abrirPanel("El ciudadano ve error SAML", `
+<b>SAML 003002 (Authentication Failed: Detalle error: no certificate has been submitted)</b><br>
+La pasarela de acceso no ha recibido un certificado digital v├ílido para autenticarse. Causas habituales:<br><br>
+
+No se ha seleccionado ning├║n certificado al acceder o el navegador no env├¡a correctamente el certificado.<br><br>
+El certificado est├í caducado, revocado o no es v├ílido.<br><br>
+El equipo no detecta correctamente el DNIe o el lector no funciona bien.<br><br>
+Alg├║n proxy, firewall o antivirus est├í bloqueando la comunicaci├│n con la pasarela.<br><br>
+
+<b>SAML (Response is fail: Contrase├▒a incorrecta. Si no recuerda su contrase├▒a, acceda al servicio de ÔÇ£Olvido de contrase├▒aÔÇØ.)</b><br>
+La autenticaci├│n con Cl@ve no se ha completado correctamente porque la contrase├▒a introducida no es v├ílida. Causas habituales:<br><br>
+
+La contrase├▒a de Cl@ve Permanente es incorrecta.<br>
+Es necesario restablecerla desde la opci├│n ÔÇ£Olvido de contrase├▒aÔÇØ.
+    `);
+  } else cerrarPanelFunc();
+};
+
+
+// =====================================
+// CHECK P├üGINA EN BLANCO
+// =====================================
+
+checkBlanco.onchange = () => {
+  if (checkBlanco.checked) {
+    checkSaml.checked = false;
+    abrirPanel("La p├ígina queda en blanco", `
+La p├ígina queda en blanco<br><br>
+
+Si al acceder el ciudadano ve la p├ígina en blanco, debe considerarse primero como un posible problema de acceso o de pasarela. En estos casos, es posible que el ciudadano no llegue a entrar realmente en el tr├ímite y que no se genere traza ├║til en SistraHelp.<br><br>
+
+Qu├® revisar:<br>
+- Puede estar fallando la pasarela de acceso.<br>
+- Puede haberse producido una redirecci├│n incompleta o fallida tras la identificaci├│n.<br>
+- El navegador, una extensi├│n, un proxy, firewall o antivirus pueden estar bloqueando la carga correcta de la p├ígina.<br><br>
+
+Prueba recomendada:<br>
+Conviene probar a acceder a Carpeta Ciudadana GOB para comprobar si la pasarela carga correctamente all├¡. Si tampoco carga o el comportamiento es similar, la orientaci├│n principal debe ser problema de acceso/pasarela, m├ís que de firma o del tr├ímite.
+    `);
+  } else cerrarPanelFunc();
+};
+  
+
+// =====================================
+// ­ƒö╣ PLEGAR "PROBLEMAS DE ACCESO"
+// =====================================
+// ­ƒæë Al contraer el apartado, limpiamos la selecci├│n y cerramos el panel mostrado
+const cardAcceso = document.getElementById("cardAcceso");
+if (cardAcceso) {
+  cardAcceso.addEventListener("toggle", () => {
+    if (!cardAcceso.open) {
+      checkSaml.checked = false;
+      checkBlanco.checked = false;
+      cerrarPanelFunc();
+    }
+  });
+}
+
+// =====================================
+// ­ƒö┤ BOT├ôN ANALIZAR 
+// =====================================
+
+btnAnalizar.onclick = () => {      // ­ƒæë Inicia el an├ílisis completo de la traza y genera resultados
+
+  // Oculta resultados anteriores
+
+
+  // Ô£à 1. VALIDACI├ôN M├ëTODO
+  if (!metodoClave.checked && !metodoCert.checked) {
+    abrirPanel("Validaci├│n", "Debe seleccionar m├®todo");
+    return;
+  }
+
+  // Ô£à 2. VALIDACI├ôN SISTEMA (ANTES que la traza)
+  if (metodoCert.checked && !sisPC.checked && !sisMovil.checked) {
+    abrirPanel("Validaci├│n", "Debe seleccionar sistema");
+    return;
+  }
+
+  // Ô£à 3. VALIDACI├ôN TRAZA
+  // ­ƒæë Se obtiene la traza pegada por el usuario
+const texto = document.getElementById("inputTraza").value.trim();
+
+  // ­ƒæë IMPORTANTE: Guardar l├¡neas originales ANTES de convertir a may├║sculas.
+  // Esto preserva el formato original (tabuladores, espacios, caracteres especiales) 
+  // para mostrar los literales de error exactamente como el usuario los peg├│.
+const lineasOriginales = texto.split(/\r?\n/);
+
+  // ­ƒæë Se convierte todo a may├║sculas. Evita errores al buscar textos (TR_, literales, etc.)
+const traza = texto.toUpperCase();
+
+  // ­ƒæë Si no hay texto ÔåÆ error
+if (!texto) {
+  abrirPanel("Validaci├│n", "Todav├¡a no ha pegado trazas");
+  return;
+}
+  
+// ­ƒæë Si no contiene TR_ ÔåÆ no es traza v├ílida
+if (!traza.includes("TR_")) {
+  abrirPanel("Validaci├│n", `Esto no es una traza v├ílida`);
+  return;
+}
+
+
+// =====================================
+// ­ƒö┤ DETECCI├ôN DE EVENTOS TR_
+// =====================================
+
+// ­ƒæë Paso 0: dividimos la traza en l├¡neas (ANTES de usarla)
+// ­ƒö╣ necesario para fase 9 (orden real)
+const lineas = traza.split(/\r?\n/);
+
+// ­ƒæë Extraemos eventos TR_ en ORDEN REAL
+// ­ƒö╣ esto nos permite saber cu├íl es el ├║ltimo evento v├ílido
+const eventos = lineas
+  .filter(linea => linea.includes("TR_"))
+  .map(linea => linea.match(/TR_[A-Z]+/)?.[0])
+  .filter(Boolean);
+
+// ­ƒæë ├Ültimo evento real del flujo
+// ­ƒö╣ controlamos caso sin eventos para evitar error
+
+const ultimoEvento = eventos.length > 0
+  ? eventos[eventos.length - 1]
+  : null;
+
+
+// ­ƒæë Detectamos presencia b├ísica (seguimos usando l├│gica actual)
+const hayFRI = eventos.includes("TR_FRI");
+const hayFRF = eventos.includes("TR_FRF");
+const haySGI = eventos.includes("TR_SGI");
+const haySGX = eventos.includes("TR_SGX");
+const haySGO = eventos.includes("TR_SGO");
+
+// ­ƒö╣ NUEVO: eventos para flujo visual
+const eventosFlujo = {
+  TR_FRI: hayFRI,
+  TR_FRF: hayFRF,
+  TR_SGI: haySGI,
+  TR_SGX: haySGX,
+  TR_SGO: haySGO,
+  TR_REG: eventos.includes("TR_REG"),
+  TR_FIN: eventos.includes("TR_FIN")
+};
+
+  // =====================================
+// ­ƒö┤ CONTEXTO DE FLUJO (PASO 1)
+// =====================================
+// ­ƒæë NO sustituye l├│gica actual
+// ­ƒæë Solo encapsula el flujo en un objeto reutilizable
+
+const contexto = {
+  llegaFirma: haySGI,
+  errorPreFirma: hayFRF && !haySGI,
+  errorFirma: haySGX,
+  firmaOK: haySGO,
+  hayFinFormulario: hayFRF
+};
+
+
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+// ­ƒö╣ FASE DEL FLUJO (PASO 3)
+// ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+// Aqu├¡ damos un paso m├ís: no solo booleanos,
+// ahora clasificamos el estado del tr├ímite en una "fase"
+// Esto nos permitir├í simplificar el ├írbol en siguientes versiones
+
+// ­ƒæë Fase basada en ├║ltimo evento (seguro)
+
+if (!ultimoEvento) {
+
+  // ­ƒæë No hay eventos ÔåÆ tratamos como pre_firma
+  contexto.fase = "pre_firma";
+}
+else if (ultimoEvento === "TR_FRF") {
+  contexto.fase = "pre_firma";
+}
+else if (ultimoEvento === "TR_SGX") {
+  contexto.fase = "error_firma";
+}
+else if (ultimoEvento === "TR_SGO") {
+  contexto.fase = "firma_ok";
+}
+else {
+  // ­ƒæë fallback seguridad
+  if (!contexto.llegaFirma) {
+    contexto.fase = "pre_firma";
+  } else if (contexto.errorFirma) {
+    contexto.fase = "error_firma";
+  } else if (contexto.firmaOK) {
+    contexto.fase = "firma_ok";
+  } else {
+    contexto.fase = "desconocida";
+  }
+}
+
+
+  
+
+// DEBUG para ver claramente en qu├® fase est├í cada traza
+console.log("FASE:", contexto.fase);
+
+  
+  
+
+// ­ƒöì DEBUG
+console.log("CONTEXTO:", contexto);
+
+
+// =====================================
+// ´┐¢ HELPERS PUROS (sin duplicaci├│n)
+// =====================================
+// Funciones reutilizables para detectar tipos de error
+
+const esErrorTecnicoHelper = (linea) => {
+  return linea.includes("FLUXE") ||
+         linea.includes("SESSI├ô") ||
+         linea.includes("SESSION") ||
+         linea.includes("EXCEPCI├ô") ||
+         linea.includes("EXCEPTION") ||
+         linea.includes("SAF_") ||
+         linea.includes("ERROR") ||
+         linea.includes("CLAVEFIRMA") ||
+         linea.includes("CODI ERROR") ||
+         linea.includes("PROVE├ÅDOR: CLAVEFIRMA");
+};
+
+const esPosibleErrorFormularioHelper = (linea) => {
+  return !linea.includes("TR_") &&
+         !linea.includes("HTTP") &&
+         !linea.includes("HTTPS") &&
+         linea.length > MIN_LITERAL_LENGTH &&
+         /[A-Z├Ç-├Ü]{3,}/.test(linea);
+};
+
+
+// =====================================
+// ­ƒö┤ DETECCI├ôN DE LITERALES (ERRORES)
+// =====================================
+// ­ƒæë AQU├ì es donde se a├▒aden nuevos textos de error
+// ­ƒæë SOLO modificar aqu├¡ para a├▒adir nuevos literales
+// ­ƒæë NO tocar el resto del c├│digo
+
+// ­ƒæë Paso 1: filtramos solo l├¡neas que contienen errores reales
+// ­ƒö╣ ampliamos detecci├│n para cubrir casos de sesi├│n, firma y t├®cnicos
+
+const lineasErrorEntries = lineas
+  .map((linea, indice) => ({ linea, original: lineasOriginales[indice] || linea }))
+  .filter(entry => {
+    const esErrorTecnico = esErrorTecnicoHelper(entry.linea);
+    const esPosibleErrorFormulario = esPosibleErrorFormularioHelper(entry.linea);
+    return esErrorTecnico || esPosibleErrorFormulario;
+  });
+
+const lineasError = lineasErrorEntries.map(entry => entry.linea);
+
+// ­ƒæë Paso 2: eliminamos duplicados
+// ­ƒö╣ nos quedamos solo con errores ├║nicos
+const erroresUnicos = [...new Set(lineasError)];
+const erroresUnicosOriginales = [];
+const seenLineas = new Set();
+lineasErrorEntries.forEach(entry => {
+  if (!seenLineas.has(entry.linea)) {
+    seenLineas.add(entry.linea);
+    erroresUnicosOriginales.push(entry.original);
+  }
+});
+
+
+                                        
+
+// ======================================================
+// ­ƒæë DETECCI├ôN AVANZADA DE ERRORES REALES (FASE 10)
+// ======================================================
+
+// ­ƒæë Detectamos Autofirma (caso prioritario)
+const hayAutofirmaError =
+  erroresUnicos.some(linea =>
+    linea.includes("SAF_27")
+  );
+
+// ­ƒæë Detectamos c├│digos reales de Cl@ve
+// ­ƒö╣ estos SIEMPRE indican proveedor Cl@ve
+
+// ­ƒæë Detectamos c├│digos reales de Cl@ve (FASE 10)
+// ­ƒö╣ patr├│n completo: Codi Error + Proveedor clavefirma + Tipus Resultat
+
+// ======================================================
+// ­ƒæë DETECCI├ôN REAL CL@VE CON ORDEN (FASE 10 PRO)
+// ======================================================
+
+
+// ­ƒæë Buscamos la PRIMERA aparici├│n real en la traza
+// ­ƒö╣ usamos lineas (NO erroresUnicos) para respetar orden real
+
+let lineaErrorClave = null;
+
+// ­ƒæë recorrer desde el final (├║ltimo evento real)
+for (let i = 0; i < lineas.length; i++) {
+  const linea = lineas[i];
+
+  if (
+    linea.includes("CLAVEFIRMA") &&
+    linea.includes("ERROR")
+  ) {
+    lineaErrorClave = linea;
+    break;
+  }
+}
+
+
+
+// ­ƒæë Extraemos c├│digo real detectado
+let codigoClaveDetectado = null;
+let tipusResultatDetectado = null;
+
+if (lineaErrorClave) {
+console.log("LINEA:", lineaErrorClave);
+console.log("CODIGO:", codigoClaveDetectado);
+console.log("TIPO:", tipusResultatDetectado);
+
+const matchCodigo = lineaErrorClave.match(/ERROR:\s*(\d+)/);
+const matchTipus = lineaErrorClave.match(/(?:TIPUS\s+)?RESULTAT\s*:\s*(\d+)/i)
+  || lineaErrorClave.match(/RESULTAD[OA]?\s*:\s*(\d+)/i);
+           
+if (matchCodigo) {
+  codigoClaveDetectado = matchCodigo[1];
+}
+
+if (matchTipus) {
+  tipusResultatDetectado = matchTipus[1];
+}
+}
+
+
+// ­ƒæë Flag final
+const hayErrorClaveReal = !!codigoClaveDetectado;
+
+
+// ­ƒæë Detectamos errores reales de Portafib / sesi├│n
+// ­ƒö╣ t├¡picos antes de invocar firma
+const hayErrorPortafibReal = erroresUnicos.some(linea =>
+  linea.includes("FLUXE") ||
+  linea.includes("SESSI├ô FIRMA") ||
+  linea.includes("SESION FIRMA") ||
+  linea.includes("SESSION") ||
+  linea.includes("TIMESTAMPINVALIDEXCEPTION") ||
+  linea.includes("TRASLLAT NO")
+  
+);
+
+  
+
+ 
+// ­ƒæë Cl@ve no se detecta por texto (por ahora)
+// ­ƒæë Se identifica por el m├®todo seleccionado por el usuario
+// const hayClaveError = ... ÔåÆ pendiente definir con ejemplos reales
+  
+
+// =====================================
+// ­ƒö┤ M├ëTODO UTILIZADO
+// =====================================
+// ­ƒæë M├®todo seleccionado manualmente por el t├®cnico
+// ­ƒæë Tiene prioridad sobre cualquier dato que pudiera inferirse de la traza
+// ­ƒæë En el futuro se podr├í leer autom├íticamente desde el formulario pegado
+
+const esClave = metodoClave.checked;
+const esCert = metodoCert.checked;
+
+
+  
+// ==========================================================================
+// ­ƒö┤ ├üRBOL DE DECISI├ôN DEL FLUJO
+// ==========================================================================
+// ­ƒæë EL CEREBRO - AQU├ì se decide qu├® regla aplicar en funci├│n del flujo + contexto
+// ­ƒæë Para a├▒adir nuevas reglas:
+//    1. A├▒adir condici├│n en este ├írbol
+//    2. Crear la regla correspondiente en acciones.json con el mismo id
+
+let idReglaDetectada = null;
+
+
+// ===============================
+// ­ƒö╣ NIVEL 1 ÔåÆ ┬┐LLEGA A FIRMA?
+// ===============================
+
+// ===============================
+// ­ƒö╣ DECISI├ôN POR FASE (PASO 4)
+// ===============================
+// Ahora el ├írbol deja de depender de mil condiciones
+// y pasa a trabajar por "fase del flujo"
+// ÔåÆ m├ís claro, m├ís mantenible, menos errores
+
+if (contexto.fase === "pre_firma") {
+
+  // ======================================================
+  // FASE: PRE_FIRMA (antes de invocar el sistema de firma)
+  // ======================================================
+  // Detecta: problemas de formulario o errores de sesi├│n/Portafib
+  // Ejemplos: validaci├│n fallida, error de sesi├│n, flujo incorrecto
+  // ­ƒæë MEJORA FORMULARIO vs PORTAFIB (FASE 10)
+
+
+// ­ƒæë Contamos intentos de formulario
+// ­ƒö╣ si hay varios TR_FRI o TR_FRF ÔåÆ el usuario est├í reintentando
+
+const numFRI = eventos.filter(e => e === "TR_FRI").length;
+const numFRF = eventos.filter(e => e === "TR_FRF").length;
+
+
+// ­ƒæë Caso: NO llega a firma (pre_firma)
+
+if (!haySGI && hayErrorPortafibReal){
+
+  // ­ƒæë Error t├®cnico REAL de sesi├│n/flujo (Portafib)
+  // ­ƒö╣ hay literales tipo FLUXE, SESSION, 227, timestampÔÇª
+  idReglaDetectada = "fallo_portafib";
+
+}
+else if (!haySGI && (numFRI > 1 || numFRF > 1)) {
+
+  // ­ƒæë Reintentos de formulario SIN errores t├®cnicos
+  // ­ƒö╣ el usuario vuelve atr├ís o intenta varias veces
+  // ­ƒö╣ esto es fallo funcional del formulario (NO Portafib)
+  idReglaDetectada = "fallo_formulario";
+
+}
+else {
+
+  // ­ƒæë Caso base: no llega a firma sin errores claros
+  // ­ƒö╣ se trata tambi├®n como formulario
+  idReglaDetectada = "fallo_formulario";
+}
+
+} else if (contexto.fase === "error_firma") {
+
+  // ======================================================
+  // FASE: ERROR_FIRMA (lleg├│ a firma pero fall├│)
+  // ======================================================
+  // Detecta: qu├® proveedor caus├│ el fallo (Autofirma, Cl@ve, FIRE)
+  // Ejemplos: certificado bloqueado, contrase├▒a incorrecta, error t├®cnico
+  // ­ƒæë Prioridad: Autofirma > Cl@ve > FIRE
+
+ // ­ƒæë Primero comprobamos si el error es de Autofirma (SAF_27)
+// ­ƒö╣ PRIORIDAD: si aparece SAF_27, SIEMPRE es Autofirma
+// ­ƒö╣ aunque el t├®cnico haya marcado Cl@ve
+
+// ­ƒæë PRIORIDAD REAL DE ERRORES (FASE 10)
+
+// ­ƒæë Autofirma SIEMPRE gana
+if (hayAutofirmaError) {
+
+  idReglaDetectada = "error_autofirma";
+
+}
+else if (hayErrorClaveReal) {
+
+// ­ƒö╣ PRIORIDAD: 103 SIEMPRE por encima de 8ÔÇô15
+if (codigoClaveDetectado === "103") {
+
+  // ­ƒö╣ 103-15 ÔåÆ certificado bloqueado
+  if (tipusResultatDetectado === "15") {
+    idReglaDetectada = "error_clave_103_15";
+  }
+
+  // ­ƒö╣ 103 ÔåÆ contrase├▒a bloqueada
+  else {
+    idReglaDetectada = "error_clave_103";
+  }
+
+}
+
+// ­ƒö╣ C├│digos 8ÔÇô15 ÔåÆ error Cl@ve individual
+else if (/^(8|9|10|11|12|13|14|15)$/.test(codigoClaveDetectado)) {
+
+  idReglaDetectada = "error_clave_8_15";
+
+}
+  // ­ƒö╣ 101 ÔåÆ nivel insuficiente / registro no v├ílido
+  else if (codigoClaveDetectado === "101") {
+
+    idReglaDetectada = "error_clave_101";
+
+  }
+
+  // ­ƒö╣ 104 ÔåÆ registro d├®bil
+  else if (codigoClaveDetectado === "104") {
+
+    idReglaDetectada = "error_clave_104";
+
+  }
+
+}
+
+else if (esCert) {
+
+  idReglaDetectada = "error_fire";
+
+}
+  
+}
+
+
+else if (contexto.fase === "firma_ok") {
+
+  // ======================================================
+  // FASE: FIRMA_OK (firma completada correctamente)
+  // ======================================================
+  // Detecta: firma exitosa (posibles errores posteriores: registro, archivo, etc.)
+  // Nota: firma OK no garantiza que el tr├ímite se haya completado correctamente.
+
+  // ­ƒö╣ Cambios 2026-06-16: si el tr├ímite finaliza OK pero por el camino hubo
+  // un error de Portafib ("El fluxe no es v├álid"), lo indicamos aparte.
+  if (hayErrorPortafibReal) {
+    idReglaDetectada = "firma_correcta_portafib";
+  } else {
+    idReglaDetectada = "firma_correcta";
+  }
+
+}
+
+
+
+// ==========================================================================
+// Ô£à FIN ├üRBOL DE DECISI├ôN DEL FLUJO
+// ==========================================================================
+
+
+// ­ƒöÄ DEBUG FINAL (NO TOCAR)
+console.log("Regla detectada:", idReglaDetectada);
+
+  
+
+// =====================================
+// ­ƒö┤ TODO OK - MOSTRAR RESULTADOS EN PANTALLA
+// =====================================
+
+  cerrarPanelFunc();                                                           // ­ƒæë Se oculta el panel de validaci├│n
+  placeholder.style.display = "none";                                          // ­ƒæë Se oculta el mensaje inicial
+  document.getElementById("resultado").style.display = "block";
+
+  
+
+  
+// =====================================
+// ­ƒö┤ GENERACI├ôN DE RESULTADOS
+// =====================================
+// ­ƒæë A partir de aqu├¡ se muestra la informaci├│n al usuario
+// ­ƒæë Incluye:
+//    - diagn├│stico t├®cnico (TR_)
+//    - acci├│n recomendada
+//    - texto para CAI
+
+// Ô£à VERIFICACI├ôN JSON para comprobar en consola que el JSON se ha cargado correctamente
+console.log("JSON disponible:", accionesJSON);
+
+
+
+// =====================================
+// ­ƒö┤ DIAGN├ôSTICO T├ëCNICO (TR_)
+// =====================================
+
+// ­ƒæë Muestra el estado de cada evento TR_. SOLO diagn├│stico t├®cnico, NO interpretaci├│n funcional
+// ­ƒæë SOLO diagn├│stico t├®cnico (lo que ha pasado en el sistema) ­ƒæë NO interpreta el error (eso se hace en el ├írbol)
+
+
+// =====================================
+// ­ƒö┤ DIAGN├ôSTICO T├ëCNICO (TR_)
+// =====================================
+
+let diagnosticoTexto = "";
+
+// ­ƒö╣ Frase explicativa del diagn├│stico (se muestra dentro del recuadro de la acci├│n)
+let fraseDiagnostico = "";
+
+// ­ƒö╣ Cartel del veredicto (Fallo Formulario / Fallo Portafib / Error Cl@veÔÇª) dentro de la tarjeta del flujo
+let cartelDiagnostico = "";
+
+// Helper: cartel azul est├índar (mismo estilo en todos los casos)
+function cartelAzul(texto) {
+  return "<div style=\"display:inline-block;background:#e7f0fb;color:#1456b8;border:1px solid #1456b8;border-radius:8px;padding:5px 12px;font-weight:600;font-size:13px;\">" + texto + "</div>";
+}
+
+// Helper: literal t├®cnico en gris peque├▒o (dentro de la frase del flujo)
+function literalFlujo(texto) {
+  return "<span style=\"color:#9a9890;font-size:11px;\">\"" + texto + "\"</span>";
+}
+
+// ­ƒö╣ El flujo en texto se elimin├│: ahora el flujo se muestra solo con el flujo visual (p├¡ldoras).
+
+
+           
+           
+// ­ƒæë Interpretaci├│n t├®cnica del fallo
+// ­ƒö╣ A├▒adimos caso especial: SAF_27 SIEMPRE es Autofirma
+
+if (!haySGI) {
+
+  // ­ƒæë No llega a firma
+  if (hayErrorPortafibReal) {
+
+    // ­ƒæë Error de sesi├│n / flujo (Portafib)
+    cartelDiagnostico = cartelAzul("Fallo Portafib");
+    fraseDiagnostico = "La firma no se inicia por un error de flujo.";
+
+  } else {
+
+    // ­ƒæë Sin errores t├®cnicos ÔåÆ problema de formulario
+    cartelDiagnostico = cartelAzul("Fallo Formulario");
+    fraseDiagnostico = "La firma no se inicia, y no hay errores de flujo " + literalFlujo("Fluxe no v├álid") + ".";
+  }
+
+}
+else if (idReglaDetectada && idReglaDetectada.indexOf("error_clave") === 0) {
+
+  // ­ƒæë Errores de Cl@ve (8ÔÇô15, 101, 103, 103-15, 104): mismo formato visual que formulario / Portafib
+  cartelDiagnostico = cartelAzul("Error Cl@ve");
+
+  // Texto del c├│digo seg├║n la regla detectada
+  let codigoTexto;
+  switch (idReglaDetectada) {
+    case "error_clave_8_15":   codigoTexto = "c├│digo 8ÔÇô15"; break;
+    case "error_clave_101":    codigoTexto = "c├│digo 101"; break;
+    case "error_clave_103":    codigoTexto = "c├│digo 103"; break;
+    case "error_clave_103_15": codigoTexto = "c├│digo 103-15"; break;
+    case "error_clave_104":    codigoTexto = "c├│digo 104"; break;
+    default:                   codigoTexto = "c├│digo " + (codigoClaveDetectado || "?");
+  }
+
+  // Literal t├®cnico (gris peque├▒o) reconstruido desde la traza
+  let literalClave = "CODI ERROR: " + (codigoClaveDetectado || "?")
+    + " - PROVE├ÅDOR: CLAVEFIRMA";
+  if (tipusResultatDetectado) {
+    literalClave += " - TIPUS RESULTAT: " + tipusResultatDetectado;
+  }
+
+  fraseDiagnostico = "La firma se inicia pero falla en Cl@ve (" + codigoTexto + "). " + literalFlujo(literalClave);
+
+}
+else if (hayAutofirmaError) {
+
+  // ­ƒæë SAF_27 ÔåÆ Autofirma SIEMPRE
+  diagnosticoTexto += "- El error corresponde a Autofirma (certificado local), no a Cl@ve.\n";
+
+}
+else if (haySGX && !cartelDiagnostico) {
+
+  // ­ƒæë Error proveedor gen├®rico (solo si no hay cartel ya asignado, p. ej. Cl@ve)
+  diagnosticoTexto += "- La firma se inicia pero falla en el sistema de firma.\n";
+
+}
+else if (haySGO) {
+
+  // ­ƒæë Firma correcta: el mensaje se muestra en la tarjeta de Acci├│n (ver acciones.json),
+  // ya no como texto suelto fuera de las tarjetas.
+
+}
+ 
+
+
+  
+  
+
+// =====================================
+// ­ƒö┤ ACCI├ôN RECOMENDADA
+// =====================================
+
+
+  console.log("haySGI:", haySGI, "haySGX:", haySGX, "haySGO:", haySGO);    // ­ƒöì DEBUG DEL FLUJO ­ƒæë Permite ver en consola qu├® est├í pasando
+
+
+// =====================================
+// ­ƒö┤ CONTROL POR REGLA (GEN├ëRICO)
+// =====================================
+// ­ƒæë Aplica autom├íticamente cualquier acci├│n definida en acciones.json
+
+// ­ƒæë Construimos la salida final partiendo del diagn├│stico
+let salidaFinal = diagnosticoTexto;
+
+// ­ƒæë Si hay una acci├│n detectada, la a├▒adimos
+if (idReglaDetectada && accionesJSON && accionesJSON.acciones) {
+
+  const accionData = accionesJSON.acciones.find(r => r.id === idReglaDetectada);
+
+if (accionData && accionData.accion) {
+
+  // El cartel azul (Fallo Formulario / Fallo Portafib) y la frase explicativa ya no van aqu├¡:
+  // ahora se muestran dentro de la tarjeta del flujo, debajo de las p├¡ldoras
+  // (ver el bloque que rellena #flujoDiagnostico).
+  // ­ƒö╣ Cambios 2026-06-16: la acci├│n usa el mismo formato de tarjeta V5 (cabecera gris + cuerpo blanco).
+  salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
+  salidaFinal += "<div class=\"panel-card__head\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#01696f\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><polyline points=\"13 17 18 12 13 7\"/><polyline points=\"6 17 11 12 6 7\"/></svg>Acci├│n</div>";
+  salidaFinal += "<div class=\"panel-card__body\">";
+  // Las l├¡neas que empiezan por "*" (notas) se muestran m├ís grises y un poco m├ís peque├▒as.
+  // ­ƒö╣ Casos especiales Portafib ÔåÆ texto din├ímico seg├║n literales detectados en la traza.
+  let textoAccion = accionData.accion;
+  const trazaCompleta = lineas.join("\n");
+  const hayFluxe = /fluxe no es v[├áa]lid/i.test(trazaCompleta);
+  const hayExcepcioSessio = /excepci[o├│]\s+al\s+generar\s+sessi[o├│]\s+firma/i.test(trazaCompleta);
+  const literalGris = (texto, cursiva) =>
+    "<span style=\"color:#9a9890;font-size:12px" + (cursiva ? ";font-style:italic" : "") + "\">\"" + texto + "\"</span>";
+
+  // ­ƒö╣ Portafib: el texto base se edita en acciones.json. Aqu├¡ solo sustituimos el
+  // marcador {lit} por los literales detectados en la traza (en gris peque├▒o).
+  // En "firma_correcta_portafib" los literales van sin cursiva; en el resto, en cursiva.
+  if (textoAccion.indexOf("{lit}") !== -1) {
+    const usarCursiva = (idReglaDetectada !== "firma_correcta_portafib");
+    let lits;
+    if (hayFluxe && hayExcepcioSessio) {
+      lits = literalGris("El fluxe no es v├álid", usarCursiva) + " / "
+           + literalGris("Excepci├│ al generar sessi├│ firma", usarCursiva);
+    } else {
+      lits = literalGris("El fluxe no es v├álid", usarCursiva);
+    }
+    textoAccion = textoAccion.replace("{lit}", lits);
+  } else if (idReglaDetectada === "error_clave_103_15") {
+    // ­ƒö╣ Caso especial: 103-15 precedido por un error 8-15 en la misma traza.
+    const hayClave8_15 = lineas.some(l =>
+      l.includes("CLAVEFIRMA") &&
+      /ERROR:\s*8\b/.test(l) &&
+      /RESULTA[TD][OA]?\s*:\s*15\b/.test(l)
+    );
+    if (hayClave8_15) {
+      textoAccion = "Se detecta uno o varios Error Cl@ve (c├│digo 8-15) y posteriormente uno o varios Errores Cl@ve (c├│digo 103-15).\nCertificado bloqueado. Indicar revocaci├│n y emisi├│n de nuevo certificado en Cl@ve.";
+    }
+  }
+
+  const accionHtml = textoAccion.split("\n").map(linea => {
+    if (linea.trim().startsWith("*")) {
+      return "<span style=\"color:#9a9890;font-size:12px;\">" + linea + "</span>";
+    }
+    return linea;
+  }).join("<br>");
+  salidaFinal += "<div style=\"font-size:14px;color:#1e1c17;\">" + accionHtml + "</div>";
+
+  // ­ƒö╣ enlace del mail DENTRO del cuerpo, debajo de la acci├│n
+  if (accionData.mail) {
+    salidaFinal += '<div style="margin-top:10px;"><a href="' + accionData.mail + '" target="_blank" rel="noopener" style="color:#1e1c17;text-decoration:underline;">Mail</a></div>';
+  }
+
+  salidaFinal += "</div></div>";
+
+} else {
+
+  salidaFinal += "<br>- Acci├│n recomendada: No definida<br>";
+
+}
+}
+
+// ­ƒæë Primero ocultamos el placeholder (mensaje inicial)
+placeholder.style.display = "none";
+
+// ­ƒæë Si hay errores reales, los a├▒adimos al diagn├│stico
+// ­ƒö╣ mostramos solo errores detectados (sin duplicados)
+
+// ­ƒö╣ Cambios 2026-06-16: icono para la cabecera de la tarjeta de literales (formato V5)
+const iconoLiterales = "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#01696f\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"8\" y1=\"6\" x2=\"21\" y2=\"6\"/><line x1=\"8\" y1=\"12\" x2=\"21\" y2=\"12\"/><line x1=\"8\" y1=\"18\" x2=\"21\" y2=\"18\"/><line x1=\"3\" y1=\"6\" x2=\"3.01\" y2=\"6\"/><line x1=\"3\" y1=\"12\" x2=\"3.01\" y2=\"12\"/><line x1=\"3\" y1=\"18\" x2=\"3.01\" y2=\"18\"/></svg>";
+
+// ­ƒæë Mostramos errores si existen
+if (erroresUnicos.length > 0) {
+
+  // ­ƒöÑ PRIMERO: si hay error de flujo (Portafib)
+  if (hayErrorPortafibReal) {
+
+    salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
+    salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
+    salidaFinal += "<div class=\"panel-card__body\">";
+    salidaFinal += "<div class='literal-pequeno'>";
+
+    const literalCounts = {};
+    const literalOrder = [];
+    const literalOriginal = {};
+
+    // Normalizar el literal: extrae el mensaje real eliminando campos t├®cnicos y espacios redundantes
+    // Esto permite agrupar y deduplicar correctamente los literales similares pero con formatos diferentes
+    const normalizarAgrupacion = (linea) => {
+      let key = linea.replace(/^ERROR\s*-\s*/i, "");
+      const partes = key.split(/\t+/).map(p => p.trim()).filter(Boolean);
+      if (partes.length > LITERAL_FIELD_INDEX) {
+        key = partes.slice(LITERAL_FIELD_INDEX).join(" ");
+      }
+      key = key.replace(/\s+/g, ' ').trim();
+      return key;
+    };
+
+    lineasErrorEntries.forEach(entry => {
+      const clave = normalizarAgrupacion(entry.linea);
+      if (!clave) return;
+      if (clave.includes("TR_")) return;
+      if (!literalCounts[clave]) {
+        literalCounts[clave] = 0;
+        literalOrder.push(clave);
+        literalOriginal[clave] = entry.original;
+      }
+      literalCounts[clave]++;
+    });
+
+    literalOrder.forEach((clave, index) => {
+      // Construir el prefijo: si el literal aparece m├║ltiples veces, mostrar (Nx)
+      // Esto ayuda al t├®cnico a identificar r├ípidamente errores repetidos
+      const cnt = literalCounts[clave] || 0;
+      const pref = '(x' + cnt + ') ';
+      const textoLiteral = literalOriginal[clave] || clave;
+      salidaFinal += pref + escapeHtml(textoLiteral) + '<br>';
+      if (index < literalOrder.length - 1) salidaFinal += '<br>';
+    });
+
+    salidaFinal += '</div></div></div>';
+
+  }
+
+// ­ƒöÑ SEGUNDO: caso formulario REAL (versi├│n final sin p├®rdida de datos)
+else if (contexto.fase === "pre_firma") {
+
+  salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
+  salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
+  salidaFinal += "<div class=\"panel-card__body\">";
+  salidaFinal += "<div class='literal-pequeno'>";
+
+  // Agrupar literales limpiando cada l├¡nea original y contando repeticiones
+  const literalCounts = {};
+  const literalOrder = [];
+
+  lineasError.forEach(orig => {
+    let limpio = orig;
+    // quitar cabecera ERROR
+    limpio = limpio.replace(/^ERROR\s*-\s*/i, "");
+    limpio = limpio.replace(/^ERROR\s*/i, "");
+    // quitar fecha + hora + ids iniciales (cabecera t├¡pica)
+    limpio = limpio.replace(/^\d{2}\/\d{2}\/\d{4}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+\s+[^\s]+\s+/, "");
+    limpio = limpio.trim();
+    if (!limpio) return;
+    if (limpio.includes("TR_")) return; // ignorar eventos
+    // mantener orden de primera aparici├│n
+    if (!literalCounts[limpio]) {
+      literalCounts[limpio] = 0;
+      literalOrder.push(limpio);
+    }
+    literalCounts[limpio]++;
+  });
+
+  // Imprimir literales respetando orden; si aparecen varias veces, prefijar con xN
+  for (let i = 0; i < literalOrder.length; i++) {
+    const lit = literalOrder[i];
+    const cnt = literalCounts[lit] || 0;
+    const pref = '(x' + cnt + ') ';
+    salidaFinal += pref + lit + "<br>";
+    // salto extra entre literales diferentes
+    if (i < literalOrder.length - 1) salidaFinal += "<br>";
+  }
+
+  salidaFinal += "</div></div></div>";
+
+}
+
+  // ­ƒö╣ resto casos (error_firma, firma_ok con errores, Autofirma, Cl@ve, FIREÔÇª)
+  else {
+
+salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
+salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
+salidaFinal += "<div class=\"panel-card__body\">";
+salidaFinal += "<div class='literal-pequeno'>";
+
+// Agrupamos contando repeticiones y mostramos el texto original una sola vez.
+// No filtramos por "TR_": en Cl@ve el error suele ir en la misma l├¡nea que el evento TR_SGX.
+// Para agrupar l├¡neas equivalentes que solo difieren en datos vol├ítiles
+// (fecha, hora, IDs de sesi├│n/expediente), normalizamos la clave de agrupaci├│n:
+//   - quitamos fechas (dd/mm/aaaa) y horas (hh:mm:ss)
+//   - quitamos tokens de sesi├│n tipo XXXX-XXXX-XXXX
+//   - quitamos n├║meros largos (5+ d├¡gitos) ÔåÆ conservamos c├│digos como 8 o 15
+const normalizarClave = (linea) => {
+  let k = linea;
+  k = k.replace(/\d{1,2}\/\d{1,2}\/\d{2,4}/g, "");
+  k = k.replace(/\d{1,2}:\d{2}:\d{2}/g, "");
+  k = k.replace(/\b[A-Z0-9]{5,}-[A-Z0-9]{5,}-[A-Z0-9]{5,}\b/g, "");
+  k = k.replace(/\b\d{5,}\b/g, "");
+  k = k.replace(/\s+/g, " ").trim();
+  return k;
+};
+
+const literalCounts = {};
+const literalOrder = [];
+const literalOriginal = {};
+
+lineasErrorEntries.forEach(entry => {
+  if (!entry.linea || !entry.linea.trim()) return;
+  const clave = normalizarClave(entry.linea);
+  if (!clave) return;
+  if (!literalCounts[clave]) {
+    literalCounts[clave] = 0;
+    literalOrder.push(clave);
+    literalOriginal[clave] = entry.original;
+  }
+  literalCounts[clave]++;
+});
+
+for (let i = 0; i < literalOrder.length; i++) {
+  const lit = literalOrder[i];
+  const cnt = literalCounts[lit] || 0;
+  const pref = '(x' + cnt + ') ';
+  salidaFinal += pref + escapeHtml(literalOriginal[lit] || lit) + "<br>";
+  if (i < literalOrder.length - 1) salidaFinal += "<br>";
+}
+
+salidaFinal += "</div></div></div>";
+
+  }
+
+} else {
+
+  // ­ƒö╣ Cambios 2026-06-16: aunque no haya literales, mostramos la tarjeta con el aviso.
+  salidaFinal += "<div class=\"panel-card\" style=\"margin-top:22px;\">";
+  salidaFinal += "<div class=\"panel-card__head\" style=\"text-transform:none;\">" + iconoLiterales + "Literales detectados</div>";
+  salidaFinal += "<div class=\"panel-card__body\">";
+  salidaFinal += "<div class='literal-pequeno'>Sin literales de error en la traza</div>";
+  salidaFinal += "</div></div>";
+}
+  
+
+// ­ƒö╣ Cambios 2026-06-16: enlace discreto para reportar un an├ílisis incorrecto.
+// Aparece siempre al final de cualquier an├ílisis y lleva al formulario de Google.
+const URL_REPORTE = "https://docs.google.com/forms/d/e/1FAIpQLScmWTRYanI4PYO_1EL18g_PVbY2Nfway4FWnHrshj5hNf_zMw/viewform";
+salidaFinal += "<div style=\"margin-top:18px;text-align:center;\">"
+  + "<a href=\"" + URL_REPORTE + "\" target=\"_blank\" rel=\"noopener\" style=\"color:#9a9890;font-size:12px;text-decoration:underline;\">Reportar an├ílisis incorrecto</a>"
+  + "</div>";
+
+  
+
+// ­ƒö╣ NUEVO: pintar flujo visual encima
+renderFlujoVisual(eventosFlujo);
+
+// Cambios 2026-06-12: mostrar el card del flujo solo cuando hay resultado
+const flujoCard = document.getElementById("flujoVisualCard");
+if (flujoCard) {
+  flujoCard.style.display = "block";
+}
+document.getElementById("flujoVisual").style.display = "flex";
+
+// ­ƒö╣ Cambios 2026-06-16: dentro de la tarjeta del flujo, debajo de las p├¡ldoras y
+// separada por una l├¡nea fina, mostramos el cartel del veredicto (azul) seguido
+// de la frase explicativa (ÔÜá ...).
+const flujoDiag = document.getElementById("flujoDiagnostico");
+if (flujoDiag) {
+  if (cartelDiagnostico || fraseDiagnostico) {
+    let contenidoDiag = "<div style=\"display:flex;align-items:center;gap:10px;flex-wrap:wrap;\">";
+    if (cartelDiagnostico) {
+      contenidoDiag += cartelDiagnostico;
+    }
+    if (fraseDiagnostico) {
+      contenidoDiag += "<span>ÔÜá " + fraseDiagnostico + "</span>";
+    }
+    contenidoDiag += "</div>";
+    flujoDiag.innerHTML = contenidoDiag;
+    flujoDiag.style.display = "block";
+  } else {
+    flujoDiag.innerHTML = "";
+    flujoDiag.style.display = "none";
+  }
+}
+
+// Funci├│n auxiliar para escapar texto antes de mostrarlo como HTML
+// IMPORTANTE: convierte caracteres especiales (< > & " ') para evitar que se interpreten como HTML
+// Esto garantiza que los literales se muestren como texto plano, no como c├│digo HTML renderizado
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ­ƒö╣ Convertir autom├íticamente cualquier URL en enlace HTML clicable
+// ­ƒö╣ Evitar reemplazar URLs que ya est├ín dentro de un atributo href de un enlace
+salidaFinal = salidaFinal.replace(
+  /(https?:\/\/[^\s"<>]+)/g,
+  (match, url, offset, str) => {
+    const before = str.slice(0, offset);
+    const hrefDbl = before.lastIndexOf('href="');
+    const hrefSgl = before.lastIndexOf("href='");
+    const tagA = before.lastIndexOf('<a ');
+    if ((hrefDbl > tagA) || (hrefSgl > tagA)) {
+      return match;
+    }
+    return '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
+  }
+);
+// ­ƒæë Mostramos SIEMPRE el resultado final
+document.getElementById("resultado").innerHTML = salidaFinal;
+
+// ­ƒæë Nos aseguramos de que el bloque resultado est├® visible
+document.getElementById("resultado").style.display = "block";
+
+// ­ƒö╣ Cambios 2026-06-16: el ancho de "Acci├│n" y "Literales" se limita al ancho
+// de la tarjeta del flujo, para que todas las tarjetas tengan el mismo ancho m├íximo.
+const flowCardEl = document.getElementById("flujoVisualCard");
+const resultadoEl = document.getElementById("resultado");
+if (flowCardEl && resultadoEl) {
+  const anchoFlujo = flowCardEl.offsetWidth;
+  if (anchoFlujo > 0) {
+    resultadoEl.style.maxWidth = anchoFlujo + "px";
+  }
+}
+
+};
+
+
+
+
+// =====================================
+// ­ƒö┤ BOT├ôN LIMPIAR
+// =====================================
+// ­ƒæë Reinicia la interfaz al estado inicial
+
+btnLimpiar.onclick = () => {
+
+  // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  // ­ƒö╣ LIMPIEZA DE CHECKS DE ERROR VISUAL
+  // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  // Quitamos los radios de SAML / p├ígina en blanco
+  // (esto es solo ayuda visual, no afecta al an├ílisis)
+  checkSaml.checked = false;
+  checkBlanco.checked = false;
+
+
+  // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  // ­ƒö╣ LIMPIEZA DE CAMPOS DE TEXTO
+  // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  // Aqu├¡ realmente limpiamos lo importante:
+  // la traza pegada por el t├®cnico
+  document.getElementById("inputTraza").value = "";
+ 
+
+  // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  // ­ƒö╣ RESET DE M├ëTODO DE FIRMA
+  // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  // Volvemos al m├®todo por defecto: Cl@ve marcado (Cambios 2026-06-17)
+  metodoClave.checked = true;
+  metodoCert.checked = false;
+
+  // Tambi├®n limpiamos selecci├│n de sistema
+  sisPC.checked = false;
+  sisMovil.checked = false;
+
+  // Y ocultamos el bloque de sistema (como si empezaras de cero)
+  bloqueSistema.style.display = "none";
+
+
+  // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  // ­ƒö╣ LIMPIEZA DE RESULTADOS EN PANTALLA
+  // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  // Cerramos panel si est├í abierto (SAML, blanco, etc.)
+  cerrarPanelFunc();
+
+
+  // ­ƒæë Volvemos al estado inicial
+placeholder.style.display = "";
+
+// ­ƒæë Limpiamos el contenido del resultado
+document.getElementById("resultado").innerText = "";
+
+// ­ƒö╣ Cambios 2026-06-16: quitamos el ancho m├íximo fijado al analizar
+document.getElementById("resultado").style.maxWidth = "";
+
+// ­ƒö╣ NUEVO: limpiar y ocultar flujo visual
+// Cambios 2026-06-12: ocultar el marco del flujo al pulsar Limpiar o al volver al estado inicial
+const flujoCard = document.getElementById("flujoVisualCard");
+const flujo = document.getElementById("flujoVisual");
+if (flujo) {
+  flujo.innerHTML = "";
+  flujo.style.display = "none";
+}
+// ­ƒö╣ Cambios 2026-06-16: limpiar tambi├®n la frase del diagn├│stico del flujo
+const flujoDiag = document.getElementById("flujoDiagnostico");
+if (flujoDiag) {
+  flujoDiag.innerHTML = "";
+  flujoDiag.style.display = "none";
+}
+if (flujoCard) {
+  flujoCard.style.display = "none";
+}
+
+// ­ƒæë Ocultamos el bloque de resultado
+document.getElementById("resultado").style.display = "none";
+
+  // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  // ­ƒö╣ INFO EN CONSOLA (PARA DEBUG)
+  // ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+  console.log("Sistema reiniciado (limpiar)");
+
+};
+
+
+
+
+  
+
+// =====================================
+// ­ƒö┤ BOT├ôN ACTUALIZAR
+// =====================================
+// ­ƒæë Fuerza recarga completa de la p├ígina
+// ­ƒæë Evita cach├® del navegador
+// ­ƒæë ├Ütil cuando:
+//    - Se han subido cambios a GitHub Pages
+//    - No se ven cambios en HTML, JS o JSON
+// ­ƒæë Alternativa manual:
+//    - Ctrl + F5 (recarga completa)
+// ­ƒæë Nota:
+//    - HTML suele quedarse en cach├®
+//    - JS/JSON ya usan timestamp internamente
+
+btnActualizar.onclick = () => {
+  location.href = location.pathname + "?v=" + Date.now();
+};
+
+
+
+// =====================================
+// ­ƒö┤ CARGAR acciones DESDE JSON
+// =====================================
+// ­ƒæë Trae el archivo acciones.json y lo guarda en memoria
+// ­ƒæë Este archivo contiene solo acciones del sistema
+
+async function cargarAcciones() {
+
+  try {
+
+    // ­ƒæë Se a├▒ade timestamp para evitar que el navegador use cach├®
+    const r = await fetch("acciones.json?v=" + Date.now());
+
+    // ­ƒæë Convierte la respuesta a objeto JSON
+    const d = await r.json();
+
+    // ­ƒæë Guarda las acciones en variable global
+    accionesJSON = d;
+
+    // ­ƒæë Debug en consola (ver contenido completo)
+    console.log("acciones JSON:", d);
+
+    // ­ƒæë Muestra versi├│n del JSON en cabecera
+    document.getElementById("versionJSON").innerText =
+      "json " + d.version;
+
+    console.log("JSON v" + d.version);
+
+  } catch {
+
+    // ­ƒæë Si falla la carga, se indica en pantalla
+    document.getElementById("versionJSON").innerText =
+      "json ?";
+  }
+}
+
+
+cargarAcciones();      // ­ƒæë Ejecuta la carga al iniciar la aplicaci├│n
+// =====================================
+// ­ƒö┤ CAMBIO DE M├ëTODO (Cl@ve)
+// =====================================
+// ­ƒæë Oculta selector de sistema
+// ­ƒæë Limpia selecci├│n PC/m├│vil
+
+metodoClave.onchange = () => {
+  bloqueSistema.style.display = "none";
+  sisPC.checked = false;
+  sisMovil.checked = false;
+};
+
+// =====================================
+// ­ƒö┤ CAMBIO DE M├ëTODO (Certificado)
+// =====================================
+// ­ƒæë Muestra selector de sistema (PC / m├│vil)
+
+metodoCert.onchange = () => {
+  bloqueSistema.style.display = "block";
+};
+});
+
+// =====================================
+// ­ƒö╣ NUEVO: FUNCI├ôN FLUJO VISUAL
+// Cambios 2026-06-12: renderiza los pasos TR_ con etiquetas de estado y color
+// =====================================
+
+function renderFlujoVisual(eventos) {
+
+  const contenedor = document.getElementById("flujoVisual");
+  if (!contenedor) return;
+
+  const pasos = ["TR_FRI","TR_FRF","TR_SGI","TR_SGX","TR_SGO","TR_REG","TR_FIN"];
+
+  let html = "<div style='display:flex;gap:6px;margin-bottom:2px;flex-wrap:wrap;align-items:center;'>";
+
+  let fallo = false;
+
+  pasos.forEach((p, i) => {
+
+    let color = "#ccc"; // gris por defecto
+
+    if (p === "TR_SGX" && eventos[p]) {
+      color = "#a12c7b"; // rojo error
+      fallo = true;
+    } else if (!fallo && eventos[p]) {
+      color = "#2e6e14"; // verde OK
+    }
+
+    html += `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="padding:4px 10px;border-radius:20px;border:1px solid ${color};color:${color};font-size:11px;font-family: monospace;background:#fff;">
+        ${p}
+      </div>`;
+
+    // Mostramos SIEMPRE la etiqueta; en gris cuando el evento no aparece en la traza.
+    const nombrePaso = p === 'TR_FRI' ? 'Inicio formulario' : p === 'TR_FRF' ? 'Fin formulario' : p === 'TR_SGI' ? 'Inicio firma' : p === 'TR_SGX' ? 'Firma KO' : p === 'TR_SGO' ? 'Firma OK' : p === 'TR_REG' ? 'Registro' : 'Fin tr├ímite';
+    const labelText = `(${nombrePaso})`;
+    const labelColor = eventos[p] ? color : '#ccc';
+    html += `<div style="font-size:9px;color:${labelColor};line-height:1.2;">${labelText}</div>`;
+
+    html += `</div>`;
+
+    if (i < pasos.length - 1) {
+      html += "<span style='color:#999;'>ÔåÆ</span>";
+    }
+
+  });
+
+  html += "</div>";
+
+  contenedor.innerHTML = html;
+}
+
+
+// =====================================
+// ­ƒö╣ ATAJOS DE TECLADO Y FOCO (Cambios 2026-06-17)
+// =====================================
+// #4 Auto-focus: al abrir la app, el cursor ya est├í en el textarea de la traza
+//    (abres ÔåÆ pegas ÔåÆ analizas, sin clics extra).
+// #5 Ctrl+Enter dentro del textarea ejecuta "Analizar".
+(function inicializarAtajos() {
+  const areaTraza = document.getElementById("inputTraza");
+  if (!areaTraza) return;
+
+  // #4 ÔÇö foco autom├ítico al cargar
+  areaTraza.focus();
+
+  // #5 ÔÇö Ctrl+Enter = Analizar
+  areaTraza.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.key === "Enter") {
+      e.preventDefault();
+      if (btnAnalizar) btnAnalizar.click();
+    }
+  });
+})();

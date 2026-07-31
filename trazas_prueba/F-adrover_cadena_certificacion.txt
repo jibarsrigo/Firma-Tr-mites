@@ -1,0 +1,61 @@
+# CAU: Jaume Miquel Adrover Binimelis (NIF 90000004S) · 00-SOLGEN (INDUSTRIA) · certificado local (Autofirm@) · Windows
+# Metodo a marcar en el analizador: Certificado local + Ordenador
+#
+# DOS literales KO en la misma traza (muchos intentos 09:39 -> 12:06, mismo equipo):
+#  (A) MAYORIA + el ULTIMO (12:06): "La cadena de certificación del certificado firmante no es válida"
+#      (resultminor SignerCertificate:InvalidCertificateChain) · Autofirm@
+#  (B) UNO (10:48, tras TR_CAR): "S'ha firmat amb un certificat on el nif associat és 90000021D,
+#      però es requeria el nif 90000004S" · Autofirm@   <-- intento puntual con certificado de OTRA persona.
+#
+# Global esperado (app.js v1.3.32): error_cadena_certificacion  (NO error_certificado_nif_no_coincide).
+#   Motivo: el NIF (B) es un intento PUNTUAL; el ULTIMO Firma KO (12:06) y la mayoria son de cadena (A).
+#   La regla del NIF solo manda si es el ULTIMO KO o si no hay cadena/validacion en la traza.
+#   La accion de cadena muestra ademas un AVISO: "en uno de los intentos se firmo con un certificado de otro NIF (90000021D)".
+#   cartel "Certificado (cadena)".
+#
+# LECTURA CAU: certificado ACCV valido en VALIDe (+ firma prueba OK) y AutoFirma local OK, falla en varios equipos
+#   => servicio @firma/FIRE -> escalar a Portafib. El NIF fue solo un intento con otro certificado.
+# Ejemplo CAI-2646080: ACCV fallaba en el servicio (no en el PC). Workaround: Cl@ve.
+# CONFIRMADO CAI-2646080: ACCV RSA1 PROFESIONALES (ROOT RSA EIDAS 2023) → COD_050 «No se confia en el responder» (OCSP).
+#   Workaround: Cl@ve. No es AutoFirma ni cadena del PC del ciudadano.
+#
+TR_SGX - Fi firma KO	16/07/2026 12:06:23	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 12:06:05	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 12:06:01	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 12:03:48	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 12:03:33	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 12:03:28	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 11:59:14	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 11:58:48	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 11:58:42	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 11:04:47	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 11:04:19	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 10:50:22	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:50:03	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 10:48:03	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	S´ha firmat amb un certificat on el nif associat és 90000021D, però es requeria el nif 90000004S Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:47:43	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 10:47:34	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 10:42:45	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:42:30	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 10:42:24	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 10:37:58	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:37:39	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 10:24:52	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 10:24:32	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 10:24:28	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:57:06	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:56:50	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:55:21	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:55:05	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_CAR - Càrrega del tràmit	16/07/2026 09:55:00	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:41:53	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:41:37	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:41:24	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:41:08	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:40:55	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:40:36	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_SGX - Fi firma KO	16/07/2026 09:40:20	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	La firma no és vàlida. Raó: La cadena de certificación del certificado firmante no es válida. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:SignerCertificate:InvalidCertificateChain) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/07/2026 09:39:22	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_FRF - Fi formulari	16/07/2026 09:38:38	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_FRI - Inici formulari	16/07/2026 09:34:26	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364		
+TR_INI - Inici del tràmit	16/07/2026 09:33:43	8WUCC4UJ-GSQUCJYJ-66GE84CQ	90000004S	JAUME MIQUEL ADROVER BINIMELIS	00-SOLGEN	INDUSTRIA	1	9442528	208364	

@@ -1,0 +1,352 @@
+<!--// =====================================
+//   NOTA SOBRE CACHÉ - GITHUB PAGE             
+// =====================================
+// Si se suben cambios y no se ven en producción:
+//    - Pulsar Ctrl + F5 O usar botón "Actualizar"
+// 👉 HTML se cachea más que JS/JSON
+// 👉 patrones.json usa timestamp para evitar caché-->
+
+
+<!-- VERSION 1.0   - Sistema método OK + Visual Básico sin errores-->
+<!--         1.1   - Mover lógica JavaScript del html hacia app.js -->
+<!--               - Campo para Formulario Recibido -->
+<!--               - Mostrar resultados(Diagnostico-Acción-CAI) tras analizar -->
+<!-- VERSIÓN 1.2   - Mostrar versiones htlm json js, tambien en F12 console -->
+<!-- VERSION 1.2.1 - Se Añade MOTOR BASE: TR_ → detección → ID regla → control → salida personalizada-->
+<!-- VERSION 1.2.2 - Se Añade sistema de reglas activo: el flujo ya se controla por patrones detectados -->
+<!-- VERSION 1.2.3 - ARQUITECTURA NUEVA: motor.js centralizado + patrones.json escalable -->
+
+<!--   motor.js → lógica de detección genérica (reutilizable)
+       patrones.json → contenido de patrones (editable, única fuente de verdad)
+       app.js → interfaz y flujo (sin cambios respecto a 1.2.2) -->
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<!-- VERSION ACTUAL --> 
+<script>
+  // 🔹 VERSION HTML (editable manual)
+  const VERSION_HTML = "1.2.3";
+</script>
+
+  
+<meta charset="UTF-8">
+<title>Analizador V1.2.3</title>
+
+<style>
+body {
+  font-family: system-ui;
+  background: #f5f4f0;
+  margin: 0;
+  color:#1e1c17;
+}
+
+/* HEADER */
+.header {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  background: white;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.header-left { display:flex; gap:14px; align-items:center;}
+
+.badge {
+  background:#01696f;
+  color:white;
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:999px;
+}
+
+.ver-detalles {
+  font-size:11px;
+  color:#01696f;
+  cursor:pointer;
+}
+
+.btn-mini {
+  border:1px solid rgba(0,0,0,0.12);
+  background:#fafafa;
+  border-radius:999px;
+  padding:6px 12px;
+  cursor:pointer;
+}
+
+.header-right {
+  margin-left:auto;
+  font-size:12px;
+  color:#6b6960;
+}
+
+/* LAYOUT */
+.container { display:flex; }
+
+.sidebar {
+  width:320px;
+  padding:16px;
+  background:#faf9f7;
+  border-right:1px solid rgba(0,0,0,0.08);
+}
+
+.main { flex:1; padding:18px; }
+
+/* CARD */
+.card {
+  background:white;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:14px;
+}
+
+/* CHECKS */
+.check {
+  display:flex;
+  gap:10px;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:8px;
+  padding:8px;
+  margin-bottom:6px;
+}
+
+/* TEXTAREA */
+
+textarea {
+  width:100%;
+  height:100px;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,0.1);
+  padding:10px;
+  font-family: monospace;
+  box-sizing: border-box;
+}
+
+
+#inputFormulario {
+  height:60px;
+}
+
+textarea:focus {
+  outline:none;
+  border-color:#01696f;
+}
+
+/* BOTONES */
+.actions {
+  display:flex;
+  gap:10px;
+}
+
+#btnAnalizar {
+  background:#01696f;
+  color:white;
+  border:none;
+  border-radius:8px;
+  padding:10px;
+  flex:1;
+}
+
+#btnLimpiar {
+  background:#eee;
+  border:none;
+  border-radius:8px;
+  padding:10px;
+  flex:1;
+}
+
+/* PANEL */
+.panel {
+  border-radius:12px;
+  border:1px solid rgba(150,66,25,.2);
+  background:#fdf0e8;
+  margin-bottom:12px;
+}
+
+.panel-header {
+  padding:10px 14px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:600;
+  color:#964219;
+}
+
+.panel-body {
+  padding:12px 14px;
+  font-size:13px;
+}
+
+.btn-close {
+  border:1px solid rgba(0,0,0,0.1);
+  background:white;
+  border-radius:6px;
+  padding:2px 8px;
+  cursor:pointer;
+}
+
+.hidden { display:none; }
+
+
+#placeholder {
+  text-align:center;
+  color:#999;
+  margin-top:120px;
+}
+
+#resCAI {
+  height: 200px;
+}
+</style>
+
+  
+</head>
+
+<body>
+
+<div class="header">
+
+  <div class="header-left">
+    <b>Analizador de Trazas</b>
+
+    <div>
+      <div class="badge">v1.2.3</div>
+      <div class="ver-detalles" id="btnDetalles">Ver detalles ▾</div>
+    </div>
+
+    <button class="btn-mini" id="btnActualizar">Actualizar</button>
+  </div>
+
+  <div class="header-right">
+   Lectura:
+<span id="versionHTML"></span>
+-
+<span id="versionJSON"></span>
+-
+<span id="versionJS"></span>
+    <a href="#" id="btnTabla">Patrones</a>
+  </div>
+
+</div>
+
+<div class="container">
+
+  <div class="sidebar">
+
+    <div class="card">
+      <b>Problemas de acceso</b><br><br>
+
+     
+<label class="check">
+  <input type="radio" name="problema" id="checkSaml"> Error SAML
+</label>
+
+<label class="check">
+  <input type="radio" name="problema" id="checkBlanco"> Página en blanco
+</label>
+
+    </div>
+
+    
+<div class="card">
+  <b>Traza</b><br><br>
+  <textarea id="inputTraza" placeholder="Pega la traza aquí..."></textarea>
+</div>
+
+<div class="card">
+  <b>Formulario recibido</b><br><br>
+  <textarea id="inputFormulario" placeholder="Pega aquí el formulario recibido..."></textarea>
+</div>
+
+<div class="card">
+
+  <b>Método</b><br><br>
+
+  <label class="check">
+    <input type="radio" name="metodo" id="metodoClave"> Cl@ve
+  </label>
+
+  <label class="check">
+    <input type="radio" name="metodo" id="metodoCert"> Certificado local
+  </label>
+
+  <div id="bloqueSistema" style="display:none; margin-top:10px;">
+    <b>Sistema</b><br><br>
+
+    <label class="check">
+      <input type="radio" name="sistema" id="sisPC">
+      <div>
+        Ordenador<br>
+        <span style="font-size:11px;color:#777;">Windows / Mac / Linux</span>
+      </div>
+    </label>
+
+    <label class="check">
+      <input type="radio" name="sistema" id="sisMovil">
+      <div>
+        Dispositivo móvil<br>
+        <span style="font-size:11px;color:#777;">Android / iPhone / iPad</span>
+      </div>
+    </label>
+  </div>
+
+</div>
+
+
+    <div class="actions">
+      <button id="btnAnalizar">Analizar</button>
+      <button id="btnLimpiar">Limpiar</button>
+    </div>
+
+  </div>
+
+  <div class="main">
+
+    <div id="panel" class="panel hidden">
+      <div class="panel-header">
+        <span id="panelTitulo"></span>
+        <button class="btn-close" id="btnCerrarPanel">Cerrar ✕</button>
+      </div>
+      <div class="panel-body" id="panelContenido"></div>
+    </div>
+
+   <div id="placeholder">
+  Pega una traza y pulsa Analizar
+</div>
+
+<div id="resultados" class="hidden">
+
+   <!-- 🔴 Análisis Trazas -->
+  <div class="card">
+    <b>Análisis Trazas</b><br><br>
+    <div id="resDiagnostico"></div>
+  </div>
+
+   <!-- 🔴 ACCIÓN RECOMENDADA -->
+  <div class="card">
+    <b>Acción recomendada</b><br><br>
+    <div id="resAccionRecomendada"></div>
+  </div>
+
+  <!-- 🔴 TEXTO PARA CAI -->
+  <div class="card">
+    <b>Texto para CAI</b><br><br>
+    <textarea id="resCAI"></textarea>
+  </div>
+
+</div>
+
+  </div>
+</div>
+
+<!-- 🔹 ORDEN DE CARGA IMPORTANTE -->
+<!-- 1. motor.js → define función buscarPatron() -->
+<!-- 2. app.js → usa buscarPatron() -->
+<script src="motor.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

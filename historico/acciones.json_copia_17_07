@@ -1,0 +1,204 @@
+{
+  "version": "1.3.35",
+  "_changes_today": "2026-07-16: lote Qué pasa/Qué hacer + reglas nuevas (ver _changelog)",
+  "_changelog": [
+    "1.3.35 - error_validacion_certificado: Qué pasa/Qué hacer (InvalidNotSigner; método del KO en Qué pasa vía js)",
+    "1.3.34 - error_clave_firma_cancelada: Qué pasa/Qué hacer (emisión mismo día + móvil; probar ordenador)",
+    "1.3.33 - error_registro_presentador: nueva regla; Firma OK + «registrat pel presentador» → incidencias",
+    "1.3.32 - fallo_portafib: Qué pasa/Qué hacer; {lit} fluxe / sesión / 502 Proxy (js)",
+    "1.3.31 - Windows Autofirma: instalación limpia + nota wiki; matiz fitxer buit",
+    "1.3.30 - Mac Autofirma Qué pasa/Qué hacer; tramite_completo notas previos",
+    "1.3.29 - Autofirma cliente windows/movil/generico Qué pasa/Qué hacer",
+    "1.3.28..26 - fallo_formulario, fitxers 500, cancelada Autofirma y variantes (lote Qué pasa/Qué hacer)",
+    "1.3.25..22 - Cl@ve 8-15 / 103 / 103-15 y overrides; estructura homogénea Acción"
+  ],
+  "acciones": [
+
+    {
+      "id": "fallo_formulario",
+      "accion": "Qué pasa:\nEl trámite no completa el formulario (falla al abrirlo o al cargar datos). No llega a la fase de firma.\n\nQué hacer:\n1. Remitir al ciudadano al formulario de incidencias / dudas funcionales por problemas con el formulario.\n2. Si aparecen literales, facilitarle el mensaje de error legible (las palabras de la traza que describen el problema) para que lo indique en ese formulario.\n3. Enviar el mail al ciudadano.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario"
+    },
+
+    {
+      "id": "fallo_portafib",
+      "accion": "Qué pasa:\nFallo técnico de Portafib / plataforma (flujo o sesión de firma). El ciudadano llega a completar el formulario, pero la firma no se inicia.\nEn la traza aparecen literales como {lit}.\nNo es un problema de las credenciales del ciudadano ni del método de firma elegido.\n\nQué hacer:\n1. Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2.\n2. Enviar el mail al ciudadano (caída / problema general).",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaGeneral"
+    },
+
+    {
+      "id": "error_clave_8_15",
+      "accion": "<b>Qué pasa:</b>\nEl ciudadano entra bien en Cl@ve (DNI y contraseña correctos), pero al firmar el trámite falla.\nCl@ve Firma devuelve el código 8-15: suele indicar un problema con el certificado de Cl@ve Permanente (hay que renovarlo o acreditarlo de nuevo).\n\n<b>Qué hacer:</b>\n1. Enviar el mail al ciudadano (explica cómo renovar/acreditar Cl@ve Permanente).\n2. Si el mismo error les pasa a varios ciudadanos a la vez → puede ser un fallo general de Cl@ve; escalar.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave815"
+    },
+
+    {
+      "id": "error_clave_103",
+      "accion": "Qué pasa:\nCl@ve indica que la contraseña está bloqueada (código 103). El ciudadano no puede seguir firmando hasta desbloquearla o recuperarla.\n\nQué hacer:\n1. Enviar el mail al ciudadano (explica cómo recuperar la contraseña en Cl@ve).",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_ClaveCredenciales"
+    },
+
+    {
+      "id": "error_clave_103_15",
+      "accion": "Qué pasa:\nCl@ve indica que los certificados del usuario están bloqueados (código 103-15). Hay que revocar el certificado de Cl@ve Firma y emitir uno nuevo para poder firmar.\n\nQué hacer:\n1. Enviar el mail al ciudadano (explica cómo revocar y emitir de nuevo el certificado en Cl@ve).",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_ClaveFirma_815_10315"
+    },
+
+    {
+      "id": "error_clave_101",
+      "accion": "Error en Cl@ve (código 101). Nivel de registro insuficiente. Indicar completar registro o aumentar nivel en Cl@ve.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave101"
+    },
+
+    {
+      "id": "error_clave_104",
+      "accion": "Error en Cl@ve (código 104). Registro débil. Indicar actualizar registro en Cl@ve.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave104"
+    },
+
+    {
+      "id": "error_clave_firma_cancelada",
+      "accion": "Qué pasa:\nFirma cancelada con Cl@ve Permanente (Cl@veFirm@ en el Firma KO), sin código de error Cl@ve (8–15 u otro) en la traza.\nSi el certificado Cl@ve Permanente se emitió o renovó el mismo día y se prueba desde el móvil, a menudo no carga bien la ventana de emitir certificado y la firma queda cancelada.\n\nQué hacer:\n1. Probar desde un ordenador: suele poder emitir el certificado y firmar.\n2. Revisar en SistraHelp el método de acceso al trámite (doble clic sobre Inicio trámite o Carga): si figura CLAVE_MOVIL u otro.\n3. Enviar el mail al ciudadano.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave_movil_No_Permitido"
+    },
+
+    {
+      "id": "error_clave_movil_no_permitida",
+      "accion": "Cl@ve Móvil no está permitida para firmar en este trámite.\nIndicar usar Cl@ve Permanente o certificado digital, según lo que admita el trámite.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave_movil_No_Permitido"
+    },
+
+    {
+      "id": "error_clave_movil",
+      "accion": "La firma se inicia pero no se completa (solo aparece Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil.\nPosible Autofirma en Android.\nRevisar en SistraHelp el último acceso al trámite (doble clic en Inicio trámite o Carga del trámite): si figura Cl@ve móvil o Certificado desde Android-Linux.\nSi se accede desde carpeta ciudadana con Cl@ve móvil, puede que al firmar no salga el selector de método (Autofirma/Cl@ve) y dé error. Probar acceder de nuevo con certificado o Cl@ve Permanente, no con Cl@ve móvil.\n*Linux — Si vemos este SO, se trata de Android con vista de ordenador en navegador.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Clave_movil_No_Permitido"
+    },
+
+    {
+      "id": "error_firma_fitxers_500",
+      "accion": "Qué pasa:\nError puntual del servicio de firma (Error general durant el procés de firma dels fitxers: 500).\nNo es un problema de las credenciales del ciudadano ni de Portafib, sino una respuesta puntual del proveedor / servicio de firma.\n\nQué hacer:\n1. Indicar al ciudadano que reintente pasados unos minutos; si sigue fallando, reintentar más tarde o con Cl@ve Permanente.\n2. Si el error se repite de forma persistente o afecta a varios ciudadanos en la misma franja horaria, escalar como posible incidencia del proveedor de firma.\n3. Enviar el mail al ciudadano (caída / problema general).",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaGeneral"
+    },
+
+    {
+      "id": "error_validacion_certificado",
+      "accion": "Qué pasa:\nFallo en la validación del certificado del firmante en el servidor (@firma). En la traza aparece (VALIDATION) con InvalidNotSignerCertificate.\nEl ciudadano llega a firmar, pero el servicio que comprueba el certificado en servidor no lo acepta como válido para esa firma. El fallo suele estar en la validación, no en las credenciales del ciudadano ni en reinstalar AutoFirma.\n\nNo confundir con InvalidCertificateChain (cadena de certificación no válida): eso es otra regla (revisar certificado/cadena / VALIDe). Aquí el literal es InvalidNotSignerCertificate.\n\nQué no es (habitualmente):\n• No es contraseña Cl@ve mal puesta.\n• No es el caso típico de falta reinstalar AutoFirma.\n• No se soluciona pidiendo al ciudadano que revise su certificado como primera acción (sobre todo con Cl@ve Permanente).\n\nPatrón que suele verse:\n• Puede afectar a firmas con Cl@ve Permanente o con certificado local.\n• En cada oleada suele fallar uno u otro método (Cl@ve o certificado), no ambos a la vez.\n• De todos los ciudadanos que usan el método afectado, solo algunos fallan; la mayoría con el mismo método pueden firmar.\n→ Mirar en el Firma KO el Método de firma (Cl@veFirm@ / Autofirm@) para saber qué método está fallando en ese caso.\n\nOjo con los logs de certificado revocado:\nEn logs de segundo nivel (CAI: seguridad, Portafib/Sistra…) a veces aparece certificado revocado, pero no suele ser correcto como causa.\n• El certificado de Cl@ve Permanente no se puede comprobar con VALIDe como un certificado de fichero.\n• Ese certificado se valida sobre todo en el momento de la firma en el trámite.\n• Conclusión CAU: el fallo suele estar en el servicio de validación, no en el certificado del ciudadano.\n\nSi Portafib dice que todo está correcto:\nEste error de firma no es revisable por CAIB a nivel de certificado del ciudadano.\n→ Indicar esperar y reintentar en otro momento.\n\nQué hacer:\n1. Escalar a PENDENTS PORTAFIB - 1.- Pendents 012 para que revisen el servicio de validación de firmas (pueden reiniciarlo).\n2. Enviar el mail de problema general al ciudadano.\n3. Mientras tanto: indicar esperar y reintentar más tarde (o otro método si el trámite lo permite).",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaGeneral"
+    },
+
+    {
+      "id": "error_certificado_nif_no_coincide",
+      "accion": "<b>Qué es:</b> se firmó con un certificado de <b>otro NIF</b> (literal: “S'ha firmat amb un certificat on el nif associat és X, però es requeria el nif Y”).\nEl ciudadano eligió en el selector un certificado que <b>no es el suyo</b>. Muy típico en <b>equipos compartidos</b> o con varios certificados en el almacén.\n\n<b>Qué no es:</b> no es problema de la plataforma, del trámite ni de Portafib.\n\n————————————————————\n<b>Cómo actuar</b>\n————————————————————\n1. Al firmar, en el selector, elegir el certificado a <b>su nombre / NIF</b> (no el de otra persona).\n2. Si hay certificados de otras personas y no deben estar: quitarlos del almacén (Win+R → <b>certmgr.msc</b> → Personal / Mis certificados).\n3. Debe firmar con el <b>mismo NIF</b> con el que accedió al trámite.\n\n————————————————————\n<b>Si al elegir el suyo aparece “cadena no válida”</b>\n————————————————————\nEntonces ya no es “otro NIF”: el problema pasa a ser su certificado (InvalidCertificateChain). Revisar de forma sencilla:\n• <b>Cadena de CA:</b> abrir el certificado → pestaña “Ruta de certificación”. Si hay aviso o “no se puede comprobar el emisor”, faltan intermedios/raíz → instalar la cadena de la CA (ver abajo).\n• <b>Vigencia:</b> Detalles → “Válido desde/hasta”; también fecha/hora del PC correctas.\n• <b>Revocación:</b> que no esté revocado y que el PC pueda acceder a las listas CRL/OCSP (un proxy/firewall puede bloquearlas).\n• <b>VALIDe</b> (https://valide.redsara.es): hacer las <b>DOS</b> pruebas — “Validar certificado” y “Realizar una firma”. No basta firmar un PDF solo con AutoFirma.\n  → Cadena inválida en VALIDe = certificado/cadena del ciudadano.\n  → VALIDe OK y falla el trámite en varios equipos = posible servicio de validación (@firma/Portafib).\n\n<span style='color:#9a9890;font-size:13px;font-style:italic;'><b>Reinstalar la cadena</b> = instalar raíz + intermedios de la CA (no el certificado personal). <b>Renovar</b> = certificado nuevo del ciudadano si el suyo está caducado/revocado/dañado.</span>",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_cadena_certificacion",
+      "accion": "<b>Qué es:</b> el servicio de validación (@firma) ha rechazado la firma porque la <b>cadena de certificación no es válida</b> (InvalidCertificateChain).\nEn pocas palabras: el certificado del ciudadano no “encaja” en la cadena de confianza que el servidor comprueba (faltan certificados intermedios, la Autoridad de Certificación no está reconocida, es de prueba/autofirmado, o la ruta de confianza está rota).\n\n<b>Qué no es:</b> no parece un fallo de AutoFirma como programa. AutoFirma solo usa el certificado del PC; quien dice “no válida” es <b>@firma</b> al validar. <b>Reinstalar AutoFirma</b> casi nunca arregla este error.\n\n<span style='color:#9a9890;font-size:13px;font-style:italic;'>Aunque en la traza ponga método Autofirm@ / AfirmaTrifase, Autofirm@ es el cliente; la decisión de “cadena no válida” la toma el validador del servidor.</span>\n\n<b>Cómo actuar:</b> casuística poco habitual → <b>llamar</b> al ciudadano y probar en directo (no hay mail específico). Alternativa inmediata mientras se diagnostica: que firme con <b>Cl@ve</b>.\n\n————————————————————\n<b>1) Preguntar primero</b> (orienta el camino en 1 minuto)\n————————————————————\n1. ¿Ha firmado <b>otros trámites hace poco</b> con este mismo certificado?\n   → Si ayer/esta semana firmó bien: el certificado suele estar bien; apunta a fallo <b>transitorio</b> o al <b>servicio de validación</b>, no a un certificado “roto” de forma permanente.\n2. ¿Le pasa lo mismo con el mismo certificado en <b>otro equipo</b> (o a otra persona con certificado de la misma CA, p.ej. ACCV/FNMT)?\n   → Si <b>SÍ</b>: no es (solo) su PC → apunta a <b>@firma / Portafib</b>.\n   → Si <b>SOLO</b> en su equipo: revisar equipo/certificado (apartado 3).\n\n<span style='color:#9a9890;font-size:13px;font-style:italic;'>Caso real: “ayer firmó 3 trámites” + “hoy falla en otro equipo” → se descartó certificado/equipo y se escaló a Portafib.</span>\n\n<b>Matiz “ayer sí, hoy no”:</b> si ayer firmó varias veces bien, es menos probable una cadena rota permanente. Suele ser: (a) validación intermitente en @firma, o (b) hoy el PC no puede consultar las listas de revocación (<b>CRL/OCSP</b>) de la CA (a veces por proxy/firewall).\n→ Primero: <b>reintentar más tarde</b> o firmar con Cl@ve. Si persiste: apartado 3 o escalar a Portafib.\n\n————————————————————\n<b>2) ¿Varios ciudadanos con el mismo error?</b>\n————————————————————\nSi InvalidCertificateChain afecta a <b>más de un ciudadano</b> (sobre todo misma franja horaria): <b>NO</b> es el certificado de cada uno → es el <b>servicio de validación (@firma)</b>.\n→ <b>Escalar</b> a PENDENTS PORTAFIB - 1.- Pendents 012 (pueden revisar/reiniciar el servicio).\n→ Enviar mail de problema general a los ciudadanos.\n→ En ese caso <b>no hace falta</b> revisar el certificado de cada uno (el apartado 3 es para un único ciudadano).\n\n————————————————————\n<b>3) Un solo ciudadano — revisar en su PC</b> (guiado, sin jerga)\n————————————————————\nIdea: el certificado personal del ciudadano necesita “compañeros” de la Autoridad de Certificación (CA) instalados en el PC (raíz e intermedios). Sin ellos, la “ruta” se rompe.\n\n1. <b>Cadena de CA</b> (lo más frecuente)\n   Abrir el certificado: Win+R → escribir <b>certmgr.msc</b> → Personal / Mis certificados → doble clic en el suyo → pestaña <b>Ruta de certificación</b>.\n   Si hay aviso o “no se puede comprobar el emisor”: faltan intermedios/raíz.\n   Qué hacer: instalar la cadena de la CA (ver “reinstalar la cadena” al final). No basta con tener solo el certificado personal.\n\n2. <b>CA reconocida</b>\n   Debe ser de una autoridad admitida (FNMT, DNIe, ACCV…). Certificados de test, autofirmados o de CA no cualificada dan este error aunque en el PC “parezcan válidos”.\n\n3. <b>Vigencia</b>\n   Doble clic → Detalles → “Válido desde” / “Válido hasta”: que no esté caducado ni “aún no válido”.\n\n4. <b>Fecha y hora del PC</b>\n   Si el reloj o la zona horaria están mal, la validación falla (se comparan fechas del certificado y de las listas CRL/OCSP).\n   Configuración → Hora e idioma → Fecha y hora → <b>Sincronizar ahora</b>; revisar zona horaria.\n\n5. <b>Revocación (CRL/OCSP)</b>\n   Que no esté revocado y que el PC pueda acceder a las listas de revocación de la CA. Un <b>proxy/firewall</b> que las bloquee hace que la cadena se dé por inválida.\n\n6. <b>Almacén correcto</b>\n   El certificado debe estar en el almacén del usuario que firma; AutoFirma debe elegir el bueno (no uno antiguo, caducado o de otro perfil/persona).\n\n<span style='color:#9a9890;font-size:13px;font-style:italic;'><b>Nota JMulticard:</b> desmarcar “Habilitar JMulticard” en AutoFirma solo afecta a tarjetas/DNIe. Con certificado software (fichero en el almacén, p.ej. muchos ACCV/FNMT) es indiferente y NO corrige este error.</span>\n\n————————————————————\n<b>4) Prueba obligatoria en VALIDe</b> (https://valide.redsara.es)\n————————————————————\nHacer las <b>DOS</b> cosas (no solo firmar un PDF en local):\n a) <b>Validar certificado</b> → debe salir válido.\n b) <b>Realizar una firma</b> (firma de prueba) → debe salir OK.\n\nPor qué: la firma de prueba en VALIDe valida la cadena de forma parecida al trámite. Firmar un PDF solo con AutoFirma prueba el cliente, <b>no</b> la validación de cadena del servidor.\n→ Si VALIDe da cadena inválida: problema del <b>certificado/cadena del ciudadano</b> (reinstalar cadena o renovar), no del trámite.\n→ Si VALIDe (validar + firma) sale OK: el certificado “en general” está bien; seguir con el apartado 5.\n\n————————————————————\n<b>5) Descarte → escalar a Portafib</b>\n————————————————————\nSi en VALIDe validar + firma de prueba salen <b>OK</b> (y, opcional, AutoFirma firma un PDF en local), certificado y equipo están bien.\nSi además falla <b>solo en el trámite</b> y se reproduce en <b>varios equipos/personas</b> con la misma CA → se descarta lo local: la incidencia está en la validación de la plataforma (@firma/FIRE).\n\n→ <b>Escalar</b> a PENDENTS PORTAFIB - 1.- Pendents 012 con <b>hechos</b> (no hipótesis): válido en VALIDe + firma prueba VALIDe OK + AutoFirma local OK + se reproduce en varios equipos/personas + firmó sin problema el día anterior.\n→ Portafib puede revisar (a confirmar por ellos): si la cadena de esa CA (p.ej. ACCV: raíz + intermedios) está en el almacén de confianza del validador, y si afecta a otros certificados de la misma CA.\n\n————————————————————\n<b>Glosario rápido</b> (para la llamada)\n————————————————————\n• <b>Reinstalar la cadena</b> (probar primero): instalar en el PC los certificados de la CA (raíz + intermedios) que “avalan” al ciudadano. NO es reinstalar su certificado personal. Se descargan de la web de la CA (p.ej. FNMT/ACCV) y se importan: raíz en “Entidades de certificación raíz de confianza”; intermedios en “Entidades de certificación intermedias”.\n• <b>Renovar el certificado</b>: pedir un certificado nuevo del ciudadano si el suyo está caducado, revocado o dañado (emisión/renovación en la CA), no solo la cadena."
+    },
+
+    {
+      "id": "error_autofirma_servidor",
+      "accion": "SAF_27 — El servicio informó de un error durante la firma del lote.\nTrazas: TR_SGI (Inicio firma) OK → TR_SGX (Firma KO). Problema en fase de firma (proveedor de firma).\nCausa principal: Instalacion AutoFirma defectuosa, no puede acceder a la clave privada. Causa poco habitual: Portafib o proveedor servidor.\nActualizar autofirma a la última versión (SAF_27 puede deberse a versión anticuada).\nEl certificado puede ser válido en FNMT y no permitir firmar con autofirma, porque AutoFirma necesita la clave privada y el validador FNMT no.\nEscenario A (más común): AutoFirma local no firma + certificado válido FNMT → instalación autofirma defectuosa.\nEscenario B: AutoFirma local firma OK + FNMT OK + trámite KO → instalación autofirma defectuosa.\n\n1. Pregunta clave: ¿Portafib falló en el momento del error?\n\n2. Acción SIEMPRE — Reinstalar AutoFirma: desinstalar → reiniciar equipo → instalar como administrador → reiniciar equipo.\nComprobar certificado vigente, que AutoFirma lo detecta y probar firma local de un PDF.\nSi no se soluciona → instalación limpia:\nhttps://cau.fundaciobit.org/firmawiki/index.php/Autofirma_Cliente_/_Fire_/_@firma#instalacion_limpia_autofirma\n\nSi tras lo anterior sigue SAF_27 → posible AutoFirma servidor. ✉︎ Mail «Problemas con el Servicio».\n<span style='color:#9a9890;font-size:13px;font-style:italic;'>Incidencia general SOLO si múltiples NIF, misma franja horaria y mismo SAF_27 → considerar problema global (proveedor).</span>",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_autofirma_cancelada",
+      "accion": "Qué pasa:\nFirma cancelada con Autofirm@ (sin código Cl@ve). Suele deberse a timeout, SSL o comunicación con AutoFirma.\n\nQué hacer:\n1. Solicitar prueba de firma local con PDF.\n2. Revisar navegador, VPN/proxy y versión de AutoFirma.\n3. Enviar el mail al ciudadano.\n*El mail se orienta según el SO detectado en la traza o marcado por el técnico.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_autofirma_entorno",
+      "accion": "La firma se inicia pero no se completa (solo Inicio firma, sin Firma KO ni Firma OK).\nPosible Cl@ve móvil o Autofirma en Android. Revisar método usado en (Inicio Trámite / Carga Trámite).\nSi se accede desde carpeta ciudadana con Cl@ve móvil, puede que al firmar no salga el selector de método (Autofirma/Cl@ve) y dé error. Probar acceder de nuevo con certificado o Cl@ve Permanente, no con Cl@ve móvil.\nRevisar instalación AutoFirma.\nSolicitar prueba de firma local con PDF.\nProbar otro navegador y red distinta, por posible bloqueo de invocación FIRE/AutoFirma: proxy, VPN, firewall o navegador.\n*El mail se orienta según el SO detectado en la traza",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_autofirma_cliente_windows",
+      "accion": "Qué pasa:\nProblema con el cliente de firma Autofirma.\n\nQué hacer:\n1. Revisar en SistraHelp la Carga del trámite (TR_CAR) anterior al inicio de firma para confirmar si el acceso fue desde Ordenador (Windows/Mac) o dispositivo móvil (Android/iPhone).\n2. Si ya se conoce el sistema: marcar Certificado local + sistema en el analizador antes de pulsar Analizar.\n3. Cerrar todos los navegadores y hacer una instalación limpia de Autofirma (desinstalar por completo e instalar de nuevo; no basta con reinstalar encima).\n4. Verificar que AutoFirma abre manualmente y firma un PDF local antes de probar el trámite.\n5. Si falló con varios navegadores, revisar firewall, VPN y antivirus.\n6. Enviar el mail al ciudadano.\n*Instalación limpia de Autofirma: el procedimiento está en la wiki de firma (firmawiki). Cuando haya artículo concreto, enlazarlo aquí.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_autofirma_cliente_mac",
+      "accion": "Qué pasa:\nProblema con el cliente de firma Autofirma en Mac.\n\nQué hacer:\n1. Revisar en SistraHelp la Carga del trámite (TR_CAR) anterior al inicio de firma para confirmar el acceso (Mac / Windows / móvil).\n2. Si ya se conoce el sistema: marcar Certificado local + sistema en el analizador antes de pulsar Analizar.\n3. Verificar que AutoFirma abre desde Aplicaciones y firma un PDF local.\n4. Si firma local OK pero web KO: Herramientas → Restaurar instalación, probar otro navegador, cerrar el navegador por completo.\n5. Revisar llavero (certificado con clave privada) y VPN.\n6. Enviar el mail al ciudadano.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_autofirma_cliente_linux",
+      "accion": "Solicitar prueba de firma local con PDF.\nSi firma local OK y web KO: usar Chrome o Firefox del sistema (no Snap/Flatpak) y Herramientas → Restaurar instalación.\nPara DNIe: verificar lector, módulo PKCS#11 y que el certificado aparece en AutoFirma.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_autofirma_cliente_android",
+      "accion": "Solicitar prueba de firma local con PDF desde la app AutoFirma.\nSi no firma PDF local → detener diagnóstico (certificado/DNIe).\nCertificado FNMT debe estar importado como .p12/.pfx. Si firma local OK pero el trámite no abre la app, el trámite puede no ser compatible: recomendar ordenador o Cl@ve Permanente.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_autofirma_cliente_iphone",
+      "accion": "Solicitar prueba de firma local con PDF. Usar Safari en vista móvil (no vista de escritorio ni navegación privada).\nSi firma local OK pero web KO: posible incompatibilidad del trámite o fallo de invocación. Recomendar ordenador o método alternativo.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_autofirma_cliente_movil",
+      "accion": "Qué pasa:\nProblema con el cliente de firma Autofirma.\n\nQué hacer:\n1. Revisar en SistraHelp la Carga del trámite (TR_CAR) anterior al inicio de firma para confirmar si el acceso fue desde Ordenador (Windows/Mac) o dispositivo móvil (Android/iPhone).\n2. Si ya se conoce el sistema: marcar Certificado local + sistema en el analizador antes de pulsar Analizar.\n3. Solicitar prueba de firma local con PDF desde AutoFirma App.\n4. Si firma local OK pero el trámite web falla, pedir probar en ordenador.\n5. Enviar el mail al ciudadano.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_autofirma_cliente_generico",
+      "accion": "Qué pasa:\nProblema con el cliente de firma Autofirma.\nAcceso marcado como Cl@ve, pero la traza apunta a firma con certificado/AutoFirma.\nEn trazas recientes, SistraHelp muestra «Método de firma» en el Firma KO; en trazas anteriores a ese cambio puede no aparecer al pegar la traza.\n\nQué hacer:\n1. Revisar en SistraHelp la Carga del trámite (TR_CAR) anterior al inicio de firma para confirmar si el acceso fue desde Ordenador (Windows/Mac) o dispositivo móvil (Android/iPhone).\n2. Seleccionar Certificado local + sistema si conoce el SO para obtener los pasos específicos, y volver a analizar.\n3. Enviar el mail al ciudadano.\n*Seleccione Certificado local + sistema si conoce el SO para obtener los pasos específicos.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_autofirma",
+      "accion": "Revisar Autofirma y equipo del usuario.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_fire",
+      "accion": "Revisar certificado, navegador y entorno FIRE (certificado local / DNIe).\nSolicitar prueba de firma local con PDF si procede AutoFirma.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
+    },
+
+    {
+      "id": "error_registro_presentador",
+      "accion": "Qué pasa:\nLa firma fue correcta (Firma OK / TR_SGO), pero al registrar el trámite el sistema no lo permite: debe registrarlo el presentador.\nLiteral: {lit}\nNo es un problema del cliente de firma ni de las credenciales.\n\nQué hacer:\n1. Remitir al ciudadano al formulario de incidencias / dudas funcionales, indicando el literal de error.\n2. No reabrir incidencia de firma: la firma ya consta OK en la traza.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario"
+    },
+
+    {
+      "id": "firma_correcta",
+      "accion": "Firma correcta (Firma OK en la traza).\nNo consta fin de trámite (TR_FIN) ni registro (TR_REG): el trámite no aparece cerrado administrativamente.\nComprobar en SistraHelp si falta un paso posterior (registro / fin de trámite)."
+    },
+
+    {
+      "id": "tramite_registrado",
+      "accion": "El trámite consta registrado (TR_REG — Registre tràmit).\nNo aparece TR_FIN (Fi de tràmit) en la traza: no consta como finalizado."
+    },
+
+    {
+      "id": "tramite_finalizado",
+      "accion": "El trámite consta finalizado (TR_FIN — Fi de tràmit).\nNo aparece TR_REG (Registre tràmit) en la traza: no consta como registrado."
+    },
+
+    {
+      "id": "tramite_completo",
+      "accion": "Qué pasa:\nTrámite registrado (TR_REG) y finalizado (TR_FIN) en la traza.\n\nQué hacer:\n1. No reabrir incidencia de firma: el trámite ya está cerrado administrativamente.\n2. Si el ciudadano pregunta por intentos previos fallidos, indicar que fueron puntuales y que al final firmó y completó el trámite."
+    },
+
+    {
+      "id": "firma_correcta_portafib",
+      "accion": "Se detecta error de portafib en la traza {lit}\nLa firma o el cierre del trámite pueden haber continuado; revisar TR_SGO / TR_FIN / TR_REG en la traza."
+    }
+
+  ]
+}

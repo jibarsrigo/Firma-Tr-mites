@@ -1,0 +1,56 @@
+== SAF_03: Error en los parámetros de entrada ==
+Este error indica una discrepancia entre la versión de Autofirma que hay instalada en el equipo, y la necesaria para realizar la gestión. La solución en éste caso, es quitar la versión antigua o no adecuada, e instalar la más moderna o la necesaria para poder firmar.<br>
+Si el problema persiste, y estamos usandoando Internet Explorer, es necesario utilizar otro navegador para realizar la firma, que tenga configurado el certificado.<br>
+
+El error SAF_03 también puede producirse por una opción de configuración de Autofirma.<br>
+Pruebe a abrir la aplicación Autofirma, y en el menú Herramientas selecciona la opción Preferencias.<br>
+Se abrirá una ventana y en la pestaña General: Compruebe que está desmarcada la casilla "Aceptar sólo conexiones con sitios seguros".<br>
+Guarde los cambios y vuelva a intentar el proceso en el que anteriormente se produjo el error SAF_03.
+
+
+== SAF_08: Se trata de un error en los perfiles de Firefox ==
+Es debido a que Autofirma está accediendo a un perfil de firefox que no es el predeterminado y que no tiene el certificado que se quiere utilizar para firmar.<br>
+En éste caso, sería necesario hacer copia de seguridad de los certificados, marcadores, contraseñas, etc de Firefox, borrar los perfiles que no sean el predeterminado y volver a instalar todo desde la copia de seguridad.<br>
+Debe de estar marcado “Confirmar antes de permitir el acceso”. Y en “Permitir siempre el acceso desde estas aplicaciones:”, es importante que veas el icono de la app "AutoFirma" en condiciones. Si ves que te sale el icono de color negro (el autoexec). Prueba a eliminarlo de esa lista y a volver a ponerlo dándole al "+" y seleccionando posteriormente "AutoFirma" dentro de tu carpeta de aplicaciones. Si no muestra la app "AutoFirma" agrégala.<br>
+No olvidar en pulsar en el botón Guardar cambios.
+
+
+== SAF_09: Versión de Autofirma incompatible ==
+Para solucionar este error es necesario desinstalar la versión de Autofirma que tengamos instalada,  descargar la versión de 32 bits, e instalarla con permisos de administrador.
+
+
+== SAF_15: Se trata de un error en el descifrado de datos ==
+Para solucionarlo hay que borrar la caché del navegador, y después, abrir Autofirma en el PC, acceder a Herramientas / Preferencias y marcar la casilla "Habilitar JMulticard para el uso de las tarjetas de la FNMT y DNIe (requiere reiniciar Autofirma)".
+
+
+== SAF_11 y SAF_16: Si utiliza proxy para salir a internet debe configurarse en la aplicación Autofirma ==
+En Herramientas / Preferencias / Configuración de red / Configurar proxy. Por favor consulte con su informático si fuera necesario. Para ver el proxy en MAC puede ir a Firefox / Preferencias / General / Proxy de red. En esa configuración se ve si se conecta por proxy. Dependiendo de la configuración, si es manual, estarán los valores.<br>
+Si tiene configurado un proxy pero no aparecen ahí los valores, puede verlos en Preferencias del Sistema / Red / Avanzado / Proxies. Estos valores deberá extrapolarlos a autofirma.
+
+
+== SAF_19: este error aparece con Internet Explorer 11 ==
+Por favor utilice otro navegador.
+
+
+== SAF_26: Error en la comunicación con el servicio de firma de lotes ==
+Este error indica que hay que actualizar la versión de Autofirma que se tiene instalada en el equipo.<br>
+Para ello, puede descargar la actualización desde
+
+
+== SAF_27: "Exception: unable to find valid certification path to requested target" ==
+Indica un fallo durante la validación del certificado o un error del servicio al procesar la firma.<br>
+Comúnmente problemas con certificados caducados, revocados o almacén de certificados dañado.
+Es uno de los errores más complicados.
+
+== SAF_35: Este error indica que el pdf está certificado ==
+Puede aparecer cuando en Portafirmas se han adjuntado ficheros .pdf que han sido previamente certificados con la utilidad de certificación de Adobe Acrobat.<br>
+Esta certificación bloquea los ficheros e impide que se firmen. En estos casos, hay que rechazar la petición de firma, e indicar al emisor que, o bien, firme los documentos en Portafirmas, o bien, los firme con Adobe Acrobat, pero usando la opción de Firmar digitalmente, no la de certificar.
+
+
+== SAF_37: La descripción del error es que no se ha podido acceder al almacén de claves SSL para la comunicación segura ==
+Restaure la instalación de AutoFirma para generar uno nuevo. En estos casos, hay que cerrar todos los navegadores, y realizar el proceso de restauración de Autofirma.<br>
+Restaurar Autofirma
+
+
+<br><br>
+[[Category:Autofirma]]

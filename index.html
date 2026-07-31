@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Analizador de Trazas SISTRA2</title>
+
+<script>
+  // 🔹 VERSION HTML (editable manual)
+  const VERSION_HTML = "1.3.9";
+</script>
+
+<!-- =====================================================
+     FUNCIONALIDADES HTML
+     =====================================================
+
+     VERSION 1.3.9
+     - <meta charset> al inicio del <head> (acentos correctos al abrir file://)
+     - Badge placeholder alineado con motor js (lo sobrescribe app.js al cargar)
+
+     VERSION 1.3.8
+     - (sin cambio de UI documentado; ver app.js / acciones)
+
+     VERSION 1.3.7
+     - Panel Info/Reglas: max-height + scroll; separadores válidos dentro del <ul>
+
+     VERSION 1.3.6
+     - Tarjeta Acción: estilos apartados «Qué pasa» / «Qué hacer» (título + línea fina;
+       solo la cabecera ACCIÓN lleva barra gris)
+     - Badge versión js alineado con motor (sesión 2026-07-16 → js v1.3.69)
+
+     VERSION 1.3.5
+     - Iconos PWA/favicon (192, 512, .ico) con logo S verde; sustituye escudo con visto
+
+     VERSION 1.3.4
+     - Cabecera: «Analizador de Trazas» + bloque marca [S] SISTRA2 (como logo oficial)
+
+     VERSION 1.3.3
+     - Logo SISTRA2 (logo-sistra-s-256.png) en cabecera; título «Analizador de Trazas SISTRA2»
+
+     VERSION 1.3.0
+     - Tooltips en cabecera; Info y Reglas en teal sin subrayado (solo al pasar el ratón)
+
+     VERSION 1.2.9
+     - PWA: manifest.json, icon-192/512, favicon, apple-touch-icon, theme-color
+     - Atajos: autofocus en textarea; pista «Ctrl V + Ctrl Enter» bajo botones
+     - Tooltips (title) en opciones de acceso, método y sistema
+     - Cl@ve marcado por defecto al cargar y al pulsar Limpiar
+
+     VERSION 1.2.8
+     - Badge de versión del analizador en cabecera (js + acciones.json)
+     - Botón Actualizar (solo icono) tras lectura js, antes de Reglas
+     - Enlace «Reglas» y lectura html / json / js en header-right
+
+     VERSION 1.2.7
+     - Estilos literales: overflow-wrap para textos largos sin espacios
+     - Clase .literal-pequeno en tarjeta de literales detectados
+
+     VERSION 1.2.6
+     - Sidebar con apartados plegables (details/summary + chevron)
+     - Bloque «Problemas de acceso» (SAML / página en blanco) plegable;
+       al cerrar limpia selección y panel de ayuda
+     - Etiquetas .opcion__titulo / .opcion__sub en método y sistema
+
+     VERSION 1.3.1
+     - Tarjeta «Flujo del trámite»: subapartado #flujoFirmaDetalle (Flujo de Firma por intento)
+     - Agrupación consecutiva, mini-píldoras SGI→cierre, badge acceso≠firma
+
+     VERSION 1.2.5
+     - Tarjeta «Flujo del trámite» (#flujoVisualCard): píldoras TR_ + #flujoDiagnostico
+     - Formato panel-card V5 (cabecera grise + cuerpo blanco) en flujo y resultados
+     - Flujo oculto hasta analizar; marco compacto (width: fit-content)
+     - Tarjetas Acción y Literales detectados con cabecera e icono SVG
+
+     VERSION 1.2.4
+     - Rediseño visual estilo V5: escudo en marca, cabecera blanca, sidebar #faf9f7
+     - Panel emergente validación (Portafib / formulario) con estilo naranja
+     - Placeholder centrado y zona #resultado con tarjetas dinámicas
+
+     VERSION 1.2.1
+     - Layout completo: header + sidebar + zona principal
+     - Panel de cabecera con versión HTML / JSON / JS y botón actualizar
+     - Entrada de traza (textarea monospace), selector Cl@ve / Certificado
+     - Selector dinámico de sistema (Ordenador / móvil) solo con certificado
+     - Botones Analizar y Limpiar; panel resultado conectado a app.js
+
+     VERSION 1.2.0
+     - Separación sidebar + main; panel de resultado independiente
+
+     VERSION 1.1
+     - Tarjetas (cards) y panel emergente reutilizable
+
+     VERSION 1.0
+     - Estructura base: entrada de traza y botón de análisis
+
+     Nota: desde app.js v1.3.0 los cambios de reglas, flujo y acciones CAU
+     están en app.js y acciones.json. El HTML solo cambia UI/estilos (p. ej. Acción
+     Qué pasa/Qué hacer en v1.3.6). Ver también _changelog en acciones.json.
+-->
+
+<style>
+  .literales {
+    font-size: 11px;
+    color: #666;
+  }
+
+  /* 🔹 NUEVO: flujo textual */
+  .flujo-texto {
+    font-size: 11px;
+    color: #666;
+  }
+
+  /* Texto de literal ligeramente más pequeño */
+  .literal-pequeno {
+    font-size: 12px;
+    color: #444;
+    margin-top: 6px;
+    line-height: 1.3;
+    /* Evita que un literal largo sin espacios desborde el ancho de la tarjeta */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .literal-cliente-firma,
+  .literal-aviso-cliente-firma {
+    color: #a12c7b;
+    font-weight: 600;
+  }
+  .literal-aviso-cliente-firma {
+    margin-bottom: 4px;
+  }
+</style>
+
+<!-- Icono / PWA (barra de tareas al instalar con Chrome). Cambiar ?v= si no refresca el icono -->
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png?v=2">
+<link rel="shortcut icon" href="favicon.ico?v=2">
+<link rel="apple-touch-icon" href="icon-192.png?v=2">
+<link rel="manifest" href="manifest.json?v=2">
+<meta name="theme-color" content="#01696f">
+
+<style>
+body {
+  font-family: system-ui;
+  background: #f5f4f0;
+  margin: 0;
+  color:#1e1c17;
+}
+
+/* HEADER */
+.header {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  background: white;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.header-left { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+.brand { display:flex; align-items:center; gap:10px; }
+.brand__prefix {
+  font-family: system-ui;
+  font-size:16px;
+  font-weight:600;
+  color:#1e1c17;
+}
+.brand__mark {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.brand__logo {
+  width:24px;
+  height:24px;
+  display:block;
+  flex-shrink:0;
+}
+.brand__sistra {
+  font-family: system-ui;
+  font-size:16px;
+  font-weight:700;
+  color:#1e1c17;
+  letter-spacing:0.02em;
+}
+.brand__two {
+  font-size:0.72em;
+  font-weight:700;
+}
+
+.badge {
+  background:#01696f;
+  color:white;
+  font-size:10px;
+  padding:3px 10px;
+  border-radius:999px;
+}
+
+.header-panel-link {
+  font-size: 11px;
+  color: #01696f;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.header-panel-link:hover,
+.header-panel-link:visited {
+  color: #01696f;
+}
+
+.header-panel-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn-mini {
+  border:1px solid rgba(0,0,0,0.12);
+  background:#fafafa;
+  border-radius:999px;
+  padding:6px 12px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-family: system-ui;
+  font-size:11px;
+  color:#1e1c17;
+}
+
+.header-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b6960;
+}
+
+.header-right__sep {
+  color: #9a9890;
+}
+
+.btn-actualizar {
+  padding: 3px 5px;
+  margin-left: 2px;
+}
+
+/* LAYOUT */
+.container { display:flex; min-height: calc(100vh - 52px); }
+
+.sidebar {
+  width:320px;
+  padding:16px;
+  background:#faf9f7;
+  border-right:1px solid rgba(0,0,0,0.08);
+}
+
+.main { flex:1; padding:18px; }
+
+/* CARD */
+.card {
+  background:white;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:14px;
+}
+
+/* Cambios 2026-06-16: la tarjeta del flujo usa el formato V5 (cabecera gris + cuerpo blanco) */
+#flujoVisualCard {
+  display:none; /* se muestra solo tras analizar */
+  /* El marco se ajusta al ancho del flujo, no a todo el panel */
+  width: fit-content;
+  max-width: 100%;
+}
+
+#flujoVisual {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+  /* Espacio a cada lado (aprox. el ancho de la palabra "ESPACIO") para ampliar el marco del flujo */
+  padding:0 60px;
+}
+
+/* Frase explicativa del diagnóstico, dentro de la tarjeta del flujo y separada de las píldoras */
+#flujoDiagnostico {
+  display:none;
+  margin-top:4px;
+  padding-top:12px;
+  border-top:1px solid rgba(0,0,0,0.06);
+  font-size:12px;
+  color:#555;
+}
+
+/* Flujo de Firma — detalle por intento (#flujoFirmaDetalle) */
+#flujoFirmaDetalle {
+  display:none;
+  margin-top:8px;
+  padding-top:10px;
+  border-top:1px solid rgba(0,0,0,0.06);
+}
+.flujo-firma-details {
+  font-size:12px;
+  color:#444;
+}
+.flujo-firma-summary {
+  cursor:pointer;
+  font-weight:600;
+  color:#01696f;
+  list-style:none;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  user-select:none;
+}
+.flujo-firma-summary::-webkit-details-marker { display:none; }
+.flujo-firma-badge {
+  font-weight:500;
+  font-size:11px;
+  color:#666;
+  background:#f0f0ee;
+  border-radius:10px;
+  padding:1px 8px;
+}
+.flujo-firma-nota-gris {
+  margin:8px 0 6px;
+  font-size:11px;
+  color:#888;
+  line-height:1.4;
+}
+.flujo-firma-nota {
+  margin:8px 0 0;
+  font-size:12px;
+  color:#666;
+}
+.flujo-firma-lista {
+  list-style:none;
+  margin:8px 0 0;
+  padding:0;
+}
+.flujo-firma-item {
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding:5px 0;
+  border-bottom:1px solid rgba(0,0,0,0.04);
+  line-height:1.35;
+}
+.flujo-firma-item-fila {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px 10px;
+  width:100%;
+}
+.flujo-firma-mini {
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  flex-shrink:0;
+}
+.flujo-firma-mini-flecha {
+  font-size:9px;
+  color:#999;
+}
+.flujo-firma-mini-pill {
+  display:inline-block;
+  padding:1px 6px;
+  border-radius:10px;
+  border:1px solid;
+  font-size:9px;
+  font-family:monospace;
+  background:#fff;
+  line-height:1.3;
+  white-space:nowrap;
+}
+.flujo-firma-mini-pill--pendiente {
+  border-style:dashed;
+  font-family:inherit;
+  letter-spacing:1px;
+}
+.flujo-firma-item:last-child { border-bottom:none; }
+.flujo-firma-num {
+  font-family:monospace;
+  font-size:11px;
+  color:#888;
+  min-width:1.8em;
+}
+.flujo-firma-ts {
+  font-size:11px;
+  color:#666;
+  font-family:monospace;
+}
+.flujo-firma-resultado {
+  font-weight:600;
+}
+.flujo-firma-resultado--con-tooltip {
+  cursor: help;
+}
+.flujo-firma-ko-prev {
+  font-size:11px;
+  color:#888;
+  font-weight:400;
+}
+.flujo-firma-meta {
+  font-size:11px;
+  color:#777;
+  padding-left:0;
+  margin-left:2.4em;
+}
+.flujo-firma-separador {
+  list-style:none;
+  margin:6px 0;
+  padding:4px 8px;
+  font-size:11px;
+  color:#2e6e14;
+  background:#f6faf4;
+  border-left:3px solid #2e6e14;
+  border-radius:0 4px 4px 0;
+}
+.flujo-firma-resumen {
+  margin-top:10px;
+  padding-top:8px;
+  border-top:1px dashed rgba(0,0,0,0.08);
+  font-size:11px;
+  color:#555;
+  line-height:1.6;
+}
+.flujo-firma-resumen-titulo {
+  font-weight:600;
+  margin-right:6px;
+}
+.flujo-firma-resumen-chip {
+  display:inline-block;
+  background:#f5f5f3;
+  border-radius:8px;
+  padding:2px 8px;
+  margin:2px 4px 2px 0;
+  border-left:3px solid transparent;
+}
+.flujo-firma-acceso {
+  font-size:10px;
+  color:#555;
+  background:#eef6f6;
+  border-radius:6px;
+  padding:1px 6px;
+  white-space:nowrap;
+}
+.flujo-firma-acceso--revisar {
+  cursor: help;
+}
+.flujo-firma-pista-sin-cierre {
+  font-size:10px;
+  color:#6b6960;
+  font-style:italic;
+  white-space:normal;
+  max-width:280px;
+  line-height:1.25;
+  cursor:help;
+}
+.flujo-firma-discrepancia {
+  font-size:10px;
+  color:#a12c7b;
+  background:#fdf5f9;
+  border-radius:6px;
+  padding:1px 6px;
+  white-space:nowrap;
+}
+.flujo-firma-grupo {
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+.flujo-firma-grupo-details {
+  margin:2px 0;
+}
+.flujo-firma-grupo-summary {
+  cursor:pointer;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:6px 10px;
+  padding:5px 0;
+  border-bottom:1px solid rgba(0,0,0,0.04);
+  line-height:1.35;
+  list-style:none;
+}
+.flujo-firma-grupo-summary::-webkit-details-marker { display:none; }
+.flujo-firma-grupo-summary::before {
+  content:"▸";
+  font-size:10px;
+  color:#888;
+  margin-right:2px;
+  transition:transform 0.15s;
+}
+.flujo-firma-grupo-details[open] > .flujo-firma-grupo-summary::before {
+  transform:rotate(90deg);
+}
+.flujo-firma-grupo-mult {
+  font-family:monospace;
+  font-size:11px;
+  color:#555;
+  font-weight:600;
+}
+.flujo-firma-lista-anidada {
+  list-style:none;
+  margin:0 0 4px 14px;
+  padding:0 0 0 8px;
+  border-left:2px solid rgba(0,0,0,0.06);
+}
+.flujo-firma-lista-anidada .flujo-firma-item {
+  padding:4px 0;
+}
+
+/* Ensure label space below every step so vertical alignment is consistent */
+.flujo-paso__label {
+  min-height:20px; /* reserve vertical space even if label is empty */
+  font-size:9px;
+  color:#666;
+  line-height:1.2;
+  text-align:center;
+}
+
+.check {
+  display:flex;
+  gap:10px;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:8px;
+  padding:8px;
+  margin-bottom:6px;
+}
+
+/* Formato V5: tarjeta con cabecera gris + cuerpo blanco */
+.panel-card {
+  background:white;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:12px;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.panel-card__head {
+  background:#ececea;
+  padding:9px 12px;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.4px;
+  text-transform:uppercase;
+  color:#6b6960;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.panel-card__body { padding:12px; }
+.panel-card__body--accion { padding:0; }
+
+/* Apartados Acción: solo ACCIÓN tiene barra; Qué pasa/hacer = título + línea fina */
+.accion-cuerpo {
+  font-size:14px;
+  color:#1e1c17;
+  line-height:1.45;
+  padding-top:4px;
+}
+.accion-intro {
+  padding:12px 12px 4px;
+}
+.accion-bloque {
+  border:none;
+  border-radius:0;
+  margin:0;
+  background:transparent;
+  overflow:visible;
+}
+.accion-bloque + .accion-bloque {
+  margin-top:6px;
+}
+.accion-apartado {
+  background:transparent;
+  padding:12px 12px 3px; /* título más cerca de la línea inferior */
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:0;
+  text-transform:none;
+  color:#6b6960;
+  border:none;
+  border-bottom:1px solid rgba(0,0,0,0.28); /* línea más visible */
+}
+.accion-bloque:first-child .accion-apartado {
+  padding-top:14px; /* aire bajo ACCIÓN */
+}
+.accion-bloque__body {
+  color:#1e1c17;
+  padding:14px 12px 20px;
+  background:transparent;
+  line-height:1.55;
+}
+.accion-bloque__body .accion-linea-vacia {
+  display:block;
+  height:10px;
+}
+.panel-card__body--accion > div:last-child {
+  padding:4px 12px 12px;
+}
+
+/* Apartado plegable (details/summary) */
+summary.panel-card__head {
+  cursor:pointer;
+  user-select:none;
+  list-style:none;
+}
+summary.panel-card__head::-webkit-details-marker { display:none; }
+.chevron { margin-left:auto; transition: transform .2s; display:inline-block; color:#9a9890; }
+details[open] > summary.panel-card__head .chevron { transform: rotate(180deg); }
+details:not([open]) > summary.panel-card__head { border-bottom:none; }
+.opcion {
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  border:1px solid rgba(0,0,0,0.10);
+  border-radius:8px;
+  padding:10px;
+  margin-bottom:8px;
+  cursor:pointer;
+}
+.opcion:last-child { margin-bottom:0; }
+.opcion__titulo { font-weight:600; font-size:13px; color:#1e1c17; }
+.opcion__sub { font-size:11px; color:#8a8780; margin-top:2px; }
+.campo-label { font-size:12px; color:#6b6960; margin-bottom:6px; }
+
+textarea {
+  width:100%;
+  height:100px;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,0.1);
+  padding:10px;
+  font-family: monospace;
+  box-sizing: border-box;
+}
+
+textarea:focus {
+  outline:none;
+  border-color:#01696f;
+}
+
+/* BOTONES */
+.actions {
+  display:flex;
+  gap:10px;
+}
+
+#btnAnalizar {
+  background:#01696f;
+  color:white;
+  border:none;
+  border-radius:8px;
+  padding:10px;
+  flex:1;
+}
+
+#btnLimpiar {
+  background:#eee;
+  border:none;
+  border-radius:8px;
+  padding:10px;
+  flex:1;
+}
+
+/* PANEL */
+.panel {
+  border-radius:12px;
+  border:1px solid rgba(150,66,25,.2);
+  background:#fdf0e8;
+  margin-bottom:12px;
+}
+
+.panel-header {
+  padding:10px 14px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:600;
+  color:#964219;
+}
+
+.panel-body {
+  padding:12px 14px;
+  font-size:13px;
+  /* Info/Reglas pueden ser largos: scroll visible en el panel */
+  max-height: min(70vh, 640px);
+  overflow-y: auto;
+  line-height: 1.45;
+}
+.panel-body ul {
+  margin: 0;
+  padding-left: 1.15em;
+}
+.panel-body li {
+  margin: 0.2em 0;
+}
+.panel-body li.reglas-sep {
+  list-style: none;
+  margin-left: -1.15em;
+  height: 0.55em;
+  padding: 0;
+}
+/* Títulos de apartado (1., 2., A)…): sin viñeta */
+.panel-body li.reglas-titulo {
+  list-style: none;
+  margin-left: -1.15em;
+  margin-top: 0.55em;
+  font-weight: 600;
+}
+
+.btn-close {
+  border:1px solid rgba(0,0,0,0.1);
+  background:white;
+  border-radius:6px;
+  padding:2px 8px;
+  cursor:pointer;
+}
+
+.hidden { display:none; }
+
+#placeholder {
+  text-align:center;
+  color:#999;
+  margin-top:120px;
+}
+
+#resultado {
+  white-space: pre-line;
+}
+
+#resultado .literales {
+  font-size: 11px;
+  color: #666;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+  <div class="header-left">
+    <div class="brand">
+      <span class="brand__prefix">Analizador de Trazas</span>
+      <span class="brand__mark" aria-label="SISTRA2">
+        <img class="brand__logo" src="logo-sistra-s-256.png" width="24" height="24" alt="" aria-hidden="true">
+        <span class="brand__sistra">SISTRA<span class="brand__two">2</span></span>
+      </span>
+    </div>
+    <div class="badge" id="versionBadge" title="Versión del motor de análisis (app.js)">v 1.3.93</div>
+    <div class="header-panel-link" id="btnDetalles" title="Qué hace el analizador, versiones y funcionalidades implementadas">Info ▾</div>
+  </div>
+
+  <div class="header-right">
+    <span title="Versiones de los ficheros cargados en el navegador">Lectura:</span>
+    <span id="versionHTML" title="Versión del interfaz (index.html). Si no coincide con lo esperado, usa el icono de actualizar"></span>
+    <span class="header-right__sep">-</span>
+    <span id="versionJSON" title="Versión de acciones.json (reglas, textos de acción y mails)"></span>
+    <span class="header-right__sep">-</span>
+    <span id="versionJS" title="Versión de app.js (motor de detección). Si no coincide con lo esperado, usa el icono de actualizar"></span>
+    <button class="btn-mini btn-actualizar" id="btnActualizar" title="Recarga la página completa (HTML, JS y acciones.json) ignorando la caché del navegador. Úsalo si no ves cambios recientes tras subirlos" aria-label="Recargar analizador (HTML, JS y JSON)"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+    <a href="#" class="header-panel-link" id="btnTabla" title="Guía del motor: qué detecta, por qué y prioridad CAU (Autofirma, Cl@ve, Portafib…)">Reglas ▾</a>
+  </div>
+
+</div>
+
+<div class="container">
+
+  <div class="sidebar">
+
+    <!-- Problemas de acceso (formato V5, plegable) -->
+    <details class="panel-card" id="cardAcceso">
+      <summary class="panel-card__head">🔐 Problemas de acceso<span class="chevron">▾</span></summary>
+      <div class="panel-card__body">
+
+        <label class="opcion" title="El ciudadano ve una pantalla de error SAML al autenticarse (problema de certificado o de contraseña Cl@ve). Muestra ayuda al seleccionarlo">
+          <input type="radio" name="problema" id="checkSaml">
+          <div>
+            <div class="opcion__titulo">El ciudadano ve error SAML</div>
+            <div class="opcion__sub">Pantalla de error SAML al autenticarse</div>
+          </div>
+        </label>
+
+        <label class="opcion" title="El trámite carga una pantalla vacía/en blanco al acceder. Muestra ayuda al seleccionarlo">
+          <input type="radio" name="problema" id="checkBlanco">
+          <div>
+            <div class="opcion__titulo">La página queda en blanco</div>
+            <div class="opcion__sub">Pantalla vacía al acceder al trámite</div>
+          </div>
+        </label>
+
+      </div>
+    </details>
+
+    <!-- Traza (formato V5, plegable) -->
+    <details class="panel-card" open>
+      <summary class="panel-card__head">📋 Traza SistraHelp<span class="chevron">▾</span></summary>
+      <div class="panel-card__body">
+        <div class="campo-label">Pega aquí</div>
+        <textarea id="inputTraza" placeholder="Pega la traza aquí..." title="Pega la traza de SistraHelp tal cual (orden inverso: lo más reciente arriba)"></textarea>
+      </div>
+    </details>
+
+    <!-- Método (formato V5, misma lógica, plegable) -->
+    <details class="panel-card" open>
+      <summary class="panel-card__head">⚙ Método<span class="chevron">▾</span></summary>
+      <div class="panel-card__body">
+
+        <label class="opcion" title="Firma con Cl@ve (Cl@ve Firma / Cl@ve Permanente)">
+          <input type="radio" name="metodo" id="metodoClave" checked>
+          <div class="opcion__titulo">Cl@ve</div>
+        </label>
+
+        <label class="opcion" title="Firma con certificado instalado en el equipo del ciudadano (Autofirma / FIRE). Requiere certificado y, normalmente, la aplicación Autofirma">
+          <input type="radio" name="metodo" id="metodoCert">
+          <div class="opcion__titulo">Certificado local</div>
+        </label>
+
+        <div id="bloqueSistema" style="display:none; margin-top:10px;">
+          <div class="campo-label">Sistema</div>
+
+          <label class="opcion" title="Autofirma / FIRE en Windows, Mac o Linux">
+            <input type="radio" name="sistema" id="sisPC">
+            <div>
+              <div class="opcion__titulo">Ordenador</div>
+              <div class="opcion__sub">Windows / Mac / Linux</div>
+            </div>
+          </label>
+
+          <label class="opcion" title="Autofirma App en Android o iPhone/iPad">
+            <input type="radio" name="sistema" id="sisMovil">
+            <div>
+              <div class="opcion__titulo">Dispositivo móvil</div>
+              <div class="opcion__sub">Android / iPhone / iPad</div>
+            </div>
+          </label>
+        </div>
+
+      </div>
+    </details>
+
+    <div class="actions">
+      <button id="btnAnalizar" title="Analiza la traza con el método marcado. Atajo: Ctrl+Enter en el cuadro de texto">Analizar</button>
+      <button id="btnLimpiar" title="Borra la traza, el resultado y vuelve a Cl@ve por defecto">Limpiar</button>
+    </div>
+
+  </div>
+
+  <div class="main">
+
+    <!-- ✅ PANEL ORIGINAL (NO TOCADO) -->
+    <div id="panel" class="panel hidden">
+      <div class="panel-header">
+        <span id="panelTitulo"></span>
+        <button class="btn-close" id="btnCerrarPanel">Cerrar ✕</button>
+      </div>
+      <div class="panel-body" id="panelContenido"></div>
+    </div>
+
+    <!-- ✅ PLACEHOLDER ORIGINAL -->
+    <div id="placeholder">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c9c7c0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 14px;" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Pega una traza y pulsa Analizar
+      <div style="margin-top:6px;font-size:12px;color:#bdbcb6;">Ctrl V + Ctrl Enter</div>
+    </div>
+
+    <!-- ✅ RESULTADO (solo esto sustituye CAI y demás) -->
+
+<!-- 🔹 NUEVO: flujo visual (formato tarjeta V5) -->
+<!-- Cambio 2026-06-16: tarjeta con cabecera gris + cuerpo blanco; el contenedor solo se muestra tras pulsar Analizar -->
+<div id="flujoVisualCard" class="panel-card">
+  <div class="panel-card__head"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#01696f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="4" cy="12" r="2"/><circle cx="20" cy="12" r="2"/><path d="M6 12h4M14 12h4"/><rect x="10" y="9" width="4" height="6" rx="1"/></svg>Flujo del trámite</div>
+  <div class="panel-card__body">
+    <div id="flujoVisual"></div>
+    <div id="flujoDiagnostico"></div>
+    <div id="flujoFirmaDetalle"></div>
+  </div>
+</div>
+
+<div id="resultado" style="white-space: normal;"></div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

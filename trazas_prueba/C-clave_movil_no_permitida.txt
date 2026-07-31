@@ -1,0 +1,14 @@
+# Fixture limpia — CLAVE_MOVIL no permitida (sin KO/cierre que robe el veredicto)
+# Literal: Mètode de autenticació CLAVE_MOVIL no està permés al tràmit
+# Incluye TR_SGI para entrar en fase error_firma (la regla se evalúa ahí, antes que Cl@ve móvil genérica)
+# Marcar: Cl@ve
+# Global: error_clave_movil_no_permitida
+# Acción (json v1.3.39): Qué pasa/Qué hacer
+# Relacionadas (mixtas): C-paloma_500_luego_8-15.txt, C-raul_500_validation_completo.txt
+
+ERROR - Error	06/07/2026 11:53:58	86ANSQ8N-2LJJUNWQ-NYSN0E8C	90000006V	PALOMA IZQUIERDO BRAVO	IG_SOL_CERTIF_PROF	IGOIB	1	9139611	8477770	Mètode de autenticació CLAVE_MOVIL no està permés al tràmit	MetodoAutenticacionException 
+ERROR - Error	06/07/2026 11:53:11	86ANSQ8N-2LJJUNWQ-NYSN0E8C	90000006V	PALOMA IZQUIERDO BRAVO	IG_SOL_CERTIF_PROF	IGOIB	1	9139611	8477770	Mètode de autenticació CLAVE_MOVIL no està permés al tràmit	MetodoAutenticacionException 
+TR_SGI - Inici firma	06/07/2026 11:52:55	86ANSQ8N-2LJJUNWQ-NYSN0E8C	90000006V	PALOMA IZQUIERDO BRAVO	IG_SOL_CERTIF_PROF	IGOIB	1	9139611	8477770		 
+TR_CAR - Càrrega del tràmit	06/07/2026 11:52:50	86ANSQ8N-2LJJUNWQ-NYSN0E8C	90000006V	PALOMA IZQUIERDO BRAVO	IG_SOL_CERTIF_PROF	IGOIB	1	9139611	8477770		 
+TR_FRI - Inici formulari	06/07/2026 11:50:10	86ANSQ8N-2LJJUNWQ-NYSN0E8C	90000006V	PALOMA IZQUIERDO BRAVO	IG_SOL_CERTIF_PROF	IGOIB	1	9139611	8477770		 
+TR_INI - Inici del tràmit	06/07/2026 11:49:55	86ANSQ8N-2LJJUNWQ-NYSN0E8C	90000006V	PALOMA IZQUIERDO BRAVO	IG_SOL_CERTIF_PROF	IGOIB	1	9139611	8477770	 

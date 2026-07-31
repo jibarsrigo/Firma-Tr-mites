@@ -1,0 +1,7 @@
+# Silvia Romero Pastor · EBAP · sin TR_FRI → fallo_formulario · 403 enriquece mail
+# Global: fallo_formulario (sin Inicio formulario; «El fluxe no es vàlid» no cambia la regla)
+
+ERROR - Error    23/06/2026 09:52:14    4WW642GJ-YC0CA6QJ-8QE8UJQ4    90000023B    SILVIA ROMERO PASTOR    EB0006OPOS-MODBORSI    EBAP    1    7733335    9429000    El fluxe no es vàlid    FlujoInvalidoException 
+ERROR - Error    23/06/2026 09:50:44    4WW642GJ-YC0CA6QJ-8QE8UJQ4    90000023B    SILVIA ROMERO PASTOR    EB0006OPOS-MODBORSI    EBAP    1    7733335    9429000    Error no controlat a la capa de servei: 403 Forbidden    ErrorNoControladoException 
+ERROR - Error    23/06/2026 09:50:08    4WW642GJ-YC0CA6QJ-8QE8UJQ4    90000023B    SILVIA ROMERO PASTOR    EB0006OPOS-MODBORSI    EBAP    1    7733335    9429000    Error no controlat a la capa de servei: 403 Forbidden    ErrorNoControladoException 
+TR_INI - Inici del tràmit    23/06/2026 09:50:01    4WW642GJ-YC0CA6QJ-8QE8UJQ4    90000023B    SILVIA ROMERO PASTOR    EB0006OPOS-MODBORSI    EBAP    1    7733335    9429000     

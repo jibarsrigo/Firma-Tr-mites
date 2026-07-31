@@ -1,0 +1,471 @@
+
+
+
+<!-- DIAGNÓSTICO RÁPIDO POR ÚLTIMA TRAZA VÁLIDA -->
+<div style="text-align:center; margin:2px 0;">
+<div style="display:inline-block;">
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:12px; background:#fff;">
+
+<!-- CABECERA -->
+<div style="display:flex; align-items:center; justify-content:center; margin:2px 0 4px 0;">
+<div style="width:60px; height:1px; background:#ddd; margin-right:8px;"></div>
+<div style="white-space:nowrap; font-weight:bold; font-size:1.05em; line-height:1;">
+[[Índice de Trazas – Sistra|Diagnóstico con última traza válida SistraHelp]]
+</div>
+<div style="width:60px; height:1px; background:#ddd; margin-left:8px;"></div>
+</div>
+
+<!-- GRID 1: DIAGNÓSTICO -->
+<div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin:10px 0;">
+
+<!-- 1) ACCESO / SESIÓN -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:260px; background:#fafafa; text-align:left; font-size:90%; line-height:1.35; color:#333;">
+<b style="font-size:105%;">🔏 Acceso / Sesión</b><br>
+<small style="color:#666;">Inicio del trámite y pre‑firma</small><br>
+<small style="color:#666;">Flujo correcto: tras terminar formulario, invoca la firma</small><br><br>
+🔹 [[Incidencias Frecuentes#IF Pasarela|Pasarela]] → ''<span style="color:#555; font-style:italic;">Inicio formulario.</span>'' No carga formulario / [[Incidencias Frecuentes#Error SAML|Error de autenticación - SAML]]<br>
+🔹 [[Incidencias Frecuentes#IF Portafib|Portafib]] → <span style="color:#555; font-style:italic;">Fin formulario</span> y No <span style="color:#555; font-style:italic;">Inicio firma</span>
++ errores de flujo<br>
+🔹 [[Incidencias Frecuentes#IF Portafib|Formulario]] →  <span style="color:#555; font-style:italic;">Fin formulario</span> y No <span style="color:#555; font-style:italic;">Inicio firma</span> 
++ No errores de flujo
+</div>
+
+<!-- 2) FIRMA – MÉTODO -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:260px; background:#fafafa; text-align:left; font-size:90%; line-height:1.35; color:#333;">
+<b style="font-size:105%;">✍️ Firma – Método</b><br>
+<small style="color:#666;">Tipo de identificación</small><br>
+<small style="color:#666;">Flujo correcto: el método permite firmar</small><br><br>
+
+🔹 [[Incidencias Frecuentes#Cl@ve_Móvil_Método_NO_permitido|Cl@ve Móvil - No Permitido]]<br><br>
+- <span style="color:#555; font-style:italic;">Inicio firma</span> → <span style="color:#555; font-style:italic;">Firma KO</span> 
+con/sin códigos 8–15 / 101 / 103 / 104 
++ Pantallas Cl@ve  “método no permitido” o “QAA insuficiente”
+</div>
+
+<!-- 3) FIRMA – PROVEEDOR (CL@VE) -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:260px; background:#fafafa; text-align:left; font-size:90%; line-height:1.35; color:#333;">
+<b style="font-size:105%;">✍️ Firma – Proveedor (Cl@ve)</b><br>
+<small style="color:#666;">KO del Proveedor Cl@ve</small><br>
+<small style="color:#666;">Flujo correcto: Cl@ve devuelve firma OK</small><br><br>
+
+<span style="color:#555; font-style:italic;">- Inicio firma</span> → <span style="color:#555; font-style:italic;">Firma KO</span> + código error:<br><br>
+🔹 [[Incidencias Frecuentes#Cl@ve_(8–15)|8–15]] → Renovar ([[Mails#Mail ClaveFirma 815 10315|8‑15 + 103-15]])<br>
+🔹 [[Incidencias Frecuentes#IF Clave101|101]] → Registro / credencial inconsistente<br>
+🔹 [[Incidencias Frecuentes#IF Clave103|103]] / <span style="color:#555; font-style:italic;">103‑15</span> → Certificados bloqueados<br>
+🔹 [[Incidencias Frecuentes#IF Clave 104|104-15]] → Registro débil<br>
+🔹 [[Error 4 - Tipo 15|4-15]] → Cancelación (cerrar / volver atrás)<br>
+🔹 [[Incidencias Frecuentes#IF Clave Firma Proveedor|Cl@ve Firma]] - Problemas con el servicio
+</div>
+
+<!-- 4) FIRMA – PROVEEDOR (AUTOFIRMA / FIRE) -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:260px; background:#fafafa; text-align:left; font-size:90%; line-height:1.35; color:#333;">
+<b style="font-size:105%;">✍️ Firma – Proveedor (Autofirma / FIRE)</b><br>
+<small style="color:#666;">KO del proveedor no‑Cl@ve</small><br>
+<small style="color:#666;">Flujo correcto: el proveedor devuelve firma OK</small><br><br>
+🔹 [[Incidencias Frecuentes#IF Autofirma|Autofirma SAF_27]] 
+
+<span style="color:#555; font-style:italic;">- Inicio firma</span> → Firma KO + SAF_27
+
+<br>
+🔹 [[Incidencias Frecuentes#IF Autofirma|Autofirma Local]]  
+
+<span style="color:#555; font-style:italic;">- Inicio firma</span> → Firma KO sin códigos Cl@ve + SAF_XX  
+</div>
+
+<!-- 5) REGISTRO -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:260px; background:#fafafa; text-align:left; font-size:90%; line-height:1.35; color:#333;">
+<b style="font-size:105%;">🧾 Registro</b><br>
+<small style="color:#666;">Firma OK pero falla registro / justificante</small><br>
+<small style="color:#666;">Flujo correcto: se genera justificante y finaliza</small><br><br>
+
+
+🔹 [[Incidencias Frecuentes#IF REGWEB|REGWEB]] 
+
+→ <span style="color:#555; font-style:italic;">Firma OK</span> y luego <span style="color:#555; font-style:italic;">Registro KO</span> / ausente o falta <span style="color:#555; font-style:italic;">TR_FIN</span>
+</div>
+
+<!-- 6) FUNCIONALES -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:150px; background:#fafafa; text-align:left; font-size:90%; line-height:1.35; color:#333;">
+<b style="font-size:105%;">⚙️ Funcionales</b><br>
+<small style="color:#666;">No es acceso / firma / Registro</small><br>
+<small style="color:#666;">F.C. No errores pago/carpeta</small><br><br>
+🔹 [[Incidencias Frecuentes#Error–_Pago_no_verificado_(Funcional)|Pago]] · 
+
+<span style="color:#555; font-style:italic;">TR_PAN</span> → Pago no verificado<br><br>
+🔹 [[Incidencias Frecuentes#Error–_Carga_desde_Carpeta|Carpeta]] 
+
+<span style="color:#555; font-style:italic;">TR_CAR</span> → Carga desde Carpeta
+</div>
+
+</div>
+
+</div>
+</div>
+</div>
+
+
+
+<div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:20px 0;">
+<div style="border:1px solid #ddd; border-radius:8px; padding:14px 18px; background:#fff; text-align:center; min-width:220px;">
+📘<br>
+'''[[Incidencias Frecuentes|Incidencias frecuentes]]'''<br>
+<small>Casos habituales y diagnóstico rápido</small>
+</div>
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:14px 18px; background:#fff; text-align:center; min-width:220px;">
+🔑<br>
+'''[[Incidencias Cl@ve|Incidencias Cl@ve]]'''<br>
+<small>Autenticación y firma con Cl@ve</small>
+</div>
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:14px 18px; background:#fff; text-align:center; min-width:220px;">
+💳<br>
+'''[[Incidencias Certificados Locales|Certificados locales]]'''<br>
+<small>FNMT, DNIe, [[Autofirma Cliente/ Autofirma Servidor / Fire|Autofirma]], FIRE</small>
+</div>
+
+</div>
+
+
+
+
+<!-- MAILS (FUERA Y SIEMPRE VISIBLE) --><div style="text-align:center; margin:2px 0 6px 0;">
+  <div style="display:inline-block; border:1px solid #ddd; border-radius:8px; padding:10px 12px; background:#fff;">
+'''📨''' [[Mails|Mails para el ciudadano]] 
+  </div>
+</div>
+
+
+
+
+== 📚 Documentación ==
+
+<!-- TRAZAS DEL TRÁMITE (COLAPSABLE, ANCHO AJUSTADO) -->
+<div style="text-align:center; margin:6px 0;">
+  <div class="mw-collapsible mw-collapsed" style="display:inline-block;">
+
+    <!-- TÍTULO SIEMPRE VISIBLE + BOTÓN EXPLORAR AL LADO -->
+    <div style="display:inline-block; white-space:nowrap; font-weight:bold; font-size:1.05em; line-height:1; margin-bottom:6px;">
+⚙️ [[Índice de Trazas – Sistra|Trazas del trámite]]
+    </div>
+
+    <div class="mw-collapsible-content">
+
+      <div style="border:1px solid #ddd; border-radius:8px; padding:6px 12px 22px 12px; background:#fff; font-size:0.85em;">
+
+        <!-- ================= GRID 1: TRAZAS ================= -->
+        <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin-bottom:14px;">
+
+          <!-- ACCESO-ACCESO -->
+          <div style="border:1px solid #ddd; border-radius:8px; padding:12px; width:260px; background:#fafafa; text-align:left;">
+<b>🟦 [Acceso‑Acceso]</b><br>
+Inicio<br><br>
+<b>TR_FRI (Inicio formulario)</b><br>
+El ciudadano accede al trámite y abre el formulario por primera vez.
+          </div>
+
+          <!-- ACCESO-SESION -->
+          <div style="border:1px solid #ddd; border-radius:8px; padding:12px; width:260px; background:#fafafa; text-align:left;">
+<b>🟦 [Acceso‑Sesión]</b><br>
+Envío del formulario<br><br>
+<b>TR_FRI (Inicio formulario)</b><br>
+El ciudadano abre el formulario.<br><br>
+<b>TR_FRF (Fin formulario)</b><br>
+Pulsa “Continuar” o “Firmar”.<br><br>
+<b>TR_CAR (Carga del trámite)</b><br>
+Carga desde Carpeta (si aplica).<br><br>
+<b>TRPAE / TRPAN (Pago Verificado/No verificado)</b><br>
+Resultado de la fase de pago (si aplica).
+          </div>
+
+          <!-- FIRMA-METODO -->
+          <div style="border:1px solid #ddd; border-radius:8px; padding:12px; width:260px; background:#fafafa; text-align:left;">
+<b>🟧 [Firma‑Método]</b><br>
+Preparación de la firma<br><br>
+<b>TR_FRI → TR_FRF</b><br>
+El formulario se completa y se envía.<br><br>
+<b>TR_SGI (Inicio firma)</b><br>
+Se inicia el proceso de firma electrónica.
+          </div>
+
+          <!-- FIRMA-PROVEEDOR -->
+          <div style="border:1px solid #ddd; border-radius:8px; padding:12px; width:260px; background:#fafafa; text-align:left;">
+<b>🟥 [Firma‑Proveedor]</b><br>
+Ejecución de la firma<br><br>
+<b>TR_SGI (Inicio firma)</b><br>
+Se invoca al proveedor de firma.<br><br>
+<b>TR_SGX (Firma KO)</b><br>
+Resultado no válido.<br><br>
+<b>TR_SGO (Fin firma OK)</b><br>
+Firma correcta (cuando procede).
+          </div>
+
+          <!-- REGISTRO -->
+          <div style="border:1px solid #ddd; border-radius:8px; padding:12px; width:260px; background:#fafafa; text-align:left;">
+<b>🟩 [Registro]</b><br>
+Finalización<br><br>
+<b>TR_SGO (Fin firma OK)</b><br>
+Firma realizada correctamente.<br><br>
+<b>TR_REG (Registro)</b><br>
+Envío a registro.<br><br>
+<b>TR_FIN (Fin trámite)</b><br>
+Proceso finalizado.
+          </div>
+
+        </div><!-- /GRID TRAZAS -->
+
+        <!-- ================= GRID 2: FASE ================= -->
+        <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
+
+          <div style="border:1px dashed #ccc; border-radius:8px; padding:10px; width:260px; background:#fff; text-align:left;">
+Inicio del trámite. Aún no se ha producido ninguna acción de firma ni registro.
+          </div>
+
+          <div style="border:1px dashed #ccc; border-radius:8px; padding:10px; width:260px; background:#fff; text-align:left;">
+Formulario completado. El trámite se prepara para pasar a la firma.
+          </div>
+
+          <div style="border:1px dashed #ccc; border-radius:8px; padding:10px; width:260px; background:#fff; text-align:left;">
+Inicio del proceso de firma con el método elegido por el ciudadano.
+          </div>
+
+          <div style="border:1px dashed #ccc; border-radius:8px; padding:10px; width:260px; background:#fff; text-align:left;">
+La firma se está ejecutando en el proveedor.
+          </div>
+
+          <div style="border:1px dashed #ccc; border-radius:8px; padding:10px; width:260px; background:#fff; text-align:left;">
+El trámite se encuentra en la fase final de registro y cierre.
+          </div>
+
+        </div><!-- /GRID FASE -->
+
+      </div><!-- /cuadro -->
+
+    </div><!-- /mw-collapsible-content -->
+  </div><!-- /mw-collapsible -->
+</div><!-- /center -->
+
+<div style="text-align:left;"></div>
+
+<!-- EXPLORAR – SERVICIOS IMPLICADOS -->
+<div style="text-align:center; margin:2px 0;">
+  <div style="display:inline-block;">
+    <div class="mw-collapsible mw-collapsed" style="margin-top:0;">
+
+<!-- TÍTULO EXPLORAR -->
+<div style="display:inline-block; white-space:nowrap; font-weight:bold;">
+🔎 Servicios implicados
+</div>
+
+<div class="mw-collapsible-content">
+
+<!-- ===================== BLOQUE 1 ===================== -->
+<!-- FLUJO DEL TRÁMITE – SERVICIOS (ACCESO / FIRMA / REGISTRO) -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:8px 12px 12px 12px; margin:8px auto; background:#fff;">
+
+<div style="display:flex; align-items:center; justify-content:center; margin:2px 0 6px 0;">
+  <div style="width:40px; height:1px; background:#ddd; margin-right:8px;"></div>
+  <div style="white-space:nowrap; font-weight:bold; font-size:1.05em; line-height:1;">
+📄 Trámite
+  </div>
+  <div style="width:40px; height:1px; background:#ddd; margin-left:8px;"></div>
+</div>
+
+<div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:6px;">
+
+<!-- ACCESO -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:260px; background:#fafafa; text-align:left; font-size:90%; line-height:1.35;">
+<b>🔐 Acceso</b><br>
+<small style="color:#666;">Antes de iniciar la firma</small><br><br>
+
+<b>[Error Acceso‑Acceso]</b><br>
+• Soffid<br>
+• Pasarela Cl@ve (autenticación)<br><br>
+
+<b>[Error Acceso‑Sesión]</b><br>
+• Portafib
+</div>
+
+<!-- FIRMA -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:300px; background:#fafafa; text-align:left; font-size:90%; line-height:1.35;">
+<b>✍️ Firma</b><br>
+<small style="color:#666;">Inicio de la firma</small><br><br>
+
+<b>[Error Firma‑Método]</b><br>
+• Cl@ve (método / QAA)<br><br>
+
+<b>[Error Firma‑Proveedor]</b><br>
+• Cl@ve Firma<br>
+• Autofirma (servidor)<br>
+• FIRE (certificado local)
+</div>
+
+<!-- REGISTRO -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:260px; background:#fafafa; text-align:left; font-size:90%; line-height:1.35;">
+<b>📄 Registro</b><br>
+<small style="color:#666;">Tras la firma</small><br><br>
+
+<b>[Error Registro]</b><br>
+• REGWEB
+</div>
+
+</div><!-- /flex -->
+</div><!-- /panel -->
+
+<!-- ===================== BLOQUE 2 ===================== -->
+<!-- SERVICIOS IMPLICADOS (TARJETA POR SERVICIO) -->
+<div style="border:1px solid #ddd; border-radius:8px; padding:8px 12px 12px 12px; margin:12px auto; background:#fff;">
+
+<div style="display:flex; align-items:center; justify-content:center; margin:2px 0 6px 0;">
+  <div style="width:40px; height:1px; background:#ddd; margin-right:8px;"></div>
+  <div style="white-space:nowrap; font-weight:bold; font-size:1.05em; line-height:1;">
+🖥️ Servicios implicados
+  </div>
+  <div style="width:40px; height:1px; background:#ddd; margin-left:8px;"></div>
+</div>
+
+<div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:6px;">
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:220px; background:#fafafa; text-align:left; font-size:90%;">
+<b>🔑 Soffid</b><br>
+<small style="color:#666;">IAM CAIB</small><br><br>
+Valida sesión / acceso
+</div>
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:220px; background:#fafafa; text-align:left; font-size:90%;">
+<b>🌐 Pasarela Cl@ve</b><br>
+<small style="color:#666;">pasarela.clave.gob.es</small><br><br>
+Identificación (Cl@ve / cert.)
+</div>
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:220px; background:#fafafa; text-align:left; font-size:90%;">
+<b>🧩 Portafib</b><br>
+<small style="color:#666;">sesión de firma</small><br><br>
+Crea sesión / lanza firma
+</div>
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:220px; background:#fafafa; text-align:left; font-size:90%;">
+<b>🪪 Cl@ve (método)</b><br>
+<small style="color:#666;">QAA / método</small><br><br>
+Autoriza método / credencial
+</div>
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:220px; background:#fafafa; text-align:left; font-size:90%;">
+<b>✍️ Cl@ve Firma</b><br>
+<small style="color:#666;">proveedor firma</small><br><br>
+Firma en nube
+</div>
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:220px; background:#fafafa; text-align:left; font-size:90%;">
+<b>🖋️ Autofirma</b><br>
+<small style="color:#666;">servidor</small><br><br>
+Firma servidor / intermedio
+</div>
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:220px; background:#fafafa; text-align:left; font-size:90%;">
+<b>💳 FIRE</b><br>
+<small style="color:#666;">certificado local</small><br><br>
+Firma con certificado
+</div>
+
+<div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:220px; background:#fafafa; text-align:left; font-size:90%;">
+<b>📄 REGWEB</b><br>
+<small style="color:#666;">registro CAIB</small><br><br>
+Registra trámite
+</div>
+
+</div><!-- /flex -->
+</div><!-- /panel -->
+
+</div><!-- /mw-collapsible-content -->
+    </div><!-- /mw-collapsible -->
+  </div><!-- /inline-block -->
+</div><!-- /center -->
+<div style="text-align:center; margin:10px 0;">
+<!-- Guia Visual --><div style="text-align:center; margin:2px 0 6px 0;">
+  <div style="display:inline-block; border:1px solid #ddd; border-radius:8px; padding:10px 12px; background:#fff;">
+'''📚''' [[Guía Visual]] 
+  </div>
+</div>
+
+Pulsa ► para expandir cada sección
+</span> 
+<div style="text-align:right;font-size:90%;margin:0 0 2px 0;">
+🔄 [{{fullurl:{{FULLPAGENAME}}|action=purge}} Recargar tabla]
+</div>
+
+<div style="width:70%; margin:0 auto;">
+<div style="display:flex; gap:12px;">
+
+<!-- COLUMNA FARMACIA -->
+<div style="flex:1; border:1px solid #ccc; padding:10px; border-radius:6px;">
+<div style="font-size:1.2em; font-weight:bold; color:#222; padding-bottom:6px; margin-bottom:18px; border-bottom:1px solid #ddd; text-align:center;">
+Farmacia
+</div>
+
+<div style="text-align:center; margin-top:60px;">
+<div style="display:inline-block; text-align:left;">
+<categorytree mode=pages depth="0">Farmacia</categorytree>
+</div>
+</div>
+</div>
+
+<!-- COLUMNA TRÁMITES -->
+<div style="flex:1; border:1px solid #ccc; padding:10px; border-radius:6px;">
+<div style="font-size:1.2em; font-weight:bold; color:#222; padding-bottom:6px; margin-bottom:18px; border-bottom:1px solid #ddd; text-align:center;">
+Trámites
+</div>
+
+<div style="text-align:center;">
+<div style="display:inline-block; text-align:left;">
+
+<div style="margin-top:12px;">
+<categorytree mode=pages depth="0">Certificados</categorytree>
+</div>
+
+<div style="margin-top:10px;">
+<categorytree mode=pages depth="0">SistraHelp</categorytree>
+</div>
+
+<div style="margin-top:10px; margin-bottom:22px;">
+<categorytree mode=pages depth="0">Funcionales Trámites</categorytree>
+</div>
+
+</div>
+</div>
+</div>
+
+<!-- COLUMNA OTROS -->
+<div style="flex:1; border:1px solid #ccc; padding:10px; border-radius:6px;">
+<div style="font-size:1.2em; font-weight:bold; color:#222; padding-bottom:6px; margin-bottom:18px; border-bottom:1px solid #ddd; text-align:center;">
+Otros
+</div>
+
+<div style="text-align:center; margin-top:60px;">
+<div style="display:inline-block; text-align:left;">
+<categorytree mode=pages depth="0">Otros</categorytree>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- RESETEO REAL (evita herencias aunque haya skins raros) -->
+<div style="text-align:left; margin-top:12px;">
+
+<br><br><br>
+
+== Empezando ==
+* [[Conceptos Básicos Edición Wiki]]
+* https://www.mediawiki.org/wiki/Help:Formatting/es
+* https://www.mediawiki.org/wiki/Help:Tables/es
+* https://www.mediawiki.org/wiki/Help:Links/es
+* https://www.mediawiki.org/wiki/Help:Images/es
+
+</div>
+
+
+<br /><br />
+[[Category:Principal]]

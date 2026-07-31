@@ -1,0 +1,10 @@
+# F-entorno_sgi_sin_cierre — sintética para error_autofirma_entorno
+# Solo TR_SGI (sin TR_SGX / TR_SGO / TR_FIN). Acceso CERTIFICADO en TR_CAR.
+# js ≥1.3.80: TR_CAR CERTIFICADO → error_autofirma_entorno (aunque el selector siga en Cl@ve).
+# Acción: FIRE/AutoFirma (sin texto de Cl@ve móvil).
+TR_SGI - Inicio firma	01/06/2026 10:04:00	ID-TEST	NIF0000000A	TEST USER	TRAMITE	ORG	1	1	1		
+TR_CAR - Carga del trámite	01/06/2026 10:03:55	ID-TEST	NIF0000000A	TEST USER	TRAMITE	ORG	1	1	1		CERTIFICADO
+TR_SGI - Inicio firma	01/06/2026 10:03:00	ID-TEST	NIF0000000A	TEST USER	TRAMITE	ORG	1	1	1		
+TR_CAR - Carga del trámite	01/06/2026 10:02:55	ID-TEST	NIF0000000A	TEST USER	TRAMITE	ORG	1	1	1		CERTIFICADO
+TR_SGI - Inicio firma	01/06/2026 10:02:00	ID-TEST	NIF0000000A	TEST USER	TRAMITE	ORG	1	1	1		
+TR_CAR - Carga del trámite	01/06/2026 10:01:55	ID-TEST	NIF0000000A	TEST USER	TRAMITE	ORG	1	1	1		CERTIFICADO

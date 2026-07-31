@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<script>
+  // 🔹 VERSION HTML (editable manual)
+  const VERSION_HTML = "1.2.4";
+</script>
+
+<!-- =====================================================
+     FUNCIONALIDADES HTML
+     =====================================================
+
+     VERSION 1.2.1
+     - Layout completo de la aplicación:
+         header + sidebar + zona principal
+     - Panel de cabecera con:
+         versión HTML / JSON / JS
+         botón actualizar (control de caché)
+         acceso a tabla de reglas
+     - Panel emergente reutilizable (mensajes dinámicos)
+     - Entrada de traza (textarea optimizado para texto técnico)
+     - Selector de método (Cl@ve / Certificado)
+     - Selector dinámico de sistema (PC / móvil)
+         visible solo para certificado
+     - Bloque de acciones:
+         botón Analizar
+         botón Limpiar
+     - Panel de resultado dinámico conectado al motor JS
+     - Placeholder inicial (estado sin análisis)
+     - Integración completa con app.js (eventos y lógica)
+
+     VERSION 1.2.0
+     - Mejora estructural del layout:
+         separación visual clara (sidebar + main)
+     - Introducción del panel de resultado independiente
+     - Mejora de accesibilidad y legibilidad del formulario
+
+     VERSION 1.1
+     - Introducción de tarjetas (cards) para organización UI
+     - Creación del panel emergente reutilizable
+     - Primer diseño funcional del flujo de usuario
+
+     VERSION 1.0
+     - Estructura base HTML de la aplicación
+     - Entrada de traza y botón de análisis
+-->
+
+<style>
+  .literales {
+    font-size: 11px;
+    color: #666;
+  }
+
+  /* 🔹 NUEVO: flujo textual */
+  .flujo-texto {
+    font-size: 11px;
+    color: #666;
+  }
+
+  /* Texto de literal ligeramente más pequeño */
+  .literal-pequeno {
+    font-size: 12px;
+    color: #444;
+    margin-top: 6px;
+    line-height: 1.3;
+  }
+</style>
+  
+<meta charset="UTF-8">
+<title>Analizador V1.2.4</title>
+
+<style>
+body {
+  font-family: system-ui;
+  background: #f5f4f0;
+  margin: 0;
+  color:#1e1c17;
+}
+
+/* HEADER */
+.header {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  background: white;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.header-left { display:flex; gap:14px; align-items:center;}
+
+.brand { display:flex; align-items:center; gap:8px; }
+.brand__title {
+  font-family: system-ui;
+  font-size:16px;
+  font-weight:600;
+  color:#1e1c17;
+}
+
+.badge {
+  background:#01696f;
+  color:white;
+  font-size:10px;
+  padding:3px 10px;
+  border-radius:999px;
+}
+
+.ver-detalles {
+  font-size:11px;
+  color:#01696f;
+  cursor:pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  display: inline-block;
+  width: fit-content;
+}
+
+.btn-mini {
+  border:1px solid rgba(0,0,0,0.12);
+  background:#fafafa;
+  border-radius:999px;
+  padding:6px 12px;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-family: system-ui;
+  font-size:11px;
+  color:#1e1c17;
+}
+
+.header-right {
+  margin-left:auto;
+  font-size:12px;
+  color:#6b6960;
+}
+
+/* LAYOUT */
+.container { display:flex; min-height: calc(100vh - 52px); }
+
+.sidebar {
+  width:320px;
+  padding:16px;
+  background:#faf9f7;
+  border-right:1px solid rgba(0,0,0,0.08);
+}
+
+.main { flex:1; padding:18px; }
+
+/* CARD */
+.card {
+  background:white;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:14px;
+}
+
+/* Cambios 2026-06-12: flujo visual compacto con marco blanco oculto hasta analizar */
+#flujoVisualCard {
+  display:none;
+  /* Outline-only card: transparent background so it matches the results panel */
+  background: transparent;
+  /* More visible contour */
+  border:1px solid rgba(0,0,0,0.14);
+  border-radius:12px;
+  padding:6px 10px;
+  margin:0 auto 14px;
+  box-sizing:border-box;
+  max-width: calc(100% - 32px);
+  /* Subtle shadow to lift the outline slightly from the background */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+#flujoVisual {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Ensure label space below every step so vertical alignment is consistent */
+.flujo-paso__label {
+  min-height:20px; /* reserve vertical space even if label is empty */
+  font-size:9px;
+  color:#666;
+  line-height:1.2;
+  text-align:center;
+}
+
+.check {
+  display:flex;
+  gap:10px;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:8px;
+  padding:8px;
+  margin-bottom:6px;
+}
+
+/* Formato V5: tarjeta con cabecera gris + cuerpo blanco */
+.panel-card {
+  background:white;
+  border:1px solid rgba(0,0,0,0.08);
+  border-radius:12px;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.panel-card__head {
+  background:#ececea;
+  padding:9px 12px;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.4px;
+  text-transform:uppercase;
+  color:#6b6960;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.panel-card__body { padding:12px; }
+
+/* Apartado plegable (details/summary) */
+summary.panel-card__head {
+  cursor:pointer;
+  user-select:none;
+  list-style:none;
+}
+summary.panel-card__head::-webkit-details-marker { display:none; }
+.chevron { margin-left:auto; transition: transform .2s; display:inline-block; color:#9a9890; }
+details[open] > summary.panel-card__head .chevron { transform: rotate(180deg); }
+details:not([open]) > summary.panel-card__head { border-bottom:none; }
+.opcion {
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  border:1px solid rgba(0,0,0,0.10);
+  border-radius:8px;
+  padding:10px;
+  margin-bottom:8px;
+  cursor:pointer;
+}
+.opcion:last-child { margin-bottom:0; }
+.opcion__titulo { font-weight:600; font-size:13px; color:#1e1c17; }
+.opcion__sub { font-size:11px; color:#8a8780; margin-top:2px; }
+.campo-label { font-size:12px; color:#6b6960; margin-bottom:6px; }
+
+textarea {
+  width:100%;
+  height:100px;
+  border-radius:10px;
+  border:1px solid rgba(0,0,0,0.1);
+  padding:10px;
+  font-family: monospace;
+  box-sizing: border-box;
+}
+
+textarea:focus {
+  outline:none;
+  border-color:#01696f;
+}
+
+/* BOTONES */
+.actions {
+  display:flex;
+  gap:10px;
+}
+
+#btnAnalizar {
+  background:#01696f;
+  color:white;
+  border:none;
+  border-radius:8px;
+  padding:10px;
+  flex:1;
+}
+
+#btnLimpiar {
+  background:#eee;
+  border:none;
+  border-radius:8px;
+  padding:10px;
+  flex:1;
+}
+
+/* PANEL */
+.panel {
+  border-radius:12px;
+  border:1px solid rgba(150,66,25,.2);
+  background:#fdf0e8;
+  margin-bottom:12px;
+}
+
+.panel-header {
+  padding:10px 14px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:600;
+  color:#964219;
+}
+
+.panel-body {
+  padding:12px 14px;
+  font-size:13px;
+}
+
+.btn-close {
+  border:1px solid rgba(0,0,0,0.1);
+  background:white;
+  border-radius:6px;
+  padding:2px 8px;
+  cursor:pointer;
+}
+
+.hidden { display:none; }
+
+#placeholder {
+  text-align:center;
+  color:#999;
+  margin-top:120px;
+}
+
+#resultado {
+  white-space: pre-line;
+}
+
+#resultado .literales {
+  font-size: 11px;
+  color: #666;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="header">
+
+  <div class="header-left">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#01696f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span class="brand__title">Analizador de Trazas</span>
+    </div>
+
+    <div style="display:flex; flex-direction:column; align-items:flex-start; gap:2px;">
+      <div class="badge">v 1.2.9</div>
+      <div class="ver-detalles" id="btnDetalles">Ver detalles ▾</div>
+    </div>
+
+    <button class="btn-mini" id="btnActualizar"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>Actualizar</button>
+  </div>
+
+  <div class="header-right">
+   Lectura:
+<span id="versionHTML"></span>
+-
+<span id="versionJSON"></span>
+-
+<span id="versionJS"></span>
+    <a href="#" id="btnTabla">Reglas</a>
+  </div>
+
+</div>
+
+<div class="container">
+
+  <div class="sidebar">
+
+    <!-- Problemas de acceso (formato V5, plegable) -->
+    <details class="panel-card" id="cardAcceso">
+      <summary class="panel-card__head">🔐 Problemas de acceso<span class="chevron">▾</span></summary>
+      <div class="panel-card__body">
+
+        <label class="opcion">
+          <input type="radio" name="problema" id="checkSaml">
+          <div>
+            <div class="opcion__titulo">El ciudadano ve error SAML</div>
+            <div class="opcion__sub">Pantalla de error SAML al autenticarse</div>
+          </div>
+        </label>
+
+        <label class="opcion">
+          <input type="radio" name="problema" id="checkBlanco">
+          <div>
+            <div class="opcion__titulo">La página queda en blanco</div>
+            <div class="opcion__sub">Pantalla vacía al acceder al trámite</div>
+          </div>
+        </label>
+
+      </div>
+    </details>
+
+    <!-- Traza (formato V5, plegable) -->
+    <details class="panel-card" open>
+      <summary class="panel-card__head">📋 Traza SistraHelp<span class="chevron">▾</span></summary>
+      <div class="panel-card__body">
+        <div class="campo-label">Pega aquí</div>
+        <textarea id="inputTraza" placeholder="Pega la traza aquí..."></textarea>
+      </div>
+    </details>
+
+    <!-- Método (formato V5, misma lógica, plegable) -->
+    <details class="panel-card" open>
+      <summary class="panel-card__head">⚙ Método<span class="chevron">▾</span></summary>
+      <div class="panel-card__body">
+
+        <label class="opcion">
+          <input type="radio" name="metodo" id="metodoClave">
+          <div class="opcion__titulo">Cl@ve</div>
+        </label>
+
+        <label class="opcion">
+          <input type="radio" name="metodo" id="metodoCert">
+          <div class="opcion__titulo">Certificado local</div>
+        </label>
+
+        <div id="bloqueSistema" style="display:none; margin-top:10px;">
+          <div class="campo-label">Sistema</div>
+
+          <label class="opcion">
+            <input type="radio" name="sistema" id="sisPC">
+            <div>
+              <div class="opcion__titulo">Ordenador</div>
+              <div class="opcion__sub">Windows / Mac / Linux</div>
+            </div>
+          </label>
+
+          <label class="opcion">
+            <input type="radio" name="sistema" id="sisMovil">
+            <div>
+              <div class="opcion__titulo">Dispositivo móvil</div>
+              <div class="opcion__sub">Android / iPhone / iPad</div>
+            </div>
+          </label>
+        </div>
+
+      </div>
+    </details>
+
+    <div class="actions">
+      <button id="btnAnalizar">Analizar</button>
+      <button id="btnLimpiar">Limpiar</button>
+    </div>
+
+  </div>
+
+  <div class="main">
+
+    <!-- ✅ PANEL ORIGINAL (NO TOCADO) -->
+    <div id="panel" class="panel hidden">
+      <div class="panel-header">
+        <span id="panelTitulo"></span>
+        <button class="btn-close" id="btnCerrarPanel">Cerrar ✕</button>
+      </div>
+      <div class="panel-body" id="panelContenido"></div>
+    </div>
+
+    <!-- ✅ PLACEHOLDER ORIGINAL -->
+    <div id="placeholder">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#c9c7c0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 14px;" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Pega una traza y pulsa Analizar
+    </div>
+
+    <!-- ✅ RESULTADO (solo esto sustituye CAI y demás) -->
+
+<!-- 🔹 NUEVO: flujo visual -->
+<!-- Cambio 2026-06-12: el contenedor solo se muestra tras pulsar Analizar -->
+<div id="flujoVisualCard">
+  <div id="flujoVisual"></div>
+</div>
+
+<div id="resultado" style="white-space: normal;"></div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>

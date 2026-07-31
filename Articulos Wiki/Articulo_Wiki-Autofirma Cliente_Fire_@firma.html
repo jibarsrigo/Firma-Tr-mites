@@ -1,0 +1,669 @@
+<div style="text-align:center;">
+<div style="display:inline-block; text-align:left; width:100%; max-width:1100px;">
+{| class="wikitable" style="width:100%; margin:10px auto; border-collapse:separate; border-spacing:10px; border:none; background:transparent;"
+|-
+! style="width:33%; background:#f0f2ff; color:#2c3e50; padding:12px; border:1px solid #c8ccd1; border-radius:8px 8px 0 0;" | ⚡ Reglas
+! style="width:33%; background:#f0f2ff; color:#2c3e50; padding:12px; border:1px solid #c8ccd1; border-radius:8px 8px 0 0;" | 💻 Diagnóstico por SO
+! style="width:33%; background:#f0f2ff; color:#2c3e50; padding:12px; border:1px solid #c8ccd1; border-radius:8px 8px 0 0;" | 🔍 Errores Específicos
+|-
+| style="vertical-align:top; padding:15px; border:1px solid #c8ccd1; background:#ffffff; border-radius:0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" |
+* [[#Prueba Firma PDF|Prueba PDF Local (Filtro 1)]]
+* [[#Resumen_conceptual:_FIRE,_Autofirma_cliente_y_Autofirma_servidor|Concepto: FIRE vs Autofirma]]
+* [[#Relación_SistraHelp_↔_diagnóstico_real|Trazas y Patrones SistraHelp]]
+| style="vertical-align:top; padding:15px; border:1px solid #c8ccd1; background:#ffffff; border-radius:0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" |
+* [[#Windows|Windows]] <small>(Carpeta .afirma / Registro)</small>
+* [[#macOS|macOS]] <small>(Sequoia / Llavero / SSL)</small>
+* [[#Linux|Linux]] <small>(Firefox Snap / PKCS#11)</small>
+| style="vertical-align:top; padding:15px; border:1px solid #c8ccd1; background:#ffffff; border-radius:0 0 8px 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" |
+* [[#Cuando_falla_Autofirma_servidor_(SAF_27)|SAF_27 (Fallo de Servidor)]]
+* [[#Cuando_falla_Autofirma_cliente_(entorno_local)|Errores SAF locales (03, 11, 19)]]
+* [[#Cliente_de_Firma_Móvil|Firma Móvil (Android / iOS)]]
+|-
+| colspan="3" style="text-align:center; background:#f8f9fa; padding:12px; border:1px solid #c8ccd1; border-radius:8px; font-weight:bold;" |
+[[#Limpieza_completa_de_AutoFirma_(Windows)|🛠️ Instalación Limpia Autofirma]]
+|}
+</div>
+</div>
+<div style="text-align:left;">
+
+=== Resumen conceptual: FIRE, Autofirma cliente y Autofirma servidor ===
+----A efectos de '''diagnóstico CAU en CAIB''', el '''proveedor de firma funcional''' depende del '''tipo de certificado utilizado en el trámite''':
+
+* '''Certificado local''' (FNMT, DNIe u otros certificados instalados en el equipo):  el proveedor de firma se considera '''FIRE'''.
+* '''Certificado centralizado Cl@ve Permanente''':  el proveedor de firma se considera '''Cl@ve Firma'''.
+
+=== Rol de FIRE en firma con certificados locales ===
+Cuando un ciudadano firma un trámite con '''certificado local''', '''FIRE actúa como proveedor de firma''' y es el componente encargado de:
+
+* detectar los certificados disponibles en el entorno del ciudadano,
+* permitir la selección del certificado,
+* ejecutar la operación de firma,
+* y devolver el resultado a '''PortaFIB'''.
+
+En este flujo, '''AutoFirma no es un proveedor de firma''', sino una '''herramienta auxiliar del entorno local''' que puede intervenir según el navegador y el sistema operativo del ciudadano.
+<br>
+
+'''Autofirma Servidor'''= Servicio de firma en servidor de FIRE (@firma) Se utiliza para referirse a un '''fallo en el servicio de firma en servidor que utiliza FIRE''', basado en componentes de '''@firma''' para la validación.<br>'''RESUMEN:'''
+
+- FIRE hace la firma, también cuando se usa cl@ve permanente para firmar-
+
+- @firma comprueba que la firma y el certificado sean válidos.
+
+- @firma valida TODOS los certificados, también los certificados locales.
+=== Funcionamiento de FIRE con certificados locales ===
+----
+Cuando un ciudadano firma con certificado local, FIRE puede operar de dos maneras, en función del navegador y del entorno:
+
+==== a) FIRE nativo ====
+El propio navegador o el sistema accede directamente al almacén de certificados y presenta la lista de certificados disponibles, '''sin necesidad de abrir la aplicación AutoFirma cliente'''.
+
+==== b) FIRE + AutoFirma cliente ====
+Si el navegador no puede acceder directamente al almacén de certificados, se lanza la aplicación '''AutoFirma cliente''', que actúa como herramienta local para:
+
+* mostrar los certificados,
+* permitir la selección,
+* y ejecutar la firma.
+
+En '''ambos casos''', en '''SistraHelp''' el proveedor que figura es '''FIRE (certificado local)'''.
+
+AutoFirma cliente '''no se trata como proveedor''', sino como un '''componente auxiliar del entorno del ciudadano'''.
+
+=== ►Nota aclaratoria sobre FIRE, Cl@ve Firma y @firma (importante) ===
+
+En los trámites de la sede CAIB, la firma electrónica siempre pasa internamente por los mismos componentes técnicos, pero a efectos de CAU '''no se diagnostican ni se escalan los problemas por la arquitectura interna''', sino por '''dónde se encuentra el certificado utilizado para firmar'''.
+
+Desde el punto de vista técnico, el flujo interno de firma es siempre el mismo:
+<blockquote>
+'''PortaFIB → FIRE → @firma'''
+</blockquote>
+
+* '''FIRE''' ejecuta la firma (siempre).
+* '''@firma''' valida el certificado y la firma (siempre).
+
+Este flujo técnico es común a todos los casos y '''no sirve para decidir el diagnóstico CAU'''.
+
+=== Criterio CAU ===
+
+A efectos de diagnóstico y escalado en CAU, el criterio es el siguiente:
+
+* '''Certificado local''' (FNMT, DNIe, etc.):  El certificado está en el equipo del ciudadano. → El problema puede estar en el entorno local. Y se trata como '''FIRE (certificado local)'''.
+
+* '''Cl@ve Permanente''':  El certificado está en los servidores de Cl@ve.  El ciudadano no tiene ningún certificado en su equipo. → El problema no puede estar en el entorno del ciudadano. Y se trata como '''Cl@ve Firma'''.
+
+
+Por este motivo, aunque en SistraHelp pueda aparecer al firmar con '''Cl@ve Firma''' el literal: 
+<blockquote>
+'''“Plugin de Firma de FIRe – Firma Cl@ve”'''
+</blockquote>
+
+Este texto '''no debe utilizarse como criterio de diagnóstico'''.   El diagnóstico CAU '''siempre depende del tipo de certificado configurado en el trámite'''.
+
+<br>
+Cuando el trámite se firma con '''certificado local''', en SistraHelp puede aparecer el método de firma:
+
+<blockquote>
+'''FIRMETODO: AfirmaTrifase – Firma con certificado (AutoFirm@)'''
+</blockquote>
+
+Este literal indica que la firma se está realizando con un '''certificado instalado en el equipo del ciudadano''' (FNMT, DNIe u otros), utilizando el motor de firma de '''@firma en modo trifásico''' y, cuando es necesario, la aplicación '''AutoFirma cliente''' como herramienta auxiliar.
+
+En estos casos, cualquier '''Firma KO''' debe clasificarse como: '''[Firma‑Proveedor] – FIRE (certificado local)'''
+
+'''RESUMEN:''' 
+
+- FIRE hace la firma, tambien cuando se usa cl@ve permanente para firmar-
+
+- @firma comprueba que la firma y el certificado sean válidos.
+
+- @firma valida TODOS los certificados, también los certificados locales.
+
+=== Cuando falla Autofirma cliente (SAF_XX entorno local) ===
+----
+'''Escenario típico:'''
+
+* Autofirma cliente no se abre.
+* Autofirma cliente se cierra o no detecta certificados.
+* Autofirma firma correctamente un fichero local, pero falla al firmar desde el navegador.
+* El navegador no consigue comunicarse correctamente con Autofirma.
+
+'''En SistraHelp se observa:'''
+
+* TR_SGI (Inicio firma) → TR_SGX (Firma KO)
+* No aparecen códigos 8‑15 / 101 / 103 / 104 (no es Cl@ve Firma)
+* No aparece SAF_27 (no es Autofirma servidor)
+
+El detalle del error suele apuntar a:
+
+* problemas con el certificado o la clave privada,
+* errores de comunicación entre navegador y Autofirma,
+* agotamiento de tiempo de firma,
+* configuración incorrecta del navegador o del entorno de seguridad,
+* problemas del sistema operativo del ciudadano.
+
+'''Interpretación:''' El trámite llega a la fase de firma, pero la operación no se completa por un '''problema del entorno local del ciudadano''' (Autofirma cliente, navegador, certificado, DNIe, permisos, antivirus, VPN, etc.).
+
+'''Clasificación:''' '''[Error Firma‑Proveedor] – FIRE (certificado local)''' FIRE sigue siendo el proveedor real del flujo, aunque el fallo se produzca en el entorno local. (AutoFirma cliente, navegador, certificado, sistema operativo).
+
+=== Cuando falla Autofirma servidor (SAF_27) ===
+----
+'''Escenario típico:'''
+
+El ciudadano llega correctamente a la fase de firma, pero el '''servicio de firma en servidor de Autofirma''' no puede procesar la solicitud.
+
+'''En SistraHelp se observa:'''
+
+* TR_SGI → TR_SGX (Firma KO)
+** En el detalle aparece '''SAF_27''' o mensajes equivalentes a error en servidor de firma o servidor intermedio de Autofirma. En SistraHelp se reconoce por el patrón '''TR_SGI → TR_SGX''' con el literal <code>SAF_27</code>, descartando fallos de Cl@ve o de Portafib al no aparecer sus códigos asociados.  Si la incidencia afecta a múltiples NIF en la misma franja horaria, se confirma una '''caída general del proveedor''' y no se debe pedir al ciudadano que reinstale la aplicación. En casos individuales, el error suele deberse a bloqueos en el puerto '''63117''' causados por '''VPN corporativas (como FortiClient)''', firewalls o proxies que impiden finalizar el ''handshake'' de firma (Conexión segura) necesario para completar el trámite.
+
+'''Conclusión:''' Proveedor KO: '''Autofirma servidor'''.
+
+'''Clasificación:''' '''[Error Firma‑Proveedor] – Autofirma (servidor)'''
+
+No se trata de un problema de la aplicación Autofirma cliente ni del entorno del ciudadano, sino de un '''fallo del servicio de firma en servidor'''.
+
+=== Cliente de Firma Móvil ===
+----
+En SistraHelp, cualquier mensaje que mencione '''«Cliente de Firma Móvil»''' se trata siempre como un fallo del entorno de '''Autofirma''' y '''NO''' como un error de Cl@ve Firma.
+
+No es un error de Cl@ve Firma.
+
+'''Clasificación:[Error Firma‑Proveedor] asociado a Autofirma''' (cliente de firma o componente intermedio), según el patrón de trazas.
+
+'''Contexto habitual en SistraHelp:'''
+La firma llega a iniciarse varias veces, pero siempre termina en KO con mensajes que mencionan Autofirma o Cliente de Firma Móvil.
+
+(SistraHelp):
+: • '''TR_SGI (Inicio firma)''' → '''TR_SGX (Firma KO)''' (repetido)
+:: Mensajes típicos:
+:: • <code>El tiempo para firmar ha expirado o puede ser que no tenga el cliente de firma que debe instalar en su sistema</code>
+:: • <code>No se pudo conectar con el servidor intermedio para la recuperación del resultado de la operación</code>
+
+'''Interpretación:'''
+La firma se inicia ('''TR_SGI'''), pero no puede completarse por:
+
+* cliente de firma no instalado o desactualizado,
+* problemas de comunicación con el servidor intermedio,
+* entorno móvil o local no compatible.
+
+• No es Portafib.  
+• No es Cl@ve Firma.  
+• No es un error del formulario.
+
+Se trata normalmente de un '''caso individual''' (un único NIF con reintentos), salvo que se detecten varios NIF con el mismo patrón en la misma franja.
+
+'''Acción (caso individual):'''
+: • Indicar que el problema no es de Portafib ni de Cl@ve, sino del entorno de firma (Autofirma / Cliente de Firma Móvil).
+: • Recomendar probar en otro navegador o equipo, sin VPN ni bloqueadores corporativos.
+: • Reintentar la firma desde «Els meus tràmits» / Carpeta.
+
+'''Acción (si se detectan varios NIF en la misma franja):'''
+: • Tratar como posible fallo general del proveedor Autofirma o componente intermedio.
+: • Recomendar reintento más tarde.
+: • No clasificarlo como Cl@ve Firma ni como fallo de Portafib/Soffid.
+
+== Errores provocados por mala instalación de Autofirma- Qué es el ''keystore'' interno de Autofirma ==
+AutoFirma incorpora un '''keystore interno propio''', independiente del almacén de certificados del sistema operativo o del navegador, que utiliza para '''establecer conexiones seguras y validar la confianza''' de los servicios con los que se comunica.
+
+Este keystore:
+
+* '''NO contiene el certificado personal del ciudadano''' (FNMT, DNIe, etc.).
+* Contiene '''certificados de confianza''' necesarios para la comunicación segura.
+
+== Qué contiene el keystore interno ==
+De forma simplificada, el keystore interno de AutoFirma contiene:
+
+=== Certificados raíz (ROOT) ===
+Permiten a AutoFirma:
+
+* confiar en las autoridades de certificación oficiales,
+* validar los certificados de los servidores con los que se comunica.
+
+=== Certificados intermedios ===
+Forman parte de la '''cadena de confianza''' necesaria para validar conexiones HTTPS y operaciones de firma.
+
+=== Certificados de confianza propios de AutoFirma ===
+Durante la instalación, AutoFirma crea certificados propios que permiten:
+
+* la comunicación segura entre el navegador y la aplicación,
+* evitar bloqueos de seguridad al invocar Autofirma desde el navegador.
+
+== Qué NO contiene el keystore ==
+Es importante no confundir conceptos:
+
+* No contiene el certificado personal del ciudadano.
+* No contiene la clave privada del usuario.
+
+Estos elementos residen en:
+
+* el almacén de certificados del sistema,
+* el navegador,
+* un dispositivo externo (DNIe, USB),
+* o la propia AutoFirma App en dispositivos móviles.
+
+== Qué ocurre si el keystore está incompleto o corrupto ==
+Si el keystore interno está incompleto o dañado:
+
+* la firma puede iniciarse correctamente,
+* pero AutoFirma no puede completar la comunicación segura,
+* produciéndose errores como:
+** firmas KO con certificado válido,
+** errores SSL,
+** TR_SGI repetido sin TR_SGO,
+** errores SAF en fases avanzadas.
+
+Por este motivo, en algunos casos, '''una reinstalación limpia de AutoFirma o el uso de “Restaurar instalación” resuelve la incidencia''', al regenerar el keystore interno.
+
+= <big>AutoFirma – Diagnóstico</big> =
+Diagnóstico de incidencias de firma con AutoFirma, FIRE, certificados locales, DNIe y firma móvil. Cuando un ciudadano firma con '''certificado local''' (FNMT, DNIe u otro):
+
+* El '''proveedor funcional''' del flujo es '''FIRE'''.
+
+* '''AutoFirma cliente NO es proveedor''', sino una herramienta local.
+
+* Los errores de AutoFirma cliente '''no invalidan''' a FIRE como proveedor.
+
+'''Principio rector:'''  Antes de escalar o clasificar un error como proveedor, debe demostrarse que el fallo NO es del entorno local del ciudadano.
+
+== Prueba Firma PDF ==
+'''SIEMPRE pedir prueba de firma local con PDF antes de cualquier otra conclusión.''' Esta prueba separa de forma fiable:
+
+* problemas del certificado,
+
+* problemas de AutoFirma,
+
+* problemas del sistema operativo,
+
+* de problemas de invocación web o proveedor.
+
+== Prueba de firma local con AutoFirma ==
+'''Procedimiento estándar:'''
+
+# Abrir AutoFirma manualmente. Seleccionar “Firmar fichero / Firmar archivo”. E intentar firmar cualquier PDF local.
+
+=== Interpretación CAU ===
+{| class="wikitable"
+!Resultado
+!Diagnóstico
+!Acción
+|-
+|AutoFirma no se abre
+|Instalación dañada / permisos
+|No escalar. Reparar entorno.
+|-
+|No aparece el certificado
+|Certificado sin clave privada / DNIe no leído
+|No escalar. Revisar certificado/DNIe.
+|-
+|No firma el PDF
+|AutoFirma o entorno KO
+|No escalar. Diagnóstico por SO.
+|-
+|Firma PDF OK
+|Certificado y AutoFirma funcionan
+|Revisar navegador / invocación web.
+|}
+'''Regla:'''
+
+Si AutoFirma firma un PDF local, el certificado ES válido.
+== Patrón Frecuente: firma local OK / firma web KO (Mac-Linux) ==
+=== Síntomas ===
+
+* AutoFirma firma PDF local correctamente.
+
+* El trámite web no completa la firma.
+
+* TR_SGI aparece, pero no hay TR_SGO.
+
+=== Interpretación ===
+El problema está en:
+
+* comunicación navegador ↔ AutoFirma,
+
+* certificados internos de AutoFirma,
+
+* perfil del navegador,
+
+* aislamiento del navegador,
+
+* seguridad (VPN, proxy, firewall).
+
+'''NO es un problema del certificado ni del proveedor FIRE.'''
+
+=== Acciones prioritarias ===
+
+* Cerrar completamente el navegador.
+
+* Probar otro navegador.
+
+* Restaurar instalación”.
+
+* Probar sin VPN o red corporativa.
+
+== Relación SistraHelp ↔ diagnóstico real ==
+
+=== Regla CAU: El proveedor que figura en SistraHelp no siempre indica dónde está el fallo real. ===
+Ejemplo:
+
+* SistraHelp muestra FIRE.
+
+* El fallo puede estar en AutoFirma cliente o navegador.
+
+=== Interpretación por trazas ===
+{| class="wikitable"
+!Patrón
+!Interpretación
+|-
+|TR_SGI → TR_SGX sin 8–15 ni SAF
+|Entorno local / FIRE
+|-
+|TR_SGI → TR_SGX + SAF_27
+|AutoFirma servidor
+|-
+|TR_SGI → TR_SGX + 8–15 / 101 / 103 / 104
+|Cl@ve Firma
+|-
+|No aparece TR_SGI
+|Portafib / Formulario
+|}
+
+== Diagnóstico por sistema operativo ==
+Este apartado recoge los patrones, causas reales y criterios CAU específicos por sistema operativo. Todo el contenido es '''diagnóstico técnico de segundo nivel''' y '''NO debe trasladarse al ciudadano tal cual'''.
+----
+
+=== Windows ===
+
+==== Patrones habituales detectados ====
+
+* AutoFirma no se abre manualmente.
+* AutoFirma se abre pero no detecta certificados.
+* Firma local de PDF falla.
+* Firma local OK pero firma web KO.
+* TR_SGI aparece pero no hay TR_SGO.
+* Carpeta <code>.afirma</code> persiste tras desinstalar.
+* AutoFirma instalada correctamente pero el navegador no la invoca.
+* Firma funciona en Firefox pero no en Chrome/Edge.
+* Firma falla solo en equipo corporativo.
+
+==== Causas técnicas frecuentes ====
+
+* Instalación incompleta de AutoFirma.
+* Keystore interno de AutoFirma corrupto.
+* Navegadores abiertos durante la instalación (registro incorrecto del protocolo <code>afirma://</code>).
+* Falta de reinicio tras instalación.
+* Bloqueo por firewall de Windows aunque el antivirus esté desactivado.
+* Antivirus con inspección HTTPS.
+* VPN corporativa (FortiClient u otras).
+* Perfil de navegador con permisos bloqueados.
+* Restricciones de Chrome/Edge más severas que Firefox.
+* Certificado FNMT sin clave privada.
+* DNIe no leído correctamente o PIN bloqueado.
+
+==== Acción ====
+
+* Cerrar '''TODOS''' los navegadores antes de instalar o reinstalar AutoFirma.
+* Reiniciar '''SIEMPRE''' el equipo tras instalar AutoFirma.
+* Verificar que AutoFirma se abre manualmente antes de probar el trámite.
+* Exigir prueba de firma local con PDF como punto de corte.
+* Si Chrome o Edge fallan, probar Firefox como alternativa real.
+* El modo incógnito '''NO''' garantiza resolver permisos bloqueados.
+* Si la firma local funciona y la web no, revisar navegador, firewall y VPN antes de escalar.
+* Un único NIF con este patrón es caso individual de entorno local.
+
+----
+
+=== macOS ===
+
+==== Patrón más frecuente ====
+
+* AutoFirma se abre correctamente.
+* Firma de PDF local funciona.
+* La firma del trámite web no se completa.
+* TR_SGI aparece, pero no hay TR_SGO.
+
+==== Causas técnicas frecuentes ====
+
+* Bloqueo parcial por Gatekeeper.
+* Confianza interna de AutoFirma dañada.
+* Certificados internos de AutoFirma corruptos.
+* Problemas de comunicación navegador ↔ AutoFirma.
+* Navegador concreto (Safari, Chrome, Edge, Firefox).
+* VPN o software corporativo.
+* Certificado presente en llavero pero sin clave privada asociada.
+
+==== Acción ====
+
+* Verificar que AutoFirma se abre manualmente desde Aplicaciones.
+* Si macOS bloquea la app, permitirla solo si procede de la web oficial.
+* Exigir prueba de firma local con PDF.
+* Si la firma local funciona y la web no:
+
+  ** usar prioritariamente “Herramientas → Restaurar instalación”.
+
+* Probar con otro navegador.
+* Cerrar completamente el navegador antes de reintentar.
+* No manipular manualmente el llavero salvo personal técnico experto.
+* Si el certificado no tiene clave privada, reimportar desde .p12 o .pfx.
+* Un único NIF con este patrón es entorno local, no proveedor.
+
+----
+
+=== Linux ===
+
+==== Factores críticos propios de Linux ====
+
+* Gran dependencia de la distribución.
+* Integración distinta por navegador.
+* Gestión de certificados separada por perfil de navegador.
+* Uso obligatorio de PKCS#11 para DNIe.
+
+==== Patrones habituales ====
+
+* AutoFirma se abre manualmente.
+* Firma local de PDF OK.
+* Firma web KO.
+* AutoFirma no se invoca desde Firefox.
+* Certificado visible en navegador pero no en AutoFirma.
+* Fallo solo en Firefox Snap o Flatpak.
+
+==== Causas técnicas frecuentes ====
+
+* Firefox instalado como Snap o Flatpak (aislamiento del sistema).
+* Navegador aislado que no puede invocar AutoFirma.
+* Certificado FNMT importado solo en navegador, no accesible para AutoFirma.
+* DNIe sin módulo PKCS#11 configurado.
+* Firewall o VPN bloqueando comunicación local.
+* Dependencias incompletas del sistema.
+
+==== Acción ====
+
+* No recomendar modo incógnito en Linux.
+* Exigir prueba de firma local con PDF.
+* Si firma local OK y web KO:
+ <blockquote>
+* Probar con '''Chrome o Firefox instalados como paquete normal del sistema (no en formato Snap ni Flatpak)''', ya que las versiones Snap/Flatpak aíslan el navegador y no permiten que se comunique correctamente con AutoFirma en <code>/usr/lib/AutoFirma</code>
+
+* Usar la opción '''“Herramientas → Restaurar instalación”''' de AutoFirma para reinstalar automáticamente el certificado <code>AutoFirma_ROOT.cer</code> en los navegadores y reparar la configuración de integración con el navegador.
+</blockquote>Para DNIe:
+* verificar lector
+* verificar módulo PKCS#11,
+
+* verificar que el certificado aparece en AutoFirma
+
+* Si el certificado no aparece en firma local, no es problema del trámite.
+
+----
+
+=== Android ===
+
+==== Reglas técnicas claras ====
+
+* AutoFirma App existe y puede firmar PDF locales.
+* AutoFirma App '''SOLO''' puede firmar trámites web compatibles.
+* No todos los trámites CAIB son compatibles con firma móvil.
+
+==== Patrones habituales ====
+
+* AutoFirma App no detecta certificados.
+* Firma PDF local KO.
+* Firma PDF local OK pero el trámite no abre la app.
+* DNIe por NFC inestable.
+
+==== Acción ====
+
+* Exigir siempre prueba de firma local con PDF desde la app.
+* Si no firma PDF local → detener diagnóstico.
+* Certificado FNMT debe estar importado como .p12 o .pfx con clave privada.
+* DNIe requiere:
+
+# NFC compatible,
+# DNIe vigente,
+# PIN no bloqueado,
+# mantener el DNI inmóvil durante la lectura.
+* VALIDe es herramienta de verificación de estado de certificado.
+* Si firma local OK pero el trámite no abre AutoFirma App '''el trámite puede no ser compatible.'''
+
+* Recomendar ordenador o método alternativo (Cl@ve Permanente).
+
+----
+
+=== iPhone / iPad ===
+
+==== Reglas técnicas claras ====
+
+* AutoFirma App puede firmar PDF locales.
+* Firma web solo posible si el trámite es compatible.
+* Safari influye de forma crítica en la invocación.
+
+==== Patrones habituales ====
+
+* Firma PDF local OK.
+* Trámite web no abre AutoFirma App.
+* Firma se cancela sin mensaje claro.
+
+==== Acción ====
+
+* Exigir prueba de firma local con PDF.
+* Verificar que el certificado está disponible para AutoFirma App.
+* Usar Safari en vista móvil (no forzar vista de escritorio).
+* No usar navegación privada.
+* Si firma local OK pero web KO: '''posible problema de compatibilidad del trámite o de invocación.'''
+
+* Recomendar ordenador o método alternativo.
+* No escalar como proveedor si solo afecta a un NIF.
+
+----
+
+== Diagnóstico por tipo de certificado ==
+=== Certificado FNMT / software ===
+Requisitos:
+
+* Certificado no caducado.
+
+* Clave privada presente.
+
+* Archivo original .p12 / .pfx.
+
+* No sirve solo .cer / .crt.
+
+Criterio: Si no aparece en firma local → no es problema del trámite.
+
+=== DNI electrónico ===
+Requisitos:
+
+* DNIe en vigor.
+
+* Certificados vigentes.
+
+* PIN no bloqueado.
+
+* Lector funciona.
+
+* Software oficial instalado.
+
+* PKCS#11 disponible (Linux/macOS).
+
+* DNIe insertado antes de abrir navegador.
+
+----
+
+== Keystore interno de AutoFirma ==
+AutoFirma dispone de un '''keystore interno propio''' con certificados de confianza.
+
+NO contiene:
+
+* certificado del ciudadano,
+
+* clave privada del ciudadano.
+
+Contiene:
+
+* certificados raíz,
+
+* certificados intermedios,
+
+* certificados propios de AutoFirma.
+
+=== Síntomas de keystore dañado ===
+
+* Firma local OK / web KO.
+
+* Errores SSL.
+
+* TR_SGI repetido sin TR_SGO.
+
+* Errores SAF no coherentes.
+
+=== Acción recomendada ===
+
+* Usar “Herramientas → Restaurar instalación”.
+
+* Si persiste, reinstalación limpia.
+
+----
+
+== Limpieza completa de AutoFirma (Windows) ==
+Usar solo cuando:
+
+* AutoFirma no se abre.
+
+* Firma local falla.
+
+* Restaurar instalación no resuelve.
+
+Procedimiento resumido:
+
+* Desinstalar AutoFirma y Reiniciar.
+
+* Eliminar:
+*# <code>C:\Program Files\AutoFirma</code>
+*# <code>C:\Users\<usuario>\.afirma</code>
+
+* (Opcional técnico) eliminar claves de registro:
+*# HKEY_LOCAL_MACHINE\SOFTWARE\AutoFirma
+*# HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\AutoFirma
+*# HKEY_CURRENT_USER\Software\AutoFirma
+
+* Reiniciar.
+
+* Instalar como '''administrador'''.
+
+* Abrir AutoFirma manualmente antes de probar.
+
+----
+
+== Resumen ==
+
+* FIRE es el proveedor con certificado local. Con certificado local, el proveedor funcional del flujo es FIRE, pero la mayoría de incidencias reales se deben al entorno local del ciudadano.
+
+* AutoFirma cliente es herramienta auxiliar.
+
+* La prueba de firma local decide el diagnóstico.
+
+* Firma local KO → entorno local.
+
+* Firma local OK / web KO → invocación navegador-AutoFirma (capa navegador ↔ AutoFirma, no problema de certificado).
+
+* Cliente de Firma Móvil no es Cl@ve.
+
+* Un NIF = caso individual. / Varios NIF = posible incidencia general.
+* '''El proveedor funcional NO siempre coincide con el origen real del fallo.''' Aunque un trámite esté asociado a un proveedor concreto (FIRE o Cl@ve Firma), el error puede deberse a otros factores, como el entorno local del ciudadano, el navegador o la comunicación con AutoFirma. El proveedor funcional indica quién gestiona la firma, pero no garantiza que el fallo se haya producido en ese proveedor.

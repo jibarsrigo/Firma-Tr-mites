@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Analizador V6</title>
+
+<style>
+body {
+  font-family: system-ui;
+  background: #f5f4f0;
+  margin: 0;
+}
+
+/* HEADER */
+.header {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.header-left { display:flex; gap:12px; align-items:center;}
+
+.badge {
+  background:#01696f;
+  color:white;
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:999px;
+}
+
+.ver-detalles {
+  font-size:10px;
+  color:#01696f;
+  cursor:pointer;
+}
+
+.btn-mini {
+  border:1px solid #ddd;
+  background:#f5f5f5;
+  border-radius:999px;
+  padding:5px 10px;
+  cursor:pointer;
+}
+
+.header-right {
+  margin-left:auto;
+  font-size:12px;
+}
+
+/* LAYOUT */
+.container { display:flex; }
+.sidebar { width:300px; padding:14px; background:#faf9f7; }
+.main { flex:1; padding:16px; }
+
+/* PANEL BONITO */
+.panel {
+  border-radius:12px;
+  border:1px solid rgba(150,66,25,.2);
+  background:#fdf0e8;
+  margin-bottom:12px;
+}
+
+.panel-header {
+  padding:10px 14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:600;
+  color:#964219;
+}
+
+.panel-body {
+  padding:12px 14px;
+  font-size:13px;
+  line-height:1.6;
+}
+
+.btn-close {
+  border:1px solid #ddd;
+  background:white;
+  border-radius:6px;
+  padding:2px 8px;
+  cursor:pointer;
+}
+
+.hidden { display:none; }
+
+/* PLACEHOLDER */
+#placeholder {
+  text-align:center;
+  color:#888;
+  margin-top:100px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+  <div class="header-left">
+    <b>Analizador de Trazas</b>
+    <div>
+      <div class="badge">BETA V2</div>
+      <div class="ver-detalles" id="btnDetalles">Ver detalles ▾</div>
+    </div>
+    <button class="btn-mini" id="btnActualizar">Actualizar</button>
+  </div>
+
+  <div class="header-right">
+    Lectura <span id="jsonStatus">...</span><br>
+    <a href="#" id="btnTabla">Tabla reglas</a>
+  </div>
+
+</div>
+
+<div class="container">
+
+  <div class="sidebar">
+    <b>Problemas de acceso</b><br>
+    <input type="checkbox" id="checkSaml"> Error SAML<br>
+    <input type="checkbox" id="checkBlanco"> Página en blanco<br><br>
+
+    <b>Traza</b><br>
+    <textarea style="width:100%;height:120px;"></textarea><br><br>
+
+    <button id="btnAnalizar">Analizar</button>
+    <button id="btnLimpiar">Limpiar</button>
+  </div>
+
+  <div class="main">
+
+    <!-- PANEL -->
+    <div id="panel" class="panel hidden">
+      <div class="panel-header">
+        <span id="panelTitulo"></span>
+        <button class="btn-close" id="btnCerrarPanel">Cerrar ✕</button>
+      </div>
+      <div class="panel-body" id="panelContenido"></div>
+    </div>
+
+    <div id="placeholder">
+      Pega una traza y pulsa Analizar
+    </div>
+
+    <div id="resultados" class="hidden">
+      RESULTADOS
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+/* PANEL (FIX correcto) */
+const panel = document.getElementById("panel");
+const panelTitulo = document.getElementById("panelTitulo");
+const panelContenido = document.getElementById("panelContenido");
+
+function abrirPanel(titulo, contenido) {
+  panel.classList.remove("hidden");
+  panelTitulo.innerText = titulo;
+  panelContenido.innerHTML = contenido;
+}
+
+function cerrarPanelFunc() {
+  panel.classList.add("hidden");
+}
+
+document.getElementById("btnCerrarPanel").onclick = cerrarPanelFunc;
+
+/* DETALLES */
+btnDetalles.onclick = () => {
+  abrirPanel("Novedades BETA", `
+  <ul>
+    <li>Nuevo panel único sin conflictos</li>
+    <li>Base limpia para motor</li>
+    <li>UI mejorada progresivamente</li>
+  </ul>
+  `);
+};
+
+/* TABLA */
+btnTabla.onclick = (e) => {
+  e.preventDefault();
+  abrirPanel("Tabla reglas", `
+  <ul>
+    <li>Reglas en desarrollo</li>
+    <li>Motor pendiente</li>
+  </ul>
+  `);
+};
+
+/* SAML (TEXTO COMPLETO RESPETADO) */
+checkSaml.onchange = () => {
+  if (checkSaml.checked) {
+    checkBlanco.checked = false;
+    abrirPanel("Información de acceso", `
+    <b>SAML 003002 (Authentication Failed: Detalle error: no certificate has been submitted)</b><br>
+    La pasarela de acceso no ha recibido un certificado digital válido para autenticarse.<br><br>
+
+    Causas habituales:<br>
+    - No se ha seleccionado ningún certificado<br>
+    - Certificado caducado o revocado<br>
+    - DNIe no detectado<br>
+    - Proxy/firewall bloqueando<br><br>
+
+    <b>SAML (Response is fail: Contraseña incorrecta)</b><br>
+    La autenticación con Cl@ve no se ha completado correctamente.<br>
+    - Contraseña incorrecta<br>
+    - Usar “Olvido de contraseña”
+    `);
+  } else cerrarPanelFunc();
+};
+
+/* PAGINA BLANCO */
+checkBlanco.onchange = () => {
+  if (checkBlanco.checked) {
+    checkSaml.checked = false;
+    abrirPanel("Información de acceso", `
+    <b>La página queda en blanco</b><br><br>
+
+    Puede ser problema de acceso o pasarela.<br><br>
+
+    Qué revisar:<br>
+    - Fallo de pasarela<br>
+    - Redirección incompleta<br>
+    - Navegador o antivirus bloqueando<br><br>
+
+    <b>Prueba:</b><br>
+    Acceder desde Carpeta Ciudadana GOB
+    `);
+  } else cerrarPanelFunc();
+};
+
+/* ANALIZAR */
+btnAnalizar.onclick = () => {
+  cerrarPanelFunc();
+  placeholder.style.display = "none";
+  resultados.classList.remove("hidden");
+};
+
+/* LIMPIAR */
+btnLimpiar.onclick = () => {
+  checkSaml.checked = false;
+  checkBlanco.checked = false;
+  cerrarPanelFunc();
+  resultados.classList.add("hidden");
+  placeholder.style.display = "";
+};
+
+/* ACTUALIZAR */
+btnActualizar.onclick = () => {
+  location.href = location.pathname + "?v=" + Date.now();
+};
+
+/* REGLAS */
+async function cargarReglas() {
+  try {
+    const r = await fetch("reglas.json?v=" + Date.now());
+    const d = await r.json();
+    jsonStatus.innerText = "v"+d.version+" ✓";
+  } catch {
+    jsonStatus.innerText = "local ⚠";
+  }
+}
+cargarReglas();
+
+</script>
+
+</body>
+</html>

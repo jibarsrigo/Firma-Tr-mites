@@ -1,0 +1,12 @@
+# Sintetica (T-): caso "500 puro" para validar la regla error_firma_fitxers_500.
+# Un solo tipo de KO: "Error general durant el proces de firma dels fitxers: 500" (Cl@veFirm@),
+# SIN VALIDATION, SIN codigo Cl@ve (8-15/101/103) y SIN cierre posterior.
+# Metodo a marcar en el analizador: Cl@ve
+# Global esperado: error_firma_fitxers_500 · cartel azul "Servicio de firma" · accion: reintentar.
+# (Datos de ciudadano ficticios; plantilla de prueba UI.)
+#
+TR_SGX - Fi firma KO	16/07/2026 11:00:10	TEST0000-TEST0000-TEST0000	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100001	200001	Error general durant el proces de firma dels fitxers: 500 Método de firma: Cl@veFirm@	
+TR_SGI - Inici firma	16/07/2026 11:00:00	TEST0000-TEST0000-TEST0000	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100001	200001		
+TR_CAR - Càrrega del tràmit	16/07/2026 10:59:55	TEST0000-TEST0000-TEST0000	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100001	200001		
+TR_FRF - Fi formulari	16/07/2026 10:59:00	TEST0000-TEST0000-TEST0000	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100001	200001		
+TR_FRI - Inici formulari	16/07/2026 10:55:00	TEST0000-TEST0000-TEST0000	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100001	200001	
