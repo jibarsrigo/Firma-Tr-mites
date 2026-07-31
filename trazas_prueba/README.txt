@@ -224,6 +224,15 @@ F-yamila_fitxer_buit_windows.txt
   Global: error_autofirma_cliente_windows
   Cartel v1.3.25: tipo predominante fitxer buit + recuento multi-KO (no el primer KO pegado)
 
+P-fluxe_despues_reg_fin.txt
+  Carmen Elisa Navarro Pineda · IG_DGFP_EMC_RCPSPI · CAI-2647810
+  SGO Autofirm@ → RGI/REG/FIN → TR_VAL → ERROR «El fluxe no es vàlid» (solo DESPUÉS del cierre)
+  CAU: ciudadano no ve botón registro; dept. confirma registro OK
+  Marcar: Certificado
+  Global: tramite_completo
+  Acción (js v1.3.102): cierre OK + fluxe después en claro; sin nota SGI «posible móvil»
+  Contraste: C-amparo / C-quetglas (fluxe ANTES del cierre → sí «portafib previo»)
+
 C-amparo_500_custodia_recupera.txt
   Amparo Esther Lozano Prieto · EB0006OPOS (EBAP) · Cl@ve Permanente (Cl@veFirm@)
   2× TR_SGX "Error general durant el proces de firma dels fitxers: 500" (Cl@veFirm@, sin codigo Cl@ve)

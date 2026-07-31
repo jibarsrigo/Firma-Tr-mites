@@ -341,6 +341,10 @@ VERSION 1.3.98  - Nota QAA: contextualizar aviso con recuperar trámite desde Ca
 VERSION 1.3.99  - Nota QAA: Accediu/BAIX solo Cl@ve Permanente; Certificado → sesión/modo privado.
 
 VERSION 1.3.100 - QAA tras TR_CAR + fallo_formulario: Acción completa (Qué hacer acceso/sesión; sin mail formulario).
+
+VERSION 1.3.101 - tramite_completo: fluxe Portafib DESPUÉS de REG/FIN ≠ «previo» (botón registro / no escalar).
+
+VERSION 1.3.102 - Fluxe tras cierre: Qué pasa claro; sin nota «posible móvil» en tramite_completo.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -352,7 +356,7 @@ VERSION 1.3.100 - QAA tras TR_CAR + fallo_formulario: Acción completa (Qué hac
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.100";
+const VERSION_JS = "1.3.102";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1436,7 +1440,7 @@ btnDetalles.onclick = () => {
   <br>
 
   <li><b>Cambios 16/07/2026</b> (js 1.3.64→${VERSION_JS} · acciones → v ${vJson} · html v1.3.6):</li>
-  <li>· <b>tramite_completo:</b> Cl@ve KO previos + SGO Autofirm@; no confundir cancelada Cl@veFirm@ con Autofirma previo; nota CLAVE_MOVIL si aplica.</li>
+  <li>· <b>tramite_completo:</b> Cl@ve KO previos + SGO Autofirm@; Portafib/fluxe DESPUÉS de REG/FIN ≠ «previo» (no escalar; botón registro).</li>
   <li>· <b>QAA:</b> bajo TR_CAR → Accediu/BAIX (Cl@ve) o sesión/modo privado (Certificado); si global es fallo_formulario, sustituye Qué hacer (sin mail formulario).</li>
   <li>· <b>NIF otro certificado:</b> detecta ES «associado»/asociado + NIE; KO tras Firma OK manda (multi-firma / reintento).</li>
   <li>· <b>KO tras Firma OK:</b> si hay Firma KO después del último TR_SGO, manda ese KO (no firma_correcta).</li>
@@ -2195,15 +2199,41 @@ const hayError403FormularioExterno = lineasTraza.some(linea =>
 // 👉 Detectamos errores reales de Portafib / sesión (solo literales acordados, no sesión cliente)
 //    SesionFirmaClienteException (sin Connect) no dispara Portafib (falso positivo cliente).
 //    SesionFirmaClienteConnectException / 502 Proxy = fallo de conexión al plugin (plataforma).
-const hayErrorPortafibReal = erroresUnicos.some(linea =>
-  /FLUXE NO ES V[ÀA]LID/i.test(linea) ||
-  /EXCEPCI[ÓO].*GENERAR SESSI[ÓO].*FIRMA/i.test(linea) ||
-  /EXCEPCI[ÓO]\s+SESSI[ÓO]\s+FIRMA/i.test(linea) ||
-  /SESIONFIRMACLIENTECONNECTEXCEPTION/i.test(linea) ||
-  /502\s*PROXY\s*ERROR/i.test(linea) ||
-  linea.includes("TIMESTAMPINVALIDEXCEPTION") ||
-  linea.includes("TRASLLAT NO")
-);
+function esLineaErrorPortafib(linea) {
+  const l = String(linea || "");
+  return /FLUXE NO ES V[ÀA]LID/i.test(l) ||
+    /EXCEPCI[ÓO].*GENERAR SESSI[ÓO].*FIRMA/i.test(l) ||
+    /EXCEPCI[ÓO]\s+SESSI[ÓO]\s+FIRMA/i.test(l) ||
+    /SESIONFIRMACLIENTECONNECTEXCEPTION/i.test(l) ||
+    /502\s*PROXY\s*ERROR/i.test(l) ||
+    l.includes("TIMESTAMPINVALIDEXCEPTION") ||
+    l.includes("TRASLLAT NO");
+}
+
+const hayErrorPortafibReal = erroresUnicos.some(esLineaErrorPortafib);
+
+// Portafib respecto a TR_REG/TR_FIN: previo (sí importa) vs solo después del cierre (ruido / post-valoración).
+function clasificarPortafibRespectoCierre(lineas) {
+  let tsCierre = null;
+  for (const l of lineas || []) {
+    if (!/^TR_REG\s+-/i.test(l) && !/^TR_FIN\s+-/i.test(l)) continue;
+    const ts = extraerTimestampLineaTraza(l);
+    if (ts != null && (tsCierre == null || ts > tsCierre)) tsCierre = ts;
+  }
+  let hayAntes = false;
+  let hayDespues = false;
+  for (const l of lineas || []) {
+    if (!esLineaErrorPortafib(l)) continue;
+    const ts = extraerTimestampLineaTraza(l);
+    if (tsCierre == null || ts == null) {
+      hayAntes = true;
+      continue;
+    }
+    if (ts > tsCierre) hayDespues = true;
+    else hayAntes = true;
+  }
+  return { hayAntes, hayDespues };
+}
 
 // 👉 Firma KO de Autofirma previos a un cierre OK (útil en tramite_completo / firma_correcta)
 //    No contar canceladas / KO de Cl@veFirm@ (SIGNATURA CANCEL + Cl@veFirm@ ≠ Autofirma).
@@ -3090,10 +3120,16 @@ if (accionData && accionData.accion) {
      idReglaDetectada === "firma_correcta") &&
     (hayErrorPortafibReal || hayAutofirmaKoPrevio || hayErrorClaveReal || hayClaveMovilNoPermitida)
   ) {
-    // Cierre OK: avisar de Portafib / Autofirma KO / Cl@ve KO / CLAVE_MOVIL previos (QAA va en NOTA_QAA_ACCION)
+    // Cierre OK: avisar de Portafib / Autofirma KO / Cl@ve KO / CLAVE_MOVIL (QAA va aparte)
     const notasPrevias = [];
-    if (hayErrorPortafibReal) {
+    const pfCierre = hayErrorPortafibReal
+      ? clasificarPortafibRespectoCierre(lineasTraza)
+      : { hayAntes: false, hayDespues: false };
+    if (pfCierre.hayAntes) {
       notasPrevias.push("Se detecta error de portafib previo en la traza.");
+    }
+    if (hayErrorPortafibReal && !pfCierre.hayAntes && !pfCierre.hayDespues) {
+      notasPrevias.push("Se detecta error de portafib en la traza.");
     }
     if (hayAutofirmaKoPrevio) {
       notasPrevias.push(
@@ -3124,13 +3160,42 @@ if (accionData && accionData.accion) {
       );
     }
     const bloquePrevios = notasPrevias.join("\n");
-    if (/Qu[eé]\s*pasa\s*:/i.test(textoAccion)) {
-      textoAccion = textoAccion.replace(
-        /((?:<b>)?Qu[eé]\s*pasa\s*:)\s*/i,
-        "$1\n" + bloquePrevios + "\n"
-      );
-    } else {
-      textoAccion = bloquePrevios + "\n\n" + textoAccion;
+    if (bloquePrevios) {
+      if (/Qu[eé]\s*pasa\s*:/i.test(textoAccion)) {
+        textoAccion = textoAccion.replace(
+          /((?:<b>)?Qu[eé]\s*pasa\s*:)\s*/i,
+          "$1\n" + bloquePrevios + "\n"
+        );
+      } else {
+        textoAccion = bloquePrevios + "\n\n" + textoAccion;
+      }
+    }
+    // Fluxe/Portafib solo DESPUÉS del cierre: al final de Qué pasa (lenguaje claro; no «previo»)
+    if (pfCierre.hayDespues) {
+      const notaFluxeDespues =
+        "Después del cierre aparece en la traza el error «El fluxe no es vàlid». "
+        + "Eso no anula el registro ni el fin: el trámite ya quedó cerrado bien.\n"
+        + "Si el ciudadano dice que no ve el botón de registro, es normal (el registro ya se hizo). "
+        + "No escalar Portafib ni reabrir incidencia de firma por ese error.";
+      if (/Qu[eé]\s*hacer\s*:/i.test(textoAccion)) {
+        textoAccion = textoAccion.replace(
+          /((?:<b>)?Qu[eé]\s*hacer\s*:)/i,
+          notaFluxeDespues + "\n\n$1"
+        );
+      } else {
+        textoAccion += "\n\n" + notaFluxeDespues;
+      }
+      if (!/botón de registro/i.test(textoAccion)) {
+        textoAccion = textoAccion.replace(
+          /((?:<b>)?Qu[eé]\s*hacer\s*:[\s\S]*?)(?=\n\*|$)/i,
+          (bloque) => {
+            const n = (bloque.match(/^\d+\./gm) || []).length;
+            return bloque.replace(/\s*$/, "")
+              + "\n" + (n + 1) + ". Si pregunta por el botón de registro o por el error «fluxe»: "
+              + "el trámite ya está registrado; ese error salió después del cierre.";
+          }
+        );
+      }
     }
   } else if (idReglaDetectada === "fallo_formulario" && !hayFRI) {
     textoAccion = "Qué pasa:\n"
@@ -3252,12 +3317,17 @@ if (accionData && accionData.accion) {
   }
 
   // 👉 Intentos solo Inicio firma (sin KO/OK) en la misma traza que otro error (p.ej. 8-15):
-  //    reflejar en «Qué pasa» la misma lectura que error_clave_movil (Cl@ve móvil / Autofirma Android).
+  //    No en cierre OK (tramite_completo…): esos SGI sin cierre son intentos abandonados, no «posible móvil».
   if (
     idReglaDetectada &&
     idReglaDetectada !== "error_clave_movil" &&
     idReglaDetectada !== "error_clave_movil_no_permitida" &&
-    idReglaDetectada !== "error_autofirma_entorno"
+    idReglaDetectada !== "error_autofirma_entorno" &&
+    idReglaDetectada !== "tramite_completo" &&
+    idReglaDetectada !== "tramite_finalizado" &&
+    idReglaDetectada !== "tramite_registrado" &&
+    idReglaDetectada !== "firma_correcta" &&
+    idReglaDetectada !== "firma_correcta_portafib"
   ) {
     const numSinCierreAccion = (typeof analizarFlujoFirma === "function")
       ? ((analizarFlujoFirma(lineasTraza).intentos || []).filter(i => i.resultado === "sin_cierre").length)
