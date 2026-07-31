@@ -327,6 +327,8 @@ VERSION 1.3.91  - Quita console.log de depuración en el análisis; html v1.3.9 
 VERSION 1.3.92  - Flujo de Firma: PLUGIN Autofirma = fitxer buit (alineado con cartel/Acción).
 
 VERSION 1.3.93  - Arranque: VERSION_HTML con typeof (no tumba botones si falta la constante).
+
+VERSION 1.3.94  - TR_BOR (Esborrat): regla tramite_borrado manda sobre KO/QAA previos.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -338,7 +340,7 @@ VERSION 1.3.93  - Arranque: VERSION_HTML con typeof (no tumba botones si falta l
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.93";
+const VERSION_JS = "1.3.94";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1395,7 +1397,7 @@ btnDetalles.onclick = () => {
   <li><b>Estado actual (completado y validado):</b></li>
   <li>✔ Interfaz estilo V5: tarjetas Flujo / Acción / Literales; Acción con apartados Qué pasa/Qué hacer.</li>
   <li>✔ <b>Pre-firma:</b> fallo formulario (sin TR_FRI) y fallo Portafib ({lit}: fluxe / sesión / 502).</li>
-  <li>✔ <b>Cierre trámite:</b> TR_SGO ≠ finalizado; TR_FIN / TR_REG / tramite_completo; KO posterior a SGO manda.</li>
+  <li>✔ <b>Cierre trámite:</b> TR_SGO ≠ finalizado; TR_FIN / TR_REG / tramite_completo; <b>TR_BOR</b> (borrado) manda sobre KO previos; KO posterior a SGO manda.</li>
   <li>✔ <b>error_registro_presentador</b> — Firma OK + registro presentador sin TR_REG → incidencias.</li>
   <li>✔ <b>firma_correcta_portafib</b> — error Portafib previo en traza con firma/cierre.</li>
   <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@ (Qué pasa/Qué hacer).</li>
@@ -1460,6 +1462,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
   tramite_registrado: "TR_REG presente; no consta TR_FIN.",
   tramite_finalizado: "TR_FIN presente; no consta TR_REG.",
   tramite_completo: "TR_REG + TR_FIN. Qué pasa/Qué hacer (+ notas previos si aplica).",
+  tramite_borrado: "TR_BOR (Esborrat). Trámite borrado; manda sobre KO/QAA previos. Qué pasa/Qué hacer.",
   firma_correcta_portafib: "Firma/cierre OK con error Portafib previo en la traza."
 };
 
@@ -1487,7 +1490,7 @@ const GRUPOS_CATALOGO_REGLAS = [
     titulo: "D) Cierre / registro",
     ids: [
       "error_registro_presentador", "firma_correcta", "tramite_registrado",
-      "tramite_finalizado", "tramite_completo", "firma_correcta_portafib"
+      "tramite_finalizado", "tramite_completo", "tramite_borrado", "firma_correcta_portafib"
     ]
   }
 ];
@@ -1547,7 +1550,7 @@ btnTabla.onclick = (e) => {
   <li class="reglas-titulo">1. Cómo lee la traza</li>
   <li>Usa líneas <b>TR_…</b> y <b>ERROR -</b> (ignora notas del agente u otras columnas pegadas).</li>
   <li>SistraHelp pega lo <b>más reciente arriba</b>; el motor ordena por fecha/hora para reconstruir el flujo real.</li>
-  <li>Eventos clave: <b>TR_INI</b> inicio trámite · <b>TR_CAR</b> carga (acceso/SO) · <b>TR_FRI/FRF</b> formulario · <b>TR_SGI</b> inicio firma · <b>TR_SGX</b> Firma KO · <b>TR_SGO</b> Firma OK · <b>TR_RGI/REG</b> registro · <b>TR_FIN</b> fin trámite.</li>
+  <li>Eventos clave: <b>TR_INI</b> inicio · <b>TR_CAR</b> carga · <b>TR_FRI/FRF</b> formulario · <b>TR_SGI</b> inicio firma · <b>TR_SGX</b> Firma KO · <b>TR_SGO</b> Firma OK · <b>TR_RGI/REG</b> registro · <b>TR_FIN</b> fin · <b>TR_BOR</b> borrado.</li>
   <li>Clasifica en fase: <b>pre-firma</b> (aún no hay inicio de firma), <b>error en firma</b>, o <b>firma/cierre OK</b>.</li>
   <li>Si hay <b>TR_RGI / TR_REG / TR_FIN</b> sin KO posterior al último TR_SGO, el cierre/registro manda. Un solo <b>TR_SGO</b> no cierra la fase de firma (puede haber más firmas). Si hay <b>Firma KO después del último TR_SGO</b>, manda ese KO.</li>
   <li class="reglas-titulo">2. Qué verás tras Analizar</li>
@@ -1737,6 +1740,7 @@ const haySGO = eventos.includes("TR_SGO");
 const hayREG = eventos.includes("TR_REG"); // 🔹 Registre tràmit (registrado)
 const hayRGI = eventos.includes("TR_RGI"); // 🔹 Inici registre tràmit
 const hayFIN = eventos.includes("TR_FIN"); // 🔹 Fi de tràmit (finalizado)
+const hayBOR = eventos.includes("TR_BOR"); // 🔹 Esborrat del tràmit (borrado)
 
 // 🔹 NUEVO: eventos para flujo visual
 const eventosFlujo = {
@@ -1747,7 +1751,8 @@ const eventosFlujo = {
   TR_SGO: haySGO,
   TR_RGI: hayRGI,
   TR_REG: hayREG,
-  TR_FIN: hayFIN
+  TR_FIN: hayFIN,
+  TR_BOR: hayBOR
 };
 
   // =====================================
@@ -2204,7 +2209,13 @@ let idReglaDetectada = null;
 // y pasa a trabajar por "fase del flujo"
 // → más claro, más mantenible, menos errores
 
-if (contexto.fase === "pre_firma") {
+// 👉 TR_BOR (Esborrat): el trámite ya no existe → manda sobre KO Cl@ve, QAA, etc.
+if (hayBOR) {
+
+  idReglaDetectada = "tramite_borrado";
+
+}
+else if (contexto.fase === "pre_firma") {
 
   // ======================================================
   // FASE: PRE_FIRMA (antes de invocar el sistema de firma)
@@ -2807,6 +2818,17 @@ else if (idReglaDetectada === "tramite_completo") {
   }
   if (hayRGI) {
     fraseDiagnostico += " Inicio de registro (TR_RGI) presente.";
+  }
+
+}
+else if (idReglaDetectada === "tramite_borrado") {
+
+  cartelDiagnostico = cartelAzul("Trámite borrado");
+  fraseDiagnostico = "Consta borrado del trámite ("
+    + literalFlujo("TR_BOR — Esborrat del tràmit")
+    + "). El expediente ya no está activo; no seguir diagnosticando firma sobre este trámite.";
+  if (hayErrorClaveReal || hayErrorQaaRecarga) {
+    fraseDiagnostico += " Los errores previos (p. ej. Cl@ve / QAA) quedan como contexto histórico.";
   }
 
 }
@@ -4400,7 +4422,7 @@ function renderFlujoVisual(eventos) {
   const contenedor = document.getElementById("flujoVisual");
   if (!contenedor) return;
 
-  const pasos = ["TR_FRI","TR_FRF","TR_SGI","TR_SGX","TR_SGO","TR_RGI","TR_FIN","TR_REG"];
+  const pasos = ["TR_FRI","TR_FRF","TR_SGI","TR_SGX","TR_SGO","TR_RGI","TR_FIN","TR_REG","TR_BOR"];
 
   let html = "<div style='display:flex;gap:6px;margin-bottom:2px;flex-wrap:wrap;align-items:center;'>";
 
@@ -4412,7 +4434,9 @@ function renderFlujoVisual(eventos) {
     //    Antes, un TR_SGX (firma KO) "apagaba" en gris los pasos siguientes
     //    aunque sí hubieran ocurrido (firma OK, registro, fin de trámite).
     if (eventos[p]) {
-      color = (p === "TR_SGX") ? "#a12c7b" : "#2e6e14"; // rojo si firma KO, verde el resto
+      if (p === "TR_SGX") color = "#a12c7b"; // firma KO
+      else if (p === "TR_BOR") color = "#a04000"; // trámite borrado
+      else color = "#2e6e14"; // resto OK / avance
     }
 
     html += `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
@@ -4421,7 +4445,7 @@ function renderFlujoVisual(eventos) {
       </div>`;
 
     // Mostramos SIEMPRE la etiqueta; en gris cuando el evento no aparece en la traza.
-    const nombrePaso = p === 'TR_FRI' ? 'Inicio formulario' : p === 'TR_FRF' ? 'Fin formulario' : p === 'TR_SGI' ? 'Inicio firma' : p === 'TR_SGX' ? 'Firma KO' : p === 'TR_SGO' ? 'Firma OK' : p === 'TR_RGI' ? 'Inicio registro' : p === 'TR_REG' ? 'Registro trámite' : 'Fin trámite';
+    const nombrePaso = p === 'TR_FRI' ? 'Inicio formulario' : p === 'TR_FRF' ? 'Fin formulario' : p === 'TR_SGI' ? 'Inicio firma' : p === 'TR_SGX' ? 'Firma KO' : p === 'TR_SGO' ? 'Firma OK' : p === 'TR_RGI' ? 'Inicio registro' : p === 'TR_REG' ? 'Registro trámite' : p === 'TR_BOR' ? 'Trámite borrado' : 'Fin trámite';
     const labelText = `(${nombrePaso})`;
     const labelColor = eventos[p] ? color : '#ccc';
     html += `<div style="font-size:9px;color:${labelColor};line-height:1.2;">${labelText}</div>`;

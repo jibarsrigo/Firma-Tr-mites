@@ -1,7 +1,8 @@
 {
-  "version": "1.3.63",
-  "_changes_today": "2026-07-17: quita paso marcar Certificado+sistema en windows/mac/movil (v1.3.63)",
+  "version": "1.3.64",
+  "_changes_today": "2026-07-31: tramite_borrado (TR_BOR Esborrat) Qué pasa/Qué hacer (v1.3.64)",
   "_changelog": [
+    "1.3.64 - tramite_borrado: TR_BOR manda; no diagnosticar firma sobre trámite borrado",
     "1.3.63 - windows/mac/movil: sin paso «marcar Certificado+sistema» (ya elegido)",
     "1.3.62 - generico: aviso Clave/Autofirma lo pone js como 1.a linea Que pasa",
     "1.3.61 - error_autofirma_cliente_windows: link Instalacion limpia autofirma (misma wiki que SAF_27)",
@@ -215,6 +216,11 @@
     {
       "id": "tramite_completo",
       "accion": "Qué pasa:\nTrámite registrado (TR_REG) y finalizado (TR_FIN) en la traza.\n\nQué hacer:\n1. No reabrir incidencia de firma: el trámite ya está cerrado administrativamente.\n2. Si el ciudadano pregunta por intentos previos fallidos, indicar que fueron puntuales y que al final firmó y completó el trámite."
+    },
+
+    {
+      "id": "tramite_borrado",
+      "accion": "Qué pasa:\nEn la traza aparece TR_BOR (Esborrat del tràmit): el trámite fue borrado. Ya no está activo.\nNo tiene sentido seguir con diagnóstico de firma (Cl@ve, Autofirma, etc.) sobre este expediente.\n\nQué hacer:\n1. Informar al ciudadano de que ese trámite consta borrado.\n2. Si debe continuar, indicar que inicie un trámite nuevo (Carpeta Ciudadana / el mismo procedimiento).\n3. No reabrir ni tratar como incidencia de firma activa sobre el expediente borrado.\n*Si en la traza hay Firma KO o QAA previos, son historial; lo que manda es el borrado."
     },
 
     {

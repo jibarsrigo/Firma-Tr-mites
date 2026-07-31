@@ -39,6 +39,12 @@ casuística no existe, se añade un .txt aquí y se actualiza este README.
 Archivos
 --------
 
+C-riera_8-15_qaa_luego_borrado.txt
+  Elena Riera Capo · SG_UGE_DIETES · 8-15 Cl@veFirm@ + QAA varios días → TR_BOR (Esborrat del tràmit)
+  Marcar: Cl@ve
+  Global (js v1.3.94 / acciones v1.3.64): tramite_borrado — TR_BOR manda (no error_clave_8_15)
+  Flujo visual: píldora TR_BOR (naranja); cartel «Trámite borrado»
+
 C-vilanova_8-15_sgi_autofirma_completo.txt
   Laura Vilanova Julia · EB0006OPOS · SGI sin cierre + QAA + 8-15 Cl@veFirm@ → SGO Autofirm@ → TR_REG+TR_FIN
   Global: tramite_completo (cierre manda; no error_clave_8_15)
