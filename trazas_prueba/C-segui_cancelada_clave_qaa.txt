@@ -2,10 +2,10 @@
 # Signatura cancel·lada + Cl@veFirm@ (sin código 8-15)
 # CAU: Cl@ve Permanente emitido/renovado el mismo día + móvil → ventana emisión no carga;
 #      desde ordenador suele emitir y firmar. Revisar acceso (CLAVE_MOVIL u otro) en TR_INI/TR_CAR.
-# También: SGI sin cierre (×2) + QAA (QaaRecargaTramiteException) posterior
+# También: SGI sin cierre (×2) + QAA posterior (QAA NO va justo bajo TR_CAR → sin nota Carpeta/Accediu)
 # Marcar: Cl@ve
 # Global: error_clave_firma_cancelada
-# Acción (json v1.3.34 / js v1.3.68): Qué pasa/Qué hacer; nota QAA + sin cierre en Qué pasa
+# Acción: Qué pasa/Qué hacer + sin cierre; no inyectar nota BAIX/Accediu (js v1.3.97)
 
 ERROR - Error	10/06/2026 14:59:32	U0Y2JWLS-A8AA4QL0-4QJYCNGE	90000015A	TONI SEGUI MAYOL	IG_DGTMA_DRE_XAR	IGOIB	1	9418794	216232	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
 TR_SGI - Inici firma	10/06/2026 14:09:39	U0Y2JWLS-A8AA4QL0-4QJYCNGE	90000015A	TONI SEGUI MAYOL	IG_DGTMA_DRE_XAR	IGOIB	1	9418794	216232		 

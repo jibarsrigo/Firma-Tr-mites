@@ -331,6 +331,16 @@ VERSION 1.3.93  - Arranque: VERSION_HTML con typeof (no tumba botones si falta l
 VERSION 1.3.94  - TR_BOR (Esborrat): regla tramite_borrado manda sobre KO/QAA previos.
 
 VERSION 1.3.95  - tramite_borrado: Acción/frase buscan por DNI en SistraHelp otro trámite.
+
+VERSION 1.3.96  - Nota QAA en Acción: Carpeta Ciudadana BAIX + aviso Accediu; matiz si Certificado.
+
+VERSION 1.3.97  - Nota QAA en Acción solo si QAA va justo bajo/tras TR_CAR (no cualquier QAA).
+
+VERSION 1.3.98  - Nota QAA: contextualizar aviso con recuperar trámite desde Carpeta Ciudadana.
+
+VERSION 1.3.99  - Nota QAA: Accediu/BAIX solo Cl@ve Permanente; Certificado → sesión/modo privado.
+
+VERSION 1.3.100 - QAA tras TR_CAR + fallo_formulario: Acción completa (Qué hacer acceso/sesión; sin mail formulario).
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -342,7 +352,7 @@ VERSION 1.3.95  - tramite_borrado: Acción/frase buscan por DNI en SistraHelp ot
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.95";
+const VERSION_JS = "1.3.100";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -375,11 +385,67 @@ const NOTA_CARPETA_CLAVE_MOVIL_SIN_SELECTOR =
   "Si se accede desde carpeta ciudadana con Cl@ve móvil, puede que al firmar no salga el selector de método (Autofirma/Cl@ve) y dé error. "
   + "Probar acceder de nuevo con certificado o Cl@ve Permanente, no con Cl@ve móvil.";
 
-// Nota Acción cuando hay QaaRecargaTramiteException (acceso/recarga; no manda la regla global).
-const NOTA_QAA_ACCION =
-  "También aparecen errores de nivel QAA (superior al del usuario autenticado). "
-  + "El trámite exige un nivel de acceso superior al de la sesión "
-  + "(habitual con Cl@ve móvil si solo se permite Cl@ve Permanente).";
+// Nota Acción solo si QAA va justo tras/bajo TR_CAR (no por cualquier QAA en la traza).
+// Cl@ve Permanente: caso típico Carpeta BAIX + aviso Accediu.
+// Certificado: ese caso BAIX/Accediu NO aplica; QAA junto a TR_CAR suele ser sesión/navegador (p. ej. móvil).
+function esLineaErrorQaa(linea) {
+  return /QAARECARGATRAMITE|NIVELL DE QAA|NIVEL DE QAA/i.test(String(linea || ""));
+}
+
+// SistraHelp: lo más reciente arriba → «justo después de carga» = línea relevante bajo TR_CAR es QAA,
+// con poca diferencia de hora (mismo intento de recuperar/acceder).
+function hayQaaJustoTrasCargaTramite(lineasTraza) {
+  const MAX_MS = 15 * 60 * 1000;
+  const relevantes = (lineasTraza || []).filter(
+    l => /^TR_[A-Z]+\s+-/.test(l) || /^ERROR\s+-/i.test(l)
+  );
+  for (let i = 0; i < relevantes.length - 1; i++) {
+    if (!/^TR_CAR\s+-/.test(relevantes[i]) || !esLineaErrorQaa(relevantes[i + 1])) continue;
+    const tsCar = extraerTimestampLineaTraza(relevantes[i]);
+    const tsQaa = extraerTimestampLineaTraza(relevantes[i + 1]);
+    if (tsCar == null || tsQaa == null) return true;
+    if (Math.abs(tsCar - tsQaa) <= MAX_MS) return true;
+  }
+  return false;
+}
+
+function textoNotaQaaAccion(esCertificado) {
+  if (esCertificado) {
+    return "En la traza aparece error de nivel QAA (superior al del usuario autenticado; QaaRecargaTramiteException) "
+      + "justo junto a una Carga del trámite (TR_CAR).\n"
+      + "El aviso típico de Carpeta Ciudadana con nivel BAIX y botón «Accediu al tràmit» es propio de "
+      + "Cl@ve Permanente, no de acceso con certificado: con certificado no debería quedar nivel bajo en Carpeta.\n"
+      + "Si el ciudadano usa certificado (p. ej. Mac) y aun así salen varios QAA al recuperar, a menudo la sesión "
+      + "del navegador quedó con un método de nivel inferior (p. ej. Cl@ve móvil) y ya no vuelve a pedir elegir.\n"
+      + "No es un fallo de formulario ni de firma Autofirm@.";
+  }
+  return "En la traza aparece error de nivel QAA (superior al del usuario autenticado; QaaRecargaTramiteException) "
+    + "justo junto a una Carga del trámite (TR_CAR).\n"
+    + "Cuando un ciudadano recupera un trámite desde Carpeta Ciudadana con Cl@ve Permanente, en pantalla ve algo como: "
+    + "«Autenticació necessària — Per accedir al tràmit necessitau un nivell "
+    + "d'autenticació superior al detectat. Pitjau el botó per a reprendre el tràmit.» "
+    + "con el botón «Accediu al tràmit»; si lo pulsa, suele acceder bien al trámite.\n"
+    + "Suele deberse a que la sesión queda con nivel de autenticación bajo (BAIX) y, al recuperar, el sistema "
+    + "pide un nivel superior (aviso + botón). No es un fallo de firma (Cl@veFirm@ / Autofirm@).";
+}
+
+// Si el motor cae en fallo_formulario pero el patrón real es QAA tras TR_CAR: Acción completa (no pasos de formulario).
+function textoAccionCompletaQaaTrasCarga(esCertificado) {
+  if (esCertificado) {
+    return "Qué pasa:\n" + textoNotaQaaAccion(true) + "\n\nQué hacer:\n"
+      + "1. Pedir al ciudadano que abra el navegador en modo privado (o cierre sesión / use otra sesión) "
+      + "e inicie de nuevo el trámite con certificado, DNIe o Cl@ve Permanente.\n"
+      + "2. Revisar en SistraHelp el acceso en Inicio/Carga (TR_INI / TR_CAR): si figura CLAVE_MOVIL u otro método de nivel inferior.\n"
+      + "3. No remitir a incidencias de formulario ni enviar el mail de formulario: el problema es el nivel/sesión de acceso (QAA). "
+      + "Puede constar Fi formulari (TR_FRF) en la traza.\n"
+      + "4. Si tras el modo privado sigue igual, confirmar con el ciudadano cómo entra (Carpeta Ciudadana / certificado).";
+  }
+  return "Qué pasa:\n" + textoNotaQaaAccion(false) + "\n\nQué hacer:\n"
+    + "1. Indicar que, al recuperar desde Carpeta Ciudadana, pulse «Accediu al tràmit» si sale el aviso de autenticación necesaria.\n"
+    + "2. Si sigue fallando: salir de Carpeta Ciudadana, volver a entrar con Cl@ve Permanente y recuperar el trámite.\n"
+    + "3. No remitir a incidencias de formulario ni enviar el mail de formulario: es un tema de nivel de acceso (QAA), no del formulario.\n"
+    + "4. No tratarlo como fallo de firma (Cl@veFirm@ / Autofirm@).";
+}
 
 function esReglaAutofirmaClienteConIntro(idRegla) {
   return !!idRegla && idRegla.indexOf("error_autofirma_cliente_") === 0;
@@ -1371,7 +1437,7 @@ btnDetalles.onclick = () => {
 
   <li><b>Cambios 16/07/2026</b> (js 1.3.64→${VERSION_JS} · acciones → v ${vJson} · html v1.3.6):</li>
   <li>· <b>tramite_completo:</b> Cl@ve KO previos + SGO Autofirm@; no confundir cancelada Cl@veFirm@ con Autofirma previo; nota CLAVE_MOVIL si aplica.</li>
-  <li>· <b>QAA:</b> nota enriquecida siempre en Acción si hay QaaRecarga (nivel sesión &lt; trámite; habitual Cl@ve móvil vs Permanente).</li>
+  <li>· <b>QAA:</b> bajo TR_CAR → Accediu/BAIX (Cl@ve) o sesión/modo privado (Certificado); si global es fallo_formulario, sustituye Qué hacer (sin mail formulario).</li>
   <li>· <b>NIF otro certificado:</b> detecta ES «associado»/asociado + NIE; KO tras Firma OK manda (multi-firma / reintento).</li>
   <li>· <b>KO tras Firma OK:</b> si hay Firma KO después del último TR_SGO, manda ese KO (no firma_correcta).</li>
   <li>· <b>Fase de firma:</b> no se cierra solo con TR_SGO; hace falta TR_RGI (o REG/FIN). Multi-firma / KO tras un OK.</li>
@@ -3235,9 +3301,20 @@ if (accionData && accionData.accion) {
     }
   }
 
-  // 👉 QAA: siempre en Acción si está en la traza (antes solo en cierre OK / cancelada Cl@ve)
-  if (hayErrorQaaRecarga && !/nivel QAA|errores de nivel QAA/i.test(textoAccion)) {
-    textoAccion = insertarBloqueEnQuePasaAccion(textoAccion, NOTA_QAA_ACCION);
+  // 👉 QAA + TR_CAR: si el global es fallo_formulario, sustituir Acción entera (Qué hacer de formulario no vale).
+  //    Si hay otra regla, solo enriquecer Qué pasa.
+  let omitirMailPorQaaTrasCarga = false;
+  if (hayQaaJustoTrasCargaTramite(lineasTraza)) {
+    const esCertSolo = esCert && !esClave;
+    if (idReglaDetectada === "fallo_formulario") {
+      textoAccion = textoAccionCompletaQaaTrasCarga(esCertSolo);
+      omitirMailPorQaaTrasCarga = true;
+    } else if (!/QaaRecargaTramiteException|Autenticació necessària|nivel QAA/i.test(textoAccion)) {
+      textoAccion = insertarBloqueEnQuePasaAccion(
+        textoAccion,
+        textoNotaQaaAccion(esCertSolo)
+      );
+    }
   }
 
   // 👉 Cl@ve marcado + Autofirma: aviso como PRIMERA línea de Qué pasa (tras el resto de intros)
@@ -3323,6 +3400,10 @@ if (accionData && accionData.accion) {
     const reglaSo = resolverReglaAutofirmaCliente();
     const accionSo = accionesJSON.acciones.find(r => r.id === reglaSo);
     if (accionSo && accionSo.mail) mailUrl = accionSo.mail;
+  }
+  // QAA tras TR_CAR con veredicto fallo_formulario: no enlazar mail de formulario
+  if (typeof omitirMailPorQaaTrasCarga !== "undefined" && omitirMailPorQaaTrasCarga) {
+    mailUrl = null;
   }
   if (mailUrl) {
     salidaFinal += '<div style="margin-top:4px;padding-top:4px;"><a href="' + mailUrl + '" target="_blank" rel="noopener" style="color:#1e1c17;text-decoration:underline;">Mail</a></div>';

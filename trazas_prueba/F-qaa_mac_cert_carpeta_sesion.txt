@@ -1,0 +1,24 @@
+# Nuria Blanco Rivas · IG_SUBVEN_ADQHAB40 · CAI-2646195
+# Contexto CAU: inicia en Mac con certificado; tras FRF → QAA; cargas desde Carpeta → muchos QAA.
+# Hipótesis CAU: en algún momento eligió Cl@ve móvil (o similar) y el navegador ya no pide método;
+#   orientar a modo privado para que vuelva a pedir certificado / DNIe / Cl@ve Permanente.
+# Relato CAU: no contestó; más tarde firmó con Autofirm@ y finalizó (esas líneas NO están en este pegado).
+# Marcar: Certificado (+ Mac si el selector lo pide)
+# Global con este recorte (sin SGI/SGO/FIN): fallo_formulario — engañoso; el formulario sí cerró (TR_FRF)
+# Acción (js v1.3.100): Certificado → Qué pasa QAA sesión + Qué hacer modo privado (NO pasos/mail de formulario)
+
+ERROR - Error	28/07/2026 00:06:02	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+ERROR - Error	28/07/2026 00:05:21	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+ERROR - Error	28/07/2026 00:04:58	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+ERROR - Error	24/07/2026 10:29:06	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+ERROR - Error	24/07/2026 10:28:11	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+ERROR - Error	24/07/2026 10:25:42	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+ERROR - Error	24/07/2026 10:24:42	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+ERROR - Error	24/07/2026 10:16:22	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+ERROR - Error	24/07/2026 10:15:46	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+ERROR - Error	24/07/2026 10:14:53	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+TR_CAR - Càrrega del tràmit	18/07/2026 17:20:32	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348		 
+ERROR - Error	18/07/2026 17:20:13	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+TR_FRF - Fi formulari	17/07/2026 00:49:50	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348		 
+TR_FRI - Inici formulari	17/07/2026 00:44:02	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348		 
+TR_INI - Inici del tràmit	17/07/2026 00:15:35	W4K8N2P6-Q7RST3UV-X9YZAB1C	90000038A	NURIA BLANCO RIVAS	IG_SUBVEN_ADQHAB40	IGOIB	1	9007115	9005348	 

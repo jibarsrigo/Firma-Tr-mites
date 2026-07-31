@@ -1,0 +1,15 @@
+# Marc Serra Vidal · IG_SUBVEN_ADQHAB40 · QAA al recuperar desde Carpeta Ciudadana (Cl@ve Permanente)
+# Contexto CAU: Carpeta Ciudadana con Permanente muestra nivel BAIX; al abrir el trámite
+#   sale «Autenticació necessària…» + botón «Accediu al tràmit» → al pulsar se accede OK.
+# En SistraHelp: QaaRecargaTramiteException (sin Firma KO ni fallo de formulario real).
+# Marcar: Cl@ve
+# Global: la regla puede ser fallo_formulario (sin TR_FRI); lo importante es la nota QAA en Acción
+# Acción (js v1.3.99): con Cl@ve → nota Accediu/BAIX (solo Permanente); no aplica el texto de Certificado
+
+TR_CAR - Càrrega del tràmit	29/07/2026 11:51:08	M3N7P2Q9-R4STU8VW-X2YZAB6D	90000036R	MARC SERRA VIDAL	IG_SUBVEN_ADQHAB40	IGOIB	1	9007102	9005334		 
+ERROR - Error	29/07/2026 11:51:05	M3N7P2Q9-R4STU8VW-X2YZAB6D	90000036R	MARC SERRA VIDAL	IG_SUBVEN_ADQHAB40	IGOIB	1	9007102	9005334	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+TR_CAR - Càrrega del tràmit	29/07/2026 11:49:47	M3N7P2Q9-R4STU8VW-X2YZAB6D	90000036R	MARC SERRA VIDAL	IG_SUBVEN_ADQHAB40	IGOIB	1	9007102	9005334		 
+ERROR - Error	29/07/2026 11:49:07	M3N7P2Q9-R4STU8VW-X2YZAB6D	90000036R	MARC SERRA VIDAL	IG_SUBVEN_ADQHAB40	IGOIB	1	9007102	9005334	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+TR_CAR - Càrrega del tràmit	29/07/2026 11:48:22	M3N7P2Q9-R4STU8VW-X2YZAB6D	90000036R	MARC SERRA VIDAL	IG_SUBVEN_ADQHAB40	IGOIB	1	9007102	9005334		 
+ERROR - Error	29/07/2026 11:47:44	M3N7P2Q9-R4STU8VW-X2YZAB6D	90000036R	MARC SERRA VIDAL	IG_SUBVEN_ADQHAB40	IGOIB	1	9007102	9005334	Nivell de QAA del tràmit és superior al del usuari autenticat	QaaRecargaTramiteException 
+TR_INI - Inici del tràmit	29/07/2026 11:46:39	M3N7P2Q9-R4STU8VW-X2YZAB6D	90000036R	MARC SERRA VIDAL	IG_SUBVEN_ADQHAB40	IGOIB	1	9007102	9005334		 

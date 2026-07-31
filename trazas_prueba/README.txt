@@ -39,6 +39,20 @@ casuística no existe, se añade un .txt aquí y se actualiza este README.
 Archivos
 --------
 
+C-qaa_carpeta_ciudadana_permanente.txt
+  Marc Serra Vidal · IG_SUBVEN_ADQHAB40 · solo TR_INI/CAR + QaaRecarga (×3)
+  Carpeta Ciudadana + Cl@ve Permanente (nivel BAIX) → aviso «Autenticació necessària» + botón Accediu → OK
+  Marcar: Cl@ve → nota Accediu/BAIX; si se marca Certificado → otra nota (sesión/modo privado, js v1.3.99)
+  Valida: nota QAA solo si va justo bajo TR_CAR
+
+F-qaa_mac_cert_carpeta_sesion.txt
+  Nuria Blanco Rivas · IG_SUBVEN_ADQHAB40 · CAI-2646195
+  Mac + certificado → FRF → QAA; muchas QAA al recuperar desde Carpeta (sesión/navegador «pegada»)
+  CAU: probar modo privado para que vuelva a pedir cert/DNIe/Permanente; relato: luego Autofirm@ + fin (no en pegado)
+  Marcar: Certificado
+  Contraste: C-qaa_… (Permanente → Accediu/BAIX). Aquí Certificado → sesión/modo privado (js v1.3.100)
+  Con este recorte (sin SGI): global fallo_formulario, pero Acción QAA completa (Qué hacer modo privado; sin mail formulario)
+
 C-riera_8-15_qaa_luego_borrado.txt
   Elena Riera Capo · SG_UGE_DIETES · 8-15 Cl@veFirm@ + QAA varios días → TR_BOR (Esborrat del tràmit)
   Marcar: Cl@ve
@@ -158,11 +172,11 @@ C-8-15_reiente_sofia-aurora.txt
 
 C-segui_cancelada_clave_qaa.txt
   Toni Segui Mayol · IG_DGTMA_DRE_XAR · CAI-2638138
-  Signatura cancel·lada + Cl@veFirm@ (sin 8-15) · SGI sin cierre ×2 · QAA posterior
+  Signatura cancel·lada + Cl@veFirm@ (sin 8-15) · SGI sin cierre ×2 · QAA posterior (sin TR_CAR encima)
   CAU: Permanente emitido/renovado mismo día + móvil → ventana emisión; probar ordenador
   Marcar: Cl@ve
   Global: error_clave_firma_cancelada
-  Acción (json v1.3.34 / js v1.3.68): Qué pasa/Qué hacer + nota QAA + sin cierre
+  Acción: Qué pasa/Qué hacer + sin cierre; sin nota Carpeta/Accediu (QAA no va justo bajo TR_CAR)
 
 C-salvati_validation_clave.txt
   Marcos Daniel Salvati Russo · IG_SUBVEN_EN_DESB25
