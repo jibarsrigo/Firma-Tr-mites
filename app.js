@@ -345,6 +345,8 @@ VERSION 1.3.100 - QAA tras TR_CAR + fallo_formulario: Acción completa (Qué hac
 VERSION 1.3.101 - tramite_completo: fluxe Portafib DESPUÉS de REG/FIN ≠ «previo» (botón registro / no escalar).
 
 VERSION 1.3.102 - Fluxe tras cierre: Qué pasa claro; sin nota «posible móvil» en tramite_completo.
+
+VERSION 1.3.103 - Nueva regla error_firma_core_invalida (SignatureCore:InvalidSignature / ASN.1) + VALIDe.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -356,7 +358,7 @@ VERSION 1.3.102 - Fluxe tras cierre: Qué pasa claro; sin nota «posible móvil�
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.102";
+const VERSION_JS = "1.3.103";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -779,6 +781,7 @@ function inferirReglaDesdeLineaKo(lineaKo) {
   if (esErrorNifCertificadoNoCoincideHelper(lineaKo)) return "error_certificado_nif_no_coincide";
   if (esErrorCadenaCertificacionHelper(lineaKo)) return "error_cadena_certificacion";
   if (esErrorValidacionCertificadoFirmanteHelper(lineaKo)) return "error_validacion_certificado";
+  if (esErrorFirmaCoreInvalidaHelper(lineaKo)) return "error_firma_core_invalida";
   if (/CLAVE[_\s]?MOVIL.*NO.*PERM[EE]|M[ÈE]TODE.*CLAVE.*MOVIL.*NO/i.test(lineaKo)) {
     return "error_clave_movil_no_permitida";
   }
@@ -887,6 +890,15 @@ function esErrorCadenaCertificacionHelper(linea) {
   return /INVALIDCERTIFICATECHAIN/i.test(s) ||
     (/CADENA DE CERTIFICACI[OÓ]|CADENA DE CONFIAN[ZÇ]A/i.test(s) &&
       /NO [EÉ]S V[AÀÁ]LIDA/i.test(s));
+}
+
+// 👉 @firma rechaza el core de la firma ASN.1 (SignatureCore:InvalidSignature). Distinto de cadena
+//    e InvalidNotSigner: la firma criptográfica generada (Autofirm@) no es válida al validarla.
+function esErrorFirmaCoreInvalidaHelper(linea) {
+  const s = String(linea || "");
+  return /SIGNATURECORE\s*:\s*INVALIDSIGNATURE/i.test(s) ||
+    (/INVALIDSIGNATURE/i.test(s) && /SIGNATURECORE|CORE DE LA FIRMA|ASN\.?1/i.test(s)) ||
+    /ERROR VALIDANDO EL CORE DE LA FIRMA/i.test(s);
 }
 
 // 👉 KO: se firmó con un certificado de un NIF distinto al requerido por el trámite.
@@ -1442,6 +1454,7 @@ btnDetalles.onclick = () => {
   <li><b>Cambios 16/07/2026</b> (js 1.3.64→${VERSION_JS} · acciones → v ${vJson} · html v1.3.6):</li>
   <li>· <b>tramite_completo:</b> Cl@ve KO previos + SGO Autofirm@; Portafib/fluxe DESPUÉS de REG/FIN ≠ «previo» (no escalar; botón registro).</li>
   <li>· <b>QAA:</b> bajo TR_CAR → Accediu/BAIX (Cl@ve) o sesión/modo privado (Certificado); si global es fallo_formulario, sustituye Qué hacer (sin mail formulario).</li>
+  <li>· <b>error_firma_core_invalida:</b> SignatureCore:InvalidSignature (ASN.1) → VALIDe cert + firma; no confundir con cadena ni cliente Windows genérico.</li>
   <li>· <b>NIF otro certificado:</b> detecta ES «associado»/asociado + NIE; KO tras Firma OK manda (multi-firma / reintento).</li>
   <li>· <b>KO tras Firma OK:</b> si hay Firma KO después del último TR_SGO, manda ese KO (no firma_correcta).</li>
   <li>· <b>Fase de firma:</b> no se cierra solo con TR_SGO; hace falta TR_RGI (o REG/FIN). Multi-firma / KO tras un OK.</li>
@@ -1518,6 +1531,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
   error_validacion_certificado: "VALIDATION InvalidNotSignerCertificate → escalar Portafib. Qué pasa/Qué hacer.",
   error_certificado_nif_no_coincide: "Firmó con certificado de otro NIF (último KO).",
   error_cadena_certificacion: "InvalidCertificateChain. Revisar cadena / VALIDe; casuística rara (llamar).",
+  error_firma_core_invalida: "SignatureCore:InvalidSignature (ASN.1). VALIDe cert+firma; certificado/Autofirma.",
   error_autofirma_servidor: "SAF_27 — fallo servidor / instalación Autofirma.",
   error_autofirma_cancelada: "Firma cancelada con Autofirm@. Qué pasa/Qué hacer.",
   error_autofirma_entorno: "Solo TR_SGI sin KO/OK; CERTIFICADO en TR_CAR o selector Certificado (FIRE/Autofirma).",
@@ -1552,7 +1566,7 @@ const GRUPOS_CATALOGO_REGLAS = [
     titulo: "C) Certificado local / Autofirma / @firma",
     ids: [
       "error_autofirma_servidor", "error_certificado_nif_no_coincide", "error_validacion_certificado",
-      "error_cadena_certificacion", "error_autofirma_cancelada", "error_autofirma_entorno",
+      "error_cadena_certificacion", "error_firma_core_invalida", "error_autofirma_cancelada", "error_autofirma_entorno",
       "error_autofirma_cliente_windows", "error_autofirma_cliente_mac",
       "error_autofirma_cliente_android", "error_autofirma_cliente_iphone", "error_autofirma_cliente_movil",
       "error_autofirma_cliente_generico", "error_autofirma", "error_fire"
@@ -1632,7 +1646,7 @@ btnTabla.onclick = (e) => {
   <li><b>Literales</b> — fragmentos de error de la traza (con ×N si se repiten).</li>
   ${htmlCatalogoReglasDesdeAcciones()}
   <li class="reglas-titulo">4. Prioridad en fase «error en firma» (por qué gana una regla y no otra)</li>
-  <li>1. SAF_27 · 2. NIF de otro certificado <i>(solo si es el último KO)</i> · 3. VALIDATION InvalidNotSigner · 4. Cadena InvalidCertificateChain</li>
+  <li>1. SAF_27 · 2. NIF de otro certificado <i>(solo si es el último KO)</i> · 3. VALIDATION InvalidNotSigner · 4. Cadena InvalidCertificateChain · 5. SignatureCore InvalidSignature (ASN.1)</li>
   <li>5. CLAVE_MOVIL no permitida <i>(solo si no hay Firma KO)</i> · 6. Último KO tipado (si reintento cambió de método) · 7. Códigos Cl@ve (8–15, 101, 103, 103-15, 104)</li>
   <li>8. Cancelada Cl@veFirm@ · 9. Error 500 de firma/custodia · 10. Autofirma cliente (literal fuerte / método Autofirm@)</li>
   <li>11. Cancelada Autofirma · 12. Cl@ve móvil (KO sin código) · 13. Solo TR_SGI sin cierre → entorno si TR_CAR=CERTIFICADO (o selector Certificado); si no, Cl@ve móvil</li>
@@ -1987,6 +2001,7 @@ const hayErrorValidacionCertificado = lineasTraza.some(esErrorValidacionCertific
 // 👉 Cadena de certificación del certificado firmante no válida (InvalidCertificateChain).
 //    Es del certificado del ciudadano (no de reinstalar Autofirma) -> revisar certificado en el equipo.
 const hayErrorCadenaCertificacion = lineasTraza.some(esErrorCadenaCertificacionHelper);
+const hayErrorFirmaCoreInvalida = lineasTraza.some(esErrorFirmaCoreInvalidaHelper);
 
 // 👉 Firmó con un certificado de un NIF distinto al requerido (seleccionó otro certificado).
 const hayErrorNifNoCoincide = lineasTraza.some(esErrorNifCertificadoNoCoincideHelper);
@@ -2412,6 +2427,14 @@ else if (hayErrorCadenaCertificacion) {
   idReglaDetectada = "error_cadena_certificacion";
 
 }
+else if (reglaUltimoKo === "error_firma_core_invalida" ||
+         (hayErrorFirmaCoreInvalida && !reglaUltimoKo)) {
+
+  // 👉 SignatureCore:InvalidSignature (core ASN.1). Manda el último KO; no confundir con cadena
+  //    ni con cliente Autofirma genérico (instalación limpia sola).
+  idReglaDetectada = "error_firma_core_invalida";
+
+}
 else if (hayClaveMovilNoPermitida && !haySGX) {
 
   // 👉 Solo si NO hay Firma KO: un ERROR de acceso CLAVE_MOVIL no debe tapar
@@ -2785,6 +2808,23 @@ else if (idReglaDetectada === "error_cadena_certificacion") {
     + "No orientar a reinstalar AutoFirma como primera acción.";
   if (firmaCertEnKo) {
     frase += " El KO indica " + literalFlujo("Método de firma: Autofirm@") + " (certificado local).";
+  }
+  fraseDiagnostico = frase;
+
+}
+else if (idReglaDetectada === "error_firma_core_invalida") {
+
+  cartelDiagnostico = cartelAzul("Firma ASN.1 inválida");
+  let frase = "Firma KO: el servidor rechaza la firma — "
+    + literalFlujo("error validando el core de la Firma ASN.1")
+    + " (" + literalFlujo("SignatureCore:InvalidSignature") + "). "
+    + "No es InvalidCertificateChain ni InvalidNotSignerCertificate. "
+    + "Conviene probar certificado y firma en VALIDe y revisar certificado/Autofirma en el equipo.";
+  if (hayMetodoFirmaAutofirmaEnKo) {
+    frase += " El KO indica " + literalFlujo("Método de firma: Autofirm@") + ".";
+  }
+  if (hayCanceladaAutofirma || haySignaturaCancelada) {
+    frase += " También hay intentos con firma cancelada; manda el InvalidSignature.";
   }
   fraseDiagnostico = frase;
 
@@ -3874,6 +3914,7 @@ const ETIQUETA_RESULTADO_FIRMA = {
   saf_27: "SAF_27",
   validacion_certificado: "Validación certificado",
   cadena_certificacion: "Cadena certificación",
+  firma_core_invalida: "Firma ASN.1 inválida",
   nif_no_coincide: "Certificado de otro NIF",
   clave_movil_no_permitida: "Cl@ve móvil no permitida",
   ko_clave_8_15: "Cl@ve 8–15",
@@ -3901,6 +3942,7 @@ const TOOLTIP_RESULTADO_FIRMA = {
   servidor_intermedio: "Fallo de comunicación con Autofirma (servidor intermedio). No indica Android ni iPhone; revisar TR_CAR anterior al SGI.",
   timeout_firma: "Tiempo de firma agotado o Autofirma no invocado o no instalado. No implica solo iPhone; confirmar SO en TR_CAR.",
   cadena_certificacion: "Cadena de certificación del certificado del ciudadano no válida (InvalidCertificateChain). Revisar el certificado en el equipo (cadena de CA, CA reconocida, vigencia, revocación, almacén). No es reinstalar Autofirma.",
+  firma_core_invalida: "El servidor rechaza el core de la firma ASN.1 (SignatureCore:InvalidSignature). Probar certificado y firma en VALIDe; revisar certificado/Autofirma (clave privada, almacén, DNIe/token).",
   nif_no_coincide: "Se firmó con un certificado de un NIF distinto al requerido. El ciudadano seleccionó otro certificado (equipo compartido / varios certificados). Indicar que elija su propio certificado."
 };
 
@@ -4051,6 +4093,7 @@ function clasificarTipoKoLinea(linea) {
   if (esErrorNifCertificadoNoCoincideHelper(l)) return "nif_no_coincide";
   if (esErrorCadenaCertificacionHelper(l)) return "cadena_certificacion";
   if (esErrorValidacionCertificadoFirmanteHelper(l)) return "validacion_certificado";
+  if (esErrorFirmaCoreInvalidaHelper(l)) return "firma_core_invalida";
   if (/CLAVE[_\s]?MOVIL.*NO.*PERM[EE]|M[ÈE]TODE.*CLAVE.*MOVIL.*NO/i.test(l)) {
     return "clave_movil_no_permitida";
   }
@@ -4094,6 +4137,7 @@ const ETIQUETA_CORTA_KO_TAMBIEN = {
   saf_27: "SAF_27",
   validacion_certificado: "validación",
   cadena_certificacion: "cadena certificación",
+  firma_core_invalida: "ASN.1 inválida",
   nif_no_coincide: "otro NIF",
   timeout_firma: "timeout",
   fitxer_buit: "fitxer buit",
@@ -4162,6 +4206,8 @@ function clasificarResultadoVentana(lineasVentana) {
     resultado = "cadena_certificacion";
   } else if (lineasVentana.some(esErrorValidacionCertificadoFirmanteHelper)) {
     resultado = "validacion_certificado";
+  } else if (lineasVentana.some(esErrorFirmaCoreInvalidaHelper)) {
+    resultado = "firma_core_invalida";
   } else if (/CLAVE[_\s]?MOVIL.*NO.*PERM[EE]|M[ÈE]TODE.*CLAVE.*MOVIL.*NO/i.test(textoVentana)) {
     resultado = "clave_movil_no_permitida";
   } else {
@@ -4367,6 +4413,7 @@ function colorResultadoFlujoFirma(resultado) {
   if (/^cancelada/.test(resultado)) return "#b7770d";
   if (resultado === "validacion_certificado") return "#8e44ad";
   if (resultado === "cadena_certificacion") return "#7d3c98";
+  if (resultado === "firma_core_invalida") return "#6c3483";
   if (resultado === "nif_no_coincide") return "#b03a2e";
   if (resultado === "timeout_firma") return "#d35400";
   if (resultado === "cliente_firma_movil") return COLOR_CLIENTE_FIRMA_MOVIL;

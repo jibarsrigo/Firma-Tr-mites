@@ -1,7 +1,8 @@
 {
-  "version": "1.3.65",
-  "_changes_today": "2026-07-31: tramite_borrado: buscar en SistraHelp por DNI otro trámite (v1.3.65)",
+  "version": "1.3.66",
+  "_changes_today": "2026-08-06: error_firma_core_invalida SignatureCore ASN.1 + VALIDe (v1.3.66)",
   "_changelog": [
+    "1.3.66 - error_firma_core_invalida: SignatureCore:InvalidSignature; Qué pasa/Qué hacer + VALIDe cert y firma",
     "1.3.65 - tramite_borrado: Qué hacer buscar por DNI en SistraHelp si ha iniciado otro trámite",
     "1.3.64 - tramite_borrado: TR_BOR manda; no diagnosticar firma sobre trámite borrado",
     "1.3.63 - windows/mac/movil: sin paso «marcar Certificado+sistema» (ya elegido)",
@@ -120,6 +121,12 @@
       "id": "error_certificado_nif_no_coincide",
       "accion": "Qué pasa:\nSe firmó con un certificado de otro NIF (en la traza: nif del certificado ≠ nif requerido).\nEl ciudadano eligió en el selector un certificado que no es el suyo. Es habitual en equipos compartidos o con varios certificados en el almacén.\nNo es un problema de la plataforma, del trámite ni de Portafib.\n\nQué hacer:\n1. Indicar que, al firmar, elija en el selector el certificado a su nombre / NIF (no el de otra persona).\n2. Si hay certificados de otras personas que no deben estar: quitarlos del almacén (Win+R → certmgr.msc → Personal / Mis certificados).\n3. Debe firmar con el mismo NIF con el que accedió al trámite.\n4. Enviar el mail al ciudadano.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario"
+    },
+
+    {
+      "id": "error_firma_core_invalida",
+      "accion": "Qué pasa:\nLa firma con Autofirm@ llega al servidor y se rechaza: la firma criptográfica no es válida (SignatureCore:InvalidSignature / error validando el core de la Firma ASN.1).\nNo es InvalidCertificateChain (cadena) ni InvalidNotSignerCertificate (validación del certificado en @firma).\nSuele apuntar al certificado o al entorno de firma en el PC: certificado dañado o mal instalado, sin clave privada, almacén Windows, Autofirma antigua/corrupta, antivirus/middleware, DNIe/token con problemas.\n\nQué hacer:\n1. Comprobar que el certificado es válido en VALIDe:\n   → https://valide.redsara.es/valide/validarCertificado/ejecutar.html\n   Seleccionar el certificado digital cuando se solicite. El resultado debe indicar que es válido y no está caducado ni revocado.\n\n2. Realizar una prueba de firma electrónica en VALIDe:\n   → https://valide.redsara.es/valide/firmar/ejecutar.html\n   Pasos: «Seleccionar fichero» → elegir un PDF de prueba → «Firmar» → en AutoFirma elegir el certificado → finalizar. Si va bien, se descarga un documento firmado.\n\n3. Según VALIDe:\n   → Si el certificado o la firma de prueba fallan: revisar certificado (importación con clave privada, FNMT/DNIe/token, almacén Windows) y middleware/lector.\n   → Si VALIDe (certificado + firma) sale OK y el trámite sigue fallando: instalación limpia de Autofirma y revisar antivirus/firewall/proxy → <a href=\"https://cau.fundaciobit.org/firmawiki/index.php/Autofirma_Cliente_/_Fire_/_@firma#instalacion_limpia_autofirma\" target=\"_blank\" rel=\"noopener\">Instalación limpia autofirma</a>.\n\n4. En el selector de AutoFirma, elegir el certificado correcto (con clave privada; no solo un .cer de otra persona).\n5. Enviar el mail al ciudadano.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Autofirma"
     },
 
     {

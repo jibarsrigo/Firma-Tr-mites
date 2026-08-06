@@ -278,6 +278,13 @@ T-500_puro.txt
   Global esperado: error_firma_fitxers_500 · cartel "Servicio de firma"
   Acción (json v1.3.25): Qué pasa / Qué hacer (reintentar; escalar si persiste o es masivo)
 
+F-valles_signature_core_invalid.txt
+  Rosa Valles Medina · SC0022TSAN (IBSALUT) · Autofirma Windows
+  KO: SignatureCore:InvalidSignature (core Firma ASN.1) + Autofirm@ (×4) · 1× cancelada intercalada
+  Marcar: Certificado + Ordenador
+  Global (js v1.3.103 / acciones v1.3.66): error_firma_core_invalida
+  Acción: VALIDe validar cert + prueba firma; luego certificado/Autofirma (no cadena ni solo «reinstalar»)
+
 F-adrover_cadena_certificacion.txt
   Jaume Miquel Adrover Binimelis (90000004S) · 00-SOLGEN (INDUSTRIA) · certificado local (Autofirm@) · Windows
   Traza completa: ~11 TR_SGX en 1h30 (09:40-11:04), MUCHOS "InvalidCertificateChain"
