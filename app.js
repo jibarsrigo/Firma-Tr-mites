@@ -347,6 +347,14 @@ VERSION 1.3.101 - tramite_completo: fluxe Portafib DESPUÉS de REG/FIN ≠ «pre
 VERSION 1.3.102 - Fluxe tras cierre: Qué pasa claro; sin nota «posible móvil» en tramite_completo.
 
 VERSION 1.3.103 - Nueva regla error_firma_core_invalida (SignatureCore:InvalidSignature / ASN.1) + VALIDe.
+
+VERSION 1.3.104 - InvalidNotSigner: Acción Autofirm@ (VALIDe/PDF/inst. normal) vs Cl@veFirm@; nota en cierre OK.
+
+VERSION 1.3.105 - InvalidNotSigner: siempre Portafib + mail general (Cl@ve o cert); sin nota móvil.
+
+VERSION 1.3.106 - error_validacion_certificado: Qué pasa más claro (acciones v1.3.68).
+
+VERSION 1.3.107 - error_validacion_certificado: método del KO al inicio de Qué pasa.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -358,7 +366,7 @@ VERSION 1.3.103 - Nueva regla error_firma_core_invalida (SignatureCore:InvalidSi
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.103";
+const VERSION_JS = "1.3.107";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1455,6 +1463,7 @@ btnDetalles.onclick = () => {
   <li>· <b>tramite_completo:</b> Cl@ve KO previos + SGO Autofirm@; Portafib/fluxe DESPUÉS de REG/FIN ≠ «previo» (no escalar; botón registro).</li>
   <li>· <b>QAA:</b> bajo TR_CAR → Accediu/BAIX (Cl@ve) o sesión/modo privado (Certificado); si global es fallo_formulario, sustituye Qué hacer (sin mail formulario).</li>
   <li>· <b>error_firma_core_invalida:</b> SignatureCore:InvalidSignature (ASN.1) → VALIDe cert + firma; no confundir con cadena ni cliente Windows genérico.</li>
+  <li>· <b>InvalidNotSigner:</b> siempre escalar Portafib + mail general (Cl@ve o cert local); @firma valida todos.</li>
   <li>· <b>NIF otro certificado:</b> detecta ES «associado»/asociado + NIE; KO tras Firma OK manda (multi-firma / reintento).</li>
   <li>· <b>KO tras Firma OK:</b> si hay Firma KO después del último TR_SGO, manda ese KO (no firma_correcta).</li>
   <li>· <b>Fase de firma:</b> no se cierra solo con TR_SGO; hace falta TR_RGI (o REG/FIN). Multi-firma / KO tras un OK.</li>
@@ -1528,7 +1537,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
   error_clave_movil_no_permitida: "CLAVE_MOVIL no permitida en el trámite → Permanente o certificado. Qué pasa/Qué hacer.",
   error_clave_movil: "Solo Inicio firma sin cierre, o KO sin código Cl@ve (posible móvil / Autofirma Android). Qué pasa/Qué hacer.",
   error_firma_fitxers_500: "Error fitxers 500 / custodia / transacción caducada. Servicio de firma. Qué pasa/Qué hacer.",
-  error_validacion_certificado: "VALIDATION InvalidNotSignerCertificate → escalar Portafib. Qué pasa/Qué hacer.",
+  error_validacion_certificado: "InvalidNotSigner (@firma). Siempre Portafib + mail general (Cl@ve o cert local).",
   error_certificado_nif_no_coincide: "Firmó con certificado de otro NIF (último KO).",
   error_cadena_certificacion: "InvalidCertificateChain. Revisar cadena / VALIDe; casuística rara (llamar).",
   error_firma_core_invalida: "SignatureCore:InvalidSignature (ASN.1). VALIDe cert+firma; certificado/Autofirma.",
@@ -3098,19 +3107,18 @@ if (accionData && accionData.accion) {
     + escapeHtml(String(texto ?? "")) + "\"</span>";
 
   if (idReglaDetectada === "error_validacion_certificado") {
-    let prefijoValidacion;
+    // Método del KO al inicio de Qué pasa (informativo; la acción es siempre escalar Portafib).
+    let notaMetodoVal;
     if (hayMetodoFirmaClaveEnKo) {
-      prefijoValidacion = "Método en este caso: Cl@ve Permanente (Cl@veFirm@ en el Firma KO).";
+      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente).";
     } else if (hayMetodoFirmaAutofirmaEnKo) {
-      prefijoValidacion = "Método en este caso: certificado local (Autofirm@ en el Firma KO).";
-    } else if (esClave && !esCert) {
-      prefijoValidacion = "Método en este caso: Cl@ve Permanente (según selector; confirmar en el Firma KO si no aparece al pegar).";
-    } else if (esCert && !esClave) {
-      prefijoValidacion = "Método en este caso: certificado local (según selector; confirmar en el Firma KO si no aparece al pegar).";
+      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Autofirm@ (certificado local).";
     } else {
-      prefijoValidacion = "Método en este caso: confirmar en el Firma KO (doble clic en SistraHelp: Cl@veFirm@ o Autofirm@).";
+      notaMetodoVal =
+        "Confirmar el Método de firma abriendo el Firma KO (doble clic en SistraHelp): Cl@veFirm@ o Autofirm@. "
+        + "Da igual para actuar: siempre se escala a Portafib.";
     }
-    textoAccion = insertarBloqueEnQuePasaAccion(textoAccion, prefijoValidacion);
+    textoAccion = insertarBloqueEnQuePasaAccion(textoAccion, notaMetodoVal);
   }
 
   // 👉 Cadena de certificación pero además, en algún intento, se firmó con un certificado de otro NIF:
@@ -3158,9 +3166,10 @@ if (accionData && accionData.accion) {
      idReglaDetectada === "tramite_finalizado" ||
      idReglaDetectada === "tramite_registrado" ||
      idReglaDetectada === "firma_correcta") &&
-    (hayErrorPortafibReal || hayAutofirmaKoPrevio || hayErrorClaveReal || hayClaveMovilNoPermitida)
+    (hayErrorPortafibReal || hayAutofirmaKoPrevio || hayErrorClaveReal ||
+     hayClaveMovilNoPermitida || hayErrorValidacionCertificado)
   ) {
-    // Cierre OK: avisar de Portafib / Autofirma KO / Cl@ve KO / CLAVE_MOVIL (QAA va aparte)
+    // Cierre OK: avisar de Portafib / Autofirma KO / Cl@ve KO / VALIDATION / CLAVE_MOVIL (QAA va aparte)
     const notasPrevias = [];
     const pfCierre = hayErrorPortafibReal
       ? clasificarPortafibRespectoCierre(lineasTraza)
@@ -3170,6 +3179,16 @@ if (accionData && accionData.accion) {
     }
     if (hayErrorPortafibReal && !pfCierre.hayAntes && !pfCierre.hayDespues) {
       notasPrevias.push("Se detecta error de portafib en la traza.");
+    }
+    if (hayErrorValidacionCertificado) {
+      const metVal = hayMetodoFirmaClaveEnKo
+        ? "Cl@veFirm@"
+        : (hayMetodoFirmaAutofirmaEnKo ? "Autofirm@" : "ver Método en el KO");
+      notasPrevias.push(
+        "Hubo Firma KO de validación @firma (InvalidNotSignerCertificate) con " + metVal + ". "
+        + "Ese fallo es del servicio de validación (escalable a Portafib si aún estuviera activo); "
+        + "puede afectar solo a algunos ciudadanos. El trámite acabó cerrado."
+      );
     }
     if (hayAutofirmaKoPrevio) {
       notasPrevias.push(
@@ -3357,12 +3376,13 @@ if (accionData && accionData.accion) {
   }
 
   // 👉 Intentos solo Inicio firma (sin KO/OK) en la misma traza que otro error (p.ej. 8-15):
-  //    No en cierre OK (tramite_completo…): esos SGI sin cierre son intentos abandonados, no «posible móvil».
+  //    No en cierre OK ni en validación @firma: no mezclar con «posible móvil».
   if (
     idReglaDetectada &&
     idReglaDetectada !== "error_clave_movil" &&
     idReglaDetectada !== "error_clave_movil_no_permitida" &&
     idReglaDetectada !== "error_autofirma_entorno" &&
+    idReglaDetectada !== "error_validacion_certificado" &&
     idReglaDetectada !== "tramite_completo" &&
     idReglaDetectada !== "tramite_finalizado" &&
     idReglaDetectada !== "tramite_registrado" &&

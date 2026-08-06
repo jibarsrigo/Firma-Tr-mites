@@ -178,12 +178,21 @@ C-segui_cancelada_clave_qaa.txt
   Global: error_clave_firma_cancelada
   Acción: Qué pasa/Qué hacer + sin cierre; sin nota Carpeta/Accediu (QAA no va justo bajo TR_CAR)
 
+C-navarro_validation_8-15_autofirma_completo.txt
+  Hugo Navarro Benitez · IG_SUBVEN_EN_DESB25 · CAI-2631450
+  Cl@veFirm@: InvalidNotSigner (×N) + 8-15 (×2) → SGO Autofirm@ → TR_REG+TR_FIN
+  Oleada: VALIDATION solo a algunos; muchos otros firman OK el mismo método
+  Marcar: Cl@ve
+  Global: tramite_completo
+  Acción (js v1.3.105): nota VALIDATION previos + 8-15 + Firma OK Autofirm@
+  Contraste limpio: C-salvati_validation_clave.txt (solo VALIDATION, sin cierre)
+
 C-salvati_validation_clave.txt
   Marcos Daniel Salvati Russo · IG_SUBVEN_EN_DESB25
   1 KO: VALIDATION InvalidNotSignerCertificate + Cl@veFirm@ (caso limpio)
   Marcar: Cl@ve
   Global: error_validacion_certificado
-  Acción (json v1.3.35 / js v1.3.69): Qué pasa/Qué hacer; método Cl@ve inyectado en Qué pasa
+  Acción (json v1.3.67 / js v1.3.105): siempre Portafib + mail general (también si fuera Autofirm@)
 
 C-8-15_luego_103-15_cifre.txt
   Antonia Isabel Cifre Pons · IG_DGDEPEN_RECO · Cl@veFirm@ · 8-15 + 103-15 (mismo segundo)
