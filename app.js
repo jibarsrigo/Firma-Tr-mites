@@ -355,6 +355,8 @@ VERSION 1.3.105 - InvalidNotSigner: siempre Portafib + mail general (Cl@ve o cer
 VERSION 1.3.106 - error_validacion_certificado: Qué pasa más claro (acciones v1.3.68).
 
 VERSION 1.3.107 - error_validacion_certificado: método del KO al inicio de Qué pasa.
+
+VERSION 1.3.108 - error_clave_8_15 + 101 en la misma traza: Qué pasa explica vínculo; mail sigue siendo 8-15.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -366,7 +368,7 @@ VERSION 1.3.107 - error_validacion_certificado: método del KO al inicio de Qué
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.107";
+const VERSION_JS = "1.3.108";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1468,6 +1470,7 @@ btnDetalles.onclick = () => {
   <li>· <b>KO tras Firma OK:</b> si hay Firma KO después del último TR_SGO, manda ese KO (no firma_correcta).</li>
   <li>· <b>Fase de firma:</b> no se cierra solo con TR_SGO; hace falta TR_RGI (o REG/FIN). Multi-firma / KO tras un OK.</li>
   <li>· <b>8-15 + 103-15</b> tras 500/transacción caducada: manda 103-15; Qué pasa aclara que no es Portafib ni @firma.</li>
+  <li>· <b>8-15 + 101</b>: manda 8-15 (último KO); Qué pasa explica el 101 (obtención/nivel) y que el mail es el de 8-15.</li>
   <li>· <b>Portafib:</b> Acción Qué pasa/Qué hacer; {lit} con fluxe, sesión y/o 502 Proxy / ConnectException.</li>
   <li>· <b>error_registro_presentador:</b> Firma OK + «registrat pel presentador» sin TR_REG → incidencias (no reabrir firma).</li>
   <li>· <b>error_clave_firma_cancelada:</b> Acción Qué pasa/Qué hacer (emisión mismo día + móvil; probar ordenador; nota QAA/sin cierre si aplica).</li>
@@ -1528,7 +1531,7 @@ btnDetalles.onclick = () => {
 const DESCRIPCION_REGLA_CATALOGO = {
   fallo_formulario: "No llega a firma; falla el formulario / datos (sin TR_FRI, 403…). Qué pasa/Qué hacer.",
   fallo_portafib: "Inicio formulario + fluxe / sesión / 502 Proxy. Portafib/plataforma. Qué pasa/Qué hacer; {lit}.",
-  error_clave_8_15: "Código 8 + Tipo 15. Renovar/acreditar Cl@ve Permanente. Qué pasa/Qué hacer.",
+  error_clave_8_15: "Código 8 + Tipo 15. Mail 8-15. Si también hay 101 → nota en Qué pasa (mismo mail).",
   error_clave_101: "Nivel de registro insuficiente en Cl@ve.",
   error_clave_103: "Contraseña Cl@ve bloqueada. Qué pasa/Qué hacer.",
   error_clave_103_15: "Certificados Cl@ve bloqueados (103+15). Override con 8-15 o 500/caducada previos.",
@@ -3294,6 +3297,25 @@ if (accionData && accionData.accion) {
         + (hayFirma500Fitxers
           ? "2. Si pregunta por el 500 / transacción caducada: indicar que fue un fallo puntual del servicio de firma; lo que bloquea ahora es el 103-15."
           : "");
+    }
+  } else if (idReglaDetectada === "error_clave_8_15") {
+    // 🔹 Misma traza con 101 (obtención de certificados / nivel): manda 8-15; mismo mail.
+    const hayClave101 = lineasTraza.some(l =>
+      l.includes("CLAVEFIRMA") && /ERROR:\s*101\b/.test(l)
+    );
+    if (hayClave101) {
+      textoAccion = insertarBloqueEnQuePasaAccion(
+        textoAccion,
+        "En la misma traza también aparece el código Cl@ve 101 "
+          + "(a menudo «Error en la obtención de los certificados»).\n"
+          + "El 101 y el 8-15 van ligados: Cl@ve Firma no consigue usar / obtener el certificado de firma "
+          + "(nivel de registro insuficiente o credencial de firma en mal estado). "
+          + "El 8-15 es el fallo al firmar con esa credencial de Cl@ve Permanente; el 101 es la otra cara del mismo problema "
+          + "(no hay certificado usable para firmar).\n"
+          + "Lo que manda es el 8-15: enviar el mail 8-15 (revocar certificado Cl@ve Firma si sale la opción, "
+          + "o renovar/acreditar Cl@ve Permanente). Ese mail ya incluye el registro avanzado; "
+          + "no hace falta enviar también el mail del 101."
+      );
     }
   } else if (
     /^error_clave_(8_15|101|103|103_15|104)$/.test(idReglaDetectada) &&

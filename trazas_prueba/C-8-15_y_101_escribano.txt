@@ -1,0 +1,26 @@
+# Marina Escudero Ramos · ANTICIPOS (IBSALUT) · Cl@veFirm@ · 8-15 + 101
+# Contexto CAU: misma traza alterna 8-15 y 101 (obtención de certificados);
+#   en medio Portafib ConnectException 401 + RegistroSolicitudException (sin TR_SGO).
+# Cronología (viejo→nuevo): 8-15 → 101×3 → CAR → ConnectException → RegistroSolicitud →
+#   ErrorNoControlado → 8-15 (último KO).
+# Marcar: Cl@ve
+# Global (js v1.3.108): error_clave_8_15 (manda el último KO) + nota Qué pasa por el 101
+# Flujo: varios intentos Cl@veFirm@; debe verse 8-15 y 101 en el desglose
+# Validar: Acción explica vínculo 101↔8-15; mail sigue Mail_Clave815 (no mail 101)
+# Ruido: 401 Portafib y RegistroSolicitud NO son el diagnóstico de firma (no hay SGO).
+
+TR_SGX - Fi firma KO	13/08/2026 00:15:52	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200	Error detectado despues de llamar a la pasarela externa(Código Error: 8 - Proveedor: clavefirma - Tipo Resultado: 15) Método de firma: Cl@veFirm@	
+TR_SGI - Inici firma	13/08/2026 00:15:40	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200		
+ERROR - Error	13/08/2026 00:14:09	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200	Error no controlat a la capa de servei: null	ErrorNoControladoException
+ERROR - Error	13/08/2026 00:07:50	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200	Error obtenint llibre associat a organisme: A04003003 - A04005003	RegistroSolicitudException
+ERROR - Error	13/08/2026 00:07:48	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200	Excepció al conectar con plugin firma: Error HTTP al realizar la solicitud: 401 - 	SesionFirmaClienteConnectException
+TR_CAR - Càrrega del tràmit	13/08/2026 00:06:49	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200		
+TR_SGX - Fi firma KO	13/08/2026 00:00:50	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200	Error en la obtencion de los certificados(Código Error: 101 - Proveedor: clavefirma - Tipo Resultado: 15) Método de firma: Cl@veFirm@	
+TR_SGI - Inici firma	13/08/2026 00:00:48	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200		
+TR_SGX - Fi firma KO	13/08/2026 00:00:43	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200	Error en la obtencion de los certificados(Código Error: 101 - Proveedor: clavefirma - Tipo Resultado: 15) Método de firma: Cl@veFirm@	
+TR_SGI - Inici firma	13/08/2026 00:00:32	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200		
+TR_SGX - Fi firma KO	13/08/2026 00:00:25	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200	Error en la obtencion de los certificados(Código Error: 101 - Proveedor: clavefirma - Tipo Resultado: 15) Método de firma: Cl@veFirm@	
+TR_SGI - Inici firma	13/08/2026 00:00:14	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200		
+TR_SGX - Fi firma KO	12/08/2026 23:59:24	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200	Error detectado despues de llamar a la pasarela externa(Código Error: 8 - Proveedor: clavefirma - Tipo Resultado: 15) Método de firma: Cl@veFirm@	
+TR_SGI - Inici firma	12/08/2026 23:59:13	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200		
+TR_CAR - Càrrega del tràmit	12/08/2026 23:59:07	KIP5E2YZ-WYBNT9T8-U8USLFZK	90000021D	MARINA ESCUDERO RAMOS	ANTICIPOS	IBSALUT	2	9122394	9056200		

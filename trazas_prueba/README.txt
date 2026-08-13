@@ -201,6 +201,13 @@ C-8-15_luego_103-15_cifre.txt
   Global: error_clave_103_15 + Acción override mixto 8-15 → 103-15 (Qué pasa/Qué hacer)
   Flujo de Firma (js v1.3.48): «Cl@ve 103-15 (también 8-15 ×2)» — desglosa tipos distintos; si todos son iguales sigue «(+N KO)»
 
+C-8-15_y_101_escribano.txt
+  Marina Escudero Ramos · ANTICIPOS (IBSALUT) · Cl@veFirm@ · 8-15 + 101 en la misma traza
+  Cronología: 8-15 → 101×3 («obtencion de los certificados») → Portafib 401 + RegistroSolicitud (sin SGO) → 8-15
+  Marcar: Cl@ve
+  Global (js v1.3.108): error_clave_8_15 + Qué pasa con vínculo 101↔8-15 (mismo mail 8-15; no mail 101)
+  Validar: Flujo desglosa 8-15 y 101; ruido 401/RegistroSolicitud no manda
+
 C-morey_500_transaccion_ok_8-15_103-15.txt
   Guillem Morey Tous · IG_AJD_AUDM · Cl@veFirm@
   Cronología: fitxers 500 + transacción caducada → Firma OK → 8-15 → 103-15
