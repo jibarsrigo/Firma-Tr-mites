@@ -59,10 +59,10 @@ Render en `app.js` (agrupa líneas en bloques al detectar títulos Qué pasa / Q
 | `error_registro_presentador` | Hecho (Firma OK + registro presentador → incidencias) |
 | `error_clave_firma_cancelada` | Hecho (+ nota QAA y sin cierre en Qué pasa si aplican) |
 | `error_validacion_certificado` | Hecho (InvalidNotSigner; método del KO en Qué pasa) |
-| `error_autofirma_cliente_windows` | Hecho (+ matiz «firma cancelada» en Qué pasa si aplica) |
-| `error_autofirma_cliente_movil` | Hecho |
+| `error_autofirma_cliente_windows` | Hecho (ordenador; nota Mac si detalle SistraHelp pone Mac; js 1.3.111) |
+| `error_autofirma_cliente_movil` | Hecho (Android/iPhone unificados aquí; .p12, NFC, Safari; js 1.3.112) |
 | `error_autofirma_cliente_generico` | Hecho (+ override cancelada Cl@ve↔Autofirm@ en Qué pasa) |
-| `error_autofirma_cliente_mac` | Hecho |
+| `error_autofirma_cliente_mac` | **Retirada** (js 1.3.111): Mac en detalle SistraHelp → nota en `error_autofirma_cliente_windows` |
 | `error_certificado_nif_no_coincide` | Hecho (Qué pasa/Qué hacer; sin matiz cadena especulativo; nota cadena solo si literal en traza) |
 | `error_cadena_certificacion` | Hecho (VALIDe primero; si falla → paso 3 PC; sin «guiado, sin jerga»; v1.3.49) |
 | `error_autofirma_servidor` | Hecho (SAF_27 Que pasa/Que hacer; link Instalacion limpia; v1.3.52) |
@@ -72,9 +72,9 @@ Render en `app.js` (agrupa líneas en bloques al detectar títulos Qué pasa / Q
 | `tramite_registrado` | Hecho |
 | `error_fire` | Hecho (legacy) |
 | `error_autofirma` | Hecho (legacy) |
-| `error_autofirma_cliente_iphone` | Hecho |
-| `error_autofirma_cliente_android` | Hecho |
-| `error_autofirma_cliente_linux` | **Retirada** (js 1.3.81): Linux → `error_autofirma_cliente_android` |
+| `error_autofirma_cliente_iphone` | **Retirada** (js 1.3.112): → `error_autofirma_cliente_movil` |
+| `error_autofirma_cliente_android` | **Retirada** (js 1.3.112): → `error_autofirma_cliente_movil` |
+| `error_autofirma_cliente_linux` | **Retirada** (js 1.3.81 / 1.3.112): Linux SistraHelp → Acción móvil |
 | `tramite_completo` | Hecho (+ nota Autofirma/Portafib previos si aplica) |
 | Estilo visual títulos | Casi cerrado (línea fina); usuario valoraba añadir teal a títulos — retomar al continuar |
 | Selector vista previa estilos | Eliminado; no reintroducir |

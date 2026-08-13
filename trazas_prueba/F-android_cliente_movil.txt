@@ -1,7 +1,7 @@
 # Nuria Belen Carrasco — Android / Cliente de Firma Móvil + servidor intermedio
 # Contexto CAU: inicio desde Linux (Android vista escritorio), luego CAR desde Android
 # Esperado Flujo de Firma: 2 intentos KO (cliente_firma_movil) + varios sin_cierre
-# Global (certificado móvil): error_autofirma_cliente_android
+# Global (certificado + Dispositivo móvil, js v1.3.112): error_autofirma_cliente_movil
 
 TR_SGI - Inici firma	18/06/2026 10:55:39	4C8860AD-NGCAYULY-N62G6NNQ	90000013R	NURIA BELEN CARRASCO GIL	SC0022TSAN	IBSALUT	1	7667452	8309269		
 TR_CAR - Càrrega del tràmit	18/06/2026 10:55:33	4C8860AD-NGCAYULY-N62G6NNQ	90000013R	NURIA BELEN CARRASCO GIL	SC0022TSAN	IBSALUT	1	7667452	8309269		

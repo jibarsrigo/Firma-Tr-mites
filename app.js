@@ -361,6 +361,10 @@ VERSION 1.3.108 - error_clave_8_15 + 101 en la misma traza: Qué pasa explica v�
 VERSION 1.3.109 - InvalidNotSigner: Cl@ve → servicio; Autofirm@ → VALIDe antes de dar por servicio.
 
 VERSION 1.3.110 - error_clave_8_15 + 6-15: Flujo etiqueta 6-15; Qué pasa (sesión caducada; manda 8-15).
+
+VERSION 1.3.111 - Retira error_autofirma_cliente_mac: Mac en detalle SistraHelp → nota en Acción ordenador (Windows).
+
+VERSION 1.3.112 - Retira error_autofirma_cliente_android e iphone: matices en Acción móvil.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -372,7 +376,7 @@ VERSION 1.3.110 - error_clave_8_15 + 6-15: Flujo etiqueta 6-15; Qué pasa (sesi�
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.110";
+const VERSION_JS = "1.3.112";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -545,8 +549,7 @@ function aplicarIntroAccionAutofirmaCliente(textoAccion, lineas, idRegla) {
 
   const analisis = analizarTiposFalloKoAutofirma(lineas);
   const counts = analisis.counts || {};
-  const esEscritorio = idRegla === "error_autofirma_cliente_mac" ||
-    idRegla === "error_autofirma_cliente_windows";
+  const esEscritorio = idRegla === "error_autofirma_cliente_windows";
   const hayServInter = !!counts["servidor intermedio"] || hayServidorIntermedioEnLineasFirma(lineas);
   const hayTimeout = !!counts.timeout;
   const partes = [];
@@ -626,9 +629,7 @@ const NOTA_SEGURIDAD_MOVIL =
   + "- Si sigue fallando: probar el trámite desde ordenador.";
 
 function esReglaAutofirmaClienteMovil(idRegla) {
-  return idRegla === "error_autofirma_cliente_movil" ||
-    idRegla === "error_autofirma_cliente_android" ||
-    idRegla === "error_autofirma_cliente_iphone";
+  return idRegla === "error_autofirma_cliente_movil";
 }
 
 function reglaAplicaNotaSeguridadEquipo(idRegla) {
@@ -850,11 +851,11 @@ function detectarSoEnTextoTraza(texto) {
 
 function reglaAutofirmaClientePorSo(so) {
   switch (so) {
-    case "iphone": return "error_autofirma_cliente_iphone";
-    case "android": return "error_autofirma_cliente_android";
-    // Linux en SistraHelp ≈ Android (vista escritorio); no usar error_autofirma_cliente_linux
-    case "linux": return "error_autofirma_cliente_android";
-    case "mac": return "error_autofirma_cliente_mac";
+    case "iphone": return "error_autofirma_cliente_movil";
+    case "android": return "error_autofirma_cliente_movil";
+    // Linux en SistraHelp ≈ Android (vista escritorio); no usar reglas android/iphone
+    case "linux": return "error_autofirma_cliente_movil";
+    case "mac": return "error_autofirma_cliente_windows";
     case "windows": return "error_autofirma_cliente_windows";
     default: return null;
   }
@@ -1515,7 +1516,7 @@ btnDetalles.onclick = () => {
   <br>
 
   <li><b>Pendiente — continuar en otro momento:</b></li>
-  <li>✔ <b>Acción Qué pasa/Qué hacer</b> en todas las reglas. Linux SistraHelp → Android (sin regla cliente_linux).</li>
+  <li>✔ <b>Acción Qué pasa/Qué hacer</b> en todas las reglas. Linux SistraHelp → Android (sin regla cliente_linux). Mac en detalle SistraHelp → nota en Acción ordenador (sin regla cliente_mac). Android/iPhone Autofirma → Acción móvil (sin reglas cliente_android/iphone).</li>
   <li>🔧 Limpieza de literales: mensaje útil arriba, traza completa debajo.</li>
   <li>🔧 Aviso Firma KO previo en tarjeta Acción cuando el trámite acaba OK.</li>
   <li>🔧 Mails Autofirma con anclas específicos por SO; wiki instalación limpia Autofirma.</li>
@@ -1552,11 +1553,8 @@ const DESCRIPCION_REGLA_CATALOGO = {
   error_autofirma_servidor: "SAF_27 — fallo servidor / instalación Autofirma.",
   error_autofirma_cancelada: "Firma cancelada con Autofirm@. Qué pasa/Qué hacer.",
   error_autofirma_entorno: "Solo TR_SGI sin KO/OK; CERTIFICADO en TR_CAR o selector Certificado (FIRE/Autofirma).",
-  error_autofirma_cliente_windows: "Cliente Autofirma Windows (servidor intermedio, timeout, fitxer buit…). Qué pasa/Qué hacer.",
-  error_autofirma_cliente_mac: "Cliente Autofirma Mac. Qué pasa/Qué hacer.",
-  error_autofirma_cliente_android: "Cliente Autofirma Android (incluye Linux en SistraHelp ≈ Android).",
-  error_autofirma_cliente_iphone: "Cliente Autofirma iPhone.",
-  error_autofirma_cliente_movil: "Cliente Autofirma móvil (SO no afinado). Qué pasa/Qué hacer.",
+  error_autofirma_cliente_windows: "Cliente Autofirma ordenador (Windows; si detalle SistraHelp pone Mac → nota llavero/Restaurar).",
+  error_autofirma_cliente_movil: "Cliente Autofirma móvil. Android/iPhone según detalle SistraHelp (notas .p12, NFC, Safari).",
   error_autofirma_cliente_generico: "Cliente Autofirma genérico / selector Cl@ve con KO Autofirm@. Qué pasa/Qué hacer.",
   error_autofirma: "Legacy Autofirma (reserva).",
   error_fire: "Legacy FIRE (reserva).",
@@ -1584,8 +1582,8 @@ const GRUPOS_CATALOGO_REGLAS = [
     ids: [
       "error_autofirma_servidor", "error_certificado_nif_no_coincide", "error_validacion_certificado",
       "error_cadena_certificacion", "error_firma_core_invalida", "error_autofirma_cancelada", "error_autofirma_entorno",
-      "error_autofirma_cliente_windows", "error_autofirma_cliente_mac",
-      "error_autofirma_cliente_android", "error_autofirma_cliente_iphone", "error_autofirma_cliente_movil",
+      "error_autofirma_cliente_windows",
+      "error_autofirma_cliente_movil",
       "error_autofirma_cliente_generico", "error_autofirma", "error_fire"
     ]
   },
@@ -2104,7 +2102,7 @@ function resolverReglaAutofirmaCliente() {
   const so = soIniCar || soSinKo;
   if (so) return reglaAutofirmaClientePorSo(so);
   if (hayPatronSgiSinCierre && hayLinuxPosibleAndroid) {
-    return "error_autofirma_cliente_android";
+    return "error_autofirma_cliente_movil";
   }
   return "error_autofirma_cliente_windows";
 }
@@ -3442,8 +3440,7 @@ if (accionData && accionData.accion) {
       const yaPistaDispositivo = /Pista de dispositivo|Habitualmente desde (iPhone|Android)/i.test(textoAccion);
       const yaAutofirmaMovil = esReglaAutofirmaClienteMovil(idReglaDetectada) || yaPistaDispositivo;
       const esEscritorioRegla =
-        idReglaDetectada === "error_autofirma_cliente_windows" ||
-        idReglaDetectada === "error_autofirma_cliente_mac";
+        idReglaDetectada === "error_autofirma_cliente_windows";
       let notaSinCierre;
       if (yaAutofirmaMovil || yaPistaDispositivo) {
         notaSinCierre =

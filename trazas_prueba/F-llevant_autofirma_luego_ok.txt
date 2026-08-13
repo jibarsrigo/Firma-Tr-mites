@@ -7,7 +7,7 @@
 #   Al pegar NO viene el literal Mac; hay que mirar SistraHelp / marcar según criterio.
 # Marcar: cualquier método (manda tramite_completo)
 # Global (js v1.3.60): tramite_completo + Autofirma previos + *SO SistraHelp (Linux≈Android / Mac≈iOS)
-# Sin SGO/FIN/REG: error_autofirma_cliente_mac (o iphone si se confirma iOS)
+# Sin SGO/FIN/REG: error_autofirma_cliente_windows (nota Mac si en detalle SistraHelp pone Mac)
 # Flujo de Firma: servidor intermedio, cancelada Autofirm@, Firma OK
 
 TR_FIN - Fi de tràmit	23/06/2026 14:24:11	UWGS0N60-SS2GA6CU-2EEQ84YE	B99000028	ESPORTS LLEVANT SL 	INS_ALE_PART	OAE	1	9359937	207817		 

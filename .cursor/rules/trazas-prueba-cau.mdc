@@ -13,7 +13,7 @@ Cuando el usuario pegue una **traza SistraHelp** (líneas `TR_…`, `ERROR…`, 
 - Comparar por **patrón funcional**, no por NIF ni fecha:
   - Código Cl@ve (8–15, 101, 103, 103-15, 104…)
   - Resultado Flujo de Firma (sin cierre ×N, SAF_27, Cliente firma móvil - Android, Client de firma - iPhone…)
-  - Regla global esperada (`error_clave_8_15`, `error_autofirma_cliente_android`, etc.)
+  - Regla global esperada (`error_clave_8_15`, `error_autofirma_cliente_movil`, etc.)
   - Mixtos (acceso ≠ firma, reiente + móvil → permanente + KO, etc.)
 
 Si la traza es la **misma casuística** con otro ciudadano/fecha → no duplicar; opcionalmente indicar al usuario qué fixture cubre el caso.

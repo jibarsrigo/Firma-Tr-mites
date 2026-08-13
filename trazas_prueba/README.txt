@@ -147,7 +147,7 @@ F-android_cliente_movil.txt
   Nuria Belen Carrasco · certificado móvil / Autofirm@
   2 KO Cliente de Firma Móvil + servidor intermedio (java.lang) + varios sin cierre
   Marcar: Certificado local + Dispositivo móvil
-  Global: error_autofirma_cliente_movil (o android/iphone si consta SO en TR_CAR)
+  Global: error_autofirma_cliente_movil
   Flujo de Firma: «Servidor intermedio» en KO
   Literales: aviso «*Cliente Autofirma / servidor intermedio…» (sin Android en aviso)
   Cartel/frase: «Problema con el cliente de firma Autofirma (servidor intermedio)…»
@@ -155,8 +155,8 @@ F-android_cliente_movil.txt
 F-iphone_timeout.txt
   Elena Rosa Medina · iPhone · certificado / Autofirm@
   3 intentos: 2 sin cierre + 1 KO timeout/client de firma (catalán) + 1 sin cierre
-  Marcar: Certificado local + Dispositivo móvil (o traza con IPHONE/IOS en TR_CAR)
-  Global: error_autofirma_cliente_movil (o iphone si consta SO en TR_CAR)
+  Marcar: Certificado local + Dispositivo móvil
+  Global: error_autofirma_cliente_movil
   Flujo de Firma: «Timeout firma» en KO (literal temps per a firmar…)
   Literales: aviso «*Timeout firma / cliente Autofirma…» (sin iPhone en aviso)
   Cartel/frase: «Problema con el cliente de firma Autofirma (timeout)…»
@@ -176,7 +176,7 @@ C-segui_cancelada_clave_qaa.txt
   CAU: Permanente emitido/renovado mismo día + móvil → ventana emisión; probar ordenador
   Marcar: Cl@ve
   Global: error_clave_firma_cancelada
-  Acción: Qué pasa/Qué hacer + sin cierre; sin nota Carpeta/Accediu (QAA no va justo bajo TR_CAR)
+  Acción: Qué pasa/Qué hacer + sin cierre; sin mail; sin nota Carpeta/Accediu (QAA no va justo bajo TR_CAR)
 
 C-navarro_validation_8-15_autofirma_completo.txt
   Hugo Navarro Benitez · IG_SUBVEN_EN_DESB25 · CAI-2631450
