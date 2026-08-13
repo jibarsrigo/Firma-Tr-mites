@@ -357,6 +357,10 @@ VERSION 1.3.106 - error_validacion_certificado: Qué pasa más claro (acciones v
 VERSION 1.3.107 - error_validacion_certificado: método del KO al inicio de Qué pasa.
 
 VERSION 1.3.108 - error_clave_8_15 + 101 en la misma traza: Qué pasa explica vínculo; mail sigue siendo 8-15.
+
+VERSION 1.3.109 - InvalidNotSigner: Cl@ve → servicio; Autofirm@ → VALIDe antes de dar por servicio.
+
+VERSION 1.3.110 - error_clave_8_15 + 6-15: Flujo etiqueta 6-15; Qué pasa (sesión caducada; manda 8-15).
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -368,7 +372,7 @@ VERSION 1.3.108 - error_clave_8_15 + 101 en la misma traza: Qué pasa explica v�
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.108";
+const VERSION_JS = "1.3.110";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1465,12 +1469,13 @@ btnDetalles.onclick = () => {
   <li>· <b>tramite_completo:</b> Cl@ve KO previos + SGO Autofirm@; Portafib/fluxe DESPUÉS de REG/FIN ≠ «previo» (no escalar; botón registro).</li>
   <li>· <b>QAA:</b> bajo TR_CAR → Accediu/BAIX (Cl@ve) o sesión/modo privado (Certificado); si global es fallo_formulario, sustituye Qué hacer (sin mail formulario).</li>
   <li>· <b>error_firma_core_invalida:</b> SignatureCore:InvalidSignature (ASN.1) → VALIDe cert + firma; no confundir con cadena ni cliente Windows genérico.</li>
-  <li>· <b>InvalidNotSigner:</b> siempre escalar Portafib + mail general (Cl@ve o cert local); @firma valida todos.</li>
+  <li>· <b>InvalidNotSigner:</b> Cl@veFirm@ → Portafib (no VALIDe); Autofirm@ → VALIDe primero; si OK → Portafib.</li>
   <li>· <b>NIF otro certificado:</b> detecta ES «associado»/asociado + NIE; KO tras Firma OK manda (multi-firma / reintento).</li>
   <li>· <b>KO tras Firma OK:</b> si hay Firma KO después del último TR_SGO, manda ese KO (no firma_correcta).</li>
   <li>· <b>Fase de firma:</b> no se cierra solo con TR_SGO; hace falta TR_RGI (o REG/FIN). Multi-firma / KO tras un OK.</li>
   <li>· <b>8-15 + 103-15</b> tras 500/transacción caducada: manda 103-15; Qué pasa aclara que no es Portafib ni @firma.</li>
-  <li>· <b>8-15 + 101</b>: manda 8-15 (último KO); Qué pasa explica el 101 (obtención/nivel) y que el mail es el de 8-15.</li>
+  <li>· <b>8-15 + 101</b>: manda 8-15; Qué pasa explica el 101 (obtención/nivel) y que el mail es el de 8-15.</li>
+  <li>· <b>8-15 + 6-15</b>: manda 8-15; Flujo muestra 6-15; Qué pasa: sesión caducada/inválida (tras revocar o por tiempo); mismo mail 8-15.</li>
   <li>· <b>Portafib:</b> Acción Qué pasa/Qué hacer; {lit} con fluxe, sesión y/o 502 Proxy / ConnectException.</li>
   <li>· <b>error_registro_presentador:</b> Firma OK + «registrat pel presentador» sin TR_REG → incidencias (no reabrir firma).</li>
   <li>· <b>error_clave_firma_cancelada:</b> Acción Qué pasa/Qué hacer (emisión mismo día + móvil; probar ordenador; nota QAA/sin cierre si aplica).</li>
@@ -1499,7 +1504,7 @@ btnDetalles.onclick = () => {
   <li>✔ <b>firma_correcta_portafib</b> — error Portafib previo en traza con firma/cierre.</li>
   <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@ (Qué pasa/Qué hacer).</li>
   <li>✔ <b>error_firma_fitxers_500</b> — KO fitxers 500 / custodia / transacción caducada (servicio Cl@ve Firma).</li>
-  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → Qué pasa/Qué hacer + escalado Portafib.</li>
+  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → Cl@ve: Portafib; cert local: VALIDe primero.</li>
   <li>✔ <b>Cadena / NIF certificado:</b> InvalidCertificateChain; NIF distinto (prioridad por último KO).</li>
   <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno sin cierre, cliente por SO; notas antivirus/red; SO SistraHelp (Linux≈Android / Mac≈posible iOS).</li>
   <li>✔ <b>Método de firma en Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector del técnico.</li>
@@ -1531,7 +1536,7 @@ btnDetalles.onclick = () => {
 const DESCRIPCION_REGLA_CATALOGO = {
   fallo_formulario: "No llega a firma; falla el formulario / datos (sin TR_FRI, 403…). Qué pasa/Qué hacer.",
   fallo_portafib: "Inicio formulario + fluxe / sesión / 502 Proxy. Portafib/plataforma. Qué pasa/Qué hacer; {lit}.",
-  error_clave_8_15: "Código 8 + Tipo 15. Mail 8-15. Si también hay 101 → nota en Qué pasa (mismo mail).",
+  error_clave_8_15: "Código 8 + Tipo 15. Mail 8-15. Si también hay 101 o 6-15 → nota en Qué pasa (mismo mail).",
   error_clave_101: "Nivel de registro insuficiente en Cl@ve.",
   error_clave_103: "Contraseña Cl@ve bloqueada. Qué pasa/Qué hacer.",
   error_clave_103_15: "Certificados Cl@ve bloqueados (103+15). Override con 8-15 o 500/caducada previos.",
@@ -1540,7 +1545,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
   error_clave_movil_no_permitida: "CLAVE_MOVIL no permitida en el trámite → Permanente o certificado. Qué pasa/Qué hacer.",
   error_clave_movil: "Solo Inicio firma sin cierre, o KO sin código Cl@ve (posible móvil / Autofirma Android). Qué pasa/Qué hacer.",
   error_firma_fitxers_500: "Error fitxers 500 / custodia / transacción caducada. Servicio de firma. Qué pasa/Qué hacer.",
-  error_validacion_certificado: "InvalidNotSigner (@firma). Siempre Portafib + mail general (Cl@ve o cert local).",
+  error_validacion_certificado: "InvalidNotSigner (@firma). Cl@ve → Portafib; cert local → VALIDe y solo entonces servicio.",
   error_certificado_nif_no_coincide: "Firmó con certificado de otro NIF (último KO).",
   error_cadena_certificacion: "InvalidCertificateChain. Revisar cadena / VALIDe; casuística rara (llamar).",
   error_firma_core_invalida: "SignatureCore:InvalidSignature (ASN.1). VALIDe cert+firma; certificado/Autofirma.",
@@ -2427,7 +2432,7 @@ else if (hayErrorNifNoCoincide &&
 }
 else if (hayErrorValidacionCertificado) {
 
-  // 👉 @firma no validó el certificado (InvalidNotSignerCertificate). Escala Portafib, no entorno local.
+  // 👉 @firma no validó el certificado (InvalidNotSignerCertificate). Cl@ve → Portafib; Autofirm@ → VALIDe primero.
   idReglaDetectada = "error_validacion_certificado";
 
 }
@@ -2780,7 +2785,7 @@ else if (idReglaDetectada === "error_validacion_certificado") {
     }
   } else if (firmaCertEnKo) {
     motivo += literalFlujo("Método de firma: Autofirm@") + " en el Firma KO. "
-      + "Certificado local (FIRE): no orientar reinstalar AutoFirma como primera acción.";
+      + "Certificado local (FIRE): comprobar en VALIDe (validar + firmar) antes de dar por fallo del servicio.";
     if (esClave && !esCert) {
       motivo += " El KO indica certificado local, no Cl@ve Permanente.";
     }
@@ -3110,16 +3115,16 @@ if (accionData && accionData.accion) {
     + escapeHtml(String(texto ?? "")) + "\"</span>";
 
   if (idReglaDetectada === "error_validacion_certificado") {
-    // Método del KO al inicio de Qué pasa (informativo; la acción es siempre escalar Portafib).
+    // Método del KO al inicio de Qué pasa (Cl@ve → servicio; Autofirm@ → VALIDe primero).
     let notaMetodoVal;
     if (hayMetodoFirmaClaveEnKo) {
-      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente).";
+      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente). No se puede comprobar en VALIDe → tratar como servicio de validación.";
     } else if (hayMetodoFirmaAutofirmaEnKo) {
-      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Autofirm@ (certificado local).";
+      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Autofirm@ (certificado local). Comprobar en VALIDe (validar + firmar) antes de dar por fallo del servicio.";
     } else {
       notaMetodoVal =
         "Confirmar el Método de firma abriendo el Firma KO (doble clic en SistraHelp): Cl@veFirm@ o Autofirm@. "
-        + "Da igual para actuar: siempre se escala a Portafib.";
+        + "Cl@ve → escalar Portafib. Certificado local → VALIDe primero.";
     }
     textoAccion = insertarBloqueEnQuePasaAccion(textoAccion, notaMetodoVal);
   }
@@ -3315,6 +3320,21 @@ if (accionData && accionData.accion) {
           + "Lo que manda es el 8-15: enviar el mail 8-15 (revocar certificado Cl@ve Firma si sale la opción, "
           + "o renovar/acreditar Cl@ve Permanente). Ese mail ya incluye el registro avanzado; "
           + "no hace falta enviar también el mail del 101."
+      );
+    }
+    const hayClave615 = lineasTraza.some(l => {
+      const clave = extraerCodigoClaveDeLinea(l);
+      return clave && clave.codigo === "6" && clave.tipus === "15";
+    });
+    if (hayClave615) {
+      textoAccion = insertarBloqueEnQuePasaAccion(
+        textoAccion,
+        "En la misma traza también aparece el código Cl@ve 6-15 "
+          + "(«La sesión no es válida o ha caducado»; a veces con Proveedor: null).\n"
+          + "El 6-15 no sustituye al 8-15: indica que la sesión de firma ya no vale "
+          + "(puede haber caducado por tiempo, o quedar inservible si se ha revocado el certificado de Cl@ve Firma).\n"
+          + "Lo que manda es el 8-15: enviar el mismo mail 8-15. Cuando haya certificado nuevo, "
+          + "firmar entrando otra vez al trámite (sesión nueva); reintentar el intento abierto suele repetir el 6-15."
       );
     }
   } else if (
@@ -3960,6 +3980,7 @@ const ETIQUETA_RESULTADO_FIRMA = {
   nif_no_coincide: "Certificado de otro NIF",
   clave_movil_no_permitida: "Cl@ve móvil no permitida",
   ko_clave_8_15: "Cl@ve 8–15",
+  ko_clave_6_15: "Cl@ve 6–15",
   ko_clave_103: "Cl@ve 103",
   ko_clave_103_15: "Cl@ve 103-15",
   ko_clave_101: "Cl@ve 101",
@@ -3985,7 +4006,8 @@ const TOOLTIP_RESULTADO_FIRMA = {
   timeout_firma: "Tiempo de firma agotado o Autofirma no invocado o no instalado. No implica solo iPhone; confirmar SO en TR_CAR.",
   cadena_certificacion: "Cadena de certificación del certificado del ciudadano no válida (InvalidCertificateChain). Revisar el certificado en el equipo (cadena de CA, CA reconocida, vigencia, revocación, almacén). No es reinstalar Autofirma.",
   firma_core_invalida: "El servidor rechaza el core de la firma ASN.1 (SignatureCore:InvalidSignature). Probar certificado y firma en VALIDe; revisar certificado/Autofirma (clave privada, almacén, DNIe/token).",
-  nif_no_coincide: "Se firmó con un certificado de un NIF distinto al requerido. El ciudadano seleccionó otro certificado (equipo compartido / varios certificados). Indicar que elija su propio certificado."
+  nif_no_coincide: "Se firmó con un certificado de un NIF distinto al requerido. El ciudadano seleccionó otro certificado (equipo compartido / varios certificados). Indicar que elija su propio certificado.",
+  ko_clave_6_15: "Sesión de firma no válida o caducada (código 6-15). No sustituye al 8-15: suele ser tras revocar o por tiempo; firmar en sesión nueva."
 };
 
 function tooltipResultadoFlujoFirma(resultado) {
@@ -4101,7 +4123,9 @@ function detectarMetodoFirmaEnLineas(lineas) {
 
 function extraerCodigoClaveDeLinea(linea) {
   const l = String(linea || "");
-  if (!/CLAVEFIRMA/i.test(l) || !/ERROR:\s*\d+/.test(l)) return null;
+  if (!/ERROR:\s*\d+/.test(l)) return null;
+  // Proveedor clavefirma, o método Cl@veFirm@ (el 6-15 a veces lleva Proveedor: null).
+  if (!/CLAVEFIRMA/i.test(l) && !esMetodoFirmaClaveEnLineaHelper(l)) return null;
   const matchCodigo = l.match(/ERROR:\s*(\d+)/);
   const matchTipus = l.match(/(?:TIPUS\s+)?RESULTAT\s*:\s*(\d+)/i)
     || l.match(/RESULTAD[OA]?\s*:\s*(\d+)/i);
@@ -4114,6 +4138,7 @@ function extraerCodigoClaveDeLinea(linea) {
 function resultadoDesdeCodigoClave(clave) {
   if (!clave || !clave.codigo) return null;
   if (clave.codigo === "103") return clave.tipus === "15" ? "ko_clave_103_15" : "ko_clave_103";
+  if (clave.codigo === "6" && clave.tipus === "15") return "ko_clave_6_15";
   if (/^(8|9|10|11|12|13|14|15)$/.test(clave.codigo)) return "ko_clave_8_15";
   if (clave.codigo === "101") return "ko_clave_101";
   if (clave.codigo === "104") return "ko_clave_104";
@@ -4167,6 +4192,7 @@ function clasificarTipoKoLinea(linea) {
 
 const ETIQUETA_CORTA_KO_TAMBIEN = {
   ko_clave_8_15: "8-15",
+  ko_clave_6_15: "6-15",
   ko_clave_103: "103",
   ko_clave_103_15: "103-15",
   ko_clave_101: "101",

@@ -208,6 +208,13 @@ C-8-15_y_101_escribano.txt
   Global (js v1.3.108): error_clave_8_15 + Qué pasa con vínculo 101↔8-15 (mismo mail 8-15; no mail 101)
   Validar: Flujo desglosa 8-15 y 101; ruido 401/RegistroSolicitud no manda
 
+C-8-15_101_luego_6-15_escribano.txt
+  Misma llamada, más tarde: revocar certificado + firmar → 6-15 («sesión no válida o ha caducado», Proveedor: null) + SGI sin cierre
+  CAU: 6-15 ≠ 8-15; sesión muerta tras revocar/tiempo. Mail sigue 8-15; firmar en sesión nueva cuando haya certificado nuevo
+  Global (js v1.3.110): error_clave_8_15 + notas 101 y 6-15 en Qué pasa (mismo mail 8-15)
+  Flujo: etiqueta «Cl@ve 6–15» (no «Cl@ve sin código»)
+  Contraste: C-8-15_y_101_escribano.txt (sin el 6-15)
+
 C-morey_500_transaccion_ok_8-15_103-15.txt
   Guillem Morey Tous · IG_AJD_AUDM · Cl@veFirm@
   Cronología: fitxers 500 + transacción caducada → Firma OK → 8-15 → 103-15
