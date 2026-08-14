@@ -1,7 +1,16 @@
 {
-  "version": "1.3.101",
-  "_changes_today": "2026-08-13: tramite_finalizado + mismo segundo REG/FIN (v1.3.101)",
+  "version": "1.3.110",
+  "_changes_today": "2026-08-14: fallo_portafib: mail Portafib + 7070 (v1.3.110)",
   "_changelog": [
+    "1.3.110 - fallo_portafib: mail «Problemas con el Servicio Portafib»; 7070; sin TR_SGI",
+    "1.3.109 - error_clave_firma_cancelada: sin PC → otro navegador del móvil",
+    "1.3.108 - error_clave_firma_cancelada: reintentar sin cerrar ventanas; mismo día + móvil → PC",
+    "1.3.107 - firma_correcta_portafib: Firma OK sin cierre + fluxe → protocolo REGWEB (no Portafib pre-firma)",
+    "1.3.106 - tramite_finalizado: FIN presente ≠ REGWEB; REGWEB solo si no hay REG ni justificante",
+    "1.3.105 - tramite_registrado: protocolo REGWEB (reintento vs CAI; mail; SEG-012)",
+    "1.3.104 - tramite_borrado: buscar por DNI primero; sin nota Carpeta ni paso firma activa",
+    "1.3.103 - tramite_borrado: quita nota KO/QAA; incidencia desde el trámite no borrado",
+    "1.3.102 - tramite_completo: firmado/registrado; justificante Carpeta → funcional; sin mail",
     "1.3.101 - tramite_finalizado: FIN sin REG; REG/FIN mismo segundo (orden indistinto); sin mail",
     "1.3.100 - tramite_registrado: REG sin FIN → traza incompleta o REGWEB; sin mail",
     "1.3.99 - firma_correcta: Firma OK ≠ fase firma cerrada ≠ trámite cerrado",
@@ -88,7 +97,7 @@
 
     {
       "id": "fallo_portafib",
-      "accion": "Qué pasa:\nFallo técnico de Portafib / plataforma (flujo o sesión de firma). El ciudadano llega a completar el formulario, pero la firma no se inicia.\nEn la traza aparecen literales como {lit}.\nNo es un problema de las credenciales del ciudadano ni del método de firma elegido.\n\nQué hacer:\n1. Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2.\n2. Enviar el mail al ciudadano (caída / problema general).",
+      "accion": "Qué pasa:\nFallo técnico de Portafib / plataforma (flujo o sesión de firma). El ciudadano completa el formulario, pero la firma no se inicia (no hay TR_SGI).\nEn la traza aparecen literales como {lit}.\nNo es un problema de las credenciales del ciudadano ni del método de firma.\n\nQué hacer:\n1. Enviar el mail «Problemas con el Servicio Portafib».\n2. Asignar CAI a Aplicacions31 - Pendents Tramitació Sistra2.\n3. Operaciones 7070 puede confirmar si hay caída de Portafib.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_CaidaGeneral"
     },
 
@@ -124,7 +133,7 @@
 
     {
       "id": "error_clave_firma_cancelada",
-      "accion": "Qué pasa:\nFirma cancelada con Cl@ve Permanente (en el Firma KO sale Cl@veFirm@), sin código 8-15, 101 ni 103.\nSi el certificado de Cl@ve Permanente se emitió o renovó el mismo día y se prueba desde el móvil, a menudo no carga bien la pantalla de emitir certificado y la firma queda cancelada.\n\nQué hacer:\n1. Probar desde un ordenador: suele poder emitir el certificado y firmar.\n2. Revisar en SistraHelp (detalle de Inicio trámite o Carga) el método de acceso: si figura Cl@ve móvil u otro."
+      "accion": "Qué pasa:\nFirma cancelada con Cl@ve Permanente (en el Firma KO sale Cl@veFirm@), sin código 8-15, 101 ni 103.\nPuede ser que se haya cerrado una ventana de Cl@ve a medias: Cl@ve da la firma por cancelada. No siempre es que el ciudadano pulsara Cancelar; a veces se cierra sola o el navegador la bloquea.\nSi el certificado de Cl@ve Permanente se emitió o renovó el mismo día y se prueba desde el móvil, a menudo no carga bien la pantalla de emitir certificado y la firma queda cancelada.\n\nQué hacer:\n1. Indicar que reintente la firma sin cerrar las ventanas de Cl@ve.\n2. Si el certificado se emitió o renovó el mismo día y estaba en el móvil: probar desde un ordenador; suele poder emitir el certificado y firmar. Si no tiene ordenador, probar desde otro navegador del móvil.\n3. Revisar en SistraHelp (detalle de Inicio trámite o Carga) el método de acceso: si figura Cl@ve móvil u otro."
     },
 
     {
@@ -229,27 +238,27 @@
 
     {
       "id": "tramite_registrado",
-      "accion": "Qué pasa:\nEl trámite consta registrado (TR_REG — Registre tràmit), pero no aparece fin de trámite (TR_FIN) en la traza.\nTR_REG y TR_FIN suelen ir juntos, a menudo a la misma hora (mismo segundo). En SistraHelp a veces se ve primero uno y a veces el otro; el orden no indica un fallo.\nSi falta TR_FIN, no es un cierre normal: o no se pegó toda la traza, o el registro no llegó a finalizar (justificante / REGWEB).\nNo es un fallo de firma: si hay Firma OK, la firma ya consta.\n\nQué hacer:\n1. Revisar en SistraHelp si el TR_FIN está en la misma hora que el TR_REG y no se pegó (traza incompleta).\n2. Preguntar si el ciudadano tiene justificante y si el trámite aparece cerrado.\n3. Si no hay justificante o no está cerrado: no reabrir como incidencia de firma. Pedir reintentar el registro. Si sigue igual, tratar como fallo de REGWEB (PENDENTS REGISTRE WEB)."
+      "accion": "Qué pasa:\nEl trámite consta registrado (TR_REG — Registre tràmit), pero no aparece fin de trámite (TR_FIN) en la traza.\nTR_REG y TR_FIN suelen ir juntos, a menudo a la misma hora (mismo segundo). En SistraHelp a veces se ve primero uno y a veces el otro; el orden no indica un fallo.\nSi falta TR_FIN, no es un cierre normal: o no se pegó toda la traza, o el registro no llegó a finalizar (justificante / REGWEB).\nLa firma es correcta (si hay Firma OK). El fallo es de REGWEB: no se ha generado el justificante. No es Cl@ve, Autofirma ni Portafib.\n\nQué hacer:\n1. Revisar en SistraHelp si el TR_FIN está en la misma hora que el TR_REG y no se pegó (traza incompleta).\n2. Preguntar si el ciudadano tiene justificante.\n3. Si en la traza aparecen «El fluxe no es vàlid», «Registre està pendent de verificació», AccionPasoNoPermitidaException, «Excepció al registrar. Marcam per reintentar» o RegistroSolicitudException: indicar que reintente el registro (sin atrás/adelante del navegador). No abrir CAI.\n4. En el resto de casos: informar de que la firma es correcta, pero el justificante no se ha generado. No pedir que vuelva a firmar. Asignar a DGIDT REGWEB — APLICACIONS\\7.-PENDENTS REGISTRE WEB (título SEG-012 – REGISTRO). Enviar el mail «Problemas REGWEB»."
     },
 
     {
       "id": "tramite_finalizado",
-      "accion": "Qué pasa:\nEl trámite consta finalizado (TR_FIN — Fi de tràmit), pero no aparece registro (TR_REG) en la traza.\nTR_REG y TR_FIN suelen ir juntos, a menudo a la misma hora (mismo segundo). En SistraHelp a veces se ve primero uno y a veces el otro; el orden no indica un fallo.\nSi falta TR_REG, lo habitual es que no se pegó toda la traza.\nNo es un fallo de firma: el trámite ya consta como finalizado.\n\nQué hacer:\n1. Revisar en SistraHelp si el TR_REG está en la misma hora que el TR_FIN y no se pegó (traza incompleta).\n2. Preguntar si el ciudadano tiene justificante.\n3. No reabrir como incidencia de firma. Si no hay justificante, tratar como fallo de REGWEB (PENDENTS REGISTRE WEB)."
+      "accion": "Qué pasa:\nEl trámite consta finalizado (TR_FIN — Fi de tràmit), pero no aparece registro (TR_REG) en la traza.\nTR_REG y TR_FIN suelen ir juntos, a menudo a la misma hora (mismo segundo). En SistraHelp a veces se ve primero uno y a veces el otro; el orden no indica un fallo.\nSi falta TR_REG, lo habitual es que no se pegó toda la traza.\nNo confundir con fallo de justificante / REGWEB: eso es cuando falta TR_FIN. Aquí el trámite ya consta finalizado.\n\nQué hacer:\n1. Revisar en SistraHelp si el TR_REG está en la misma hora que el TR_FIN y no se pegó (traza incompleta).\n2. Si el ciudadano tiene justificante: indicar que el trámite está finalizado (consta firmado). Si no puede descargarlo desde Carpeta Ciudadana, remitir a dudas funcionales.\n3. Si, con la traza completa, no hay TR_REG y no hay justificante: informar de que la firma es correcta, pero el justificante no consta. No pedir que vuelva a firmar. Asignar a DGIDT REGWEB — APLICACIONS\\7.-PENDENTS REGISTRE WEB (título SEG-012 – REGISTRO). Enviar el mail «Problemas REGWEB»."
     },
 
     {
       "id": "tramite_completo",
-      "accion": "Qué pasa:\nTrámite registrado (TR_REG) y finalizado (TR_FIN) en la traza.\n\nQué hacer:\n1. No reabrir incidencia de firma: el trámite ya está cerrado administrativamente.\n2. Si el ciudadano pregunta por intentos previos fallidos, indicar que fueron puntuales y que al final firmó y completó el trámite."
+      "accion": "Qué pasa:\nEl trámite consta registrado (TR_REG — Registre tràmit) y finalizado (TR_FIN — Fi de tràmit).\nTR_REG y TR_FIN suelen ir a la misma hora (mismo segundo). En SistraHelp a veces se ve primero uno y a veces el otro; el orden no indica un fallo.\nEl trámite ya está cerrado administrativamente. El justificante de registro forma parte de ese cierre.\n*No confundir con fallo de justificante/REGWEB: eso es cuando falta TR_FIN o el registro sale KO.\n\nQué hacer:\n1. Indicar al ciudadano que el trámite está finalizado: consta firmado y registrado.\n2. Si tiene problemas para descargar el justificante de registro desde Carpeta Ciudadana, remitir a dudas funcionales, explicando que el trámite consta firmado y registrado correctamente."
     },
 
     {
       "id": "tramite_borrado",
-      "accion": "Qué pasa:\nEn la traza aparece TR_BOR (Esborrat del tràmit): el trámite fue borrado. Ya no está activo.\n\nQué hacer:\n1. Informar al ciudadano de que ese trámite consta borrado.\n2. Buscar en SistraHelp por DNI por si ha iniciado otro trámite (mismo o parecido) y analizar esa traza si existe.\n3. Si debe continuar y no hay otro trámite, indicar que inicie uno nuevo (Carpeta Ciudadana / el mismo procedimiento).\n4. No reabrir ni tratar como incidencia de firma activa sobre el expediente borrado.\n*Si en la traza hay Firma KO o QAA previos, son historial; lo que manda es el borrado."
+      "accion": "Qué pasa:\nEn la traza aparece TR_BOR (Esborrat del tràmit): el trámite fue borrado. Ya no está activo.\n\nQué hacer:\n1. Buscar en SistraHelp por DNI por si hay otro trámite activo.\n2. Si hay otro trámite no finalizado: indicar que abra incidencia con el formulario de incidencias desde ese trámite, no desde el que ha borrado.\n3. Si no hay otro: informar de que ese trámite consta borrado. Si debe continuar, indicar que inicie uno nuevo."
     },
 
     {
       "id": "firma_correcta_portafib",
-      "accion": "Qué pasa:\nSe detecta un error de Portafib en la traza ({lit}), pero la firma o el cierre del trámite pueden haber continuado.\n\nQué hacer:\n1. Revisar en la traza si hay TR_SGO (Firma OK), TR_REG y/o TR_FIN.\n2. Si el trámite cerró (REG/FIN), no reabrir como fallo de Portafib; orientar según el cierre.\n3. Si no hay cierre tras el error Portafib, tratar como fallo de plataforma (escalar / mail según caso)."
+      "accion": "Qué pasa:\nHay Firma OK (TR_SGO) y en la traza aparece {lit}.\nEl trámite no está cerrado: no hay registro (TR_REG) ni fin de trámite (TR_FIN).\nLa firma es correcta. El fallo puede ser de REGWEB: no se ha generado el justificante.\n\nQué hacer:\n1. Si en la traza aparece alguno de estos literales:\n   • «El fluxe no es vàlid»\n   • «Registre està pendent de verificació»\n   • «AccionPasoNoPermitidaException»\n   • «Excepció al registrar. Marcam per reintentar»\n   • «RegistroSolicitudException»\n   indicar al ciudadano que reintente el registro (sin pulsar Atrás o Adelante en el navegador durante el registro: eso provoca a menudo «El fluxe no es vàlid» / «AccionPasoNoPermitidaException»). No abrir CAI. Si tras reintentar sigue fallando, pasar al punto 2.\n2. En el resto de casos: informar de que la firma es correcta, pero el justificante no se ha generado. No pedir que vuelva a firmar. Asignar a DGIDT REGWEB — APLICACIONS\\7.-PENDENTS REGISTRE WEB (título SEG-012 – REGISTRO). Enviar el mail «Problemas REGWEB»."
     }
 
   ]
