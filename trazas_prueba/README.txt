@@ -178,6 +178,15 @@ C-segui_cancelada_clave_qaa.txt
   Global: error_clave_firma_cancelada
   Acción: Qué pasa/Qué hacer + sin cierre; sin mail; sin nota Carpeta/Accediu (QAA no va justo bajo TR_CAR)
 
+C-campos_8-15_luego_cancelada_sgi.txt
+  Nerea Campos Rivas · IG_SUBVEN_CONC (IGOIB)
+  Cl@veFirm@: 8-15 → Signatura cancel·lada → muchos TR_SGI sin cierre (+ AnexoVacioException en formulario)
+  Contraste: C-segui (cancelada SIN código) y C-8-15_luego_autofirma_cancelada (último KO Autofirm@)
+  Marcar: Cl@ve
+  Global (js ≥1.3.113): error_clave_8_15 (NO error_clave_firma_cancelada)
+  Acción: Qué pasa 8-15 + nota cancelada posterior (no sustituye) + nota SGI sin cierre; mail 8-15
+  Antes (js ≤1.3.112): ganaba cancelada y decía «sin código 8-15»
+
 C-navarro_validation_8-15_autofirma_completo.txt
   Hugo Navarro Benitez · IG_SUBVEN_EN_DESB25 · CAI-2631450
   Cl@veFirm@: InvalidNotSigner (×N) + 8-15 (×2) → SGO Autofirm@ → TR_REG+TR_FIN
@@ -344,7 +353,7 @@ Notas
 
 Pendiente de fixture (mencionados en CAU, sin traza guardada aún)
 ------------------------------------------------------------------
-  Cl@ve 101 · Cl@ve 104 · Joana 15× SGI · Ismael 101/104 · Nerea 8-15
+  Cl@ve 101 · Cl@ve 104 · Joana 15× SGI · Ismael 101/104
   (103-15 tras 8-15: Cifre + Morey)
 
 Implementado (app.js v1.3.28 / acciones.json v1.3.4)

@@ -365,6 +365,8 @@ VERSION 1.3.110 - error_clave_8_15 + 6-15: Flujo etiqueta 6-15; Qué pasa (sesi�
 VERSION 1.3.111 - Retira error_autofirma_cliente_mac: Mac en detalle SistraHelp → nota en Acción ordenador (Windows).
 
 VERSION 1.3.112 - Retira error_autofirma_cliente_android e iphone: matices en Acción móvil.
+
+VERSION 1.3.113 - 8-15 (u otro código Cl@ve) manda sobre cancelada Cl@veFirm@ posterior (mismo método; Campos).
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -376,7 +378,7 @@ VERSION 1.3.112 - Retira error_autofirma_cliente_android e iphone: matices en Ac
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.112";
+const VERSION_JS = "1.3.113";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1537,12 +1539,12 @@ btnDetalles.onclick = () => {
 const DESCRIPCION_REGLA_CATALOGO = {
   fallo_formulario: "No llega a firma; falla el formulario / datos (sin TR_FRI, 403…). Qué pasa/Qué hacer.",
   fallo_portafib: "Inicio formulario + fluxe / sesión / 502 Proxy. Portafib/plataforma. Qué pasa/Qué hacer; {lit}.",
-  error_clave_8_15: "Código 8 + Tipo 15. Mail 8-15. Si también hay 101 o 6-15 → nota en Qué pasa (mismo mail).",
+  error_clave_8_15: "Código 8 + Tipo 15. Mail 8-15. Si también hay 101, 6-15 o cancelada Cl@veFirm@ → nota en Qué pasa (manda 8-15).",
   error_clave_101: "Nivel de registro insuficiente en Cl@ve.",
   error_clave_103: "Contraseña Cl@ve bloqueada. Qué pasa/Qué hacer.",
   error_clave_103_15: "Certificados Cl@ve bloqueados (103+15). Override con 8-15 o 500/caducada previos.",
   error_clave_104: "Registro Cl@ve débil.",
-  error_clave_firma_cancelada: "Signatura cancel·lada + Cl@veFirm@ (sin código). Emisión mismo día + móvil. Qué pasa/Qué hacer.",
+  error_clave_firma_cancelada: "Signatura cancel·lada + Cl@veFirm@ y sin código 8–15/101/103/104. Emisión mismo día + móvil.",
   error_clave_movil_no_permitida: "CLAVE_MOVIL no permitida en el trámite → Permanente o certificado. Qué pasa/Qué hacer.",
   error_clave_movil: "Solo Inicio firma sin cierre, o KO sin código Cl@ve (posible móvil / Autofirma Android). Qué pasa/Qué hacer.",
   error_firma_fitxers_500: "Error fitxers 500 / custodia / transacción caducada. Servicio de firma. Qué pasa/Qué hacer.",
@@ -1662,8 +1664,8 @@ btnTabla.onclick = (e) => {
   ${htmlCatalogoReglasDesdeAcciones()}
   <li class="reglas-titulo">4. Prioridad en fase «error en firma» (por qué gana una regla y no otra)</li>
   <li>1. SAF_27 · 2. NIF de otro certificado <i>(solo si es el último KO)</i> · 3. VALIDATION InvalidNotSigner · 4. Cadena InvalidCertificateChain · 5. SignatureCore InvalidSignature (ASN.1)</li>
-  <li>5. CLAVE_MOVIL no permitida <i>(solo si no hay Firma KO)</i> · 6. Último KO tipado (si reintento cambió de método) · 7. Códigos Cl@ve (8–15, 101, 103, 103-15, 104)</li>
-  <li>8. Cancelada Cl@veFirm@ · 9. Error 500 de firma/custodia · 10. Autofirma cliente (literal fuerte / método Autofirm@)</li>
+  <li>5. CLAVE_MOVIL no permitida <i>(solo si no hay Firma KO)</i> · 6. Último KO tipado <i>(si el reintento cambió a Autofirm@)</i> · 7. Códigos Cl@ve (8–15, 101, 103, 103-15, 104)</li>
+  <li>8. Cancelada Cl@veFirm@ <i>(solo si no hay código Cl@ve en la traza)</i> · 9. Error 500 de firma/custodia · 10. Autofirma cliente (literal fuerte / método Autofirm@)</li>
   <li>11. Cancelada Autofirma · 12. Cl@ve móvil (KO sin código) · 13. Solo TR_SGI sin cierre → entorno si TR_CAR=CERTIFICADO (o selector Certificado); si no, Cl@ve móvil</li>
   <li><i>Idea clave:</i> manda el <b>último KO relevante / problema persistente</b>. Tras un TR_SGO, un KO nuevo vuelve a fase error_firma.</li>
   <li class="reglas-titulo">5. Método Cl@ve / Certificado y Ordenador / móvil</li>
@@ -2406,10 +2408,12 @@ else {
 // 👉 PRIORIDAD REAL DE ERRORES (FASE 10)
   const ultimaLineaKo = obtenerUltimaLineaFirmaKoCronologica(lineasTraza);
   const reglaUltimoKo = ultimaLineaKo ? inferirReglaDesdeLineaKo(ultimaLineaKo) : null;
+  // 👉 Tras un código Cl@ve, solo si el último KO es de OTRO método (Autofirm@).
+  //    Cancelada Cl@veFirm@ es el mismo método: no tapa 8-15/101/103/104 (Campos: 8-15 → cancelada → SGI).
   const koPosteriorDistintoDeClaveCodigo =
     hayErrorClaveReal &&
     reglaUltimoKo &&
-    (/^error_autofirma/.test(reglaUltimoKo) || reglaUltimoKo === "error_clave_firma_cancelada");
+    /^error_autofirma/.test(reglaUltimoKo);
 
 // 👉 Autofirma servidor (SAF_27) SIEMPRE gana
 if (hayAutofirmaError) {
@@ -2459,7 +2463,7 @@ else if (hayClaveMovilNoPermitida && !haySGX) {
 }
 else if (koPosteriorDistintoDeClaveCodigo) {
 
-  // 👉 Tras un error Cl@ve con código, reintento con otro método: manda el último Firma KO
+  // 👉 Tras un error Cl@ve con código, reintento con Autofirm@: manda el último Firma KO
   idReglaDetectada = reglaUltimoKo;
 
 }
@@ -3333,6 +3337,15 @@ if (accionData && accionData.accion) {
           + "(puede haber caducado por tiempo, o quedar inservible si se ha revocado el certificado de Cl@ve Firma).\n"
           + "Lo que manda es el 8-15: enviar el mismo mail 8-15. Cuando haya certificado nuevo, "
           + "firmar entrando otra vez al trámite (sesión nueva); reintentar el intento abierto suele repetir el 6-15."
+      );
+    }
+    const ultimaKo815 = obtenerUltimaLineaFirmaKoCronologica(lineasTraza);
+    if (hayCanceladaConClave && inferirReglaDesdeLineaKo(ultimaKo815) === "error_clave_firma_cancelada") {
+      textoAccion = insertarBloqueEnQuePasaAccion(
+        textoAccion,
+        "Después del 8-15 aparece una firma cancelada con Cl@ve Permanente (Cl@veFirm@, sin código). "
+          + "Suele ser un reintento que no completó (ventana cerrada o bloqueada). "
+          + "No sustituye al 8-15: lo que manda es renovar o acreditar Cl@ve Permanente."
       );
     }
   } else if (
