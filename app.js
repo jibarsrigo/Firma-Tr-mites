@@ -370,7 +370,7 @@ VERSION 1.3.113 - 8-15 (u otro código Cl@ve) manda sobre cancelada Cl@veFirm@ p
 
 VERSION 1.3.114 - InvalidNotSigner Cl@ve: logs revocado/DNIe no mandan; no renovar Cl@ve; mail general + CAI de seguimiento en oleada.
 
-VERSION 1.3.115 - error_validacion_certificado: Acción completa (oleada, logs, colas, VALIDe); cartel Cl@ve sin resumir el matiz revocado/DNIe.
+VERSION 1.3.116 - VALIDATION Cl@ve: mail servicio + CAI cerrada; reabrir a los 2 días si sigue. No escalar colas.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -382,7 +382,7 @@ VERSION 1.3.115 - error_validacion_certificado: Acción completa (oleada, logs, 
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.115";
+const VERSION_JS = "1.3.116";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1552,7 +1552,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
   error_clave_movil_no_permitida: "CLAVE_MOVIL no permitida en el trámite → Permanente o certificado. Qué pasa/Qué hacer.",
   error_clave_movil: "Solo Inicio firma sin cierre, o KO sin código Cl@ve (posible móvil / Autofirma Android). Qué pasa/Qué hacer.",
   error_firma_fitxers_500: "Error fitxers 500 / custodia / transacción caducada. Servicio de firma. Qué pasa/Qué hacer.",
-  error_validacion_certificado: "InvalidNotSigner (@firma). Cl@ve → servicio (no renovar; logs revocado/DNIe no mandan). Cert local → VALIDe primero.",
+  error_validacion_certificado: "InvalidNotSigner. Cl@ve: mail servicio, CAI y cierre (a los 2 días si sigue, dejar abierta). Cert local: VALIDe primero.",
   error_certificado_nif_no_coincide: "Firmó con certificado de otro NIF (último KO).",
   error_cadena_certificacion: "InvalidCertificateChain. Revisar cadena / VALIDe; casuística rara (llamar).",
   error_firma_core_invalida: "SignatureCore:InvalidSignature (ASN.1). VALIDe cert+firma; certificado/Autofirma.",
@@ -2786,7 +2786,7 @@ else if (idReglaDetectada === "error_validacion_certificado") {
   if (firmaClaveEnKo) {
     motivo += literalFlujo("Método de firma: Cl@veFirm@") + " en el Firma KO. "
       + "Firma con Cl@ve Permanente: el fallo está en la validación del certificado en servidor (@firma), "
-      + "no en la contraseña ni en el registro. No es mail 8-15 ni renovar Cl@ve. "
+      + "No es mail 8-15 ni renovar Cl@ve. Mail de servicio, CAI y cierre; si a los 2 días sigue, dejar abierta. "
       + "Si Seguridad/Sistra leen revocado o DNIe en logs, no suele ser la causa: el KO es Cl@veFirm@ "
       + "(certificado en la nube). En oleadas el mismo ciudadano firma luego sin haber renovado nada.";
     if (esCert && !esClave) {
@@ -3128,9 +3128,9 @@ if (accionData && accionData.accion) {
     let notaMetodoVal;
     if (hayMetodoFirmaClaveEnKo) {
       notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente). "
-        + "No se puede comprobar en VALIDe. Tratar como servicio de validación (@firma): mail de problema general, "
-        + "esperar y reintentar. No mail 8-15 ni renovar Cl@ve. Los logs de segundo nivel que dicen revocado o DNIe "
-        + "no mandan si el KO es Cl@veFirm@.";
+        + "No se puede comprobar en VALIDe. Mail de problema con el servicio, abrir CAI y cerrar "
+        + "(si a los 2 días sigue, dejar abierta). No mail 8-15 ni renovar Cl@ve. "
+        + "No pasar a Portafib/Sistra/Seguridad. Logs revocado o DNIe no mandan si el KO es Cl@veFirm@.";
     } else if (hayMetodoFirmaAutofirmaEnKo) {
       notaMetodoVal = "En este caso el Firma KO indica Método de firma: Autofirm@ (certificado local). Comprobar en VALIDe (validar + firmar) antes de dar por fallo del servicio.";
     } else {
