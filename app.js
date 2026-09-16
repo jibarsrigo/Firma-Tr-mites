@@ -367,6 +367,10 @@ VERSION 1.3.111 - Retira error_autofirma_cliente_mac: Mac en detalle SistraHelp 
 VERSION 1.3.112 - Retira error_autofirma_cliente_android e iphone: matices en Acción móvil.
 
 VERSION 1.3.113 - 8-15 (u otro código Cl@ve) manda sobre cancelada Cl@veFirm@ posterior (mismo método; Campos).
+
+VERSION 1.3.114 - InvalidNotSigner Cl@ve: logs revocado/DNIe no mandan; no renovar Cl@ve; mail general + CAI de seguimiento en oleada.
+
+VERSION 1.3.116 - VALIDATION Cl@ve: mail servicio + CAI cerrada; reabrir a los 2 días si sigue. No escalar colas.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -378,7 +382,7 @@ VERSION 1.3.113 - 8-15 (u otro código Cl@ve) manda sobre cancelada Cl@veFirm@ p
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.113";
+const VERSION_JS = "1.3.116";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1472,7 +1476,7 @@ btnDetalles.onclick = () => {
   <li>· <b>tramite_completo:</b> Cl@ve KO previos + SGO Autofirm@; Portafib/fluxe DESPUÉS de REG/FIN ≠ «previo» (no escalar; botón registro).</li>
   <li>· <b>QAA:</b> bajo TR_CAR → Accediu/BAIX (Cl@ve) o sesión/modo privado (Certificado); si global es fallo_formulario, sustituye Qué hacer (sin mail formulario).</li>
   <li>· <b>error_firma_core_invalida:</b> SignatureCore:InvalidSignature (ASN.1) → VALIDe cert + firma; no confundir con cadena ni cliente Windows genérico.</li>
-  <li>· <b>InvalidNotSigner:</b> Cl@veFirm@ → Portafib (no VALIDe); Autofirm@ → VALIDe primero; si OK → Portafib.</li>
+  <li>· <b>InvalidNotSigner:</b> Cl@veFirm@ → servicio/@firma (mail general; no renovar Cl@ve; logs revocado/DNIe no mandan); Autofirm@ → VALIDe primero.</li>
   <li>· <b>NIF otro certificado:</b> detecta ES «associado»/asociado + NIE; KO tras Firma OK manda (multi-firma / reintento).</li>
   <li>· <b>KO tras Firma OK:</b> si hay Firma KO después del último TR_SGO, manda ese KO (no firma_correcta).</li>
   <li>· <b>Fase de firma:</b> no se cierra solo con TR_SGO; hace falta TR_RGI (o REG/FIN). Multi-firma / KO tras un OK.</li>
@@ -1507,7 +1511,7 @@ btnDetalles.onclick = () => {
   <li>✔ <b>firma_correcta_portafib</b> — error Portafib previo en traza con firma/cierre.</li>
   <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@ (Qué pasa/Qué hacer).</li>
   <li>✔ <b>error_firma_fitxers_500</b> — KO fitxers 500 / custodia / transacción caducada (servicio Cl@ve Firma).</li>
-  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → Cl@ve: Portafib; cert local: VALIDe primero.</li>
+  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → Cl@ve: mail general, no renovar; cert local: VALIDe primero.</li>
   <li>✔ <b>Cadena / NIF certificado:</b> InvalidCertificateChain; NIF distinto (prioridad por último KO).</li>
   <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno sin cierre, cliente por SO; notas antivirus/red; SO SistraHelp (Linux≈Android / Mac≈posible iOS).</li>
   <li>✔ <b>Método de firma en Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector del técnico.</li>
@@ -1548,7 +1552,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
   error_clave_movil_no_permitida: "CLAVE_MOVIL no permitida en el trámite → Permanente o certificado. Qué pasa/Qué hacer.",
   error_clave_movil: "Solo Inicio firma sin cierre, o KO sin código Cl@ve (posible móvil / Autofirma Android). Qué pasa/Qué hacer.",
   error_firma_fitxers_500: "Error fitxers 500 / custodia / transacción caducada. Servicio de firma. Qué pasa/Qué hacer.",
-  error_validacion_certificado: "InvalidNotSigner (@firma). Cl@ve → Portafib; cert local → VALIDe y solo entonces servicio.",
+  error_validacion_certificado: "InvalidNotSigner. Cl@ve: mail servicio, CAI y cierre (a los 2 días si sigue, dejar abierta). Cert local: VALIDe primero.",
   error_certificado_nif_no_coincide: "Firmó con certificado de otro NIF (último KO).",
   error_cadena_certificacion: "InvalidCertificateChain. Revisar cadena / VALIDe; casuística rara (llamar).",
   error_firma_core_invalida: "SignatureCore:InvalidSignature (ASN.1). VALIDe cert+firma; certificado/Autofirma.",
@@ -2781,7 +2785,10 @@ else if (idReglaDetectada === "error_validacion_certificado") {
     + literalFlujo("InvalidNotSignerCertificate") + ". ";
   if (firmaClaveEnKo) {
     motivo += literalFlujo("Método de firma: Cl@veFirm@") + " en el Firma KO. "
-      + "Firma con Cl@ve Permanente: el fallo está en la validación del certificado en servidor (@firma), no en las credenciales Cl@ve del ciudadano.";
+      + "Firma con Cl@ve Permanente: el fallo está en la validación del certificado en servidor (@firma), "
+      + "No es mail 8-15 ni renovar Cl@ve. Mail de servicio, CAI y cierre; si a los 2 días sigue, dejar abierta. "
+      + "Si Seguridad/Sistra leen revocado o DNIe en logs, no suele ser la causa: el KO es Cl@veFirm@ "
+      + "(certificado en la nube). En oleadas el mismo ciudadano firma luego sin haber renovado nada.";
     if (esCert && !esClave) {
       motivo += " El KO indica Cl@ve Permanente, no certificado local / FIRE.";
     }
@@ -3120,13 +3127,16 @@ if (accionData && accionData.accion) {
     // Método del KO al inicio de Qué pasa (Cl@ve → servicio; Autofirm@ → VALIDe primero).
     let notaMetodoVal;
     if (hayMetodoFirmaClaveEnKo) {
-      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente). No se puede comprobar en VALIDe → tratar como servicio de validación.";
+      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente). "
+        + "No se puede comprobar en VALIDe. Mail de problema con el servicio, abrir CAI y cerrar "
+        + "(si a los 2 días sigue, dejar abierta). No mail 8-15 ni renovar Cl@ve. "
+        + "No pasar a Portafib/Sistra/Seguridad. Logs revocado o DNIe no mandan si el KO es Cl@veFirm@.";
     } else if (hayMetodoFirmaAutofirmaEnKo) {
       notaMetodoVal = "En este caso el Firma KO indica Método de firma: Autofirm@ (certificado local). Comprobar en VALIDe (validar + firmar) antes de dar por fallo del servicio.";
     } else {
       notaMetodoVal =
         "Confirmar el Método de firma abriendo el Firma KO (doble clic en SistraHelp): Cl@veFirm@ o Autofirm@. "
-        + "Cl@ve → escalar Portafib. Certificado local → VALIDe primero.";
+        + "Cl@ve → servicio de validación (mail general; no renovar). Certificado local → VALIDe primero.";
     }
     textoAccion = insertarBloqueEnQuePasaAccion(textoAccion, notaMetodoVal);
   }
