@@ -369,6 +369,8 @@ VERSION 1.3.112 - Retira error_autofirma_cliente_android e iphone: matices en Ac
 VERSION 1.3.113 - 8-15 (u otro código Cl@ve) manda sobre cancelada Cl@veFirm@ posterior (mismo método; Campos).
 
 VERSION 1.3.114 - InvalidNotSigner Cl@ve: logs revocado/DNIe no mandan; no renovar Cl@ve; mail general + CAI de seguimiento en oleada.
+
+VERSION 1.3.115 - error_validacion_certificado: Acción completa (oleada, logs, colas, VALIDe); cartel Cl@ve sin resumir el matiz revocado/DNIe.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -380,7 +382,7 @@ VERSION 1.3.114 - InvalidNotSigner Cl@ve: logs revocado/DNIe no mandan; no renov
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.114";
+const VERSION_JS = "1.3.115";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -2783,7 +2785,10 @@ else if (idReglaDetectada === "error_validacion_certificado") {
     + literalFlujo("InvalidNotSignerCertificate") + ". ";
   if (firmaClaveEnKo) {
     motivo += literalFlujo("Método de firma: Cl@veFirm@") + " en el Firma KO. "
-      + "Firma con Cl@ve Permanente: el fallo está en la validación del certificado en servidor (@firma), no en las credenciales Cl@ve del ciudadano.";
+      + "Firma con Cl@ve Permanente: el fallo está en la validación del certificado en servidor (@firma), "
+      + "no en la contraseña ni en el registro. No es mail 8-15 ni renovar Cl@ve. "
+      + "Si Seguridad/Sistra leen revocado o DNIe en logs, no suele ser la causa: el KO es Cl@veFirm@ "
+      + "(certificado en la nube). En oleadas el mismo ciudadano firma luego sin haber renovado nada.";
     if (esCert && !esClave) {
       motivo += " El KO indica Cl@ve Permanente, no certificado local / FIRE.";
     }
@@ -3122,7 +3127,10 @@ if (accionData && accionData.accion) {
     // Método del KO al inicio de Qué pasa (Cl@ve → servicio; Autofirm@ → VALIDe primero).
     let notaMetodoVal;
     if (hayMetodoFirmaClaveEnKo) {
-      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente). No se puede comprobar en VALIDe → tratar como servicio de validación.";
+      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente). "
+        + "No se puede comprobar en VALIDe. Tratar como servicio de validación (@firma): mail de problema general, "
+        + "esperar y reintentar. No mail 8-15 ni renovar Cl@ve. Los logs de segundo nivel que dicen revocado o DNIe "
+        + "no mandan si el KO es Cl@veFirm@.";
     } else if (hayMetodoFirmaAutofirmaEnKo) {
       notaMetodoVal = "En este caso el Firma KO indica Método de firma: Autofirm@ (certificado local). Comprobar en VALIDe (validar + firmar) antes de dar por fallo del servicio.";
     } else {
