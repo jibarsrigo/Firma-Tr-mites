@@ -367,6 +367,8 @@ VERSION 1.3.111 - Retira error_autofirma_cliente_mac: Mac en detalle SistraHelp 
 VERSION 1.3.112 - Retira error_autofirma_cliente_android e iphone: matices en Acción móvil.
 
 VERSION 1.3.113 - 8-15 (u otro código Cl@ve) manda sobre cancelada Cl@veFirm@ posterior (mismo método; Campos).
+
+VERSION 1.3.114 - error_registro_marcam_reintentar: Firma OK + «Excepció al registrar. Marcam per reintentar» (sin TR_REG) → nueva solicitud (expediente no continuable).
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -378,7 +380,7 @@ VERSION 1.3.113 - 8-15 (u otro código Cl@ve) manda sobre cancelada Cl@veFirm@ p
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.113";
+const VERSION_JS = "1.3.114";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -767,6 +769,13 @@ function extraerLiteralRegistroPresentador(lineasTraza) {
 
 function hayErrorRegistroPresentador(lineasTraza) {
   return !!extraerLiteralRegistroPresentador(lineasTraza);
+}
+
+/** «Excepció al registrar. Marcam per reintentar.» (RegistroSolicitudException). No otras RegistroSolicitud. */
+function hayErrorRegistroMarcamReintentar(lineasTraza) {
+  return (lineasTraza || []).some(l =>
+    /EXCEPCI[ÓO]\s+AL\s+REGISTRAR[\s.]*MARCAM\s+PER\s+REINTENTAR/i.test(String(l || ""))
+  );
 }
 
 function hayFirmaKoPosteriorAUltimaFirmaOk(lineasTraza) {
@@ -1481,6 +1490,7 @@ btnDetalles.onclick = () => {
   <li>· <b>8-15 + 6-15</b>: manda 8-15; Flujo muestra 6-15; Qué pasa: sesión caducada/inválida (tras revocar o por tiempo); mismo mail 8-15.</li>
   <li>· <b>Portafib:</b> Acción Qué pasa/Qué hacer; {lit} con fluxe, sesión y/o 502 Proxy / ConnectException.</li>
   <li>· <b>error_registro_presentador:</b> Firma OK + «registrat pel presentador» sin TR_REG → incidencias (no reabrir firma).</li>
+  <li>· <b>error_registro_marcam_reintentar:</b> Firma OK + «Excepció al registrar. Marcam per reintentar» sin TR_REG → nueva solicitud (no reintentar el mismo expediente).</li>
   <li>· <b>error_clave_firma_cancelada:</b> Acción Qué pasa/Qué hacer (emisión mismo día + móvil; probar ordenador; nota QAA/sin cierre si aplica).</li>
   <li>· <b>error_validacion_certificado:</b> Acción Qué pasa/Qué hacer; método del KO (Cl@veFirm@ / Autofirm@) dentro de Qué pasa.</li>
   <li>· Fixtures nuevas en <b>trazas_prueba/</b> (Morey, Olmedo, Insulars, Segui, Salvati, etc.).</li>
@@ -1504,6 +1514,7 @@ btnDetalles.onclick = () => {
   <li>✔ <b>Pre-firma:</b> fallo formulario (sin TR_FRI) y fallo Portafib ({lit}: fluxe / sesión / 502).</li>
   <li>✔ <b>Cierre trámite:</b> TR_SGO ≠ finalizado; TR_FIN / TR_REG / tramite_completo; <b>TR_BOR</b> (borrado) manda sobre KO previos; KO posterior a SGO manda.</li>
   <li>✔ <b>error_registro_presentador</b> — Firma OK + registro presentador sin TR_REG → incidencias.</li>
+  <li>✔ <b>error_registro_marcam_reintentar</b> — Firma OK + «Marcam per reintentar» sin TR_REG → nueva solicitud.</li>
   <li>✔ <b>firma_correcta_portafib</b> — error Portafib previo en traza con firma/cierre.</li>
   <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@ (Qué pasa/Qué hacer).</li>
   <li>✔ <b>error_firma_fitxers_500</b> — KO fitxers 500 / custodia / transacción caducada (servicio Cl@ve Firma).</li>
@@ -1561,6 +1572,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
   error_autofirma: "Legacy Autofirma (reserva).",
   error_fire: "Legacy FIRE (reserva).",
   error_registro_presentador: "Firma OK + «registrat pel presentador» sin TR_REG → incidencias. Qué pasa/Qué hacer.",
+  error_registro_marcam_reintentar: "Firma OK + «Excepció al registrar. Marcam per reintentar» sin TR_REG → nueva solicitud. Qué pasa/Qué hacer.",
   firma_correcta: "TR_SGO; fase de firma cerrada solo con TR_RGI (multi-firma). Sin TR_REG/TR_FIN.",
   tramite_registrado: "TR_REG presente; no consta TR_FIN.",
   tramite_finalizado: "TR_FIN presente; no consta TR_REG.",
@@ -1592,7 +1604,7 @@ const GRUPOS_CATALOGO_REGLAS = [
   {
     titulo: "D) Cierre / registro",
     ids: [
-      "error_registro_presentador", "firma_correcta", "tramite_registrado",
+      "error_registro_presentador", "error_registro_marcam_reintentar", "firma_correcta", "tramite_registrado",
       "tramite_finalizado", "tramite_completo", "tramite_borrado", "firma_correcta_portafib"
     ]
   }
@@ -2581,6 +2593,9 @@ else if (contexto.fase === "firma_ok") {
     idReglaDetectada = "tramite_finalizado";
   } else if (hayREG) {
     idReglaDetectada = "tramite_registrado";
+  } else if (!hayREG && hayErrorRegistroMarcamReintentar(lineasTraza)) {
+    // Firma OK + inicio registro, pero el expediente queda no continuable (REGWEB)
+    idReglaDetectada = "error_registro_marcam_reintentar";
   } else if (!hayREG && hayErrorRegistroPresentador(lineasTraza)) {
     // Firma OK / inicio registro, pero ERROR: debe registrarlo el presentador
     idReglaDetectada = "error_registro_presentador";
@@ -3014,6 +3029,16 @@ else if (idReglaDetectada === "tramite_registrado") {
   }
   if (haySGO) {
     fraseDiagnostico += " Firma OK (TR_SGO) presente.";
+  }
+
+}
+else if (idReglaDetectada === "error_registro_marcam_reintentar") {
+
+  cartelDiagnostico = cartelAzul("Fallo registro");
+  fraseDiagnostico = "Firma OK (TR_SGO), pero el registro falla: «Excepció al registrar. Marcam per reintentar.» "
+    + "(RegistroSolicitudException). El expediente no se puede continuar; hay que iniciar una nueva solicitud.";
+  if (hayRGI) {
+    fraseDiagnostico += " Consta Inicio registro (TR_RGI) sin TR_REG.";
   }
 
 }

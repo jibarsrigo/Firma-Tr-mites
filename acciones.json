@@ -1,7 +1,8 @@
 {
-  "version": "1.3.110",
-  "_changes_today": "2026-08-14: fallo_portafib: mail Portafib + 7070 (v1.3.110)",
+  "version": "1.3.111",
+  "_changes_today": "2026-09-24: error_registro_marcam_reintentar (v1.3.111)",
   "_changelog": [
+    "1.3.111 - error_registro_marcam_reintentar: Firma OK + «Marcam per reintentar» sin TR_REG → nueva solicitud",
     "1.3.110 - fallo_portafib: mail «Problemas con el Servicio Portafib»; 7070; sin TR_SGI",
     "1.3.109 - error_clave_firma_cancelada: sin PC → otro navegador del móvil",
     "1.3.108 - error_clave_firma_cancelada: reintentar sin cerrar ventanas; mismo día + móvil → PC",
@@ -230,6 +231,10 @@
       "accion": "Qué pasa:\nLa firma fue correcta (Firma OK / TR_SGO), pero al registrar el trámite el sistema no lo permite: debe registrarlo el presentador.\nLiteral: {lit}\nNo es un problema del cliente de firma ni de las credenciales.\n\nQué hacer:\n1. Remitir al ciudadano al formulario de incidencias / dudas funcionales, indicando el literal de error.\n2. No reabrir incidencia de firma: la firma ya consta OK en la traza.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario"
     },
+    {
+      "id": "error_registro_marcam_reintentar",
+      "accion": "Qué pasa:\nLa firma fue correcta (Firma OK / TR_SGO). Al registrar (Inicio registro / TR_RGI) el sistema falla con «Excepció al registrar. Marcam per reintentar.» (RegistroSolicitudException). No hay registro (TR_REG) ni fin de trámite (TR_FIN).\nAunque el literal diga «marcam per reintentar», el expediente queda corrupto: no se puede continuar ni corregir sobre este trámite. No es un fallo de Cl@ve, Autofirma ni de las credenciales del ciudadano.\n\nQué hacer:\n1. No pedir que vuelva a firmar ni que reintente el registro en el mismo expediente.\n2. Indicar que inicie una nueva solicitud.\n3. Enviar este correo:\nHem revisat la incidència que ens comunica. Després de les comprovacions realitzades, hem detectat que l'expedient electrònic presenta una incidència tècnica que impedeix continuar-ne la tramitació.\n\nMalauradament, aquesta incidència no es pot corregir sobre el tràmit actual. Per aquest motiu, serà necessari que iniciï una nova sol·licitud."
+    },
 
     {
       "id": "firma_correcta",
@@ -238,7 +243,7 @@
 
     {
       "id": "tramite_registrado",
-      "accion": "Qué pasa:\nEl trámite consta registrado (TR_REG — Registre tràmit), pero no aparece fin de trámite (TR_FIN) en la traza.\nTR_REG y TR_FIN suelen ir juntos, a menudo a la misma hora (mismo segundo). En SistraHelp a veces se ve primero uno y a veces el otro; el orden no indica un fallo.\nSi falta TR_FIN, no es un cierre normal: o no se pegó toda la traza, o el registro no llegó a finalizar (justificante / REGWEB).\nLa firma es correcta (si hay Firma OK). El fallo es de REGWEB: no se ha generado el justificante. No es Cl@ve, Autofirma ni Portafib.\n\nQué hacer:\n1. Revisar en SistraHelp si el TR_FIN está en la misma hora que el TR_REG y no se pegó (traza incompleta).\n2. Preguntar si el ciudadano tiene justificante.\n3. Si en la traza aparecen «El fluxe no es vàlid», «Registre està pendent de verificació», AccionPasoNoPermitidaException, «Excepció al registrar. Marcam per reintentar» o RegistroSolicitudException: indicar que reintente el registro (sin atrás/adelante del navegador). No abrir CAI.\n4. En el resto de casos: informar de que la firma es correcta, pero el justificante no se ha generado. No pedir que vuelva a firmar. Asignar a DGIDT REGWEB — APLICACIONS\\7.-PENDENTS REGISTRE WEB (título SEG-012 – REGISTRO). Enviar el mail «Problemas REGWEB»."
+      "accion": "Qué pasa:\nEl trámite consta registrado (TR_REG — Registre tràmit), pero no aparece fin de trámite (TR_FIN) en la traza.\nTR_REG y TR_FIN suelen ir juntos, a menudo a la misma hora (mismo segundo). En SistraHelp a veces se ve primero uno y a veces el otro; el orden no indica un fallo.\nSi falta TR_FIN, no es un cierre normal: o no se pegó toda la traza, o el registro no llegó a finalizar (justificante / REGWEB).\nLa firma es correcta (si hay Firma OK). El fallo es de REGWEB: no se ha generado el justificante. No es Cl@ve, Autofirma ni Portafib.\n\nQué hacer:\n1. Revisar en SistraHelp si el TR_FIN está en la misma hora que el TR_REG y no se pegó (traza incompleta).\n2. Preguntar si el ciudadano tiene justificante.\n3. Si en la traza aparecen «El fluxe no es vàlid», «Registre està pendent de verificació» o AccionPasoNoPermitidaException: indicar que reintente el registro (sin atrás/adelante del navegador). No abrir CAI. Si el literal es «Excepció al registrar. Marcam per reintentar» y no hay TR_REG, no es este caso: el expediente no se puede continuar (nueva solicitud).\n4. En el resto de casos: informar de que la firma es correcta, pero el justificante no se ha generado. No pedir que vuelva a firmar. Asignar a DGIDT REGWEB — APLICACIONS\\7.-PENDENTS REGISTRE WEB (título SEG-012 – REGISTRO). Enviar el mail «Problemas REGWEB»."
     },
 
     {
@@ -258,7 +263,7 @@
 
     {
       "id": "firma_correcta_portafib",
-      "accion": "Qué pasa:\nHay Firma OK (TR_SGO) y en la traza aparece {lit}.\nEl trámite no está cerrado: no hay registro (TR_REG) ni fin de trámite (TR_FIN).\nLa firma es correcta. El fallo puede ser de REGWEB: no se ha generado el justificante.\n\nQué hacer:\n1. Si en la traza aparece alguno de estos literales:\n   • «El fluxe no es vàlid»\n   • «Registre està pendent de verificació»\n   • «AccionPasoNoPermitidaException»\n   • «Excepció al registrar. Marcam per reintentar»\n   • «RegistroSolicitudException»\n   indicar al ciudadano que reintente el registro (sin pulsar Atrás o Adelante en el navegador durante el registro: eso provoca a menudo «El fluxe no es vàlid» / «AccionPasoNoPermitidaException»). No abrir CAI. Si tras reintentar sigue fallando, pasar al punto 2.\n2. En el resto de casos: informar de que la firma es correcta, pero el justificante no se ha generado. No pedir que vuelva a firmar. Asignar a DGIDT REGWEB — APLICACIONS\\7.-PENDENTS REGISTRE WEB (título SEG-012 – REGISTRO). Enviar el mail «Problemas REGWEB»."
+      "accion": "Qué pasa:\nHay Firma OK (TR_SGO) y en la traza aparece {lit}.\nEl trámite no está cerrado: no hay registro (TR_REG) ni fin de trámite (TR_FIN).\nLa firma es correcta. El fallo puede ser de REGWEB: no se ha generado el justificante.\n\nQué hacer:\n1. Si en la traza aparece alguno de estos literales:\n   • «El fluxe no es vàlid»\n   • «Registre està pendent de verificació»\n   • «AccionPasoNoPermitidaException»\n   indicar al ciudadano que reintente el registro (sin pulsar Atrás o Adelante en el navegador durante el registro: eso provoca a menudo «El fluxe no es vàlid» / «AccionPasoNoPermitidaException»). No abrir CAI. Si tras reintentar sigue fallando, pasar al punto 2.\n   Si el literal es «Excepció al registrar. Marcam per reintentar» y no hay TR_REG: no reintentar este expediente; indicar nueva solicitud (regla error_registro_marcam_reintentar).\n2. En el resto de casos: informar de que la firma es correcta, pero el justificante no se ha generado. No pedir que vuelva a firmar. Asignar a DGIDT REGWEB — APLICACIONS\\7.-PENDENTS REGISTRE WEB (título SEG-012 – REGISTRO). Enviar el mail «Problemas REGWEB»."
     }
 
   ]

@@ -99,6 +99,14 @@ P-registro_presentador_insulars.txt
   Global: error_registro_presentador (no firma_correcta)
   Acción (json v1.3.33 / js v1.3.67): Qué pasa/Qué hacer → incidencias con literal
 
+P-vidal_registro_marcam_reintentar.txt
+  Clara Vidal Pons · SUBV_CONC_DOC (IGOIB) · Autofirm@
+  Firma OK → TR_RGI ×4 → «Excepció al registrar. Marcam per reintentar.» (RegistroSolicitudException)
+  Sin TR_REG / TR_FIN; luego TR_CAR
+  CAU: expediente corrupto → nueva solicitud (no reintentar el mismo)
+  Global (js v1.3.114 / acciones v1.3.111): error_registro_marcam_reintentar (no firma_correcta)
+  Contraste: P-registro_presentador_insulars.txt; no es C-8-15_y_101_escribano.txt (otro RegistroSolicitud)
+
 F-campillo_saf27_solo_ko.txt
   (Sustituye F-saf27_sintetico.txt) Rodrigo Campillo · IG_SUBVEN_TRANS_VEHIC · solo KO
   Qué pasó: selector AutoFirma con muchos certificados inválidos → SAF_27×N + cancelada;
