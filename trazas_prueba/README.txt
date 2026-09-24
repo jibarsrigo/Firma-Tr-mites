@@ -104,7 +104,7 @@ P-vidal_registro_marcam_reintentar.txt
   Firma OK → TR_RGI ×4 → «Excepció al registrar. Marcam per reintentar.» (RegistroSolicitudException)
   Sin TR_REG / TR_FIN; luego TR_CAR
   CAU: expediente corrupto → nueva solicitud (no reintentar el mismo)
-  Global (js v1.3.114 / acciones v1.3.111): error_registro_marcam_reintentar (no firma_correcta)
+  Global (js v1.3.115 / acciones v1.3.112): error_registro_marcam_reintentar (no firma_correcta)
   Contraste: P-registro_presentador_insulars.txt; no es C-8-15_y_101_escribano.txt (otro RegistroSolicitud)
 
 F-campillo_saf27_solo_ko.txt

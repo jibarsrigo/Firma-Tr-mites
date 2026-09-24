@@ -1,7 +1,8 @@
 {
-  "version": "1.3.111",
-  "_changes_today": "2026-09-24: error_registro_marcam_reintentar (v1.3.111)",
+  "version": "1.3.112",
+  "_changes_today": "2026-09-24: error_registro_marcam_reintentar Acción más clara, sin plantilla de mail (v1.3.112)",
   "_changelog": [
+    "1.3.112 - error_registro_marcam_reintentar: Qué pasa/Qué hacer más claros; sin texto de correo",
     "1.3.111 - error_registro_marcam_reintentar: Firma OK + «Marcam per reintentar» sin TR_REG → nueva solicitud",
     "1.3.110 - fallo_portafib: mail «Problemas con el Servicio Portafib»; 7070; sin TR_SGI",
     "1.3.109 - error_clave_firma_cancelada: sin PC → otro navegador del móvil",
@@ -233,7 +234,7 @@
     },
     {
       "id": "error_registro_marcam_reintentar",
-      "accion": "Qué pasa:\nLa firma fue correcta (Firma OK / TR_SGO). Al registrar (Inicio registro / TR_RGI) el sistema falla con «Excepció al registrar. Marcam per reintentar.» (RegistroSolicitudException). No hay registro (TR_REG) ni fin de trámite (TR_FIN).\nAunque el literal diga «marcam per reintentar», el expediente queda corrupto: no se puede continuar ni corregir sobre este trámite. No es un fallo de Cl@ve, Autofirma ni de las credenciales del ciudadano.\n\nQué hacer:\n1. No pedir que vuelva a firmar ni que reintente el registro en el mismo expediente.\n2. Indicar que inicie una nueva solicitud.\n3. Enviar este correo:\nHem revisat la incidència que ens comunica. Després de les comprovacions realitzades, hem detectat que l'expedient electrònic presenta una incidència tècnica que impedeix continuar-ne la tramitació.\n\nMalauradament, aquesta incidència no es pot corregir sobre el tràmit actual. Per aquest motiu, serà necessari que iniciï una nova sol·licitud."
+      "accion": "Qué pasa:\nEl ciudadano firmó bien (en SistraHelp hay Firma OK). El paso siguiente es el registro: el sistema intenta asentar el trámite y generar el justificante.\nAhí falla, con el literal «Excepció al registrar. Marcam per reintentar.» (RegistroSolicitudException). Hay Inicio registro, pero no llega a Registro ni a Fin de trámite: no hay justificante.\nEl literal parece de un fallo puntual («lo marcamos para reintentar»), pero en estos casos el expediente queda corrupto. Reintentar el registro o volver a firmar en el mismo trámite no lo arregla: el expediente ya no se puede continuar ni corregir.\nNo es un problema de Cl@ve, de Autofirma ni de las credenciales del ciudadano. La firma está bien; ha fallado el registro de este expediente.\n\nQué hacer:\n1. Explicar que la firma fue correcta, pero el registro de este trámite ha fallado y el expediente ha quedado corrupto.\n2. Indicar que tiene que hacer el trámite de nuevo (nueva solicitud). No se puede seguir sobre este.\n3. No pedir que vuelva a firmar ni que pulse otra vez Registrar en el mismo expediente: no lo desbloquea.\n4. No tratarlo como incidencia de firma ni como REGWEB de reintento (fluxe / atrás-adelante). Si hace falta, informar del literal."
     },
 
     {

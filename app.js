@@ -369,6 +369,8 @@ VERSION 1.3.112 - Retira error_autofirma_cliente_android e iphone: matices en Ac
 VERSION 1.3.113 - 8-15 (u otro código Cl@ve) manda sobre cancelada Cl@veFirm@ posterior (mismo método; Campos).
 
 VERSION 1.3.114 - error_registro_marcam_reintentar: Firma OK + «Excepció al registrar. Marcam per reintentar» (sin TR_REG) → nueva solicitud (expediente no continuable).
+
+VERSION 1.3.115 - error_registro_marcam_reintentar: Acción más clara (expediente corrupto → trámite de nuevo); sin plantilla de correo.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -380,7 +382,7 @@ VERSION 1.3.114 - error_registro_marcam_reintentar: Firma OK + «Excepció al re
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.114";
+const VERSION_JS = "1.3.115";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1572,7 +1574,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
   error_autofirma: "Legacy Autofirma (reserva).",
   error_fire: "Legacy FIRE (reserva).",
   error_registro_presentador: "Firma OK + «registrat pel presentador» sin TR_REG → incidencias. Qué pasa/Qué hacer.",
-  error_registro_marcam_reintentar: "Firma OK + «Excepció al registrar. Marcam per reintentar» sin TR_REG → nueva solicitud. Qué pasa/Qué hacer.",
+  error_registro_marcam_reintentar: "Firma OK + «Marcam per reintentar» sin TR_REG: expediente corrupto → trámite de nuevo. Qué pasa/Qué hacer (sin mail).",
   firma_correcta: "TR_SGO; fase de firma cerrada solo con TR_RGI (multi-firma). Sin TR_REG/TR_FIN.",
   tramite_registrado: "TR_REG presente; no consta TR_FIN.",
   tramite_finalizado: "TR_FIN presente; no consta TR_REG.",

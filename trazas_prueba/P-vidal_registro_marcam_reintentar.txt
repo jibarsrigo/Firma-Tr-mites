@@ -3,7 +3,7 @@
 # Sin TR_REG / TR_FIN; luego TR_CAR
 # CAU: el expediente queda corrupto; no se corrige sobre este trámite → nueva solicitud
 # Global: error_registro_marcam_reintentar (no firma_correcta)
-# Acción (json v1.3.111 / js v1.3.114): Qué pasa/Qué hacer; correo catalán de nueva solicitud
+# Acción (json v1.3.112 / js v1.3.115): Qué pasa/Qué hacer; nueva solicitud (expediente corrupto); sin plantilla de mail
 # Contraste: P-registro_presentador_insulars.txt (otro literal de registro)
 # No confundir con C-8-15_y_101_escribano.txt (RegistroSolicitudException distinta, sin este literal, sin SGO)
 
