@@ -1,7 +1,8 @@
 {
-  "version": "1.3.112",
-  "_changes_today": "2026-09-24: error_registro_marcam_reintentar Acción más clara, sin plantilla de mail (v1.3.112)",
+  "version": "1.3.113",
+  "_changes_today": "2026-09-25: error_anexo_firma_incorrecta (v1.3.113)",
   "_changelog": [
+    "1.3.113 - error_anexo_firma_incorrecta: PDF adjunto PAdES ≠ VALIDATION del trámite; remitir a funcionales",
     "1.3.112 - error_registro_marcam_reintentar: Qué pasa/Qué hacer más claros; sin texto de correo",
     "1.3.111 - error_registro_marcam_reintentar: Firma OK + «Marcam per reintentar» sin TR_REG → nueva solicitud",
     "1.3.110 - fallo_portafib: mail «Problemas con el Servicio Portafib»; 7070; sin TR_SGI",
@@ -94,6 +95,11 @@
     {
       "id": "fallo_formulario",
       "accion": "Qué pasa:\nEl trámite no completa el formulario (falla al abrirlo o al cargar datos). No llega a la fase de firma.\n\nQué hacer:\n1. Remitir al ciudadano al formulario de incidencias / dudas funcionales por problemas con el formulario.\n2. Si aparecen literales, copiar al ciudadano el mensaje de la traza para que lo indique en incidencias. Ejemplo: «No s'ha especificat presentador».\n3. Enviar el mail al ciudadano.",
+      "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario"
+    },
+    {
+      "id": "error_anexo_firma_incorrecta",
+      "accion": "Qué pasa:\nEl ciudadano está en el formulario y al adjuntar un PDF ya firmado el sistema lo rechaza. No llega a firmar el trámite (no hay Inicio firma).\nEl validador comprueba la firma de ese PDF anexo (PAdES). En la traza suele salir «La firma no es correcta o no ha sido firmada por todos los firmantes», AnexarFirmadoFirmaIncorrectaException o un error al revisar el diccionario de firma (p. ej. Signature2 / ByteRange).\nEso no es el VALIDATION / InvalidNotSignerCertificate de cuando se firma la solicitud con Cl@veFirm@ o Autofirm@. Aquí falla la firma del documento que sube, no la firma del trámite.\nSoporte de firma no decide si ese anexo debe ir firmado: lo marca el trámite (dudas funcionales). A veces el PDF lleva dos firmas y la primera no es válida; firmar otra vez encima no suele valer.\n\nQué hacer:\n1. Remitir a incidencias / dudas funcionales para que revisen la firma del PDF que adjunta (si debe llevar firma, de quién, y si el fichero es el correcto).\n2. Copiar al ciudadano el literal de la traza para que lo indique en incidencias.\n3. No tratarlo como VALIDATION de oleada ni enviar mail de Cl@ve 8-15, Autofirma o Portafib.\n4. Si enseña el PDF y hay más de una firma (y alguna no válida): puede partir del original y firmarlo una sola vez. Funcionales confirman si el documento tiene que ir firmado.",
       "mail": "https://cau.fundaciobit.org/firmawiki/index.php/Mails#Mail_Formulario"
     },
 

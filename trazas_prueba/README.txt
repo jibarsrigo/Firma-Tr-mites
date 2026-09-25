@@ -74,6 +74,14 @@ F-canaves_nif_es_tras_firma_ok.txt
   Global (js v1.3.76): error_certificado_nif_no_coincide (NO firma_correcta ni Autofirma cliente)
   Valida: literal ES/associado; KO tras SGO manda; extracción cert 90000012T / requerido Z9000002S
 
+P-serra_anexo_pades_incorrecta.txt
+  Oriol Serra Vidal · IG_SUBVEN_EN_CERTEN · adjunta PDF firmado en formulario
+  AnexarFirmadoFirmaIncorrectaException + PAdESInvalidContentsKey (Signature2 / ByteRange)
+  + ValidacionFirmaException (diccionario Signature2); sin TR_SGI
+  CAU: no es VALIDATION InvalidNotSigner del trámite; remitir a dudas funcionales
+  Global (js v1.3.116 / acciones v1.3.113): error_anexo_firma_incorrecta
+  Contraste: C-salvati_validation_clave.txt (InvalidNotSigner en Firma KO)
+
 P-formulario_403_externo.txt
   Silvia Romero Pastor · EBAP · sin TR_FRI · 403 Forbidden formulario externo
   ERROR: 403 Forbidden (×2) + El fluxe no es vàlid (ignorado para la regla)

@@ -371,6 +371,8 @@ VERSION 1.3.113 - 8-15 (u otro código Cl@ve) manda sobre cancelada Cl@veFirm@ p
 VERSION 1.3.114 - error_registro_marcam_reintentar: Firma OK + «Excepció al registrar. Marcam per reintentar» (sin TR_REG) → nueva solicitud (expediente no continuable).
 
 VERSION 1.3.115 - error_registro_marcam_reintentar: Acción más clara (expediente corrupto → trámite de nuevo); sin plantilla de correo.
+
+VERSION 1.3.116 - error_anexo_firma_incorrecta: PDF adjunto (PAdES/AnexarFirmado) ≠ VALIDATION InvalidNotSigner del trámite; funcionales.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -382,7 +384,7 @@ VERSION 1.3.115 - error_registro_marcam_reintentar: Acción más clara (expedien
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.115";
+const VERSION_JS = "1.3.116";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -922,6 +924,17 @@ function esErrorCadenaCertificacionHelper(linea) {
 
 // 👉 @firma rechaza el core de la firma ASN.1 (SignatureCore:InvalidSignature). Distinto de cadena
 //    e InvalidNotSigner: la firma criptográfica generada (Autofirm@) no es válida al validarla.
+/** Firma del PDF que se adjunta en el formulario (anexo), no la firma del trámite ni InvalidNotSigner. */
+function esErrorAnexoFirmaIncorrectaHelper(linea) {
+  const s = String(linea || "");
+  if (/INVALIDNOTSIGNERCERTIFICATE/i.test(s)) return false;
+  return /ANEXARFIRMADOFIRMAINCORRECTAEXCEPTION/i.test(s) ||
+    /PADESINVALIDCONTENTSKEY/i.test(s) ||
+    /LA FIRMA NO ES CORRECTA O NO HA SIDO FIRMADA POR TODOS LOS FIRMANTES/i.test(s) ||
+    (/VALIDACIONFIRMAEXCEPTION/i.test(s) &&
+      /DICCIONARIO|SIGNATUREMANAGEREXCEPTION|PADESINVALID/i.test(s));
+}
+
 function esErrorFirmaCoreInvalidaHelper(linea) {
   const s = String(linea || "");
   return /SIGNATURECORE\s*:\s*INVALIDSIGNATURE/i.test(s) ||
@@ -1493,6 +1506,7 @@ btnDetalles.onclick = () => {
   <li>· <b>Portafib:</b> Acción Qué pasa/Qué hacer; {lit} con fluxe, sesión y/o 502 Proxy / ConnectException.</li>
   <li>· <b>error_registro_presentador:</b> Firma OK + «registrat pel presentador» sin TR_REG → incidencias (no reabrir firma).</li>
   <li>· <b>error_registro_marcam_reintentar:</b> Firma OK + «Excepció al registrar. Marcam per reintentar» sin TR_REG → nueva solicitud (no reintentar el mismo expediente).</li>
+  <li>· <b>error_anexo_firma_incorrecta:</b> PDF adjunto (PAdES / AnexarFirmado) sin TR_SGI → funcionales; no es VALIDATION InvalidNotSigner del trámite.</li>
   <li>· <b>error_clave_firma_cancelada:</b> Acción Qué pasa/Qué hacer (emisión mismo día + móvil; probar ordenador; nota QAA/sin cierre si aplica).</li>
   <li>· <b>error_validacion_certificado:</b> Acción Qué pasa/Qué hacer; método del KO (Cl@veFirm@ / Autofirm@) dentro de Qué pasa.</li>
   <li>· Fixtures nuevas en <b>trazas_prueba/</b> (Morey, Olmedo, Insulars, Segui, Salvati, etc.).</li>
@@ -1514,6 +1528,7 @@ btnDetalles.onclick = () => {
   <li><b>Estado actual (completado y validado):</b></li>
   <li>✔ Interfaz estilo V5: tarjetas Flujo / Acción / Literales; Acción con apartados Qué pasa/Qué hacer.</li>
   <li>✔ <b>Pre-firma:</b> fallo formulario (sin TR_FRI) y fallo Portafib ({lit}: fluxe / sesión / 502).</li>
+  <li>✔ <b>error_anexo_firma_incorrecta</b> — firma del PDF que adjunta (PAdES); no InvalidNotSigner; funcionales.</li>
   <li>✔ <b>Cierre trámite:</b> TR_SGO ≠ finalizado; TR_FIN / TR_REG / tramite_completo; <b>TR_BOR</b> (borrado) manda sobre KO previos; KO posterior a SGO manda.</li>
   <li>✔ <b>error_registro_presentador</b> — Firma OK + registro presentador sin TR_REG → incidencias.</li>
   <li>✔ <b>error_registro_marcam_reintentar</b> — Firma OK + «Marcam per reintentar» sin TR_REG → nueva solicitud.</li>
@@ -1551,6 +1566,7 @@ btnDetalles.onclick = () => {
 // 👉 Texto corto para el catálogo de Reglas (una línea por id de acciones.json)
 const DESCRIPCION_REGLA_CATALOGO = {
   fallo_formulario: "No llega a firma; falla el formulario / datos (sin TR_FRI, 403…). Qué pasa/Qué hacer.",
+  error_anexo_firma_incorrecta: "PDF adjunto: firma PAdES incorrecta (AnexarFirmado). No es VALIDATION del trámite. Funcionales.",
   fallo_portafib: "Inicio formulario + fluxe / sesión / 502 Proxy. Portafib/plataforma. Qué pasa/Qué hacer; {lit}.",
   error_clave_8_15: "Código 8 + Tipo 15. Mail 8-15. Si también hay 101, 6-15 o cancelada Cl@veFirm@ → nota en Qué pasa (manda 8-15).",
   error_clave_101: "Nivel de registro insuficiente en Cl@ve.",
@@ -1584,7 +1600,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
 };
 
 const GRUPOS_CATALOGO_REGLAS = [
-  { titulo: "A) Antes de firmar (pre-firma)", ids: ["fallo_formulario", "fallo_portafib"] },
+  { titulo: "A) Antes de firmar (pre-firma)", ids: ["fallo_formulario", "error_anexo_firma_incorrecta", "fallo_portafib"] },
   {
     titulo: "B) Cl@ve Firma (códigos y móvil)",
     ids: [
@@ -2028,6 +2044,7 @@ const hayMetodoFirmaClaveEnKo = lineasTraza.some(linea =>
 );
 
 const hayErrorValidacionCertificado = lineasTraza.some(esErrorValidacionCertificadoFirmanteHelper);
+const hayErrorAnexoFirmaIncorrecta = lineasTraza.some(esErrorAnexoFirmaIncorrectaHelper);
 
 // 👉 Cadena de certificación del certificado firmante no válida (InvalidCertificateChain).
 //    Es del certificado del ciudadano (no de reinstalar Autofirma) -> revisar certificado en el equipo.
@@ -2376,10 +2393,16 @@ const numFRI = eventos.filter(e => e === "TR_FRI").length;
 const numFRF = eventos.filter(e => e === "TR_FRF").length;
 
 
+// 👉 PDF anexo con firma incorrecta (PAdES / AnexarFirmado): no es VALIDATION del trámite
+if (!haySGI && hayErrorAnexoFirmaIncorrecta) {
+
+  idReglaDetectada = "error_anexo_firma_incorrecta";
+
+}
 // 👉 Caso: NO llega a firma (pre_firma)
 // 🔹 Sin TR_FRI → formulario (aunque aparezca «El fluxe no es vàlid»); Portafib solo si hubo Inicio formulario
 
-if (!haySGI && !hayFRI) {
+else if (!haySGI && !hayFRI) {
 
   idReglaDetectada = "fallo_formulario";
 
@@ -2681,7 +2704,15 @@ function literalFlujo(texto) {
 
 if (!haySGI) {
 
-  if (idReglaDetectada === "fallo_portafib") {
+  if (idReglaDetectada === "error_anexo_firma_incorrecta") {
+
+    cartelDiagnostico = cartelAzul("PDF anexo");
+    fraseDiagnostico = "El formulario rechaza el PDF que adjunta: la firma de ese documento no es correcta "
+      + "(PAdES / AnexarFirmadoFirmaIncorrectaException). "
+      + "No es el VALIDATION InvalidNotSignerCertificate de firmar el trámite. "
+      + "Remitir a dudas funcionales para que revisen esa firma del anexo.";
+
+  } else if (idReglaDetectada === "fallo_portafib") {
 
     cartelDiagnostico = cartelAzul("Fallo Portafib");
     fraseDiagnostico = "La firma no se inicia por un error de Portafib (flujo o sesión).";

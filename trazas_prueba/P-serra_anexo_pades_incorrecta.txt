@@ -1,0 +1,14 @@
+# Oriol Serra Vidal · IG_SUBVEN_EN_CERTEN (IGOIB)
+# Adjunta PDF ya firmado en el formulario; el validador PAdES rechaza Signature2 / ByteRange
+# Sin TR_SGI (no llega a firmar el trámite)
+# CAU: no es VALIDATION InvalidNotSigner del trámite; remitir a dudas funcionales
+# Global: error_anexo_firma_incorrecta (no fallo_formulario genérico ni error_validacion_certificado)
+# Acción (json v1.3.113 / js v1.3.116): firma del PDF anexo; funcionales; no mail 8-15/Autofirma/Portafib
+# Contraste: C-salvati_validation_clave.txt / C-navarro (InvalidNotSigner en TR_SGX)
+
+ERROR - Error	25/09/2026 07:36:27	H7K2N5P8-Q3RST6UV-W9XYZ1AB	90000050S	ORIOL SERRA VIDAL	IG_SUBVEN_EN_CERTEN	IGOIB	2	9007302	208187	Error accedint a plugin de validació de firma en servidor: es.gob.afirma.mfirma.exception.SignatureManagerException: (VALIDATION) Se ha producido un error accediendo a la revisión del diccionario con nombre [Signature2].(urn:oasis:names:tc:dss:1.0:resultmajor:ResponderError)	ValidacionFirmaException
+ERROR - Error	25/09/2026 07:36:05	H7K2N5P8-Q3RST6UV-W9XYZ1AB	90000050S	ORIOL SERRA VIDAL	IG_SUBVEN_EN_CERTEN	IGOIB	2	9007302	208187	La firma no es correcta o no ha sido firmada por todos los firmantes: Validación PAdES: El resumen de la firma del diccionario de firma para el elemento con nombre: [Signature2] no se corresponde con el resumen indicado en la clave /ByteRange. (urn:afirma:dss:1.0:profile:XSS:resultminor:PAdESInvalidContentsKey)	AnexarFirmadoFirmaIncorrectaException
+TR_FRF - Fi formulari	25/09/2026 07:35:41	H7K2N5P8-Q3RST6UV-W9XYZ1AB	90000050S	ORIOL SERRA VIDAL	IG_SUBVEN_EN_CERTEN	IGOIB	2	9007302	208187		
+TR_FRI - Inici formulari	25/09/2026 07:30:37	H7K2N5P8-Q3RST6UV-W9XYZ1AB	90000050S	ORIOL SERRA VIDAL	IG_SUBVEN_EN_CERTEN	IGOIB	2	9007302	208187		
+TR_FRI - Inici formulari	25/09/2026 07:27:26	H7K2N5P8-Q3RST6UV-W9XYZ1AB	90000050S	ORIOL SERRA VIDAL	IG_SUBVEN_EN_CERTEN	IGOIB	2	9007302	208187		
+TR_INI - Inici del tràmit	25/09/2026 07:27:18	H7K2N5P8-Q3RST6UV-W9XYZ1AB	90000050S	ORIOL SERRA VIDAL	IG_SUBVEN_EN_CERTEN	IGOIB	2	9007302	208187	
