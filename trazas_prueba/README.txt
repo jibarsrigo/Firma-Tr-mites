@@ -152,6 +152,15 @@ F-febrer_cancelada_autofirma.txt
   Acción (json v1.3.29 / js v1.3.52): Qué pasa/Qué hacer en las tres variantes
   Nota: Método Autofirm@ en KO → rama cliente (no error_autofirma_cancelada)
 
+F-romero_cancelada_sgi_portafib.txt
+  Elisa Romero Valle · ACCESO_AUTORIZADO_ESPAI_SALUT · Windows casa
+  3× cancelada Autofirm@ (14/09) → muchos TR_SGI sin cierre (14/09 tarde + 15/09)
+  Relato: PDF local OK; Chrome/Edge se quedan en «Espere Autofirma»; requestPlugin conexión restablecida;
+    ~15 min → NPE passarela/finalReal (timeout, no causa Portafib)
+  Marcar: Certificado + Ordenador → error_autofirma_cliente_windows
+  Contraste: F-febrer (solo canceladas, sin colgado posterior)
+  CAU: no proxy de empresa; comunicación navegador↔Autofirma↔Portafib (antivirus SSL / firewall del PC)
+
 F-llevant_autofirma_luego_ok.txt
   Esports Llevant Sl · INS_ALE_PART · servidor intermedio + cancelada → SGO Autofirm@ → TR_REG+TR_FIN
   SistraHelp TR_INI: Mac — pero CAU: Mac puede ser iPhone/iPad vista escritorio (paralelo Linux→Android).
