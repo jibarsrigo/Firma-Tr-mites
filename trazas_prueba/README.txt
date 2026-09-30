@@ -209,7 +209,7 @@ C-navarro_validation_8-15_autofirma_completo.txt
   Oleada: VALIDATION solo a algunos; muchos otros firman OK el mismo método
   Marcar: Cl@ve
   Global: tramite_completo
-  Acción (js v1.3.105): nota VALIDATION previos + 8-15 + Firma OK Autofirm@
+  Acción (js v1.3.117): nota VALIDATION previos (SEGURETAT si aún activo) + 8-15 + Firma OK Autofirm@
   Contraste limpio: C-salvati_validation_clave.txt (solo VALIDATION, sin cierre)
 
 C-salvati_validation_clave.txt
@@ -217,7 +217,8 @@ C-salvati_validation_clave.txt
   1 KO: VALIDATION InvalidNotSignerCertificate + Cl@veFirm@ (caso limpio)
   Marcar: Cl@ve
   Global: error_validacion_certificado
-  Acción (json v1.3.67 / js v1.3.105): siempre Portafib + mail general (también si fuera Autofirm@)
+  Acción (json v1.3.114 / js v1.3.117): 1.- PENDENTS SEGURETAT + texto CAI Cl@veFirm@ (OCSP/@Firma; precedente ACCV); no Portafib
+  Contraste Autofirm@: T-validation_autofirma.txt
 
 C-8-15_luego_103-15_cifre.txt
   Antonia Isabel Cifre Pons · IG_DGDEPEN_RECO · Cl@veFirm@ · 8-15 + 103-15 (mismo segundo)
@@ -326,6 +327,13 @@ T-500_puro.txt
   Global esperado: error_firma_fitxers_500 · cartel "Servicio de firma"
   Acción (json v1.3.25): Qué pasa / Qué hacer (reintentar; escalar si persiste o es masivo)
 
+T-validation_autofirma.txt
+  Sintetica (datos ficticios) · 1x TR_SGX VALIDATION InvalidNotSignerCertificate + Autofirm@
+  Contraste Cl@veFirm@: C-salvati_validation_clave.txt
+  Marcar: Certificado
+  Global esperado: error_validacion_certificado
+  Acción (json v1.3.114 / js v1.3.117): 1.- PENDENTS SEGURETAT + texto CAI AutoFirma; no Portafib
+
 F-valles_signature_core_invalid.txt
   Rosa Valles Medina · SC0022TSAN (IBSALUT) · Autofirma Windows
   KO: SignatureCore:InvalidSignature (core Firma ASN.1) + Autofirm@ (×4) · 1× cancelada intercalada
@@ -379,7 +387,7 @@ Implementado (app.js v1.3.28 / acciones.json v1.3.4)
   Prioridad: tras VALIDATION (error_validacion_certificado) y codigos Cl@ve (8-15/101/103/104 mandan si aparecen),
     antes del catch-all error_clave_movil. Cartel azul "Servicio de firma".
   Casos ya correctos sin regla nueva:
-    - 500 + VALIDATION -> error_validacion_certificado (dice: problema de servicio, reintentar mas tarde).
+    - 500 + VALIDATION -> error_validacion_certificado (CAI a 1.- PENDENTS SEGURETAT; no Portafib).
     - 500 antes de 8-15 (8-15 es el KO que manda) -> error_clave_8_15.
     - 500 con cierre posterior (TR_RGI/TR_REG/TR_FIN, sin KO tras el último SGO) -> tramite_completo.
     - 500 + SGO sin TR_RGI -> firma_correcta (fase de firma abierta; no dar por cerrado).

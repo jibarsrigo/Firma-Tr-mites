@@ -1,0 +1,12 @@
+# Sintetica (T-): VALIDATION InvalidNotSignerCertificate con Autofirm@ (caso limpio).
+# Contraste Cl@veFirm@: C-salvati_validation_clave.txt
+# Metodo a marcar: Certificado
+# Global esperado: error_validacion_certificado
+# Acción (json v1.3.114 / js v1.3.117): 1.- PENDENTS SEGURETAT + texto CAI AutoFirma (OCSP/cadena/@Firma); no Portafib
+# (Datos de ciudadano ficticios; plantilla de prueba UI.)
+#
+TR_SGX - Fi firma KO	16/09/2026 11:00:10	TEST0001-TEST0001-TEST0001	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100002	200002	La firma no és vàlida. Raó: (VALIDATION) La validación del certificado del firmante contenido en el diccionario de firma [Signature1] no ha sido correcta. (urn:oasis:names:tc:dss:1.0:resultmajor:Warning | urn:afirma:dss:1.0:profile:XSS:resultminor:InvalidNotSignerCertificate) Método de firma: Autofirm@	
+TR_SGI - Inici firma	16/09/2026 11:00:00	TEST0001-TEST0001-TEST0001	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100002	200002		
+TR_CAR - Càrrega del tràmit	16/09/2026 10:59:55	TEST0001-TEST0001-TEST0001	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100002	200002		
+TR_FRF - Fi formulari	16/09/2026 10:59:00	TEST0001-TEST0001-TEST0001	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100002	200002		
+TR_FRI - Inici formulari	16/09/2026 10:55:00	TEST0001-TEST0001-TEST0001	NIF0000000A	CIUDADANO TEST	TRAMITE_TEST	ORG	1	100002	200002	

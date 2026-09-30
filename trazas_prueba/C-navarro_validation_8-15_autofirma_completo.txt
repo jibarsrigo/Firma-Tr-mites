@@ -3,8 +3,8 @@
 # Oleada: VALIDATION solo a algunos con Cl@ve (o cert); muchos otros firman OK el mismo día
 # Marcar: Cl@ve (cierre con Autofirm@)
 # Global: tramite_completo
-# Acción: notas VALIDATION previos + 8-15 + Firma OK Autofirm@ (js v1.3.105)
-# Sin cierre: error_validacion → siempre Portafib + mail general (Cl@ve o cert)
+# Acción: notas VALIDATION previos + 8-15 + Firma OK Autofirm@ (js v1.3.117: VALIDATION → SEGURETAT)
+# Sin cierre: error_validacion → 1.- PENDENTS SEGURETAT (no Portafib)
 # Caso limpio solo VALIDATION: C-salvati_validation_clave.txt
 TR_FIN - Fi de tràmit	15/05/2026 22:43:05	P9Q2R4S7-T5UVW8XY-Z1AB3CD0	90000041Y	HUGO NAVARRO BENITEZ	IG_SUBVEN_EN_DESB25	IGOIB	1	9007140	9005370		
 TR_REG - Registre tràmit	15/05/2026 22:43:05	P9Q2R4S7-T5UVW8XY-Z1AB3CD0	90000041Y	HUGO NAVARRO BENITEZ	IG_SUBVEN_EN_DESB25	IGOIB	1	9007140	9005370		

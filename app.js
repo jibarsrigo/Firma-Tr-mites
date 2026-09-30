@@ -373,6 +373,8 @@ VERSION 1.3.114 - error_registro_marcam_reintentar: Firma OK + «Excepció al re
 VERSION 1.3.115 - error_registro_marcam_reintentar: Acción más clara (expediente corrupto → trámite de nuevo); sin plantilla de correo.
 
 VERSION 1.3.116 - error_anexo_firma_incorrecta: PDF adjunto (PAdES/AnexarFirmado) ≠ VALIDATION InvalidNotSigner del trámite; funcionales.
+
+VERSION 1.3.117 - error_validacion_certificado: CAI a 1.- PENDENTS SEGURETAT (OCSP/@Firma; precedente ACCV); no Portafib.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -384,7 +386,7 @@ VERSION 1.3.116 - error_anexo_firma_incorrecta: PDF adjunto (PAdES/AnexarFirmado
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.116";
+const VERSION_JS = "1.3.117";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1496,7 +1498,7 @@ btnDetalles.onclick = () => {
   <li>· <b>tramite_completo:</b> Cl@ve KO previos + SGO Autofirm@; Portafib/fluxe DESPUÉS de REG/FIN ≠ «previo» (no escalar; botón registro).</li>
   <li>· <b>QAA:</b> bajo TR_CAR → Accediu/BAIX (Cl@ve) o sesión/modo privado (Certificado); si global es fallo_formulario, sustituye Qué hacer (sin mail formulario).</li>
   <li>· <b>error_firma_core_invalida:</b> SignatureCore:InvalidSignature (ASN.1) → VALIDe cert + firma; no confundir con cadena ni cliente Windows genérico.</li>
-  <li>· <b>InvalidNotSigner:</b> Cl@veFirm@ → Portafib (no VALIDe); Autofirm@ → VALIDe primero; si OK → Portafib.</li>
+  <li>· <b>InvalidNotSigner:</b> Cl@veFirm@ o Autofirm@ → 1.- PENDENTS SEGURETAT (OCSP/@Firma; precedente ACCV); no Portafib. VALIDe solo opcional si Autofirm@ de un solo NIF.</li>
   <li>· <b>NIF otro certificado:</b> detecta ES «associado»/asociado + NIE; KO tras Firma OK manda (multi-firma / reintento).</li>
   <li>· <b>KO tras Firma OK:</b> si hay Firma KO después del último TR_SGO, manda ese KO (no firma_correcta).</li>
   <li>· <b>Fase de firma:</b> no se cierra solo con TR_SGO; hace falta TR_RGI (o REG/FIN). Multi-firma / KO tras un OK.</li>
@@ -1508,7 +1510,7 @@ btnDetalles.onclick = () => {
   <li>· <b>error_registro_marcam_reintentar:</b> Firma OK + «Excepció al registrar. Marcam per reintentar» sin TR_REG → nueva solicitud (no reintentar el mismo expediente).</li>
   <li>· <b>error_anexo_firma_incorrecta:</b> PDF adjunto (PAdES / AnexarFirmado) sin TR_SGI → funcionales; no es VALIDATION InvalidNotSigner del trámite.</li>
   <li>· <b>error_clave_firma_cancelada:</b> Acción Qué pasa/Qué hacer (emisión mismo día + móvil; probar ordenador; nota QAA/sin cierre si aplica).</li>
-  <li>· <b>error_validacion_certificado:</b> Acción Qué pasa/Qué hacer; método del KO (Cl@veFirm@ / Autofirm@) dentro de Qué pasa.</li>
+  <li>· <b>error_validacion_certificado:</b> Acción Qué pasa/Qué hacer; CAI a 1.- PENDENTS SEGURETAT (textos Cl@veFirm@ / Autofirm@; OCSP; precedente ACCV).</li>
   <li>· Fixtures nuevas en <b>trazas_prueba/</b> (Morey, Olmedo, Insulars, Segui, Salvati, etc.).</li>
   <li>· Comentarios de versión: bloque VERSION en app.js, cabecera HTML, <b>_changelog</b> en acciones.json.</li>
 
@@ -1535,7 +1537,7 @@ btnDetalles.onclick = () => {
   <li>✔ <b>firma_correcta_portafib</b> — error Portafib previo en traza con firma/cierre.</li>
   <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@ (Qué pasa/Qué hacer).</li>
   <li>✔ <b>error_firma_fitxers_500</b> — KO fitxers 500 / custodia / transacción caducada (servicio Cl@ve Firma).</li>
-  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → Cl@ve: Portafib; cert local: VALIDe primero.</li>
+  <li>✔ <b>Validación @firma</b> (InvalidNotSignerCertificate) → 1.- PENDENTS SEGURETAT (OCSP/@Firma); no Portafib.</li>
   <li>✔ <b>Cadena / NIF certificado:</b> InvalidCertificateChain; NIF distinto (prioridad por último KO).</li>
   <li>✔ <b>Autofirma:</b> SAF_27, cancelada, entorno sin cierre, cliente por SO; notas antivirus/red; SO SistraHelp (Linux≈Android / Mac≈posible iOS).</li>
   <li>✔ <b>Método de firma en Firma KO</b> (Autofirm@ / Cl@veFirm@) manda sobre selector del técnico.</li>
@@ -1577,7 +1579,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
   error_clave_movil_no_permitida: "CLAVE_MOVIL no permitida en el trámite → Permanente o certificado. Qué pasa/Qué hacer.",
   error_clave_movil: "Solo Inicio firma sin cierre, o KO sin código Cl@ve (posible móvil / Autofirma Android). Qué pasa/Qué hacer.",
   error_firma_fitxers_500: "Error fitxers 500 / custodia / transacción caducada. Servicio de firma. Qué pasa/Qué hacer.",
-  error_validacion_certificado: "InvalidNotSigner (@firma). Cl@ve → Portafib; cert local → VALIDe y solo entonces servicio.",
+  error_validacion_certificado: "InvalidNotSigner (@firma). CAI a 1.- PENDENTS SEGURETAT (OCSP/@Firma; ACCV). No Portafib.",
   error_certificado_nif_no_coincide: "Firmó con certificado de otro NIF (último KO).",
   error_cadena_certificacion: "InvalidCertificateChain. Revisar cadena / VALIDe; casuística rara (llamar).",
   error_firma_core_invalida: "SignatureCore:InvalidSignature (ASN.1). VALIDe cert+firma; certificado/Autofirma.",
@@ -2471,7 +2473,7 @@ else if (hayErrorNifNoCoincide &&
 }
 else if (hayErrorValidacionCertificado) {
 
-  // 👉 @firma no validó el certificado (InvalidNotSignerCertificate). Cl@ve → Portafib; Autofirm@ → VALIDe primero.
+  // 👉 @firma no validó el certificado (InvalidNotSignerCertificate). CAI a SEGURETAT (OCSP/@Firma); no Portafib.
   idReglaDetectada = "error_validacion_certificado";
 
 }
@@ -2829,13 +2831,14 @@ else if (idReglaDetectada === "error_validacion_certificado") {
     + literalFlujo("InvalidNotSignerCertificate") + ". ";
   if (firmaClaveEnKo) {
     motivo += literalFlujo("Método de firma: Cl@veFirm@") + " en el Firma KO. "
-      + "Firma con Cl@ve Permanente: el fallo está en la validación del certificado en servidor (@firma), no en las credenciales Cl@ve del ciudadano.";
+      + "Firma con Cl@ve Permanente: el fallo está en la validación del certificado en servidor (@firma), no en las credenciales Cl@ve del ciudadano. "
+      + "Escalar a 1.- PENDENTS SEGURETAT (OCSP / políticas @Firma); no a Portafib.";
     if (esCert && !esClave) {
       motivo += " El KO indica Cl@ve Permanente, no certificado local / FIRE.";
     }
   } else if (firmaCertEnKo) {
     motivo += literalFlujo("Método de firma: Autofirm@") + " en el Firma KO. "
-      + "Certificado local (FIRE): comprobar en VALIDe (validar + firmar) antes de dar por fallo del servicio.";
+      + "Certificado local: escalar a 1.- PENDENTS SEGURETAT (@Firma / OCSP). VALIDe (validar + firmar) solo si es un solo NIF sin oleada.";
     if (esClave && !esCert) {
       motivo += " El KO indica certificado local, no Cl@ve Permanente.";
     }
@@ -3175,16 +3178,16 @@ if (accionData && accionData.accion) {
     + escapeHtml(String(texto ?? "")) + "\"</span>";
 
   if (idReglaDetectada === "error_validacion_certificado") {
-    // Método del KO al inicio de Qué pasa (Cl@ve → servicio; Autofirm@ → VALIDe primero).
+    // Método del KO al inicio de Qué pasa (ambos → SEGURETAT; VALIDe solo opcional en Autofirm@).
     let notaMetodoVal;
     if (hayMetodoFirmaClaveEnKo) {
-      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente). No se puede comprobar en VALIDe → tratar como servicio de validación.";
+      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente). No se puede comprobar en VALIDe → 1.- PENDENTS SEGURETAT (OCSP / políticas @Firma).";
     } else if (hayMetodoFirmaAutofirmaEnKo) {
-      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Autofirm@ (certificado local). Comprobar en VALIDe (validar + firmar) antes de dar por fallo del servicio.";
+      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Autofirm@ (certificado local). Escalar a 1.- PENDENTS SEGURETAT. VALIDe (validar + firmar) solo si es un solo NIF, sin oleada.";
     } else {
       notaMetodoVal =
         "Confirmar el Método de firma abriendo el Firma KO (doble clic en SistraHelp): Cl@veFirm@ o Autofirm@. "
-        + "Cl@ve → escalar Portafib. Certificado local → VALIDe primero.";
+        + "En ambos casos: 1.- PENDENTS SEGURETAT (no Portafib). Pegar el texto CAI de Cl@veFirm@ o Autofirm@.";
     }
     textoAccion = insertarBloqueEnQuePasaAccion(textoAccion, notaMetodoVal);
   }
@@ -3254,7 +3257,7 @@ if (accionData && accionData.accion) {
         : (hayMetodoFirmaAutofirmaEnKo ? "Autofirm@" : "ver Método en el KO");
       notasPrevias.push(
         "Hubo Firma KO de validación @firma (InvalidNotSignerCertificate) con " + metVal + ". "
-        + "Ese fallo es del servicio de validación (escalable a Portafib si aún estuviera activo); "
+        + "Ese fallo es del servicio de validación (@Firma / OCSP; escalable a 1.- PENDENTS SEGURETAT si aún estuviera activo); "
         + "puede afectar solo a algunos ciudadanos. El trámite acabó cerrado."
       );
     }
