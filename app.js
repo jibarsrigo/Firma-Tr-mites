@@ -375,6 +375,8 @@ VERSION 1.3.115 - error_registro_marcam_reintentar: Acción más clara (expedien
 VERSION 1.3.116 - error_anexo_firma_incorrecta: PDF adjunto (PAdES/AnexarFirmado) ≠ VALIDATION InvalidNotSigner del trámite; funcionales.
 
 VERSION 1.3.117 - error_validacion_certificado: CAI a 1.- PENDENTS SEGURETAT (OCSP/@Firma; precedente ACCV); no Portafib.
+
+VERSION 1.3.118 - InvalidNotSigner + Cl@veFirm@: el certificado de firma de Cl@ve Permanente no se comprueba en VALIDe (a diferencia de FNMT o DNIe).
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -386,7 +388,7 @@ VERSION 1.3.117 - error_validacion_certificado: CAI a 1.- PENDENTS SEGURETAT (OC
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.117";
+const VERSION_JS = "1.3.118";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -3181,7 +3183,7 @@ if (accionData && accionData.accion) {
     // Método del KO al inicio de Qué pasa (ambos → SEGURETAT; VALIDe solo opcional en Autofirm@).
     let notaMetodoVal;
     if (hayMetodoFirmaClaveEnKo) {
-      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@ (Cl@ve Permanente). No se puede comprobar en VALIDe → 1.- PENDENTS SEGURETAT (OCSP / políticas @Firma).";
+      notaMetodoVal = "En este caso el Firma KO indica Método de firma: Cl@veFirm@. El certificado de firma de Cl@ve Permanente NO se puede comprobar en VALIDe como lo haríamos con un FNMT o DNI. Escalar a 1.- PENDENTS SEGURETAT (OCSP / políticas @Firma).";
     } else if (hayMetodoFirmaAutofirmaEnKo) {
       notaMetodoVal = "En este caso el Firma KO indica Método de firma: Autofirm@ (certificado local). Escalar a 1.- PENDENTS SEGURETAT. VALIDe (validar + firmar) solo si es un solo NIF, sin oleada.";
     } else {
