@@ -111,9 +111,19 @@ P-vidal_registro_marcam_reintentar.txt
   Clara Vidal Pons · SUBV_CONC_DOC (IGOIB) · Autofirm@
   Firma OK → TR_RGI ×4 → «Excepció al registrar. Marcam per reintentar.» (RegistroSolicitudException)
   Sin TR_REG / TR_FIN; luego TR_CAR
-  CAU: expediente corrupto → nueva solicitud (no reintentar el mismo)
+  CAU: repite el literal en cada intento → expediente corrupto → nueva solicitud
   Global (js v1.3.115 / acciones v1.3.112): error_registro_marcam_reintentar (no firma_correcta)
+  Acción (acciones v1.3.120): primero recargar desde Carpeta Ciudadana y registrar; nueva solicitud solo si repite
   Contraste: P-registro_presentador_insulars.txt; no es C-8-15_y_101_escribano.txt (otro RegistroSolicitud)
+  Contraste: P-sastre_marcam_recupera_carpeta.txt (mismo literal, pero recupera)
+
+P-sastre_marcam_recupera_carpeta.txt
+  Andreu Sastre Coll · INSTANCIA_GENERICA_SR (SIMPL_DOC) · recorte sin TR_SGO/TR_REG
+  «Excepció al registrar. Marcam per reintentar.» 13:07 → TR_CAR (Carpeta Ciudadana) 13:12 → TR_RGI 13:16:17 → TR_FIN 13:16:19
+  CAU: el literal NO implica siempre expediente corrupto; cargando desde Carpeta registró a la segunda
+  Marcar: cualquier método (manda el cierre)
+  Global: tramite_finalizado (TR_FIN sin TR_REG en el recorte) — no error_registro_marcam_reintentar
+  Valida: el ERROR Marcam previo no secuestra el cierre; motiva el Qué hacer de la regla Marcam (js v1.3.119)
 
 F-campillo_saf27_solo_ko.txt
   (Sustituye F-saf27_sintetico.txt) Rodrigo Campillo · IG_SUBVEN_TRANS_VEHIC · solo KO

@@ -377,6 +377,7 @@ VERSION 1.3.116 - error_anexo_firma_incorrecta: PDF adjunto (PAdES/AnexarFirmado
 VERSION 1.3.117 - error_validacion_certificado: CAI a 1.- PENDENTS SEGURETAT (OCSP/@Firma; precedente ACCV); no Portafib.
 
 VERSION 1.3.118 - InvalidNotSigner + Cl@veFirm@: el certificado de firma de Cl@ve Permanente no se comprueba en VALIDe (a diferencia de FNMT o DNIe).
+VERSION 1.3.119 - error_registro_marcam_reintentar: el registro puede recuperarse cargando desde Carpeta Ciudadana (Sastre); nueva solicitud solo si repite el literal.
 */
 
 // CÓMO AÑADIR REGLAS:
@@ -388,7 +389,7 @@ VERSION 1.3.118 - InvalidNotSigner + Cl@veFirm@: el certificado de firma de Cl@v
 
 // 🔹 VERSION JS (editable manual) 
 // Cambios 2026-06-12: flujo visual, marco blanco compacto y mostrar solo tras analizar
-const VERSION_JS = "1.3.118";
+const VERSION_JS = "1.3.119";
 
 // Variable global donde se guarda el contenido de acciones.json
 let accionesJSON = null;
@@ -1509,7 +1510,7 @@ btnDetalles.onclick = () => {
   <li>· <b>8-15 + 6-15</b>: manda 8-15; Flujo muestra 6-15; Qué pasa: sesión caducada/inválida (tras revocar o por tiempo); mismo mail 8-15.</li>
   <li>· <b>Portafib:</b> Acción Qué pasa/Qué hacer; {lit} con fluxe, sesión y/o 502 Proxy / ConnectException.</li>
   <li>· <b>error_registro_presentador:</b> Firma OK + «registrat pel presentador» sin TR_REG → incidencias (no reabrir firma).</li>
-  <li>· <b>error_registro_marcam_reintentar:</b> Firma OK + «Excepció al registrar. Marcam per reintentar» sin TR_REG → nueva solicitud (no reintentar el mismo expediente).</li>
+  <li>· <b>error_registro_marcam_reintentar:</b> Firma OK + «Excepció al registrar. Marcam per reintentar» sin TR_REG → cargar desde Carpeta Ciudadana y registrar de nuevo; si repite, nueva solicitud.</li>
   <li>· <b>error_anexo_firma_incorrecta:</b> PDF adjunto (PAdES / AnexarFirmado) sin TR_SGI → funcionales; no es VALIDATION InvalidNotSigner del trámite.</li>
   <li>· <b>error_clave_firma_cancelada:</b> Acción Qué pasa/Qué hacer (emisión mismo día + móvil; probar ordenador; nota QAA/sin cierre si aplica).</li>
   <li>· <b>error_validacion_certificado:</b> Acción Qué pasa/Qué hacer; CAI a 1.- PENDENTS SEGURETAT (textos Cl@veFirm@ / Autofirm@; OCSP; precedente ACCV).</li>
@@ -1535,7 +1536,7 @@ btnDetalles.onclick = () => {
   <li>✔ <b>error_anexo_firma_incorrecta</b> — firma del PDF que adjunta (PAdES); no InvalidNotSigner; funcionales.</li>
   <li>✔ <b>Cierre trámite:</b> TR_SGO ≠ finalizado; TR_FIN / TR_REG / tramite_completo; <b>TR_BOR</b> (borrado) manda sobre KO previos; KO posterior a SGO manda.</li>
   <li>✔ <b>error_registro_presentador</b> — Firma OK + registro presentador sin TR_REG → incidencias.</li>
-  <li>✔ <b>error_registro_marcam_reintentar</b> — Firma OK + «Marcam per reintentar» sin TR_REG → nueva solicitud.</li>
+  <li>✔ <b>error_registro_marcam_reintentar</b> — Firma OK + «Marcam per reintentar» sin TR_REG → recargar desde Carpeta y registrar; si repite, nueva solicitud.</li>
   <li>✔ <b>firma_correcta_portafib</b> — error Portafib previo en traza con firma/cierre.</li>
   <li>✔ <b>Cl@ve:</b> 8–15, 101, 103, 103-15, 104; móvil; CLAVE_MOVIL no permitida; cancelada Cl@veFirm@ (Qué pasa/Qué hacer).</li>
   <li>✔ <b>error_firma_fitxers_500</b> — KO fitxers 500 / custodia / transacción caducada (servicio Cl@ve Firma).</li>
@@ -1594,7 +1595,7 @@ const DESCRIPCION_REGLA_CATALOGO = {
   error_autofirma: "Legacy Autofirma (reserva).",
   error_fire: "Legacy FIRE (reserva).",
   error_registro_presentador: "Firma OK + «registrat pel presentador» sin TR_REG → incidencias. Qué pasa/Qué hacer.",
-  error_registro_marcam_reintentar: "Firma OK + «Marcam per reintentar» sin TR_REG: expediente corrupto → trámite de nuevo. Qué pasa/Qué hacer (sin mail).",
+  error_registro_marcam_reintentar: "Firma OK + «Marcam per reintentar» sin TR_REG: recargar desde Carpeta Ciudadana y registrar; si repite → trámite de nuevo. Qué pasa/Qué hacer (sin mail).",
   firma_correcta: "TR_SGO; fase de firma cerrada solo con TR_RGI (multi-firma). Sin TR_REG/TR_FIN.",
   tramite_registrado: "TR_REG presente; no consta TR_FIN.",
   tramite_finalizado: "TR_FIN presente; no consta TR_REG.",
@@ -3074,7 +3075,7 @@ else if (idReglaDetectada === "error_registro_marcam_reintentar") {
 
   cartelDiagnostico = cartelAzul("Fallo registro");
   fraseDiagnostico = "Firma OK (TR_SGO), pero el registro falla: «Excepció al registrar. Marcam per reintentar.» "
-    + "(RegistroSolicitudException). El expediente no se puede continuar; hay que iniciar una nueva solicitud.";
+    + "(RegistroSolicitudException). Que cargue el trámite desde Carpeta Ciudadana y vuelva a registrar; si repite el literal, nueva solicitud.";
   if (hayRGI) {
     fraseDiagnostico += " Consta Inicio registro (TR_RGI) sin TR_REG.";
   }

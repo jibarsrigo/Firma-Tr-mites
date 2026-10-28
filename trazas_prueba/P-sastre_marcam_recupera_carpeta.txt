@@ -1,0 +1,19 @@
+# Andreu Sastre Coll · INSTANCIA_GENERICA_SR (SIMPL_DOC) · 28/10/2026
+# Recorte pegado por el CAU (sin TR_SGO / TR_REG): solo la cola del registro.
+#
+# Qué pasó: «Excepció al registrar. Marcam per reintentar.» (RegistroSolicitudException) a las 13:07.
+#   El ciudadano cargó el trámite de nuevo desde Carpeta Ciudadana (TR_CAR 13:12) y pulsó Registrar:
+#   TR_RGI 13:16:17 → TR_FIN 13:16:19. El expediente NO quedó corrupto: se registró a la segunda.
+#
+# Contraste: P-vidal_registro_marcam_reintentar.txt (TR_RGI ×4 con la misma excepción, nunca registra → nueva solicitud).
+# Lección CAU: con «Marcam per reintentar», antes de dar el expediente por perdido, cargarlo desde Carpeta Ciudadana
+#   y volver a registrar. Solo si repite el literal tras cargarlo de nuevo → nueva solicitud.
+#
+# Marcar: cualquier método (manda el cierre)
+# Global: tramite_finalizado (hay TR_FIN; TR_REG no está en el recorte) — NO error_registro_marcam_reintentar
+#   (el cartel avisa «no hay Inicio formulario» porque el recorte no lleva TR_INI/TR_FRI; con la traza completa → tramite_completo)
+# Valida: el literal Marcam NO manda cuando hay cierre posterior; Qué pasa de la regla Marcam debe admitir recuperación.
+TR_FIN - Fi de tràmit	28/10/2026 13:16:19	K3PD7WQA-2MZVR8LT-H6NXB4CJ	90000028Q	ANDREU SASTRE COLL	INSTANCIA_GENERICA_SR	SIMPL_DOC	1	5183742	3496185		
+TR_RGI - Inici registre tràmit	28/10/2026 13:16:17	K3PD7WQA-2MZVR8LT-H6NXB4CJ	90000028Q	ANDREU SASTRE COLL	INSTANCIA_GENERICA_SR	SIMPL_DOC	1	5183742	3496185		
+TR_CAR - Càrrega del tràmit	28/10/2026 13:12:25	K3PD7WQA-2MZVR8LT-H6NXB4CJ	90000028Q	ANDREU SASTRE COLL	INSTANCIA_GENERICA_SR	SIMPL_DOC	1	5183742	3496185		
+ERROR - Error	28/10/2026 13:07:00	K3PD7WQA-2MZVR8LT-H6NXB4CJ	90000028Q	ANDREU SASTRE COLL	INSTANCIA_GENERICA_SR	SIMPL_DOC	1	5183742	3496185	Excepció al registrar. Marcam per reintentar.	RegistroSolicitudException
