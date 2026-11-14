@@ -5,80 +5,66 @@ No acortar al recordar: si hace falta, citar o resumir con el mismo nivel de det
 
 ---
 
-## YA HECHO (no volver a pedir como pendiente abierto)
+## YA CERRADO / DESCARTADO (no reabrir salvo que el usuario lo pida)
 
-### Integración Problemas con el Servicio → Incidencias Frecuentes
-- Criterio: **no** enlazar Frecuentes a Problemas; integrar individual + oleada/general en cada apartado.
-- Integrado con bloque «Problema general / con el servicio» donde aplica: Pasarela (+ **Soffid dentro del mismo apartado**), Cl@ve Firma proveedor, Portafib, 8‑15, Autofirma, REGWEB.
-- Acceso Cl@ve · Autofirma: sin bloque servicio (no aplica; el usuario lo rechazó).
-- Tablas/cuadros: **descartados** (dificultan la lectura).
-
-### Links 🔹 (punto 2 de la auditoría)
-- Quitar referencias a anclas muertas de **Incidencias Cl@ve** (Pago, Carpeta, 103, 101/103‑15/104, Cl@ve Móvil). El usuario lo está aplicando / ha aplicado.
-- **Mantener** Evento TR SGX como detalle completo / versión extendida:
-  - 8‑15, 101, 103‑15, 104 (páginas existen).
-  - Texto del enlace = título de la página (ej. `[[Evento TR SGX - Fi firma KO - Código Error 8 - Tipo 15]]`), no «Detalle completo…».
-- 103 sin tipo 15: no hay Evento TR; solo quitar link Cl@ve.
-
----
-
-## PENDIENTE INMEDIATO (seguimos en esta línea de trabajo)
-
-### A) Punto 3 — «no es problema general» en apartados cortos — MATIZ / CASI DESCARTADO
-
-**Decisión del usuario (2026-11-14):** en **101 / 103 / 103‑15 / 104** **no hace falta** escribir «siempre individual / no es problema de servicio»: se entiende porque esos apartados no tienen bloque de oleada, y en Cl@ve Firma proveedor + 8‑15 general ya se dice que solo el 8‑15 puede ser general. El agente está de acuerdo: repetirlo en cada código es ruido.
-
-**Opcional más adelante (solo si confunde en CAU):** una frase mínima en Cl@ve Móvil / Pago / Carpeta / Adjuntos — no prioritario. Adjuntos+`ValidacionFirmaException` → Seguridad ya está en el apartado.
-
-### B) Links 🔹 punto 2
-Usuario aplicando: quitar Cl@ve rotos; Evento TR en 8‑15/101/103‑15/104. Confirmar cerrado cuando lo diga.
+| Tema | Estado |
+|---|---|
+| Integrar Problemas con el Servicio → Incidencias Frecuentes (individual + oleada) | Hecho |
+| Soffid dentro de Pasarela (no apartado propio) | Hecho |
+| Quitar 🔹 a Incidencias Cl@ve rotos; mantener Evento TR 8/101/103‑15/104 | Hecho (usuario) |
+| «Siempre individual» explícito en 101/103/104 | Descartado (redundante) |
+| Artículos completos nuevos por cada apartado de Frecuentes | Descartado (solo Evento TR ya existentes) |
+| Homogeneizar texto Frecuentes | Cerrado (usuario) |
+| Layout Mails (árbol / `[+]`) | Cerrado — integrado en Cl@ve/Cert |
+| Índice visual Frecuentes (colores fase, compacto) | Cerrado (usuario conforme con el resultado) |
+| Tablas/cuadros en Frecuentes | Descartado |
 
 ---
 
-## PENDIENTES APLAZADOS (otro momento; recordar con detalle)
+## PENDIENTE PRINCIPAL (continuar en otro momento) — Links en zonas de color
 
-### 1) Homogeneizar / simplificar Incidencias Frecuentes — CERRADO
+**Qué pidió el usuario (2026-11-14, casi literal):**
+Tanto en **Página principal** como en **Incidencias Cl@ve** e **Incidencias Certificados Locales**, en las **partes con color** (cajas de fase con `border-left` naranja / amarillo / verde / azul / gris), quiere que aparezca **link de todo lo posible**:
+- si ya existe un `span id` / ancla en Incidencias Frecuentes (u otra página válida) → enlazar;
+- si **no** existe ancla pero el caso es enlazable → **crear el span** en Frecuentes (o donde corresponda) y luego el link.
 
-Pedido original: comprensión, unificar, mínimas palabras, misma estructura. Tablas descartadas.
-**Decisión usuario (2026-11-14):** ya está homogeneizado tras el pase apartado a apartado + integración Problemas.
+La idea es **valorar cuántas cosas pueden aparecer en forma de link** (inventario), no inventar texto nuevo de diagnóstico en esas cajas: las cajas siguen siendo el mapa; el detalle sigue en Frecuentes.
 
-**Estado:** Cerrado.
+**Alcance (3 artículos):**
+1. **Página principal** — filas de color del diagnóstico (Acceso, Carga, Formulario/Portafib, Firma, Registro, Cierre) y, si aplica, coherencia con botones inferiores.
+2. **Incidencias Cl@ve** — cada caja de color del itinerario.
+3. **Incidencias Certificados Locales** — igual.
 
-### 2) Artículos completos por apartado — DESCARTADO
+**Cómo retomar (orden de trabajo):**
+1. Listar, por cada caja de color, **todos los casos/literales/códigos** que ya se mencionan o deberían poder saltar (ej. en Firma de Página principal: Cl@ve Móvil, Acceso Cl@ve·Autofirma, 8‑15, 8‑15 general, 101, 103, 103‑15, 104, cancelada, 500, VALIDATION, 6‑15, Autofirma, SAF_27, NIF/cadena, cliente…).
+2. Cruzar con anclas reales de **Incidencias Frecuentes** (y Evento TR si aplica).
+3. Marcar: **ya linkeado** / **existe ancla pero falta link** / **hay que crear span** / **no merece link** (demasiado genérico o duplicado).
+4. Corregir links rotos detectados de paso (ej. en Página principal se vieron `#IF_Clave10115` y `#IF_Clave_10415` que no son los ids canónicos `#IF_Clave101` / `#IF_Clave_104`).
+5. Aplicar cambios caja a caja (mismo estilo visual; solo enriquecer enlaces).
+6. No saturar: si una línea queda ilegible de tantos links, agrupar (como ya se hace con `·`) sin perder destinos.
 
-**Decisión del usuario (2026-11-14):** en Incidencias Frecuentes estará **todo**. No crear páginas nuevas «artículo completo» por cada apartado.
+**Ejemplo de huecos conocidos al dejar el pendiente:**
+- Página principal · Firma: varios códigos ya enlazan; revisar que 101/104 apunten a ids correctos; cancelada / 500 / VALIDATION / 6‑15 van al proveedor genérico — valorar anclas finas o subtítulos con `span` en Frecuentes.
+- Cierre en Página principal: hoy sin link (trámite completo) — ¿enlazar a algo en Frecuentes o dejar sin link?
+- Cl@ve / Certificados: auditar cada caja de color frente al índice nuevo de Frecuentes.
 
-**Excepción puntual (ya existente, mantener link):** Evento TR SGX de **8‑15**, **101**, **103‑15**, **104** (versión extendida del error). Nada más por simetría.
+**Estado:** Pendiente — aplazado a otro momento. Recordar con este detalle.
 
-**Estado:** Descartado (salvo Evento TR ya enlazados).
+---
 
-### 3) Rediseño del índice visual superior de Incidencias Frecuentes — CASI CERRADO
+## OTROS APLAZADOS (menor / otro frente)
 
-Colores alineados con Página principal (Acceso/Carga naranja, Formulario amarillo, Firma verde, Registro azul). Compacto; Acceso y Formulario separados. Usuario valorando resultado; si confirma OK → cerrar.
-
-**Estado:** Pendiente confirmación usuario.
-
-### 4) Layout de la página Mails — CERRADO / DESCARTADO COMO PENDIENTE
-
-**Decisión usuario (2026-11-14):** eliminado de pendientes; el flujo + detalles quedaron **muy bien integrados en Incidencias Cl@ve / Certificados** (ya no hace falta retomar ese layout en Mails como tarea).
-
-**Estado:** Cerrado.
-
-### 5) Destino de la página «Problemas con el Servicio»
-
-Frecuentes ya no debe depender de ella. Queda decidir más adelante: dejarla histórica, vaciarla, redirigir a Frecuentes, o actualizar sus links rotos a Cl@ve/Certificados. No bloquea el trabajo actual en Frecuentes.
-
+### Destino de la página «Problemas con el Servicio»
+Frecuentes ya no depende de ella. Decidir: histórica, vaciar, redirigir a Frecuentes, o arreglar sus links rotos a Cl@ve/Cert.
 **Estado:** Aplazado.
 
-### 6) Estilo UI del analizador (teal en títulos Qué pasa / Qué hacer)
-
-Pendiente menor del analizador web (no MediaWiki). Ver `acciones-que-pasa-que-hacer.mdc`.
-
+### Estilo UI del analizador (teal en títulos Qué pasa / Qué hacer)
+No es MediaWiki. Ver `acciones-que-pasa-que-hacer.mdc`.
 **Estado:** Aplazado / otro frente.
 
 ---
 
 ## Cómo cerrar
 
-Cuando el usuario marque un punto como listo, actualizar este archivo (marcar hecho o borrar el bloque) y no volver a recordarlo.
+Cuando el usuario marque un punto como listo, actualizar este archivo y no volver a recordarlo.
 Al recordar, **no reducir a una frase** si eso pierde el matiz; usar este documento como fuente.
