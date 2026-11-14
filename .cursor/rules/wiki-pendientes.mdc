@@ -69,7 +69,7 @@ Antes, en Incidencias Frecuentes, varios apartados solo tenían un **link a otra
 - Acceso Cl@ve·Autofirma: sin bloque servicio (no aplica).
 - **Pendiente inmediato tras auditoría del código completo:**
   1. **Soffid** — **integrado en `#IF_Pasarela`** (no apartado propio). Al rediseñar el índice, opcional renombrar la entrada Acceso para mencionar Soffid.
-  2. **Quitar 🔹 rotos** aún presentes: Pago, Carpeta, 103, 103‑15, 101, 104, Cl@ve Móvil (todos a Incidencias Cl@ve); opcional decidir si se mantienen `Evento TR SGX…` 101/103‑15/104.
+  2. **Links 🔹:** quitar rotos a Incidencias Cl@ve (Pago, Carpeta, 103, Móvil, y el de Cl@ve en 101/103‑15/104). **Mantener** Evento TR SGX como detalle completo: 8‑15, 101, 103‑15, 104 (existen y el usuario quiere el link). 103 sin tipo 15: solo quitar Cl@ve (no hay Evento TR).
   3. Reforzar en 101/103/103‑15/104/Cl@ve Móvil/Pago/Carpeta/Adjuntos una línea **«no es problema general / servicio»** (o cuándo sí escalar Seguridad en adjuntos validación).
   4. Índice superior — sigue aplazado.
 
