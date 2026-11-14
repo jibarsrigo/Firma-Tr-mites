@@ -70,6 +70,21 @@ Antes, en Incidencias Frecuentes, varios apartados solo tenían un **link a otra
 - Orden: empezar por `#IF_Pasarela`; seguir con el siguiente que pase el usuario.
 - Sigue aplazado el rediseño del **índice superior** (sección 3).
 
+### Links 🔹 inferiores rotos / circularidad
+
+**Qué pidió el usuario:** Los links inferiores de cada apartado (`: 🔹 [[Incidencias Cl@ve#…]]`, `[[Incidencias Certificados Locales#…]]`, a veces `[[Problemas con el Servicio#…]]`) **se han roto** porque Incidencias Cl@ve e Incidencias Certificados Locales **ya no tienen la información detallada**: son itinerarios; el detalle está en Incidencias Frecuentes. Si algo se referenciaba allí y ya no existe, hay que **integrarlo en Frecuentes** (si faltaba) o **quitar/sustituir el link**.
+
+**Criterio de trabajo (acordar al revisar cada apartado):**
+1. **Incidencias Cl@ve / Certificados** — no enlazar desde Frecuentes a anclas de detalle que ya no existen (circular: Frecuentes → itinerario → Frecuentes). Quitar esos 🔹 salvo que se quiera un enlace genérico al itinerario (sin ancla de contenido muerto), y solo si aporta.
+2. **Problemas con el Servicio** — decidir por cada link: ¿esa página tiene contenido **propio** (oleada, escalado, CAI) que Frecuentes no tiene? Si sí → mantener. Si es duplicado vacío o ancla muerta → integrar lo útil en Frecuentes y quitar el 🔹.
+3. **Evento TR SGX / otras páginas largas** (p. ej. artículo 8‑15) — mantener solo si la página sigue existiendo y aporta; si no, el detalle queda en Frecuentes (idea de artículo completo sigue aplazada).
+4. Al revisar cada apartado: auditar la lista final de 🔹 y dejar solo enlaces vivos y útiles.
+
+**Ejemplo Pasarela:** quitar o sustituir  
+`[[Problemas con el Servicio#AccesoAcceso_Clave_Pasarela]]`,  
+`[[Incidencias Cl@ve#AccesoAcceso_Soffid_Clave]]`,  
+`[[Incidencias Certificados Locales#AccesoAcceso_Certificado]]`.
+
 ---
 
 ## Cómo cerrar
