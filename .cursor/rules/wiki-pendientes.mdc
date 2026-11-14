@@ -37,13 +37,12 @@ Usuario aplicando: quitar Cl@ve rotos; Evento TR en 8‑15/101/103‑15/104. Con
 
 ## PENDIENTES APLAZADOS (otro momento; recordar con detalle)
 
-### 1) Homogeneizar / simplificar el resto de Incidencias Frecuentes (comprensión)
+### 1) Homogeneizar / simplificar Incidencias Frecuentes — CERRADO
 
-Pedido original: revisar **todo** Frecuentes para mejorar comprensión; unificar apartados si es posible; mostrar de forma más sencilla; máxima claridad con **mínimas palabras**; misma organización/estilo en todos los apartados. Se valoraron tablas y se **descartaron**.
+Pedido original: comprensión, unificar, mínimas palabras, misma estructura. Tablas descartadas.
+**Decisión usuario (2026-11-14):** ya está homogeneizado tras el pase apartado a apartado + integración Problemas.
 
-Estado real ahora: varios apartados grandes ya están reescritos (Pasarela+Soffid, Cl@ve Firma, Portafib, 8‑15, Autofirma, REGWEB) con estructura Qué pasa / Traza / … / Problema general. Los cortos (101, 103, Pago…) aún no están homogeneizados del todo (falta sobre todo el matiz «no servicio» del punto A). Cuando se cierre A, valorar si hace falta otro pase solo de tono/longitud.
-
-**Estado:** Parcialmente avanzado; no cerrado.
+**Estado:** Cerrado.
 
 ### 2) Artículos completos por apartado — DESCARTADO
 
@@ -59,11 +58,11 @@ El índice (tres cajas Acceso / Firma / Registro+Funcionales bajo `__NOTOC__`) *
 
 **Estado:** Aplazado — no cerrado.
 
-### 4) Layout de la página Mails — APLAZADO
+### 4) Layout de la página Mails — CERRADO / DESCARTADO COMO PENDIENTE
 
-El usuario había añadido en Mails (castellano) un árbol ASCII del flujo + disclosure `[+]` con tabla de eventos. Le gustaba la firma minimalista y el `[+]`, pero tras los cambios de Página principal / Cl@ve / Certificados no quedó claro si estaba bien integrado. Lo dejó explícitamente «en pendientes para luego».
+**Decisión usuario (2026-11-14):** eliminado de pendientes; el flujo + detalles quedaron **muy bien integrados en Incidencias Cl@ve / Certificados** (ya no hace falta retomar ese layout en Mails como tarea).
 
-**Estado:** Aplazado — no cerrado.
+**Estado:** Cerrado.
 
 ### 5) Destino de la página «Problemas con el Servicio»
 
