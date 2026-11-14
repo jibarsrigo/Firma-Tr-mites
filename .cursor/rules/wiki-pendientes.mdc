@@ -84,7 +84,19 @@ Antes, en Incidencias Frecuentes, varios apartados solo tenían un **link a otra
 7. Qué hacer con la página **Problemas con el Servicio** en sí (vaciar, redirigir, o dejar histórica) → decidir más adelante; mientras, Frecuentes no depende de ella.
 8. Páginas tipo **Evento TR SGX / 8‑15 largo**: misma lógica si se tocan — preferir detalle en Frecuentes; enlace solo si se decide mantener artículo profundo (idea aplazada).
 
-**Pasarela (`#IF_Pasarela`):** integrar comprobaciones de oleada (pasarela.gob, Carpeta, DGT, estado); **quitar** los tres 🔹 (Problemas + Cl@ve + Certificados). Sin link a Problemas.
+**Integración Problemas → Frecuentes (en curso):** en cada apartado de Frecuentes debe quedar **explícito** cuándo es **problema general / con el servicio** (varios NIF, misma franja, mismo patrón) frente a caso individual. Sin links a Problemas.
+
+| Problemas con el Servicio | Apartado Frecuentes |
+|---|---|
+| `#AccesoAcceso_Clave_Pasarela` | `#IF_Pasarela` |
+| `#AccesoAcceso_Soffid` | **Nuevo** (o bloque Acceso) — aún no existe en Frecuentes |
+| `#AccesoSesion_Portafib` (+ excepción formulario) | `#IF_Portafib` |
+| `#FirmaMetodo_Clave` | `#Cl@ve_Móvil_…` + parte método en `#IF_Autofirma` (casi nunca general) |
+| `#FirmaProveedor_ClaveGeneral` (8‑15 oleada) | `#IF_Clave_Firma_Proveedor` + `#IF_Clave815` / `#Clave815General` |
+| `#FirmaProveedor_AutofirmaGeneral` / FIRE | `#IF_Autofirma` |
+| `#Registro_REGWEB` | `#IF_REGWEB` |
+
+Códigos 101/103/103‑15/104: en Problemas se marcan **siempre individuales** — reforzar eso en sus apartados.
 
 ---
 
