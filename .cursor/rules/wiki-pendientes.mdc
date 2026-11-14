@@ -64,7 +64,11 @@ Antes, en Incidencias Frecuentes, varios apartados solo tenían un **link a otra
 
 ## En curso (2026-11-14)
 
-- Prototipo de estilo homogéneo de apartados en Incidencias Frecuentes, empezando por el más denso: **Autofirma (`#IF_Autofirma`)**. Si el usuario lo valida, aplicar el mismo esqueleto al resto.
+- **Incidencias Frecuentes — revisión texto apartado a apartado** (sin cambiar el aspecto visual que ya gusta: blockquote Qué pasa, subtítulos, listas `:` / `•`, Qué hacer, links).
+- **Descartado:** rediseño con tablas/cuadros y el prototipo de Autofirma con ese estilo. No volver a proponer cuadros.
+- **No** se crearán (de momento) páginas independientes por apartado: cada apartado de Frecuentes debe entenderse solo y cubrir **todas** las opciones del caso.
+- Orden: empezar por `#IF_Pasarela`; seguir con el siguiente que pase el usuario.
+- Sigue aplazado el rediseño del **índice superior** (sección 3).
 
 ---
 
