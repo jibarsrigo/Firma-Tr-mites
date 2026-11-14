@@ -24,27 +24,14 @@ No acortar al recordar: si hace falta, citar o resumir con el mismo nivel de det
 
 ## PENDIENTE INMEDIATO (seguimos en esta línea de trabajo)
 
-### A) Punto 3 de la auditoría — «no es problema general / servicio» en apartados cortos
+### A) Punto 3 — «no es problema general» en apartados cortos — MATIZ / CASI DESCARTADO
 
-**Qué falta:** En los apartados que **casi nunca** (o nunca) son oleada de servicio, dejar **explícito** que no se escale como problema general / con el servicio, alineado con lo que ya dicen Pasarela/8‑15/Autofirma/Portafib/REGWEB.
+**Decisión del usuario (2026-11-14):** en **101 / 103 / 103‑15 / 104** **no hace falta** escribir «siempre individual / no es problema de servicio»: se entiende porque esos apartados no tienen bloque de oleada, y en Cl@ve Firma proveedor + 8‑15 general ya se dice que solo el 8‑15 puede ser general. El agente está de acuerdo: repetirlo en cada código es ruido.
 
-Apartados a tocar (texto corto, misma estructura visual):
+**Opcional más adelante (solo si confunde en CAU):** una frase mínima en Cl@ve Móvil / Pago / Carpeta / Adjuntos — no prioritario. Adjuntos+`ValidacionFirmaException` → Seguridad ya está en el apartado.
 
-| Apartado | Qué reforzar |
-|---|---|
-| **101** | Siempre individual (credencial/registro). Aunque haya muchos casos, no es caída Cl@ve Firma. |
-| **103** | Siempre individual (contraseña). No confundir con 103‑15 ni con servicio. |
-| **103‑15** | Siempre individual (certificados bloqueados). Si va con 8‑15, manda 103‑15. No es oleada 8‑15. |
-| **104** | Siempre individual (registro débil). |
-| **Cl@ve Móvil** | Método; el proveedor Cl@ve no llega a devolver código. No es problema de servicio Cl@ve Firma ni Autofirma. |
-| **Pago** | Funcional; no es firma / Portafib / Cl@ve / Autofirma; no escalar como servicio de firma. |
-| **Carpeta** | Acceso al reabrir; QAA / móvil. No escalar como firma/servicio por ver Cargas. |
-| **Adjuntos** | Casi siempre funcional / fichero del ciudadano. `ValidacionFirmaException` → escalar **Seguridad** (no oleada Autofirma/Portafib). El mail «problema general» orientado al anexo no es caída de firma. |
-
-**Cómo:** una línea o bloque breve «Problema general / con el servicio» = no aplica (o la excepción Seguridad en adjuntos), sin rediseñar el apartado.
-
-### B) Confirmar que el punto 2 quedó aplicado del todo
-Si el usuario aún no ha quitado todos los 🔹 Cl@ve o no ha puesto el Evento TR en 8‑15, terminarlo. Luego marcar cerrado.
+### B) Links 🔹 punto 2
+Usuario aplicando: quitar Cl@ve rotos; Evento TR en 8‑15/101/103‑15/104. Confirmar cerrado cuando lo diga.
 
 ---
 
@@ -58,15 +45,13 @@ Estado real ahora: varios apartados grandes ya están reescritos (Pasarela+Soffi
 
 **Estado:** Parcialmente avanzado; no cerrado.
 
-### 2) Artículos completos independientes por cada apartado
+### 2) Artículos completos por apartado — DESCARTADO
 
-Idea original: una página profunda por cada caso de Frecuentes.
+**Decisión del usuario (2026-11-14):** en Incidencias Frecuentes estará **todo**. No crear páginas nuevas «artículo completo» por cada apartado.
 
-**Avance:** para códigos Cl@ve 8‑15 / 101 / 103‑15 / 104 ya existen **Evento TR SGX…** y se mantienen como link de versión extendida. No hace falta inventar páginas nuevas para esos.
+**Excepción puntual (ya existente, mantener link):** Evento TR SGX de **8‑15**, **101**, **103‑15**, **104** (versión extendida del error). Nada más por simetría.
 
-**Sigue pendiente decidir:** ¿el mismo modelo (página larga + link al final) para otros apartados (Pasarela, Portafib, Autofirma, REGWEB, Adjuntos…)? Solo si aportan más que Frecuentes; no por simetría.
-
-**Estado:** Parcial (códigos Cl@ve OK); resto aplazado.
+**Estado:** Descartado (salvo Evento TR ya enlazados).
 
 ### 3) Rediseño del índice visual superior de Incidencias Frecuentes — APLAZADO
 
