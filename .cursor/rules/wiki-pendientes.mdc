@@ -1,39 +1,60 @@
 # Wiki CAU — pendientes (recordar hasta cerrar)
 
 Al retomar trabajo de wiki MediaWiki, **recordar al usuario** estos puntos hasta marcarlos hechos.
+No acortar al recordar: si hace falta, citar o resumir con el mismo nivel de detalle que aquí.
 
-## 1) Simplificar y homogeneizar Incidencias Frecuentes
+---
 
-**Pedido:** Revisar **todo** el contenido de Incidencias Frecuentes para:
-- Mejorar comprensión.
-- Unificar apartados si es posible (sin perder información segura).
-- Mostrar apartados de forma más sencilla.
-- Donde ayude: sustituir párrafos por formatos compactos (p. ej. pequeña tabla) si reduce palabras y aclara.
-- Máxima claridad con **mínimas palabras**.
-- Revisar la **organización** de cada apartado.
-- **Homogeneizar** estructura y estilo entre todos los apartados (mismo patrón visual/editorial).
+## 1) Revisar y simplificar todo Incidencias Frecuentes (comprensión + homogeneidad)
+
+**Qué pidió el usuario (casi literal):**
+Ahora no puede seguir desarrollando la wiki, pero quiere que quede pendiente y se le recuerde:
+revisar **todo el contenido** de Incidencias Frecuentes para **mejorar la comprensión**, **unificar contenido de apartados si es posible**, o **mostrar los apartados de forma más sencilla**. En algún caso se podrían **sustituir párrafos** por algo más compacto —por ejemplo **una pequeña tabla que sustituya texto**— u otros formatos similares. Quiere que **quede claro lo que se explica usando la menor cantidad de palabras**. Luego quiere que se **revise la organización de cada apartado** y **homogeneizar todo**: algo **más sencillo y homogéneo**.
+
+**Objetivo al retomar:**
+- Pasar apartado por apartado de Incidencias Frecuentes.
+- Conservar solo lo que sabemos con seguridad (mismo criterio que al depurar la wiki: verdades casi absolutas).
+- Reducir palabras al mínimo sin perder información útil.
+- Unificar casos que digan casi lo mismo, si se puede sin mezclar casuísticas distintas.
+- Misma estructura / mismo “aspecto editorial” en todos los apartados (no unos muy narrativos y otros muy telegráficos).
+- Valorar tablas u otros formatos cortos donde un párrafo largo se entienda peor.
 
 **Estado:** Pendiente — no cerrado.
 
-## 2) Artículo completo independiente por apartado (idea)
+---
 
-**Pedido:** Valorar una **página/artículo completo independiente** por cada apartado de Incidencias Frecuentes, con explicación en profundidad.
+## 2) Idea: artículo/página completa independiente por cada apartado de Frecuentes
 
-Relacionado con el patrón ya pedido para el **8‑15** (y valorar 101/104): en Frecuentes queda lo operativo; el artículo largo aporta matices (oleada/general, historial, casos límite).
+**Qué pidió el usuario (casi literal):**
+Como idea 2: podría haber una **página/artículo completo independiente de cada apartado** de Incidencias Frecuentes, donde se **explique con profundidad todo**.
+
+**Contexto previo relacionado (no perderlo):**
+Antes, en Incidencias Frecuentes, varios apartados solo tenían un **link a otra página/artículo** que detallaba el caso (el error no se mostraba entero en Frecuentes). Luego se crearon **apartados específicos con detalle dentro de Incidencias Frecuentes** (p. ej. errores **101** y **104**, anclas `#IF_Clave101`, `#IF_Clave_104`). El usuario preguntó si **no queda link al artículo completo**, y si no es oportuno que aparezcan **referenciados como link a página completa**, igual que hay un **artículo/página completo para el 8‑15** que habla del **8‑15 individual** y del **problema general si se repite en muchos casos**.
+
+**Criterio acordado en conversación (matiz):**
+- En Frecuentes: lo operativo (qué pasa / qué hacer / mail), corto y homogéneo.
+- Artículo completo: solo cuando aporta más (matiz individual vs oleada, historial, casos límite) — ahí encaja el 8‑15.
+- Para 101/104 (u otros): enlace a página larga **si existe o se va a mantener**; no inventar páginas solo por simetría.
+- Al final del apartado en Frecuentes, algo del estilo: `→ [[Nombre artículo|artículo completo]]`.
 
 **Qué hacer cuando se retome:**
-1. Decidir si el modelo es: Frecuentes = resumen homogéneo + `→ [[Artículo|artículo completo]]` en cada caso que lo merezca.
-2. Confirmar títulos exactos de páginas largas existentes (8‑15; si hay 101/104 u otras).
-3. No inventar páginas solo por simetría; crear/mantener solo las que se vayan a usar.
-4. En Frecuentes, al final del apartado: enlace `→ [[Nombre|artículo completo]]` cuando exista.
+1. Decidir si se adopta el modelo “un artículo profundo por cada apartado de Frecuentes” o solo para los que lo merecen (empezando por 8‑15 y los que ya existan).
+2. Confirmar **títulos exactos** de las páginas largas (8‑15; 101/104 si las hay; resto).
+3. En cada apartado de Frecuentes que tenga (o vaya a tener) artículo completo: añadir el enlace al final, mismo estilo que el resto de `→ [[…]]`.
+4. No duplicar texto largo en Frecuentes si el detalle profundo vive en la página independiente.
 
-**Estado:** Pendiente — no cerrado. (Incluye el enlace a artículo completo tipo 8‑15.)
+**Estado:** Pendiente — no cerrado. (Incluye enlaces tipo 8‑15 / valorar 101 y 104.)
 
-## 3) Otros wiki (aplazados antes)
+---
 
-- Revisar integración del layout de **Mails** (árbol ASCII / `[+]` disclosure) con el estilo nuevo de Página principal / Cl@ve / Certificados.
-- Estilo UI analizador (si aplica): teal en títulos Qué pasa / Qué hacer — ver `acciones-que-pasa-que-hacer.mdc`.
+## 3) Otros wiki (aplazados antes en la misma línea de trabajo)
+
+- Revisar la integración del layout de **Mails** (árbol ASCII / disclosure `[+]` con tabla de eventos) con el estilo nuevo de Página principal / Incidencias Cl@ve / Incidencias Certificados Locales — el usuario lo dejó “en pendientes para luego” porque le gustaba la firma minimalista del flujo + el `[+]` de detalles, pero no estaba claro si quedaba bien integrado tras los cambios de las otras páginas.
+- Estilo UI del **analizador** (si aplica al retomar ese frente): valorar teal en títulos Qué pasa / Qué hacer — ver `acciones-que-pasa-que-hacer.mdc`.
+
+---
 
 ## Cómo cerrar
 
-Cuando el usuario marque un punto como listo, actualizar este archivo (marcar hecho o borrar el bloque) y no volver a recordarlo.
+Cuando el usuario diga que un punto está listo, actualizar este archivo (marcar hecho o borrar el bloque) y no volver a recordarlo.
+Al recordar, **no reducir a una frase** si eso pierde el matiz; usar este documento como fuente.
