@@ -1,0 +1,26 @@
+# Wiki CAU — pendientes (recordar hasta cerrar)
+
+Al retomar trabajo de wiki MediaWiki, **recordar al usuario** estos puntos hasta marcarlos hechos.
+
+## Pendiente activo — enlaces a artículo completo
+
+**Contexto:** En Incidencias Frecuentes el detalle operativo (qué pasa / qué hacer / mail) está en anclas (`#IF_Clave101`, `#IF_Clave_104`, `#IF_Clave815`, etc.). El **8‑15** además tiene (o tenía) una **página/artículo completo** que cubre el caso individual y el problema general si se repite en muchos casos.
+
+**Pedido del usuario:** Valorar y aplicar el mismo patrón: en Frecuentes, al final del apartado, enlace tipo `→ [[Nombre artículo|artículo completo]]` cuando exista página larga que aporte más que el resumen (matiz oleada/general, historial, casos límite).
+
+**Qué hacer cuando se retome:**
+1. Confirmar títulos exactos de las páginas largas (8‑15; si hay 101/104 u otras).
+2. En cada apartado de Incidencias Frecuentes que tenga artículo completo: añadir el link al final (misma línea / estilo que el resto de `→ [[…]]`).
+3. No inventar páginas nuevas solo por simetría; enlace solo si la página existe o se va a mantener.
+4. Criterio: Frecuentes = operativo; artículo completo = profundidad (como 8‑15 general).
+
+**Estado:** Pendiente — no cerrado.
+
+## Otros wiki (aplazados antes)
+
+- Revisar integración del layout de **Mails** (árbol ASCII / `[+]` disclosure) con el estilo nuevo de Página principal / Cl@ve / Certificados.
+- Estilo UI analizador (si aplica): teal en títulos Qué pasa / Qué hacer — ver `acciones-que-pasa-que-hacer.mdc`.
+
+## Cómo cerrar
+
+Cuando el usuario diga que está listo el punto de enlaces a artículo completo (y/o Mails), actualizar este archivo: marcar hecho o borrar el bloque correspondiente, y no volver a recordarlo.
