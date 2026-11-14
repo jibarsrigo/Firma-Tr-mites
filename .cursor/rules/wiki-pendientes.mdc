@@ -73,6 +73,24 @@ La idea es **valorar cuántas cosas pueden aparecer en forma de link** (inventar
 
 ---
 
+## PENDIENTE / CONFIRMAR — Índice visual de Mails (colores, compacto)
+
+**Qué se hizo:** rediseñar el índice de **Mails** al estilo del índice de Incidencias Frecuentes (marco + título «Índice» + cajas con `border-left` de color), manteniendo los **4 apartados que fijó la jefa**: General, Problemas Autofirma, Problemas Cl@ve, Otros — aunque el usuario no está del todo de acuerdo con ese reparto, se respetan.
+
+**Colores acordados (homogéneos con Página principal):**
+- General → gris `#7f8c8d` (como caja Mails / cierre)
+- Autofirma → azul `#2980b9` (como certificados)
+- Cl@ve → verde `#27ae60` (como itinerario Cl@ve)
+- Otros → amarillo `#f1c40f` (funcional / formulario / pago / REGWEB…)
+
+**Compacto:** tipografía pequeña, códigos Cl@ve agrupados con `·`, sin emojis de columna.
+
+**Pendiente de confirmar con el usuario:** si el resultado le encaja → cerrar. Si algún link del índice no salta, revisar que el `span id` del mail coincida (había anclas con espacios vs guiones bajos; se unificó hacia `#Mail_…` al estilo Frecuentes).
+
+**Estado:** En validación / casi cerrado — no dar por cerrado del todo hasta que el usuario lo diga.
+
+---
+
 ## OTROS APLAZADOS (menor / otro frente)
 
 ### Destino de la página «Problemas con el Servicio»
