@@ -14,14 +14,35 @@ No acortar al recordar: si hace falta, citar o resumir con el mismo nivel de det
 | Quitar 🔹 a Incidencias Cl@ve rotos; mantener Evento TR 8/101/103‑15/104 | Hecho (usuario) |
 | «Siempre individual» explícito en 101/103/104 | Descartado (redundante) |
 | Artículos completos nuevos por cada apartado de Frecuentes | Descartado (solo Evento TR ya existentes) |
-| Homogeneizar texto Frecuentes | Cerrado (usuario) |
+| Homogeneizar **estructura/estilo** Frecuentes (apartados, índice colores) | Cerrado (usuario) — **no** incluye el pase de lenguaje claro (ver pendiente «No hablar indio») |
 | Layout Mails (árbol / `[+]`) | Cerrado — integrado en Cl@ve/Cert |
 | Índice visual Frecuentes (colores fase, compacto) | Cerrado (usuario conforme con el resultado) |
 | Tablas/cuadros en Frecuentes | Descartado |
 
 ---
 
-## PENDIENTE PRINCIPAL (continuar en otro momento) — Links en zonas de color
+## PENDIENTE PRINCIPAL A — Lenguaje claro en Incidencias Frecuentes («NO HABLAR INDIO»)
+
+**Qué pidió el usuario (2026-11-14, y ya lo había pedido en una revisión anterior que no se llegó a hacer):**
+Revisar **todo el texto** de **Incidencias Frecuentes**. Hay muchas veces que «parece que se habla indio»: se dan indicaciones que **solo entiende quien ya conoce con detalle** los problemas. Debe entenderse **por todo el mundo** del CAU (quien llega nuevo a la traza también).
+
+**NO HABLAR INDIO.** Hay que **explicar mejor** las cosas: menos jerga interna, menos asumir que el lector ya sabe qué es Soffid / Portafib / «manda el código» / «oleada» / «Fin formulario sin Inicio firma» sin una frase en castellano llano al lado.
+
+**Matiz importante:** esto **no** quedó hecho en el pase de homogeneizar estructura + integrar Problemas. Ese pase mejoró organización y oleada/individual, pero el tono sigue siendo de experto a experto. Este pendiente es **otro** (lenguaje / comprensión), no darlo por cerrado.
+
+**Criterio al retomar (apartado a apartado):**
+1. Leer cada bloque preguntando: ¿lo entendería alguien del CAU que no lleva meses con estas incidencias?
+2. Donde haya tecnicismo necesario (literal SistraHelp, código 8‑15, TR_…), **dejar el literal** pero añadir **qué significa en la práctica** en una frase corta.
+3. Sustituir o aclarar abreviaturas y frases internas («manda», «pre‑proveedor», «IdP», «SEG‑012», etc.) la primera vez que salen en el apartado, o con sinónimo claro.
+4. Conservar verdades seguras y mails; no inventar; no acortar quitando el porqué.
+5. Misma estructura visual actual (Qué pasa / Traza / Qué hacer / Problema general); solo reescribir para claridad.
+6. Empezar por los apartados más densos (Pasarela+Soffid, Cl@ve Firma, 8‑15, Portafib, Autofirma, REGWEB) y seguir con los cortos.
+
+**Estado:** Pendiente — aplazado a otro momento. Recordar con este detalle. Prioridad alta de comprensión.
+
+---
+
+## PENDIENTE PRINCIPAL B — Links en zonas de color
 
 **Qué pidió el usuario (2026-11-14, casi literal):**
 Tanto en **Página principal** como en **Incidencias Cl@ve** e **Incidencias Certificados Locales**, en las **partes con color** (cajas de fase con `border-left` naranja / amarillo / verde / azul / gris), quiere que aparezca **link de todo lo posible**:
