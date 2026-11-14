@@ -62,13 +62,16 @@ Antes, en Incidencias Frecuentes, varios apartados solo tenían un **link a otra
 
 ---
 
-## En curso (2026-11-14)
+## En curso (2026-11-14) — estado tras pase Problemas → Frecuentes
 
-- **Incidencias Frecuentes — revisión texto apartado a apartado** (sin cambiar el aspecto visual que ya gusta: blockquote Qué pasa, subtítulos, listas `:` / `•`, Qué hacer, links).
-- **Descartado:** rediseño con tablas/cuadros y el prototipo de Autofirma con ese estilo. No volver a proponer cuadros.
-- **No** se crearán (de momento) páginas independientes por apartado: cada apartado de Frecuentes debe entenderse solo y cubrir **todas** las opciones del caso.
-- Orden: empezar por `#IF_Pasarela`; seguir con el siguiente que pase el usuario.
-- Sigue aplazado el rediseño del **índice superior** (sección 3).
+- Aspecto visual actual; sin tablas/cuadros.
+- Integrado en Frecuentes (con bloque individual vs **problema general / servicio** donde aplica): Pasarela, Cl@ve Firma proveedor, Portafib, 8‑15, Autofirma, REGWEB.
+- Acceso Cl@ve·Autofirma: sin bloque servicio (no aplica).
+- **Pendiente inmediato tras auditoría del código completo:**
+  1. **Soffid** — crear apartado en Frecuentes (y entrada en índice cuando se toque el índice); Pasarela ya lo menciona como «otro apartado» que **aún no existe**.
+  2. **Quitar 🔹 rotos** aún presentes: Pago, Carpeta, 103, 103‑15, 101, 104, Cl@ve Móvil (todos a Incidencias Cl@ve); opcional decidir si se mantienen `Evento TR SGX…` 101/103‑15/104.
+  3. Reforzar en 101/103/103‑15/104/Cl@ve Móvil/Pago/Carpeta/Adjuntos una línea **«no es problema general / servicio»** (o cuándo sí escalar Seguridad en adjuntos validación).
+  4. Índice superior — sigue aplazado (añadir Soffid cuando se rediseñe).
 
 ### Links 🔹 inferiores rotos / circularidad
 
