@@ -80,10 +80,12 @@ Antes, en Incidencias Frecuentes, varios apartados solo tenían un **link a otra
 3. **Evento TR SGX / otras páginas largas** (p. ej. artículo 8‑15) — mantener solo si la página sigue existiendo y aporta; si no, el detalle queda en Frecuentes (idea de artículo completo sigue aplazada).
 4. Al revisar cada apartado: auditar la lista final de 🔹 y dejar solo enlaces vivos y útiles.
 
-**Ejemplo Pasarela:** quitar o sustituir  
-`[[Problemas con el Servicio#AccesoAcceso_Clave_Pasarela]]`,  
-`[[Incidencias Cl@ve#AccesoAcceso_Soffid_Clave]]`,  
-`[[Incidencias Certificados Locales#AccesoAcceso_Certificado]]`.
+**Ejemplo Pasarela (revisado con el usuario):**
+- `[[Problemas con el Servicio#AccesoAcceso_Clave_Pasarela]]` → **destino válido** (patrón incidencia **general** / oleada). Decidir: mantener link y/o **integrar** en Frecuentes lo que no esté (URL `pasarela.clave.gob.es`, prueba DGT, diferencia con Soffid).
+- `[[Incidencias Cl@ve#AccesoAcceso_Soffid_Clave]]` y `[[Incidencias Certificados Locales#AccesoAcceso_Certificado]]` → **rotos** (anclas sin contenido). **Quitar.**
+- Auditar **todos** los 🔹 / `[[…]]` de Incidencias Frecuentes con la misma regla.
+- Nota: en **Problemas con el Servicio** existe apartado **Soffid** (`#AccesoAcceso_Soffid`) que **no** está en Frecuentes; valorar si hace falta un apartado Acceso‑Soffid en Frecuentes o bastan literales + link a Problemas.
+- La propia página Problemas enlaza a anclas muertas de Cl@ve/Certificados → pendiente aparte cuando se toque esa página.
 
 ---
 
