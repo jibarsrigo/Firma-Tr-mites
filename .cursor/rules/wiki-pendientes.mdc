@@ -52,11 +52,11 @@ Pedido original: comprensión, unificar, mínimas palabras, misma estructura. Ta
 
 **Estado:** Descartado (salvo Evento TR ya enlazados).
 
-### 3) Rediseño del índice visual superior de Incidencias Frecuentes — EN CURSO
+### 3) Rediseño del índice visual superior de Incidencias Frecuentes — CASI CERRADO
 
-Homogeneizar con colores de fase (borde izquierdo + fondo) como Página principal / Cl@ve / Certificados, pero **compacto** (solo índice). Incluir Soffid en el enlace de Acceso/Pasarela. Sin emojis pesados; tipografía pequeña; poco margen.
+Colores alineados con Página principal (Acceso/Carga naranja, Formulario amarillo, Firma verde, Registro azul). Compacto; Acceso y Formulario separados. Usuario valorando resultado; si confirma OK → cerrar.
 
-**Estado:** En curso.
+**Estado:** Pendiente confirmación usuario.
 
 ### 4) Layout de la página Mails — CERRADO / DESCARTADO COMO PENDIENTE
 
