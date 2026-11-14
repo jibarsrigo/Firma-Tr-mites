@@ -5,105 +5,96 @@ No acortar al recordar: si hace falta, citar o resumir con el mismo nivel de det
 
 ---
 
-## 1) Revisar y simplificar todo Incidencias Frecuentes (comprensión + homogeneidad)
+## YA HECHO (no volver a pedir como pendiente abierto)
 
-**Qué pidió el usuario (casi literal):**
-Ahora no puede seguir desarrollando la wiki, pero quiere que quede pendiente y se le recuerde:
-revisar **todo el contenido** de Incidencias Frecuentes para **mejorar la comprensión**, **unificar contenido de apartados si es posible**, o **mostrar los apartados de forma más sencilla**. En algún caso se podrían **sustituir párrafos** por algo más compacto —por ejemplo **una pequeña tabla que sustituya texto**— u otros formatos similares. Quiere que **quede claro lo que se explica usando la menor cantidad de palabras**. Luego quiere que se **revise la organización de cada apartado** y **homogeneizar todo**: algo **más sencillo y homogéneo**.
+### Integración Problemas con el Servicio → Incidencias Frecuentes
+- Criterio: **no** enlazar Frecuentes a Problemas; integrar individual + oleada/general en cada apartado.
+- Integrado con bloque «Problema general / con el servicio» donde aplica: Pasarela (+ **Soffid dentro del mismo apartado**), Cl@ve Firma proveedor, Portafib, 8‑15, Autofirma, REGWEB.
+- Acceso Cl@ve · Autofirma: sin bloque servicio (no aplica; el usuario lo rechazó).
+- Tablas/cuadros: **descartados** (dificultan la lectura).
 
-**Objetivo al retomar:**
-- Pasar apartado por apartado de Incidencias Frecuentes.
-- Conservar solo lo que sabemos con seguridad (mismo criterio que al depurar la wiki: verdades casi absolutas).
-- Reducir palabras al mínimo sin perder información útil.
-- Unificar casos que digan casi lo mismo, si se puede sin mezclar casuísticas distintas.
-- Misma estructura / mismo “aspecto editorial” en todos los apartados (no unos muy narrativos y otros muy telegráficos).
-- Valorar tablas u otros formatos cortos donde un párrafo largo se entienda peor.
-
-**Estado:** Pendiente — no cerrado.
-
----
-
-## 2) Idea: artículo/página completa independiente por cada apartado de Frecuentes
-
-**Qué pidió el usuario (casi literal):**
-Como idea 2: podría haber una **página/artículo completo independiente de cada apartado** de Incidencias Frecuentes, donde se **explique con profundidad todo**.
-
-**Contexto previo relacionado (no perderlo):**
-Antes, en Incidencias Frecuentes, varios apartados solo tenían un **link a otra página/artículo** que detallaba el caso (el error no se mostraba entero en Frecuentes). Luego se crearon **apartados específicos con detalle dentro de Incidencias Frecuentes** (p. ej. errores **101** y **104**, anclas `#IF_Clave101`, `#IF_Clave_104`). El usuario preguntó si **no queda link al artículo completo**, y si no es oportuno que aparezcan **referenciados como link a página completa**, igual que hay un **artículo/página completo para el 8‑15** que habla del **8‑15 individual** y del **problema general si se repite en muchos casos**.
-
-**Criterio acordado en conversación (matiz):**
-- En Frecuentes: lo operativo (qué pasa / qué hacer / mail), corto y homogéneo.
-- Artículo completo: solo cuando aporta más (matiz individual vs oleada, historial, casos límite) — ahí encaja el 8‑15.
-- Para 101/104 (u otros): enlace a página larga **si existe o se va a mantener**; no inventar páginas solo por simetría.
-- Al final del apartado en Frecuentes, algo del estilo: `→ [[Nombre artículo|artículo completo]]`.
-
-**Qué hacer cuando se retome:**
-1. Decidir si se adopta el modelo “un artículo profundo por cada apartado de Frecuentes” o solo para los que lo merecen (empezando por 8‑15 y los que ya existan).
-2. Confirmar **títulos exactos** de las páginas largas (8‑15; 101/104 si las hay; resto).
-3. En cada apartado de Frecuentes que tenga (o vaya a tener) artículo completo: añadir el enlace al final, mismo estilo que el resto de `→ [[…]]`.
-4. No duplicar texto largo en Frecuentes si el detalle profundo vive en la página independiente.
-
-**Estado:** Pendiente — no cerrado. (Incluye enlaces tipo 8‑15 / valorar 101 y 104.)
+### Links 🔹 (punto 2 de la auditoría)
+- Quitar referencias a anclas muertas de **Incidencias Cl@ve** (Pago, Carpeta, 103, 101/103‑15/104, Cl@ve Móvil). El usuario lo está aplicando / ha aplicado.
+- **Mantener** Evento TR SGX como detalle completo / versión extendida:
+  - 8‑15, 101, 103‑15, 104 (páginas existen).
+  - Texto del enlace = título de la página (ej. `[[Evento TR SGX - Fi firma KO - Código Error 8 - Tipo 15]]`), no «Detalle completo…».
+- 103 sin tipo 15: no hay Evento TR; solo quitar link Cl@ve.
 
 ---
 
-## 3) Rediseño del índice visual superior de Incidencias Frecuentes — APLAZADO
+## PENDIENTE INMEDIATO (seguimos en esta línea de trabajo)
 
-**Qué pidió el usuario:** al retomar el rediseño del contenido de Incidencias Frecuentes, **dejar el rediseño del índice superior para otro momento** y anotarlo en pendientes. El índice actual es el bloque centrado con tres cajas (Acceso / Firma / Registro+Funcionales) bajo `__NOTOC__`. No tocarlo mientras se rediseñan los apartados de contenido; volver a él cuando el estilo de los apartados esté cerrado y se pueda alinear el índice.
+### A) Punto 3 de la auditoría — «no es problema general / servicio» en apartados cortos
 
-**Estado:** Pendiente / aplazado — no cerrado.
+**Qué falta:** En los apartados que **casi nunca** (o nunca) son oleada de servicio, dejar **explícito** que no se escale como problema general / con el servicio, alineado con lo que ya dicen Pasarela/8‑15/Autofirma/Portafib/REGWEB.
 
----
+Apartados a tocar (texto corto, misma estructura visual):
 
-## 4) Otros wiki (aplazados antes en la misma línea de trabajo)
-
-- Revisar la integración del layout de **Mails** (árbol ASCII / disclosure `[+]` con tabla de eventos) con el estilo nuevo de Página principal / Incidencias Cl@ve / Incidencias Certificados Locales — el usuario lo dejó “en pendientes para luego” porque le gustaba la firma minimalista del flujo + el `[+]` de detalles, pero no estaba claro si quedaba bien integrado tras los cambios de las otras páginas.
-- Estilo UI del **analizador** (si aplica al retomar ese frente): valorar teal en títulos Qué pasa / Qué hacer — ver `acciones-que-pasa-que-hacer.mdc`.
-
----
-
-## En curso (2026-11-14) — estado tras pase Problemas → Frecuentes
-
-- Aspecto visual actual; sin tablas/cuadros.
-- Integrado en Frecuentes (con bloque individual vs **problema general / servicio** donde aplica): Pasarela, Cl@ve Firma proveedor, Portafib, 8‑15, Autofirma, REGWEB.
-- Acceso Cl@ve·Autofirma: sin bloque servicio (no aplica).
-- **Pendiente inmediato tras auditoría del código completo:**
-  1. **Soffid** — **integrado en `#IF_Pasarela`** (no apartado propio). Al rediseñar el índice, opcional renombrar la entrada Acceso para mencionar Soffid.
-  2. **Links 🔹:** quitar rotos a Incidencias Cl@ve (Pago, Carpeta, 103, Móvil, y el de Cl@ve en 101/103‑15/104). **Mantener** Evento TR SGX como detalle completo: 8‑15, 101, 103‑15, 104 (existen y el usuario quiere el link). 103 sin tipo 15: solo quitar Cl@ve (no hay Evento TR).
-  3. Reforzar en 101/103/103‑15/104/Cl@ve Móvil/Pago/Carpeta/Adjuntos una línea **«no es problema general / servicio»** (o cuándo sí escalar Seguridad en adjuntos validación).
-  4. Índice superior — sigue aplazado.
-
-### Links 🔹 inferiores rotos / circularidad
-
-**Qué pidió el usuario:** Los links inferiores de cada apartado (`: 🔹 [[Incidencias Cl@ve#…]]`, `[[Incidencias Certificados Locales#…]]`, a veces `[[Problemas con el Servicio#…]]`) **se han roto** porque Incidencias Cl@ve e Incidencias Certificados Locales **ya no tienen la información detallada**: son itinerarios; el detalle está en Incidencias Frecuentes. Si algo se referenciaba allí y ya no existe, hay que **integrarlo en Frecuentes** (si faltaba) o **quitar/sustituir el link**.
-
-**Criterio acordado con el usuario (2026-11-14):**
-1. **No volver a referenciar** desde Incidencias Frecuentes a **Problemas con el Servicio** (ni “problemas generales”).
-2. Lo que haya en Problemas con el Servicio que sea útil para el CAU se **integra dentro de los apartados de Incidencias Frecuentes** (caso individual **y** oleada/general en el mismo apartado, cuando aplique).
-3. **Incidencias Cl@ve / Certificados** — no enlazar a anclas de detalle muertas. Quitar esos 🔹.
-4. Cada apartado de Frecuentes debe bastarse solo (mails, qué hacer individual, qué hacer si es general/oleada).
-5. Auditar **todos** los 🔹 / `[[…]]` de Frecuentes con esta regla.
-6. **Soffid** (`Problemas#AccesoAcceso_Soffid`) no está aún como apartado propio en Frecuentes → **crear/integrar** al revisar Acceso (no dejarlo solo en Problemas ni como link).
-7. Qué hacer con la página **Problemas con el Servicio** en sí (vaciar, redirigir, o dejar histórica) → decidir más adelante; mientras, Frecuentes no depende de ella.
-8. Páginas tipo **Evento TR SGX / 8‑15 largo**: misma lógica si se tocan — preferir detalle en Frecuentes; enlace solo si se decide mantener artículo profundo (idea aplazada).
-
-**Integración Problemas → Frecuentes (en curso):** en cada apartado de Frecuentes debe quedar **explícito** cuándo es **problema general / con el servicio** (varios NIF, misma franja, mismo patrón) frente a caso individual. Sin links a Problemas.
-
-| Problemas con el Servicio | Apartado Frecuentes |
+| Apartado | Qué reforzar |
 |---|---|
-| `#AccesoAcceso_Clave_Pasarela` | `#IF_Pasarela` |
-| `#AccesoAcceso_Soffid` | **Nuevo** (o bloque Acceso) — aún no existe en Frecuentes |
-| `#AccesoSesion_Portafib` (+ excepción formulario) | `#IF_Portafib` |
-| `#FirmaMetodo_Clave` | `#Cl@ve_Móvil_…` + parte método en `#IF_Autofirma` (casi nunca general) |
-| `#FirmaProveedor_ClaveGeneral` (8‑15 oleada) | `#IF_Clave_Firma_Proveedor` + `#IF_Clave815` / `#Clave815General` |
-| `#FirmaProveedor_AutofirmaGeneral` / FIRE | `#IF_Autofirma` |
-| `#Registro_REGWEB` | `#IF_REGWEB` |
+| **101** | Siempre individual (credencial/registro). Aunque haya muchos casos, no es caída Cl@ve Firma. |
+| **103** | Siempre individual (contraseña). No confundir con 103‑15 ni con servicio. |
+| **103‑15** | Siempre individual (certificados bloqueados). Si va con 8‑15, manda 103‑15. No es oleada 8‑15. |
+| **104** | Siempre individual (registro débil). |
+| **Cl@ve Móvil** | Método; el proveedor Cl@ve no llega a devolver código. No es problema de servicio Cl@ve Firma ni Autofirma. |
+| **Pago** | Funcional; no es firma / Portafib / Cl@ve / Autofirma; no escalar como servicio de firma. |
+| **Carpeta** | Acceso al reabrir; QAA / móvil. No escalar como firma/servicio por ver Cargas. |
+| **Adjuntos** | Casi siempre funcional / fichero del ciudadano. `ValidacionFirmaException` → escalar **Seguridad** (no oleada Autofirma/Portafib). El mail «problema general» orientado al anexo no es caída de firma. |
 
-Códigos 101/103/103‑15/104: en Problemas se marcan **siempre individuales** — reforzar eso en sus apartados.
+**Cómo:** una línea o bloque breve «Problema general / con el servicio» = no aplica (o la excepción Seguridad en adjuntos), sin rediseñar el apartado.
+
+### B) Confirmar que el punto 2 quedó aplicado del todo
+Si el usuario aún no ha quitado todos los 🔹 Cl@ve o no ha puesto el Evento TR en 8‑15, terminarlo. Luego marcar cerrado.
+
+---
+
+## PENDIENTES APLAZADOS (otro momento; recordar con detalle)
+
+### 1) Homogeneizar / simplificar el resto de Incidencias Frecuentes (comprensión)
+
+Pedido original: revisar **todo** Frecuentes para mejorar comprensión; unificar apartados si es posible; mostrar de forma más sencilla; máxima claridad con **mínimas palabras**; misma organización/estilo en todos los apartados. Se valoraron tablas y se **descartaron**.
+
+Estado real ahora: varios apartados grandes ya están reescritos (Pasarela+Soffid, Cl@ve Firma, Portafib, 8‑15, Autofirma, REGWEB) con estructura Qué pasa / Traza / … / Problema general. Los cortos (101, 103, Pago…) aún no están homogeneizados del todo (falta sobre todo el matiz «no servicio» del punto A). Cuando se cierre A, valorar si hace falta otro pase solo de tono/longitud.
+
+**Estado:** Parcialmente avanzado; no cerrado.
+
+### 2) Artículos completos independientes por cada apartado
+
+Idea original: una página profunda por cada caso de Frecuentes.
+
+**Avance:** para códigos Cl@ve 8‑15 / 101 / 103‑15 / 104 ya existen **Evento TR SGX…** y se mantienen como link de versión extendida. No hace falta inventar páginas nuevas para esos.
+
+**Sigue pendiente decidir:** ¿el mismo modelo (página larga + link al final) para otros apartados (Pasarela, Portafib, Autofirma, REGWEB, Adjuntos…)? Solo si aportan más que Frecuentes; no por simetría.
+
+**Estado:** Parcial (códigos Cl@ve OK); resto aplazado.
+
+### 3) Rediseño del índice visual superior de Incidencias Frecuentes — APLAZADO
+
+El índice (tres cajas Acceso / Firma / Registro+Funcionales bajo `__NOTOC__`) **no se toca** hasta que el contenido esté más cerrado. Al retomarlo: valorar mencionar Soffid en la caja Acceso (ahora está dentro de Pasarela); alinear nombres/enlaces con los apartados actuales.
+
+**Estado:** Aplazado — no cerrado.
+
+### 4) Layout de la página Mails — APLAZADO
+
+El usuario había añadido en Mails (castellano) un árbol ASCII del flujo + disclosure `[+]` con tabla de eventos. Le gustaba la firma minimalista y el `[+]`, pero tras los cambios de Página principal / Cl@ve / Certificados no quedó claro si estaba bien integrado. Lo dejó explícitamente «en pendientes para luego».
+
+**Estado:** Aplazado — no cerrado.
+
+### 5) Destino de la página «Problemas con el Servicio»
+
+Frecuentes ya no debe depender de ella. Queda decidir más adelante: dejarla histórica, vaciarla, redirigir a Frecuentes, o actualizar sus links rotos a Cl@ve/Certificados. No bloquea el trabajo actual en Frecuentes.
+
+**Estado:** Aplazado.
+
+### 6) Estilo UI del analizador (teal en títulos Qué pasa / Qué hacer)
+
+Pendiente menor del analizador web (no MediaWiki). Ver `acciones-que-pasa-que-hacer.mdc`.
+
+**Estado:** Aplazado / otro frente.
 
 ---
 
 ## Cómo cerrar
 
-Cuando el usuario diga que un punto está listo, actualizar este archivo (marcar hecho o borrar el bloque) y no volver a recordarlo.
+Cuando el usuario marque un punto como listo, actualizar este archivo (marcar hecho o borrar el bloque) y no volver a recordarlo.
 Al recordar, **no reducir a una frase** si eso pierde el matiz; usar este documento como fuente.
