@@ -2,25 +2,38 @@
 
 Al retomar trabajo de wiki MediaWiki, **recordar al usuario** estos puntos hasta marcarlos hechos.
 
-## Pendiente activo — enlaces a artículo completo
+## 1) Simplificar y homogeneizar Incidencias Frecuentes
 
-**Contexto:** En Incidencias Frecuentes el detalle operativo (qué pasa / qué hacer / mail) está en anclas (`#IF_Clave101`, `#IF_Clave_104`, `#IF_Clave815`, etc.). El **8‑15** además tiene (o tenía) una **página/artículo completo** que cubre el caso individual y el problema general si se repite en muchos casos.
-
-**Pedido del usuario:** Valorar y aplicar el mismo patrón: en Frecuentes, al final del apartado, enlace tipo `→ [[Nombre artículo|artículo completo]]` cuando exista página larga que aporte más que el resumen (matiz oleada/general, historial, casos límite).
-
-**Qué hacer cuando se retome:**
-1. Confirmar títulos exactos de las páginas largas (8‑15; si hay 101/104 u otras).
-2. En cada apartado de Incidencias Frecuentes que tenga artículo completo: añadir el link al final (misma línea / estilo que el resto de `→ [[…]]`).
-3. No inventar páginas nuevas solo por simetría; enlace solo si la página existe o se va a mantener.
-4. Criterio: Frecuentes = operativo; artículo completo = profundidad (como 8‑15 general).
+**Pedido:** Revisar **todo** el contenido de Incidencias Frecuentes para:
+- Mejorar comprensión.
+- Unificar apartados si es posible (sin perder información segura).
+- Mostrar apartados de forma más sencilla.
+- Donde ayude: sustituir párrafos por formatos compactos (p. ej. pequeña tabla) si reduce palabras y aclara.
+- Máxima claridad con **mínimas palabras**.
+- Revisar la **organización** de cada apartado.
+- **Homogeneizar** estructura y estilo entre todos los apartados (mismo patrón visual/editorial).
 
 **Estado:** Pendiente — no cerrado.
 
-## Otros wiki (aplazados antes)
+## 2) Artículo completo independiente por apartado (idea)
+
+**Pedido:** Valorar una **página/artículo completo independiente** por cada apartado de Incidencias Frecuentes, con explicación en profundidad.
+
+Relacionado con el patrón ya pedido para el **8‑15** (y valorar 101/104): en Frecuentes queda lo operativo; el artículo largo aporta matices (oleada/general, historial, casos límite).
+
+**Qué hacer cuando se retome:**
+1. Decidir si el modelo es: Frecuentes = resumen homogéneo + `→ [[Artículo|artículo completo]]` en cada caso que lo merezca.
+2. Confirmar títulos exactos de páginas largas existentes (8‑15; si hay 101/104 u otras).
+3. No inventar páginas solo por simetría; crear/mantener solo las que se vayan a usar.
+4. En Frecuentes, al final del apartado: enlace `→ [[Nombre|artículo completo]]` cuando exista.
+
+**Estado:** Pendiente — no cerrado. (Incluye el enlace a artículo completo tipo 8‑15.)
+
+## 3) Otros wiki (aplazados antes)
 
 - Revisar integración del layout de **Mails** (árbol ASCII / `[+]` disclosure) con el estilo nuevo de Página principal / Cl@ve / Certificados.
 - Estilo UI analizador (si aplica): teal en títulos Qué pasa / Qué hacer — ver `acciones-que-pasa-que-hacer.mdc`.
 
 ## Cómo cerrar
 
-Cuando el usuario diga que está listo el punto de enlaces a artículo completo (y/o Mails), actualizar este archivo: marcar hecho o borrar el bloque correspondiente, y no volver a recordarlo.
+Cuando el usuario marque un punto como listo, actualizar este archivo (marcar hecho o borrar el bloque) y no volver a recordarlo.
