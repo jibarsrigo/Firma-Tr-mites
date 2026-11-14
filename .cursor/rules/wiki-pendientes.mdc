@@ -68,10 +68,10 @@ Antes, en Incidencias Frecuentes, varios apartados solo tenían un **link a otra
 - Integrado en Frecuentes (con bloque individual vs **problema general / servicio** donde aplica): Pasarela, Cl@ve Firma proveedor, Portafib, 8‑15, Autofirma, REGWEB.
 - Acceso Cl@ve·Autofirma: sin bloque servicio (no aplica).
 - **Pendiente inmediato tras auditoría del código completo:**
-  1. **Soffid** — crear apartado en Frecuentes (y entrada en índice cuando se toque el índice); Pasarela ya lo menciona como «otro apartado» que **aún no existe**.
+  1. **Soffid** — **integrado en `#IF_Pasarela`** (no apartado propio). Al rediseñar el índice, opcional renombrar la entrada Acceso para mencionar Soffid.
   2. **Quitar 🔹 rotos** aún presentes: Pago, Carpeta, 103, 103‑15, 101, 104, Cl@ve Móvil (todos a Incidencias Cl@ve); opcional decidir si se mantienen `Evento TR SGX…` 101/103‑15/104.
   3. Reforzar en 101/103/103‑15/104/Cl@ve Móvil/Pago/Carpeta/Adjuntos una línea **«no es problema general / servicio»** (o cuándo sí escalar Seguridad en adjuntos validación).
-  4. Índice superior — sigue aplazado (añadir Soffid cuando se rediseñe).
+  4. Índice superior — sigue aplazado.
 
 ### Links 🔹 inferiores rotos / circularidad
 
