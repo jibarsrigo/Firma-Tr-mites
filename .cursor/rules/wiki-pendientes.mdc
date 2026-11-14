@@ -47,10 +47,24 @@ Antes, en Incidencias Frecuentes, varios apartados solo tenían un **link a otra
 
 ---
 
-## 3) Otros wiki (aplazados antes en la misma línea de trabajo)
+## 3) Rediseño del índice visual superior de Incidencias Frecuentes — APLAZADO
+
+**Qué pidió el usuario:** al retomar el rediseño del contenido de Incidencias Frecuentes, **dejar el rediseño del índice superior para otro momento** y anotarlo en pendientes. El índice actual es el bloque centrado con tres cajas (Acceso / Firma / Registro+Funcionales) bajo `__NOTOC__`. No tocarlo mientras se rediseñan los apartados de contenido; volver a él cuando el estilo de los apartados esté cerrado y se pueda alinear el índice.
+
+**Estado:** Pendiente / aplazado — no cerrado.
+
+---
+
+## 4) Otros wiki (aplazados antes en la misma línea de trabajo)
 
 - Revisar la integración del layout de **Mails** (árbol ASCII / disclosure `[+]` con tabla de eventos) con el estilo nuevo de Página principal / Incidencias Cl@ve / Incidencias Certificados Locales — el usuario lo dejó “en pendientes para luego” porque le gustaba la firma minimalista del flujo + el `[+]` de detalles, pero no estaba claro si quedaba bien integrado tras los cambios de las otras páginas.
 - Estilo UI del **analizador** (si aplica al retomar ese frente): valorar teal en títulos Qué pasa / Qué hacer — ver `acciones-que-pasa-que-hacer.mdc`.
+
+---
+
+## En curso (2026-11-14)
+
+- Prototipo de estilo homogéneo de apartados en Incidencias Frecuentes, empezando por el más denso: **Autofirma (`#IF_Autofirma`)**. Si el usuario lo valida, aplicar el mismo esqueleto al resto.
 
 ---
 
