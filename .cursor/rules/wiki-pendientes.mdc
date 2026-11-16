@@ -91,6 +91,27 @@ La idea es **valorar cuántas cosas pueden aparecer en forma de link** (inventar
 
 ---
 
+## PENDIENTE — Formulario: literal «codi camp» / ErrorConfiguracionException (CNUMREG)
+
+**Qué surgió (2026-11-16):** caso real INS_DOC. El ciudadano veía un mensaje genérico («espere unos minutos y vuelva a intentarlo») y no podía presentar documentación. En SistraHelp, tras `TR_FRI` / `TR_CAR`, aparecía:
+
+`Les dades introduïdes no són vàlides (codi camp: CNUMREG)` + `ErrorConfiguracionException`
+
+Sin `TR_FRF` en esos intentos. **No es Portafib ni firma** (no hay `TR_SGI`). El código de campo (`CNUMREG`) indica qué dato del formulario rechaza la validación. Más tarde corrigió el dato → Fin formulario → Autofirm@ → registro/fin.
+
+**Qué hay que hacer en wiki (aún no aplicado):**
+En **Incidencias Frecuentes** · `#IF_Portafib` · bloque **Literales Formulario (cuando los hay)**, añadir viñeta (buscar última viñeta de literales formulario y pegar debajo):
+
+```wikitext
+: • <code>Les dades introduïdes no són vàlides (codi camp: …)</code> / <code>ErrorConfiguracionException</code> → el formulario rechaza un dato de un **campo concreto** (el código del campo sale en la traza, p. ej. <code>CNUMREG</code>). No es Portafib ni firma. El ciudadano puede ver un mensaje genérico («espere unos minutos y vuelva a intentarlo»). Orientar a revisar ese campo / incidencias o dudas funcionales; copiar el literal completo. ✉︎ [[Mails#Mail_Formulario|Mail formulario]]. Si más tarde hay Fin formulario + Firma OK + Registro → el trámite se completó; esos ERROR son historia.
+```
+
+**Repo:** fixture anonimizada `trazas_prueba/P-formulario_camp_invalid_cnumreg.txt` + README (PR #13, rama `cursor/formulario-cnumreg-bd90`). Tramo solo ERROR → `fallo_formulario`; traza completa con REG+FIN → `tramite_completo`.
+
+**Estado:** Pendiente de pegar en wiki — aplazado a otro momento. Recordar con este detalle.
+
+---
+
 ## OTROS APLAZADOS (menor / otro frente)
 
 ### Destino de la página «Problemas con el Servicio»
