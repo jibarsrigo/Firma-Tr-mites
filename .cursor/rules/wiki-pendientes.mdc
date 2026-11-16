@@ -1,0 +1,177 @@
+# Wiki CAU — pendientes (recordar hasta cerrar)
+
+Al retomar trabajo de wiki MediaWiki, **recordar al usuario** estos puntos hasta marcarlos hechos.
+No acortar al recordar: si hace falta, citar o resumir con el mismo nivel de detalle que aquí.
+
+---
+
+## YA CERRADO / DESCARTADO (no reabrir salvo que el usuario lo pida)
+
+| Tema | Estado |
+|---|---|
+| Integrar Problemas con el Servicio → Incidencias Frecuentes (individual + oleada) | Hecho |
+| Soffid dentro de Pasarela (no apartado propio) | Hecho |
+| Quitar 🔹 a Incidencias Cl@ve rotos; mantener Evento TR 8/101/103‑15/104 | Hecho (usuario) |
+| «Siempre individual» explícito en 101/103/104 | Descartado (redundante) |
+| Artículos completos nuevos por cada apartado de Frecuentes | Descartado (solo Evento TR ya existentes) |
+| Homogeneizar **estructura/estilo** Frecuentes (apartados, índice colores) | Cerrado (usuario) — **no** incluye el pase de lenguaje claro (ver pendiente «No hablar indio») |
+| Layout Mails (árbol / `[+]`) | Cerrado — integrado en Cl@ve/Cert |
+| Índice visual Frecuentes (colores fase, compacto) | Cerrado (usuario conforme con el resultado) |
+| Tablas/cuadros en Frecuentes | Descartado |
+
+---
+
+## PENDIENTE PRINCIPAL A — Lenguaje claro en Incidencias Frecuentes («NO HABLAR INDIO»)
+
+**Qué pidió el usuario (2026-11-14, y ya lo había pedido en una revisión anterior que no se llegó a hacer):**
+Revisar **todo el texto** de **Incidencias Frecuentes**. Hay muchas veces que «parece que se habla indio»: se dan indicaciones que **solo entiende quien ya conoce con detalle** los problemas. Debe entenderse **por todo el mundo** del CAU (quien llega nuevo a la traza también).
+
+**NO HABLAR INDIO.** Hay que **explicar mejor** las cosas: menos jerga interna, menos asumir que el lector ya sabe qué es Soffid / Portafib / «manda el código» / «oleada» / «Fin formulario sin Inicio firma» sin una frase en castellano llano al lado.
+
+**Matiz importante:** esto **no** quedó hecho en el pase de homogeneizar estructura + integrar Problemas. Ese pase mejoró organización y oleada/individual, pero el tono sigue siendo de experto a experto. Este pendiente es **otro** (lenguaje / comprensión), no darlo por cerrado.
+
+**Criterio al retomar (apartado a apartado):**
+1. Leer cada bloque preguntando: ¿lo entendería alguien del CAU que no lleva meses con estas incidencias?
+2. Donde haya tecnicismo necesario (literal SistraHelp, código 8‑15, TR_…), **dejar el literal** pero añadir **qué significa en la práctica** en una frase corta.
+3. Sustituir o aclarar abreviaturas y frases internas («manda», «pre‑proveedor», «IdP», «SEG‑012», «un NIF», «misma franja», etc.) la primera vez, o con sinónimo claro («si solo le pasa a un ciudadano», «varios ciudadanos a la misma hora»).
+4. Conservar verdades seguras y mails; no inventar; no acortar quitando el porqué.
+5. Misma estructura visual actual (Qué pasa / Traza / Qué hacer / Problema general); solo reescribir para claridad.
+6. Empezar por los apartados más densos (Pasarela+Soffid, Cl@ve Firma, 8‑15, Portafib, Autofirma, REGWEB) y seguir con los cortos.
+
+**Criterio de cantidad de texto (usuario 2026-11-16, apartado Pasarela):**
+- **No** alargar mucho: los compañeros no deben tener que leer párrafos largos.
+- **Sí** dar **un poco de contexto** de la situación para que la frase suelta se entienda (quién / dónde se ve / qué implica).
+- Ejemplos del pedido: «no ha entrado» → «el ciudadano no ha accedido al trámite»; explicar de pasada qué es Soffid / dónde salen los literales; «Un solo NIF» → «si solo le sucede a un ciudadano»; «Varios NIF misma franja» → «varios ciudadanos en la misma franja de tiempo»; quitar matices confusos tipo «Si falta nivel avanzado» si no aportan.
+- Estado Pasarela: en reescritura (usuario validando).
+
+**Estado:** En curso — empezado por `#IF_Pasarela`. Prioridad alta de comprensión.
+
+---
+
+## PENDIENTE PRINCIPAL B — Links en zonas de color
+
+**Qué pidió el usuario (2026-11-14, casi literal):**
+Tanto en **Página principal** como en **Incidencias Cl@ve** e **Incidencias Certificados Locales**, en las **partes con color** (cajas de fase con `border-left` naranja / amarillo / verde / azul / gris), quiere que aparezca **link de todo lo posible**:
+- si ya existe un `span id` / ancla en Incidencias Frecuentes (u otra página válida) → enlazar;
+- si **no** existe ancla pero el caso es enlazable → **crear el span** en Frecuentes (o donde corresponda) y luego el link.
+
+La idea es **valorar cuántas cosas pueden aparecer en forma de link** (inventario), no inventar texto nuevo de diagnóstico en esas cajas: las cajas siguen siendo el mapa; el detalle sigue en Frecuentes.
+
+**Alcance (3 artículos):**
+1. **Página principal** — filas de color del diagnóstico (Acceso, Carga, Formulario/Portafib, Firma, Registro, Cierre) y, si aplica, coherencia con botones inferiores.
+2. **Incidencias Cl@ve** — cada caja de color del itinerario.
+3. **Incidencias Certificados Locales** — igual.
+
+**Cómo retomar (orden de trabajo):**
+1. Listar, por cada caja de color, **todos los casos/literales/códigos** que ya se mencionan o deberían poder saltar (ej. en Firma de Página principal: Cl@ve Móvil, Acceso Cl@ve·Autofirma, 8‑15, 8‑15 general, 101, 103, 103‑15, 104, cancelada, 500, VALIDATION, 6‑15, Autofirma, SAF_27, NIF/cadena, cliente…).
+2. Cruzar con anclas reales de **Incidencias Frecuentes** (y Evento TR si aplica).
+3. Marcar: **ya linkeado** / **existe ancla pero falta link** / **hay que crear span** / **no merece link** (demasiado genérico o duplicado).
+4. Corregir links rotos detectados de paso (ej. en Página principal se vieron `#IF_Clave10115` y `#IF_Clave_10415` que no son los ids canónicos `#IF_Clave101` / `#IF_Clave_104`).
+5. Aplicar cambios caja a caja (mismo estilo visual; solo enriquecer enlaces).
+6. No saturar: si una línea queda ilegible de tantos links, agrupar (como ya se hace con `·`) sin perder destinos.
+
+**Ejemplo de huecos conocidos al dejar el pendiente:**
+- Página principal · Firma: varios códigos ya enlazan; revisar que 101/104 apunten a ids correctos; cancelada / 500 / VALIDATION / 6‑15 van al proveedor genérico — valorar anclas finas o subtítulos con `span` en Frecuentes.
+- Cierre en Página principal: hoy sin link (trámite completo) — ¿enlazar a algo en Frecuentes o dejar sin link?
+- Cl@ve / Certificados: auditar cada caja de color frente al índice nuevo de Frecuentes.
+
+**Estado (2026-11-16):** En curso / casi cerrado en wiki viva:
+- **Página principal**, **Incidencias Cl@ve** e **Incidencias Certificados Locales** actualizados con links a anclas finas de Frecuentes (`IF_Carga_QAA`, `IF_ClaveMovil_Carpeta` / `_Firma`, `IF_Portafib_servicio`, `IF_Formulario_funcional`, `IF_Clave_cancelada` / `_500` / `_VALIDATION` / `_615`, `IF_Autofirma_*`, etc.).
+- **Incidencias Frecuentes:** spans finos pegados; pendiente menor índice Formulario (`Portafib` / `Formulario` → anclas distintas) y revisar texto QAA Cl@ve Permanente (no usar «Autenticació necessària»; mensaje real ≈ nivel de seguridad inferior).
+- Queda validar saltos en navegador tras pegar.
+
+**Estado:** En validación — no dar por cerrado del todo hasta que el usuario confirme.
+
+---
+
+## PENDIENTE / CONFIRMAR — Índice visual de Mails (colores, compacto)
+
+**Qué se hizo:** rediseñar el índice de **Mails** al estilo del índice de Incidencias Frecuentes (marco + título «Índice» + cajas con `border-left` de color), manteniendo los **4 apartados que fijó la jefa**: General, Problemas Autofirma, Problemas Cl@ve, Otros — aunque el usuario no está del todo de acuerdo con ese reparto, se respetan.
+
+**Colores acordados (homogéneos con Página principal):**
+- General → gris `#7f8c8d` (como caja Mails / cierre)
+- Autofirma → azul `#2980b9` (como certificados)
+- Cl@ve → verde `#27ae60` (como itinerario Cl@ve)
+- Otros → amarillo `#f1c40f` (funcional / formulario / pago / REGWEB…)
+
+**Compacto:** tipografía pequeña, códigos Cl@ve agrupados con `·`, sin emojis de columna.
+
+**Pendiente de confirmar con el usuario:** si el resultado le encaja → cerrar. Si algún link del índice no salta, revisar que el `span id` del mail coincida (había anclas con espacios vs guiones bajos; se unificó hacia `#Mail_…` al estilo Frecuentes).
+
+**Estado:** En validación / casi cerrado — no dar por cerrado del todo hasta que el usuario lo diga.
+
+---
+
+## PENDIENTE — Mails: link a Incidencias Frecuentes en cada mail
+
+**Qué pidió el usuario (2026-11-16):** revisar el artículo **Mails** y, en **cada mail**, añadir un **link al apartado o subapartado de Incidencias Frecuentes** donde se explica el caso.
+
+**Dónde colocarlo:** **arriba** del texto del mail a enviar (antes del cuerpo / plantilla que se copia), para que el agente pueda abrir el diagnóstico del caso sin buscarlo a mano.
+
+**Cómo retomar:**
+1. Inventariar cada ancla `Mail_…` del artículo Mails.
+2. Cruzar con el apartado / subapartado de **Incidencias Frecuentes** (usar anclas finas si existen: p. ej. `#IF_Clave815`, `#IF_Autofirma_SAF27`, `#IF_Portafib_servicio`…).
+3. Pegar en cada mail una línea corta tipo: `→ [[Incidencias Frecuentes#…|Ver caso en Incidencias Frecuentes]]` (o redacción acordada) **justo encima** del texto a enviar.
+4. Si un mail no tiene caso claro en Frecuentes → anotarlo y decidir (crear ancla / no enlazar / enlazar al apartado genérico).
+5. Homogeneizar estilo (misma frase / mismo tamaño) en todos los mails.
+
+**Estado:** Pendiente — aplazado a otro momento. Recordar con este detalle.
+
+---
+
+## PENDIENTE — Formulario: literal «codi camp» / ErrorConfiguracionException (CNUMREG)
+
+**Qué surgió (2026-11-16):** caso real INS_DOC. El ciudadano veía un mensaje genérico («espere unos minutos y vuelva a intentarlo») y no podía presentar documentación. En SistraHelp, tras `TR_FRI` / `TR_CAR`, aparecía:
+
+`Les dades introduïdes no són vàlides (codi camp: CNUMREG)` + `ErrorConfiguracionException`
+
+Sin `TR_FRF` en esos intentos. **No es Portafib ni firma** (no hay `TR_SGI`). El código de campo (`CNUMREG`) indica qué dato del formulario rechaza la validación. Más tarde corrigió el dato → Fin formulario → Autofirm@ → registro/fin.
+
+**Qué hay que hacer en wiki (aún no aplicado):**
+En **Incidencias Frecuentes** · `#IF_Portafib` · bloque **Literales Formulario (cuando los hay)**, añadir viñeta (buscar última viñeta de literales formulario y pegar debajo):
+
+```wikitext
+: • <code>Les dades introduïdes no són vàlides (codi camp: …)</code> / <code>ErrorConfiguracionException</code> → el formulario rechaza un dato de un **campo concreto** (el código del campo sale en la traza, p. ej. <code>CNUMREG</code>). No es Portafib ni firma. El ciudadano puede ver un mensaje genérico («espere unos minutos y vuelva a intentarlo»). Orientar a revisar ese campo / incidencias o dudas funcionales; copiar el literal completo. ✉︎ [[Mails#Mail_Formulario|Mail formulario]]. Si más tarde hay Fin formulario + Firma OK + Registro → el trámite se completó; esos ERROR son historia.
+```
+
+**Repo:** fixture anonimizada `trazas_prueba/P-formulario_camp_invalid_cnumreg.txt` + README (PR #13, rama `cursor/formulario-cnumreg-bd90`). Tramo solo ERROR → `fallo_formulario`; traza completa con REG+FIN → `tramite_completo`.
+
+**Estado:** Pendiente de pegar en wiki — aplazado a otro momento. Recordar con este detalle.
+
+---
+
+## PENDIENTE — Contenido del `[+]` (leyenda de eventos) unificado Cl@ve / Certificados
+
+**Qué pidió el usuario (2026-11-16):** actualizar / completar el contenido del bloque colapsable **`[+]`** (tabla «Evento → Qué indica») de forma que sea **el mismo** en:
+
+1. **Incidencias Cl@ve**
+2. **Incidencias Certificados Locales**
+
+Hoy el `[+]` es una leyenda rápida de eventos SistraHelp (Inici del tràmit, formulari, firma, registre, càrrega…). Hay que **revisarlo y completarlo** (textos más claros, coherentes con el pase «NO HABLAR INDIO» y con lo que ya se explica en Frecuentes), y **dejar una sola versión** pegada en las dos páginas para que no diverjan.
+
+**Cómo retomar:**
+1. Partir del `[+]` actual (el de Cl@ve o el de Certificados; deben igualarse).
+2. Revisar fila a fila: ¿se entiende? ¿falta algún evento habitual (ERROR, BOR, etc.)? ¿sobra algo?
+3. Aplicar el mismo HTML/tabla en **ambas** páginas.
+4. No mezclar con el rediseño de cajas de color (eso ya va aparte).
+
+**Estado:** Pendiente — aplazado a otro momento. Recordar con este detalle.
+
+---
+
+## OTROS APLAZADOS (menor / otro frente)
+
+### Destino de la página «Problemas con el Servicio»
+Frecuentes ya no depende de ella. Decidir: histórica, vaciar, redirigir a Frecuentes, o arreglar sus links rotos a Cl@ve/Cert.
+**Estado:** Aplazado.
+
+### Estilo UI del analizador (teal en títulos Qué pasa / Qué hacer)
+No es MediaWiki. Ver `acciones-que-pasa-que-hacer.mdc`.
+**Estado:** Aplazado / otro frente.
+
+---
+
+## Cómo cerrar
+
+Cuando el usuario marque un punto como listo, actualizar este archivo y no volver a recordarlo.
+Al recordar, **no reducir a una frase** si eso pierde el matiz; usar este documento como fuente.
