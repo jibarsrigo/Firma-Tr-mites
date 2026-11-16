@@ -94,6 +94,13 @@ P-formulario_dominio_remoto_biel.txt
   Global: fallo_formulario
   Acción (json v1.3.26): Qué pasa / Qué hacer — incidencias + literal legible
 
+P-formulario_camp_invalid_cnumreg.txt
+  Nordvista Serveis SL · INS_DOC · ErrorConfiguracionException «Les dades introduïdes no són vàlides (codi camp: CNUMREG)»
+  Varios TR_FRI/CAR → ERROR (sin TR_FRF en esos días); ciudadano ve mensaje genérico «espere unos minutos»
+  NO Portafib / NO firma mientras está bloqueado → formulario (campo concreto); Mail_Formulario + incidencias
+  12/11: FRF → Autofirm@ → REG+FIN (completo; ERROR previos = historia)
+  Global: tramo solo ERROR → fallo_formulario; traza completa → tramite_completo
+
 P-olmedo_502_proxy_fluxe.txt
   Pilar Olmedo Serrano · IG_SUBVEN_COTAUT · pre-firma (FRI/FRF, sin SGI)
   502 Proxy + SesionFirmaClienteConnectException (×N) + El fluxe no es vàlid
