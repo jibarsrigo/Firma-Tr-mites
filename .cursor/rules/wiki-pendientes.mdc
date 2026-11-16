@@ -75,7 +75,12 @@ La idea es **valorar cuántas cosas pueden aparecer en forma de link** (inventar
 - Cierre en Página principal: hoy sin link (trámite completo) — ¿enlazar a algo en Frecuentes o dejar sin link?
 - Cl@ve / Certificados: auditar cada caja de color frente al índice nuevo de Frecuentes.
 
-**Estado:** Pendiente — aplazado a otro momento. Recordar con este detalle.
+**Estado (2026-11-16):** En curso / casi cerrado en wiki viva:
+- **Página principal**, **Incidencias Cl@ve** e **Incidencias Certificados Locales** actualizados con links a anclas finas de Frecuentes (`IF_Carga_QAA`, `IF_ClaveMovil_Carpeta` / `_Firma`, `IF_Portafib_servicio`, `IF_Formulario_funcional`, `IF_Clave_cancelada` / `_500` / `_VALIDATION` / `_615`, `IF_Autofirma_*`, etc.).
+- **Incidencias Frecuentes:** spans finos pegados; pendiente menor índice Formulario (`Portafib` / `Formulario` → anclas distintas) y revisar texto QAA Cl@ve Permanente (no usar «Autenticació necessària»; mensaje real ≈ nivel de seguridad inferior).
+- Queda validar saltos en navegador tras pegar.
+
+**Estado:** En validación — no dar por cerrado del todo hasta que el usuario confirme.
 
 ---
 
@@ -94,6 +99,23 @@ La idea es **valorar cuántas cosas pueden aparecer en forma de link** (inventar
 **Pendiente de confirmar con el usuario:** si el resultado le encaja → cerrar. Si algún link del índice no salta, revisar que el `span id` del mail coincida (había anclas con espacios vs guiones bajos; se unificó hacia `#Mail_…` al estilo Frecuentes).
 
 **Estado:** En validación / casi cerrado — no dar por cerrado del todo hasta que el usuario lo diga.
+
+---
+
+## PENDIENTE — Mails: link a Incidencias Frecuentes en cada mail
+
+**Qué pidió el usuario (2026-11-16):** revisar el artículo **Mails** y, en **cada mail**, añadir un **link al apartado o subapartado de Incidencias Frecuentes** donde se explica el caso.
+
+**Dónde colocarlo:** **arriba** del texto del mail a enviar (antes del cuerpo / plantilla que se copia), para que el agente pueda abrir el diagnóstico del caso sin buscarlo a mano.
+
+**Cómo retomar:**
+1. Inventariar cada ancla `Mail_…` del artículo Mails.
+2. Cruzar con el apartado / subapartado de **Incidencias Frecuentes** (usar anclas finas si existen: p. ej. `#IF_Clave815`, `#IF_Autofirma_SAF27`, `#IF_Portafib_servicio`…).
+3. Pegar en cada mail una línea corta tipo: `→ [[Incidencias Frecuentes#…|Ver caso en Incidencias Frecuentes]]` (o redacción acordada) **justo encima** del texto a enviar.
+4. Si un mail no tiene caso claro en Frecuentes → anotarlo y decidir (crear ancla / no enlazar / enlazar al apartado genérico).
+5. Homogeneizar estilo (misma frase / mismo tamaño) en todos los mails.
+
+**Estado:** Pendiente — aplazado a otro momento. Recordar con este detalle.
 
 ---
 
