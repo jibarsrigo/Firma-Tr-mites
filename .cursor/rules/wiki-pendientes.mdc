@@ -33,12 +33,18 @@ Revisar **todo el texto** de **Incidencias Frecuentes**. Hay muchas veces que «
 **Criterio al retomar (apartado a apartado):**
 1. Leer cada bloque preguntando: ¿lo entendería alguien del CAU que no lleva meses con estas incidencias?
 2. Donde haya tecnicismo necesario (literal SistraHelp, código 8‑15, TR_…), **dejar el literal** pero añadir **qué significa en la práctica** en una frase corta.
-3. Sustituir o aclarar abreviaturas y frases internas («manda», «pre‑proveedor», «IdP», «SEG‑012», etc.) la primera vez que salen en el apartado, o con sinónimo claro.
+3. Sustituir o aclarar abreviaturas y frases internas («manda», «pre‑proveedor», «IdP», «SEG‑012», «un NIF», «misma franja», etc.) la primera vez, o con sinónimo claro («si solo le pasa a un ciudadano», «varios ciudadanos a la misma hora»).
 4. Conservar verdades seguras y mails; no inventar; no acortar quitando el porqué.
 5. Misma estructura visual actual (Qué pasa / Traza / Qué hacer / Problema general); solo reescribir para claridad.
 6. Empezar por los apartados más densos (Pasarela+Soffid, Cl@ve Firma, 8‑15, Portafib, Autofirma, REGWEB) y seguir con los cortos.
 
-**Estado:** Pendiente — aplazado a otro momento. Recordar con este detalle. Prioridad alta de comprensión.
+**Criterio de cantidad de texto (usuario 2026-11-16, apartado Pasarela):**
+- **No** alargar mucho: los compañeros no deben tener que leer párrafos largos.
+- **Sí** dar **un poco de contexto** de la situación para que la frase suelta se entienda (quién / dónde se ve / qué implica).
+- Ejemplos del pedido: «no ha entrado» → «el ciudadano no ha accedido al trámite»; explicar de pasada qué es Soffid / dónde salen los literales; «Un solo NIF» → «si solo le sucede a un ciudadano»; «Varios NIF misma franja» → «varios ciudadanos en la misma franja de tiempo»; quitar matices confusos tipo «Si falta nivel avanzado» si no aportan.
+- Estado Pasarela: en reescritura (usuario validando).
+
+**Estado:** En curso — empezado por `#IF_Pasarela`. Prioridad alta de comprensión.
 
 ---
 
@@ -109,6 +115,25 @@ En **Incidencias Frecuentes** · `#IF_Portafib` · bloque **Literales Formulario
 **Repo:** fixture anonimizada `trazas_prueba/P-formulario_camp_invalid_cnumreg.txt` + README (PR #13, rama `cursor/formulario-cnumreg-bd90`). Tramo solo ERROR → `fallo_formulario`; traza completa con REG+FIN → `tramite_completo`.
 
 **Estado:** Pendiente de pegar en wiki — aplazado a otro momento. Recordar con este detalle.
+
+---
+
+## PENDIENTE — Contenido del `[+]` (leyenda de eventos) unificado Cl@ve / Certificados
+
+**Qué pidió el usuario (2026-11-16):** actualizar / completar el contenido del bloque colapsable **`[+]`** (tabla «Evento → Qué indica») de forma que sea **el mismo** en:
+
+1. **Incidencias Cl@ve**
+2. **Incidencias Certificados Locales**
+
+Hoy el `[+]` es una leyenda rápida de eventos SistraHelp (Inici del tràmit, formulari, firma, registre, càrrega…). Hay que **revisarlo y completarlo** (textos más claros, coherentes con el pase «NO HABLAR INDIO» y con lo que ya se explica en Frecuentes), y **dejar una sola versión** pegada en las dos páginas para que no diverjan.
+
+**Cómo retomar:**
+1. Partir del `[+]` actual (el de Cl@ve o el de Certificados; deben igualarse).
+2. Revisar fila a fila: ¿se entiende? ¿falta algún evento habitual (ERROR, BOR, etc.)? ¿sobra algo?
+3. Aplicar el mismo HTML/tabla en **ambas** páginas.
+4. No mezclar con el rediseño de cajas de color (eso ya va aparte).
+
+**Estado:** Pendiente — aplazado a otro momento. Recordar con este detalle.
 
 ---
 
